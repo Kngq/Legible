@@ -404,7 +404,7 @@ Home is one timeline (`buildTimeline` in `src/lib/engine/timeline.ts`). There is
 
 1. **Header.** Avatar with its completion ring, town name, "What is being decided near you", and "Your profile".
 2. **Nudge.** At most one card, for `nextItem(profile)` (see Onboarding).
-3. **Your timeline.** One list, ranked (below). Each entry is a date tile beside a card:
+3. **Your timeline,** laid out like a news reader on a white sheet. The top-ranked entry is a **hero card** (deep purple, serif headline, due line, how it reaches you, who acts at the foot, a large faint pictogram in place of a photo). The rest fall into sections in rank order, **For you**, **You follow**, **For everyone**, each a bold sans heading with a "Show all N" pill (three rows shown). A row is an 80 px thumbnail (the day, or a pictogram for undated bills), a serif headline, a grey date line with "•" separators, and two small lines. Touching ballot questions appear under their entry as rows with their cover art. Open questions become bordered cards ("Sharpen your timeline", serif title, black chevron). The nudge is a promo block: grey panel, bold line, black "Add now" pill, a pictogram. Every entry carries:
    - name;
    - when it is due, as a fact: "Open, closes in 6 days · Fri, Oct 30, 11:59 PM", "Voters decide in 10 days · Nov 3";
    - one sentence on what it is (the civic item's summary, or "9 statewide questions on your ballot.");

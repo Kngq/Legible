@@ -1,8 +1,10 @@
 "use client";
 
-// Home: one timeline of what is being decided near the person, soonest first.
-// Each entry says what it is, when it is due, and how it reaches this person.
+// Home, laid out like a news reader: the most relevant item as a hero card, then
+// sections (For you, You follow, For everyone) of rows with a thumbnail, a serif
+// headline, and a date line. Order comes from buildTimeline: relevance, then time.
 // All filtering runs in the browser.
+import { useState, type ReactNode } from "react";
 import { avatarParts } from "@/lib/engine/avatar";
 import { decidedLine, decideByLine, decideByRelative, DOC_TYPE_LABEL, shortDate } from "@/lib/engine/decide-by";
 import type { CivicCard } from "@/lib/engine/civic";
@@ -11,20 +13,32 @@ import type { Feed, FeedItem } from "@/lib/engine/feed";
 import { nextItem, personalization, type ChecklistItem } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
 import { buildTimeline, docWhat, type TimelineEntry } from "@/lib/engine/timeline";
-import type { Provenance } from "@/lib/engine/types";
+import type { Card, Provenance } from "@/lib/engine/types";
 import { LIFE_AREAS } from "@/lib/vocab";
 import { AvatarRing } from "./AvatarRing";
-import { DocTile } from "./covers";
+import { Cover, DocTile } from "./covers";
 import { Glyph, Part } from "./icons";
 import { itemView, viewForPart, type SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { Button, FOCUS, Tag } from "./ui";
+
+const SERIF = "font-[family-name:var(--font-serif)]";
+const PILL = `inline-flex min-h-9 shrink-0 items-center rounded-full bg-surface-muted px-4 text-small font-semibold hover:bg-border ${FOCUS}`;
+const ROWS_SHOWN = 3;
 
 const TRUST: Record<Provenance, { label: string; pop: "positive" | "attention" }> = {
   reviewed: { label: "Reviewed", pop: "positive" },
   verified: { label: "Verified", pop: "positive" },
   ai_draft: { label: "AI draft", pop: "attention" },
 };
+
+type Tier = "touches" | "list" | "everyone";
+const TIERS: { id: Tier; title: string }[] = [
+  { id: "touches", title: "For you" },
+  { id: "list", title: "You follow" },
+  { id: "everyone", title: "For everyone" },
+];
+const tierOf = (e: TimelineEntry): Tier => (e.touches ? "touches" : e.relevance >= 0.6 ? "list" : "everyone");
 
 export function Home({
   feed,
@@ -63,30 +77,30 @@ export function Home({
   const nudge = nudgeDismissed ? null : nextItem(profile);
   const decided = feed.items.filter((i) => i.status === "decided");
   const timeline = buildTimeline(feed.items, civic, today);
+  const [hero, ...rest] = timeline;
+  const open = (e: TimelineEntry) => (e.kind === "doc" ? onOpenDoc(e.item.doc.id) : onOpenItem(e.card.item.id));
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 pb-16 pt-4 sm:px-6 lg:pt-8">
-      {/* Header: the person's page. Avatar with its ring, town, profile button. */}
-      <header className="flex flex-col items-center pt-4 text-center">
+    <div className="mx-auto w-full max-w-2xl bg-surface px-5 pb-16 pt-6 sm:my-6 sm:rounded-xl sm:px-8 sm:shadow-card">
+      {/* Header: town, the avatar ring, and the profile pill. */}
+      <header className="flex items-center gap-4">
         <AvatarRing
           parts={parts}
           percent={meter.percent}
-          size={120}
+          size={64}
           onFigure={() => onOpenProfile({ kind: "list" })}
           onPart={(p) => onOpenProfile(viewForPart(p))}
         />
-        <p className="mt-2 text-title">{town ?? "Massachusetts"}</p>
-        <p className="text-body text-muted-foreground">What is being decided near you</p>
-        <div className="mt-3 flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => onOpenProfile({ kind: "list" })}
-            className={`min-h-11 rounded-full bg-surface-muted px-5 text-body font-semibold hover:bg-border ${FOCUS}`}
-          >
+        <div className="min-w-0 flex-1">
+          <p className="text-title font-bold tracking-tight">{town ?? "Massachusetts"}</p>
+          <p className="text-small text-muted-foreground">What is being decided near you</p>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={PILL}>
             Your profile
           </button>
           {remember && (
-            <button type="button" onClick={onForget} className={`min-h-11 rounded-full px-4 text-small font-semibold text-muted-foreground hover:text-foreground ${FOCUS}`}>
+            <button type="button" onClick={onForget} className={`min-h-9 px-2 text-small font-semibold text-muted-foreground hover:text-foreground ${FOCUS}`}>
               Forget me
             </button>
           )}
@@ -95,26 +109,21 @@ export function Home({
 
       {nudge && <Nudge item={nudge} onOpen={() => onOpenProfile(itemView(nudge))} onDismiss={onDismissNudge} />}
 
-      <section aria-labelledby="h-timeline" className="mt-8">
-        <h1 id="h-timeline" className="text-title">
-          Your timeline
-        </h1>
-        <p className="mt-1 text-small text-muted-foreground">Deadlines, votes, and meetings, most relevant to you first, then soonest. Each one says why it is here.</p>
+      <h1 className="sr-only">Your timeline</h1>
+      {hero && <Hero entry={hero} today={today} onOpen={() => open(hero)} onOpenMeasure={onOpenMeasure} />}
 
-        <ol className="mt-5">
-          {timeline.map((e, i) => (
-            <TimelineRow
-              key={e.key}
-              entry={e}
-              today={today}
-              last={i === timeline.length - 1}
-              onOpenItem={onOpenItem}
-              onOpenDoc={onOpenDoc}
-              onOpenMeasure={onOpenMeasure}
-            />
-          ))}
-        </ol>
-      </section>
+      {TIERS.map((t) => {
+        const entries = rest.filter((e) => tierOf(e) === t.id);
+        return entries.length ? (
+          <Section key={t.id} id={`h-${t.id}`} title={t.title} count={entries.length}>
+            {(all) =>
+              (all ? entries : entries.slice(0, ROWS_SHOWN)).map((e) => (
+                <Row key={e.key} entry={e} today={today} onOpen={() => open(e)} onOpenMeasure={onOpenMeasure} />
+              ))
+            }
+          </Section>
+        ) : null;
+      })}
 
       {!feed.items.some((i) => i.scope === "town") && (
         <EmptyTown town={town} onAddTown={() => onOpenProfile({ kind: "town" })} onUpload={onUpload} />
@@ -122,25 +131,31 @@ export function Home({
 
       {feed.openAreas.length > 0 && (
         <section aria-labelledby="h-open" className="mt-10">
-          <h2 id="h-open" className="text-title">
-            Open questions for you
-          </h2>
-          <p className="mt-1 text-small text-muted-foreground">Each one sorts more of your feed. Your answers stay in this browser.</p>
-          <ul className="mt-3 overflow-hidden rounded-lg bg-surface shadow-card">
+          <div className="flex items-center justify-between gap-3">
+            <h2 id="h-open" className="text-title font-bold tracking-tight">
+              Sharpen your timeline
+            </h2>
+            <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={PILL}>
+              Your profile
+            </button>
+          </div>
+          <ul className="mt-4 space-y-3">
             {feed.openAreas.map((id) => {
               const a = LIFE_AREAS.find((x) => x.id === id)!;
               return (
-                <li key={id} className="border-b border-border last:border-0">
+                <li key={id}>
                   <button
                     type="button"
                     onClick={() => onOpenProfile({ kind: "area", id })}
-                    className={`flex min-h-16 w-full items-center gap-3 px-4 py-3 text-left hover:bg-surface-muted ${FOCUS}`}
+                    className={`flex w-full items-start gap-3 rounded-md border border-border bg-surface p-4 text-left hover:bg-surface-muted/60 ${FOCUS}`}
                   >
                     <span className="min-w-0 flex-1">
-                      <span className="block text-body font-semibold">{a.heading}</span>
-                      <span className="block text-small text-muted-foreground">{a.why}</span>
+                      <span className={`block text-body font-semibold ${SERIF}`}>{a.heading}</span>
+                      <span className="mt-1 block text-small text-muted-foreground">{a.why} Your answers stay in this browser.</span>
                     </span>
-                    <span className="shrink-0 text-small font-semibold">Answer</span>
+                    <span aria-hidden="true" className="flex size-7 shrink-0 -rotate-90 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                      <Glyph name="chevron" size={14} />
+                    </span>
                   </button>
                 </li>
               );
@@ -151,7 +166,7 @@ export function Home({
 
       {decided.length > 0 && (
         <details className="group mt-10">
-          <summary className={`flex min-h-12 cursor-pointer list-none items-center justify-between rounded-lg bg-surface px-5 shadow-card ${FOCUS}`}>
+          <summary className={`flex min-h-12 cursor-pointer list-none items-center justify-between rounded-md border border-border px-5 ${FOCUS}`}>
             <span className="text-body font-semibold">
               Decided <span className="text-muted-foreground">{decided.length}</span>
             </span>
@@ -169,106 +184,167 @@ export function Home({
         </details>
       )}
 
-      <p className="mt-12 text-small text-muted-foreground">Your answers and your town stay in this browser. Legible sorts the official text; it never says how to vote.</p>
+      <p className="mt-12 text-small text-muted-foreground">Most relevant to you first, then soonest. Your answers and your town stay in this browser. Legible sorts the official text; it never says how to vote.</p>
     </div>
+  );
+}
+
+/** Section heading in bold sans with a "Show all" pill, like a news reader's topic block. */
+function Section({ id, title, count, children }: { id: string; title: string; count: number; children: (all: boolean) => ReactNode }) {
+  const [all, setAll] = useState(false);
+  return (
+    <section aria-labelledby={id} className="mt-10">
+      <div className="flex items-center justify-between gap-3">
+        <h2 id={id} className="text-title font-bold tracking-tight">
+          {title}
+        </h2>
+        {count > ROWS_SHOWN && (
+          <button type="button" onClick={() => setAll(!all)} aria-expanded={all} className={PILL}>
+            {all ? "Show less" : `Show all ${count}`}
+          </button>
+        )}
+      </div>
+      <ul className="mt-2">{children(all)}</ul>
+    </section>
   );
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-/** Date tile for a YYYY-MM-DD day, or a pictogram for undated bills. */
-function DayTile({ date }: { date?: string }) {
+/** Square thumbnail: the day for dated items, a pictogram for undated bills. */
+function DayTile({ date, size = 80 }: { date?: string; size?: number }) {
   if (!date) {
     return (
-      <span aria-hidden="true" className="flex size-14 shrink-0 items-center justify-center rounded-md bg-info text-info-foreground">
-        <Part name="book" size={30} />
+      <span aria-hidden="true" className="flex shrink-0 items-center justify-center rounded-md bg-info text-info-foreground" style={{ width: size, height: size }}>
+        <Part name="book" size={Math.round(size * 0.45)} />
       </span>
     );
   }
   const [, m, d] = date.split("-").map(Number);
   return (
-    <span aria-hidden="true" className="flex size-14 shrink-0 flex-col items-center justify-center rounded-md bg-surface leading-none shadow-card">
+    <span aria-hidden="true" className="flex shrink-0 flex-col items-center justify-center rounded-md bg-surface-muted leading-none" style={{ width: size, height: size }}>
       <span className="text-small font-semibold uppercase text-muted-foreground">{MONTHS[m - 1]}</span>
-      <span className="mt-0.5 text-title">{d}</span>
+      <span className="mt-1 text-title font-bold">{d}</span>
     </span>
   );
 }
 
-/** When it is due, as a fact: "Today · Sat, Oct 24, 11:59 PM", "Voters decide in 10 days · Nov 3". */
+/** When it is due, as a fact: "Today • Sat, Oct 24, 11:59 PM", "Voters decide in 10 days • Nov 3". */
 function dueLine(e: TimelineEntry, today: string): string {
   if (e.kind === "doc") {
     const d = e.item.doc.decideBy;
-    return d ? `${decideByRelative(d, today)} · ${shortDate(d.date)}` : DOC_TYPE_LABEL[e.item.doc.docType];
+    return d ? `${decideByRelative(d, today)} • ${shortDate(d.date)}` : DOC_TYPE_LABEL[e.item.doc.docType];
   }
   const c: CivicCard = e.card;
   const i = c.item;
-  if (!i.at) return [i.status, i.lastAction && `latest action ${i.lastAction.date}`].filter(Boolean).join(" · ");
-  return `${timingTag(c)} · ${dateTime(i.until && c.timing === "open" ? i.until : i.at)}`;
+  if (!i.at) return [i.status, i.lastAction && `latest action ${i.lastAction.date}`].filter(Boolean).join(" • ");
+  return `${timingTag(c)} • ${dateTime(i.until && c.timing === "open" ? i.until : i.at)}`;
 }
 
-function TimelineRow({
+function titleOf(e: TimelineEntry): string {
+  return e.kind === "doc" ? e.item.doc.title : e.card.item.title;
+}
+
+function bodyOf(e: TimelineEntry): string {
+  return e.kind === "doc" ? (e.item.doc.decideBy?.who ?? e.item.doc.place.name) : e.card.item.body;
+}
+
+const KIND_PART = { deadline: "ballot", window: "ballot_box", election: "ballot_box", meeting: "town_hall", bill: "book" } as const;
+
+/** The most relevant item, large: serif headline on deep purple, who acts at the foot. */
+function Hero({
   entry: e,
   today,
-  last,
-  onOpenItem,
-  onOpenDoc,
+  onOpen,
   onOpenMeasure,
 }: {
   entry: TimelineEntry;
   today: string;
-  last: boolean;
-  onOpenItem: (id: string) => void;
-  onOpenDoc: (id: string) => void;
+  onOpen: () => void;
   onOpenMeasure: (docId: string, measureId: string) => void;
 }) {
-  const title = e.kind === "doc" ? e.item.doc.title : e.card.item.title;
-  const what = e.kind === "doc" ? docWhat(e.item) : e.card.item.summary;
-  const open = () => (e.kind === "doc" ? onOpenDoc(e.item.doc.id) : onOpenItem(e.card.item.id));
+  const part = e.kind === "doc" ? "ballot_box" : KIND_PART[e.card.item.kind];
   const ballot = e.kind === "doc" ? e.item : e.ballot;
-  const touching = ballot ? ballot.cards.filter((c) => c.relevance === "touches") : [];
-  const soon = e.days !== undefined && e.days <= 0;
-
   return (
-    <li className="relative flex gap-4 pb-5">
-      {!last && <span aria-hidden="true" className="absolute bottom-0 left-7 top-14 w-px bg-border" />}
-      <DayTile date={e.date} />
-      <div className="min-w-0 flex-1 overflow-hidden rounded-lg bg-surface shadow-card">
-        <button type="button" onClick={open} className={`block w-full p-4 text-left hover:bg-surface-muted/60 ${FOCUS}`}>
-          <span className="flex items-start justify-between gap-3">
-            <span className="text-body font-semibold">{title}</span>
-            {e.touches && <Tag pop="accent">For you</Tag>}
+    <section aria-label="Most relevant to you" className="mt-6">
+      <button
+        type="button"
+        onClick={onOpen}
+        className={`relative flex min-h-64 w-full flex-col justify-end overflow-hidden rounded-lg bg-accent p-5 text-left text-accent-foreground transition-transform duration-(--duration) ease-legible hover:-translate-y-0.5 ${FOCUS}`}
+      >
+        <span aria-hidden="true" className="absolute -right-8 -top-8 opacity-15">
+          <Part name={part} size={150} strokeWidth={1.2} />
+        </span>
+        {e.touches && <span className="absolute right-4 top-4 rounded-sm bg-accent-foreground px-2.5 py-1 text-small font-semibold text-foreground">For you</span>}
+        <span className="relative text-small font-semibold opacity-85">{dueLine(e, today)}</span>
+        <span className={`relative mt-2 block text-title font-semibold leading-tight ${SERIF}`}>{titleOf(e)}</span>
+        <span className="relative mt-2 block text-small opacity-90">{e.forYou}</span>
+        <span className="relative mt-4 flex items-center gap-3">
+          <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-md bg-accent-foreground/15">
+            <Part name={part} size={22} />
           </span>
-          <span className={`mt-1 block text-small font-semibold ${soon ? "text-foreground" : "text-muted-foreground"}`}>{dueLine(e, today)}</span>
-          <span className="mt-2 line-clamp-3 block text-body">{what}</span>
-          <span className={`mt-3 block rounded-md px-3 py-2 text-small ${e.touches ? "bg-accent-soft font-semibold" : "bg-surface-muted"}`}>{e.forYou}</span>
-        </button>
-        {ballot && (
-          <div className="border-t border-border px-4 pb-3 pt-2">
-            {touching.map((c) => (
-              <button
-                key={c.measure.id}
-                type="button"
-                onClick={() => onOpenMeasure(ballot.doc.id, c.measure.id)}
-                className={`flex min-h-11 w-full items-center justify-between gap-3 text-left text-small font-semibold ${FOCUS}`}
-              >
-                <span>
-                  {ballot.doc.docType === "ballot" ? "Question" : "Article"} {c.measure.number}: {c.measure.title}
-                </span>
-                <span className="-rotate-90">
-                  <Glyph name="chevron" size={16} />
-                </span>
-              </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => onOpenDoc(ballot.doc.id)}
-              className={`min-h-11 text-small font-semibold underline underline-offset-4 ${FOCUS}`}
-            >
-              See all {ballot.total} {ballot.doc.docType === "ballot" ? "questions" : "items"}
-            </button>
-          </div>
-        )}
-      </div>
+          <span className="text-body font-semibold">{bodyOf(e)}</span>
+        </span>
+      </button>
+      {ballot && <MeasureLinks ballot={ballot} onOpenMeasure={onOpenMeasure} />}
+    </section>
+  );
+}
+
+/** The measures of a ballot or warrant that touch the person, as thumbnail rows. */
+function MeasureLinks({ ballot, onOpenMeasure }: { ballot: FeedItem; onOpenMeasure: (docId: string, measureId: string) => void }) {
+  const touching: Card[] = ballot.cards.filter((c) => c.relevance === "touches");
+  if (!touching.length) return null;
+  const isBallot = ballot.doc.docType === "ballot";
+  return (
+    <ul className="mt-2">
+      {touching.map((c) => (
+        <li key={c.measure.id}>
+          <button
+            type="button"
+            onClick={() => onOpenMeasure(ballot.doc.id, c.measure.id)}
+            className={`flex w-full items-center gap-4 rounded-md py-3 text-left hover:bg-surface-muted/60 ${FOCUS}`}
+          >
+            <Cover measure={c.measure} label={`${isBallot ? "Q" : "#"}${c.measure.number}`} size={28} className="size-20 shrink-0 rounded-md" />
+            <span className="min-w-0 flex-1">
+              <span className={`line-clamp-2 block text-body font-semibold leading-snug ${SERIF}`}>{c.measure.title}</span>
+              <span className="mt-1 block text-small text-muted-foreground">
+                {isBallot ? "Question" : "Article"} {c.measure.number} • touches you
+              </span>
+            </span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** One timeline entry: thumbnail, serif headline, date line, and how it reaches the person. */
+function Row({
+  entry: e,
+  today,
+  onOpen,
+  onOpenMeasure,
+}: {
+  entry: TimelineEntry;
+  today: string;
+  onOpen: () => void;
+  onOpenMeasure: (docId: string, measureId: string) => void;
+}) {
+  const ballot = e.kind === "doc" ? e.item : e.ballot;
+  const what = e.kind === "doc" ? docWhat(e.item) : e.card.item.summary;
+  return (
+    <li className="border-b border-border last:border-0">
+      <button type="button" onClick={onOpen} className={`flex w-full gap-4 rounded-md py-4 text-left hover:bg-surface-muted/60 ${FOCUS}`}>
+        <DayTile date={e.date} />
+        <span className="min-w-0 flex-1">
+          <span className={`line-clamp-2 block text-body font-semibold leading-snug ${SERIF}`}>{titleOf(e)}</span>
+          <span className="mt-1 block text-small text-muted-foreground">{dueLine(e, today)}</span>
+          <span className="mt-1.5 line-clamp-2 block text-small">{what}</span>
+          <span className={`mt-1.5 block text-small ${e.touches ? "font-semibold" : "text-muted-foreground"}`}>{e.forYou}</span>
+        </span>
+      </button>
+      {ballot && <MeasureLinks ballot={ballot} onOpenMeasure={onOpenMeasure} />}
     </li>
   );
 }
@@ -304,7 +380,7 @@ function FeedRow({ item, today, onOpen }: { item: FeedItem; today: string; onOpe
 
 function EmptyTown({ town, onAddTown, onUpload }: { town?: string; onAddTown: () => void; onUpload?: () => void }) {
   return (
-    <div className="mt-4 rounded-lg bg-surface p-5 shadow-card">
+    <div className="mt-8 rounded-lg border border-border p-5">
       {town ? (
         <>
           <p className="text-body font-semibold">Legible does not have documents for {town} yet.</p>
@@ -339,19 +415,23 @@ export function nudgeCopy(item: ChecklistItem): string {
   return `Add ${a.heading.charAt(0).toLowerCase() + a.heading.slice(1)} to sort ${decisionsPhrase(a.why)}.`;
 }
 
-/** The single nudge card. Never names a document; never more than one. */
+/** The single nudge card, styled as a promo block: text, a black pill, an illustration. */
 function Nudge({ item, onOpen, onDismiss }: { item: ChecklistItem; onOpen: () => void; onDismiss: () => void }) {
+  const art = item.kind === "town" ? "town_hall" : item.kind === "topics" ? "magnifier" : "key";
   return (
-    <div className="mt-4 flex items-start gap-3 rounded-lg bg-surface p-4 shadow-card">
-      <span aria-hidden="true" className="mt-1.5 size-2.5 shrink-0 rounded-full bg-accent" />
+    <div className="relative mt-6 flex items-center gap-4 overflow-hidden rounded-lg bg-surface-muted p-5">
       <div className="min-w-0 flex-1">
-        <p className="text-body">{nudgeCopy(item)}</p>
-        <Button variant="secondary" className="mt-3 min-h-10! px-4" onClick={onOpen}>
-          Add
-        </Button>
+        <p className="text-small text-muted-foreground">Sharpen your timeline</p>
+        <p className="mt-1 text-body font-semibold">{nudgeCopy(item)}</p>
+        <button type="button" onClick={onOpen} className={`mt-3 inline-flex min-h-10 items-center rounded-md bg-primary px-4 text-small font-semibold text-primary-foreground ${FOCUS}`}>
+          Add now
+        </button>
       </div>
-      <button type="button" onClick={onDismiss} aria-label="Dismiss" className={`-m-2 flex size-12 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-surface-muted ${FOCUS}`}>
-        <Glyph name="close" size={18} />
+      <span aria-hidden="true" className="shrink-0 text-foreground/70">
+        <Part name={art} size={72} strokeWidth={1.2} />
+      </span>
+      <button type="button" onClick={onDismiss} aria-label="Dismiss" className={`absolute right-1 top-1 flex size-11 items-center justify-center rounded-md text-muted-foreground hover:bg-border ${FOCUS}`}>
+        <Glyph name="close" size={16} />
       </button>
     </div>
   );
