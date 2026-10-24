@@ -5,22 +5,12 @@
 // else lives on Explore. Order comes from buildTimeline. Runs in the browser.
 import type { CivicCard } from "@/lib/engine/civic";
 import type { Feed } from "@/lib/engine/feed";
-import { personalization } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
 import { buildTimeline } from "@/lib/engine/timeline";
-import type { LifeAreaId } from "@/lib/vocab";
-import { Glyph, Part } from "./icons";
+import { Glyph } from "./icons";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
-import { FOCUS } from "./ui";
-import { H2, PRIMARY, SECONDARY, TopBar, UpdateCard } from "./updates";
-
-/** The three profile categories Home asks about. Other areas live in the profile. */
-const CATEGORIES: { id: LifeAreaId; title: string; why: string; add: string; art: string }[] = [
-  { id: "home", title: "Your home", why: "Find out about changes that could affect where you live.", add: "Add housing details", art: "key" },
-  { id: "work", title: "Your work", why: "See decisions that could affect your job or local businesses.", add: "Add work details", art: "storefront" },
-  { id: "voting", title: "Elections", why: "Stay informed about elections and voting in your area.", add: "Add voting details", art: "ballot" },
-];
+import { H2, SECONDARY, TopBar, UpdateCard } from "./updates";
 
 export function Home({
   feed,
@@ -45,72 +35,38 @@ export function Home({
   onExplore: () => void;
 }) {
   const town = townName(profile.townId);
-  const meter = personalization(profile);
-  const done = new Set(meter.items.flatMap((i) => (i.kind === "area" && i.done ? [i.id] : [])));
+  // A friendly greeting, stable per name so it doesn't flicker on re-render.
+  const GREETINGS = ["Hello", "Hi", "Hey", "Welcome back"];
+  const greeting = GREETINGS[(profile.name ?? "").length % GREETINGS.length];
   const forYou = buildTimeline(feed.items, civic, today).filter((e) => e.touches || e.relevance >= 0.6);
   const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure };
+  // Interests are "decided" once the person confirms the topics screen or picks any.
+  const needsInterests = !profile.topicsConfirmedAt && Object.keys(profile.topics).length === 0;
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-16 sm:px-6">
-      <TopBar active="home" profile={profile} onHome={() => window.scrollTo({ top: 0 })} onExplore={onExplore} onOpenProfile={onOpenProfile} />
+      <TopBar active="home" needsInterests={needsInterests} onHome={() => window.scrollTo({ top: 0 })} onExplore={onExplore} onOpenProfile={onOpenProfile} />
 
       <header className="pt-6">
-        <h1 className="text-display">What&apos;s happening in {town ?? "Massachusetts"}?</h1>
-        <p className="mt-3 text-body text-muted-foreground">Understand local decisions, see how they could affect you, and find ways to have your say.</p>
+        {profile.name ? (
+          <>
+            <h1 className="text-display">
+              {greeting}, {profile.name}
+            </h1>
+            <p className="mt-3 text-body text-muted-foreground">
+              Here&apos;s what&apos;s happening in {town ?? "Massachusetts"}: local decisions, how they could affect you, and ways to have your say.
+            </p>
+          </>
+        ) : (
+          <>
+            <h1 className="text-display">What&apos;s happening in {town ?? "Massachusetts"}?</h1>
+            <p className="mt-3 text-body text-muted-foreground">Understand local decisions, see how they could affect you, and find ways to have your say.</p>
+          </>
+        )}
       </header>
 
-      {/* What matters to you comes first: it is what makes the rest personal. */}
-      <section aria-labelledby="h-matters" className="mt-10">
-        <h2 id="h-matters" className={H2}>
-          What matters to you?
-        </h2>
-        <p className="mt-1 text-small text-muted-foreground">
-          Tell us a little about yourself so we can highlight decisions that may affect your life. Your answers stay in this browser.
-        </p>
-        {!town && (
-          <button type="button" onClick={() => onOpenProfile({ kind: "town" })} className={`mt-4 ${PRIMARY}`}>
-            Add your city or town
-          </button>
-        )}
-        <ul className="mt-4 grid gap-3 sm:grid-cols-3">
-          {CATEGORIES.map((c) => {
-            const isDone = done.has(c.id);
-            return (
-              <li key={c.id}>
-                <button
-                  type="button"
-                  onClick={() => onOpenProfile({ kind: "area", id: c.id })}
-                  className={`flex h-full w-full flex-col rounded-lg border bg-surface p-4 text-left transition-colors duration-(--duration) ease-legible hover:bg-surface-muted/60 ${FOCUS} ${
-                    isDone ? "border-border" : "border-accent/30"
-                  }`}
-                >
-                  <span aria-hidden="true" className={`flex size-11 items-center justify-center rounded-full ${isDone ? "bg-surface-muted" : "bg-accent-soft"}`}>
-                    <Part name={c.art} size={24} />
-                  </span>
-                  <span className="mt-3 block text-body font-bold">{c.title}</span>
-                  <span className="mt-1 block flex-1 text-small text-muted-foreground">{c.why}</span>
-                  {isDone ? (
-                    <span className="mt-3 flex items-center justify-between gap-2 text-small font-semibold">
-                      <span className="inline-flex items-center gap-1.5">
-                        <Glyph name="check" size={14} /> Added
-                      </span>
-                      <span className="underline underline-offset-4">Edit</span>
-                    </span>
-                  ) : (
-                    <span className="mt-3 inline-flex min-h-10 items-center justify-center rounded-full bg-primary px-4 text-small font-semibold text-primary-foreground">{c.add}</span>
-                  )}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={`mt-3 min-h-11 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
-          More about you: household, getting around, and subjects you follow
-        </button>
-      </section>
-
       {/* Only what matches this person. Everything else is on Explore. */}
-      <section aria-labelledby="h-foryou" className="mt-12">
+      <section aria-labelledby="h-foryou" className="mt-10">
         <h2 id="h-foryou" className={H2}>
           For you
         </h2>

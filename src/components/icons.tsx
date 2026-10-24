@@ -177,7 +177,7 @@ export function DirectionMark({ direction, size = 28 }: { direction: Direction; 
   );
 }
 
-export function Glyph({ name, size = 20 }: { name: "back" | "close" | "check" | "chevron" | "quote" | "external" | "copy" | "share"; size?: number }) {
+export function Glyph({ name, size = 20 }: { name: "back" | "close" | "check" | "chevron" | "quote" | "external" | "copy" | "share" | "person"; size?: number }) {
   const d: Record<typeof name, ReactNode> = {
     back: <path d="M15 5 8 12l7 7" />,
     close: <path d="M6 6l12 12M18 6 6 18" />,
@@ -186,6 +186,12 @@ export function Glyph({ name, size = 20 }: { name: "back" | "close" | "check" | 
     quote: <path d="M5 11h4v6H5zM5 11c0-3 1.3-4.5 4-5M14 11h4v6h-4zM14 11c0-3 1.3-4.5 4-5" />,
     external: <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />,
     share: <path d="M12 15V3.5M8 7.5l4-4 4 4M7 11H5.5v9.5h13V11H17" />,
+    person: (
+      <>
+        <circle cx="12" cy="8" r="3.2" />
+        <path d="M5.5 19.5c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6" />
+      </>
+    ),
     copy: (
       <>
         <rect x="8" y="8" width="12" height="12" rx="2" />

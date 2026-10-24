@@ -35,6 +35,8 @@ export interface TopicChoice {
 
 export interface Profile {
   version: typeof PROFILE_VERSION;
+  /** First name or nickname for the greeting. Browser-only, like every life fact; never sent. */
+  name?: string;
   townId?: string;
   facts: Partial<Record<FactId, FactAnswer>>;
   skipped: Partial<Record<FactId, FactSkip>>;
@@ -150,6 +152,7 @@ export function parseProfile(raw: unknown): Profile | null {
   const now = new Date().toISOString();
   const out = emptyProfile(typeof r.createdAt === "string" ? r.createdAt : now);
   if (typeof r.townId === "string") out.townId = r.townId;
+  if (typeof r.name === "string" && r.name.trim()) out.name = r.name.trim().slice(0, 40);
   if (typeof r.topicsConfirmedAt === "string") out.topicsConfirmedAt = r.topicsConfirmedAt;
   if (r.source === "persona") out.source = "persona";
   if (typeof r.updatedAt === "string") out.updatedAt = r.updatedAt;

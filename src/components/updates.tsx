@@ -3,19 +3,15 @@
 // Pieces shared by Home and Explore: the top bar with Home and Explore tabs, the
 // update card, the decided-row, and the one "How Legible works" note.
 import type { ReactNode } from "react";
-import { avatarParts } from "@/lib/engine/avatar";
 import { decidedLine, decideByLine, decideByRelative, DOC_TYPE_LABEL, shortDate } from "@/lib/engine/decide-by";
 import { timingTag } from "@/lib/engine/civic-copy";
 import type { FeedItem } from "@/lib/engine/feed";
-import { personalization } from "@/lib/engine/personalization";
-import type { Profile } from "@/lib/engine/profile";
 import { docWhat, type TimelineEntry } from "@/lib/engine/timeline";
 import type { Provenance } from "@/lib/engine/types";
 import { friendlyWhen, KIND_LABEL, whyLine } from "@/lib/engine/update-copy";
-import { AvatarRing } from "./AvatarRing";
 import { DocTile } from "./covers";
 import { Glyph } from "./icons";
-import { viewForPart, type SheetView } from "./ProfileSheet";
+import { type SheetView } from "./ProfileSheet";
 import { FOCUS, Tag } from "./ui";
 
 export const H2 = "text-title font-bold tracking-tight";
@@ -31,13 +27,14 @@ const TRUST: Record<Provenance, { label: string; pop: "positive" | "attention" }
 /** "Legible", Home and Explore tabs, and the avatar that opens the profile. */
 export function TopBar({
   active,
-  profile,
+  needsInterests = false,
   onHome,
   onExplore,
   onOpenProfile,
 }: {
   active: "home" | "explore";
-  profile: Profile;
+  /** Show an attention badge on the profile icon until interests are chosen. */
+  needsInterests?: boolean;
   onHome: () => void;
   onExplore: () => void;
   onOpenProfile: (v: SheetView) => void;
@@ -56,21 +53,28 @@ export function TopBar({
   );
   return (
     <nav aria-label="Main" className="flex h-16 items-center justify-between gap-3">
-      <span className="text-body font-bold tracking-tight">Legible</span>
+      <span className="font-wordmark text-body font-bold tracking-tight">Legible</span>
       <span className="flex items-center rounded-full bg-surface p-1 shadow-card">
         {tab("home", "Home", onHome)}
         {tab("explore", "Explore", onExplore)}
       </span>
       <span className="flex items-center gap-1">
-        <span className="sr-only">Your profile</span>
-        <AvatarRing
-          parts={avatarParts(profile)}
-          percent={personalization(profile).percent}
-          size={44}
-          showLabel={false}
-          onFigure={() => onOpenProfile({ kind: "list" })}
-          onPart={(p) => onOpenProfile(viewForPart(p))}
-        />
+        <button
+          type="button"
+          onClick={() => onOpenProfile({ kind: needsInterests ? "topics" : "list" })}
+          aria-label={needsInterests ? "Your profile — pick the subjects you follow" : "Your profile"}
+          className={`relative flex size-11 items-center justify-center rounded-full bg-surface text-foreground shadow-card transition-colors duration-(--duration) ease-legible hover:bg-surface-muted ${FOCUS}`}
+        >
+          <Glyph name="person" size={24} />
+          {needsInterests && (
+            <span
+              aria-hidden="true"
+              className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-attention text-[11px] font-bold leading-none text-attention-foreground ring-2 ring-background"
+            >
+              !
+            </span>
+          )}
+        </button>
       </span>
     </nav>
   );
