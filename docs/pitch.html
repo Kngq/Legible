@@ -1,0 +1,302 @@
+<title>Nine Pitch</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F7F7F3; --surface:#FFFFFF; --ink:#1C2228; --muted:#5F6973; --line:#D9DCD6;
+  --blue:#24518F; --blue-soft:#E3EAF5; --hi:#FFE45C; --hi-ink:#4A3F00;
+  --quote-bg:#F1F3EE; --ok:#2E7D4F;
+  --display:"Fraunces",Georgia,"Times New Roman",serif;
+  --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#15191E; --surface:#1E242B; --ink:#E8EAE4; --muted:#A3ABB3; --line:#333B44;
+    --blue:#8FB3EA; --blue-soft:#243247; --hi:#E6CD3E; --hi-ink:#1C1700;
+    --quote-bg:#232A32; --ok:#6FCB94; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15191E; --surface:#1E242B; --ink:#E8EAE4; --muted:#A3ABB3; --line:#333B44;
+  --blue:#8FB3EA; --blue-soft:#243247; --hi:#E6CD3E; --hi-ink:#1C1700;
+  --quote-bg:#232A32; --ok:#6FCB94; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;margin:0;padding-block:0 64px;padding-inline:16px}
+.wrap{max-width:880px;margin:0 auto;display:grid;gap:56px}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:clamp(34px,6vw,54px);letter-spacing:-.01em}
+h2{font-size:clamp(22px,3.4vw,30px)}
+h3{font-size:18px;font-weight:600}
+p{margin:0;max-width:62ch}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hero{padding-top:48px;display:grid;gap:18px}
+.hero .lede{font-size:20px;line-height:1.45;max-width:40ch}
+.mark{background:var(--hi);color:var(--hi-ink);padding:0 .2em;border-radius:2px}
+.hero .meta{font-family:var(--mono);font-size:13px;color:var(--muted)}
+section{display:grid;gap:20px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step{display:grid;gap:8px;border-top:3px solid var(--blue);padding-top:12px}
+.step .n{font-family:var(--mono);font-size:12px;color:var(--blue)}
+.step p{font-size:15px}
+/* mock app */
+.app{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.app .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);font-size:14px}
+.app .bar strong{font-family:var(--display);font-size:17px;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:13px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+.chip.on{background:var(--blue-soft);border-color:var(--blue);color:var(--ink)}
+.notice{padding:10px 16px;background:var(--quote-bg);font-size:13px;color:var(--muted);border-bottom:1px solid var(--line)}
+.cards{display:grid;gap:12px;padding:16px}
+.card{border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:12px}
+.card.touch{border-color:var(--hi);box-shadow:inset 4px 0 0 var(--hi)}
+.card .head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.qnum{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.card h3{font-family:var(--display);font-size:20px;font-weight:700}
+.badge{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin-left:auto}
+.badge.touch{background:var(--hi);color:var(--hi-ink)}
+.badge.all{background:var(--blue-soft);color:var(--ink)}
+.badge.no{border:1px solid var(--line);color:var(--muted)}
+.dir{font-size:14px;color:var(--muted)}
+.dir b{color:var(--ink);font-weight:600}
+.why{font-size:15px}
+.yn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.yn div{background:var(--quote-bg);border-radius:6px;padding:10px 12px;font-size:14px}
+.yn .lab{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
+.cite{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--blue);border:1px solid var(--blue);border-radius:4px;padding:2px 7px;background:transparent}
+.cite::before{content:"¶";font-weight:500}
+.card .foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.collapsed{padding:12px 16px;border:1px dashed var(--line);border-radius:8px;font-size:14px;color:var(--muted)}
+/* two small screens */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px;align-content:start}
+.pane .t{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.field{display:grid;gap:6px;font-size:14px}
+.field .box{border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:14px;background:var(--paper)}
+.radios{display:flex;gap:6px;flex-wrap:wrap}
+.radios span{border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:13px}
+.radios span.on{border-color:var(--blue);background:var(--blue-soft)}
+.checks{display:grid;gap:6px;font-size:14px}
+.checks label{display:flex;gap:8px;align-items:center}
+.checks i{width:16px;height:16px;border:1.5px solid var(--line);border-radius:3px;display:inline-block;flex:none}
+.checks i.on{background:var(--blue);border-color:var(--blue)}
+.btn{background:var(--blue);color:#fff;border-radius:6px;padding:10px 14px;font-weight:600;font-size:14px;text-align:center}
+:root[data-theme="dark"] .btn{color:#0F1620}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#0F1620}}
+.map{aspect-ratio:4/3;max-width:100%;border-radius:6px;background:var(--quote-bg);position:relative;overflow:hidden}
+.map svg{width:100%;height:100%;display:block}
+.legend{display:flex;gap:10px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.legend .sw{display:inline-block;width:40px;height:8px;border-radius:2px;background:linear-gradient(90deg,#DCE6F5,#24518F)}
+.kv{font-size:14px;display:grid;gap:4px}
+.kv b{font-weight:600}
+/* never list */
+.never{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.never div{border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:15px}
+.never div::before{content:"✕";color:var(--muted);margin-right:8px;font-family:var(--mono)}
+/* compare table */
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td.y{color:var(--ok);font-weight:600}
+td.n{color:var(--muted)}
+tr.us td{background:var(--blue-soft)}
+/* plan */
+.plan{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.col{display:grid;gap:10px;align-content:start}
+.col .who{font-family:var(--display);font-size:20px;font-weight:700}
+.col ol{margin:0;padding-left:20px;display:grid;gap:6px;font-size:15px}
+.col li span{color:var(--muted);font-family:var(--mono);font-size:12px;margin-left:6px}
+.ai{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ai div{border-left:3px solid var(--blue);padding-left:14px;display:grid;gap:6px}
+.ai p{font-size:15px}
+.pitchline{font-family:var(--display);font-size:clamp(20px,3vw,26px);font-weight:500;line-height:1.35;max-width:34ch;border-top:1px solid var(--line);padding-top:24px}
+@media (max-width:640px){
+  .steps,.two,.never,.plan,.ai,.yn{grid-template-columns:1fr}
+  .badge{margin-left:0}
+}
+@media (prefers-reduced-motion: no-preference){ .card.touch{transition:box-shadow .2s} }
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">Hackachusetts · Civic action track · 8-hour build</div>
+  <h1>Nine</h1>
+  <p class="lede">Tell us your town and a few facts about your life. We re-sort the <span class="mark">9 Massachusetts ballot questions</span> by whether they touch you, and every sentence quotes the Attorney General.</p>
+  <p class="meta">Nov 3, 2026 · 9 statewide questions · 351 towns · zero recommendations</p>
+</header>
+
+<section>
+  <div class="eyebrow">The problem in two facts</div>
+  <h2>The official booklet is 88 pages. Most people read the headlines instead.</h2>
+  <p>And the headlines disagree. On Question 9, one outlet wrote that a YES vote repeals the gun law. The Secretary of State says a YES vote keeps the law. A voter who reads only the news can walk in and vote the opposite of what they meant.</p>
+</section>
+
+<section>
+  <div class="eyebrow">The 30-second version</div>
+  <div class="steps">
+    <div class="step"><div class="n">Step 1</div><h3>You answer 20 seconds of questions</h3><p>Town. Rent or own. A few one-sentence checkboxes like "I own a gun" or "I've used a public defender." Nothing leaves your browser.</p></div>
+    <div class="step"><div class="n">Step 2</div><h3>Your ballot re-sorts itself</h3><p>Questions that touch you rise to the top with a yellow badge. Questions that apply to everyone sit in the middle. The rest collapse.</p></div>
+    <div class="step"><div class="n">Step 3</div><h3>Every claim has a receipt</h3><p>Each sentence carries a chip. Tap it and the exact Attorney General paragraph opens. We never paraphrase and never say how to vote.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">What the main screen looks like</div>
+  <h2>Example: a Dorchester homeowner who owns a firearm</h2>
+  <div class="app">
+    <div class="bar">
+      <strong>9 questions · Nov 3 · Boston (Dorchester)</strong>
+      <div class="chips"><span class="chip on">Own</span><span class="chip on">Firearm owner</span><span class="chip">Renter</span><span class="chip">State employee</span><span class="chip">Cannabis consumer</span></div>
+    </div>
+    <div class="notice">We quote the Attorney General's summary. We don't tell you how to vote.</div>
+    <div class="cards">
+
+      <div class="card touch">
+        <div class="head"><span class="qnum">Question 9 · Referendum on an existing law</span><span class="badge touch">Touches you</span></div>
+        <h3>Firearms regulation</h3>
+        <div class="dir">Direction: <b>changes a rule that applies to you</b></div>
+        <p class="why">You said you own a firearm. This question decides whether the 2024 firearms law stays in place or is repealed. <span class="cite">AG summary, para 1</span></p>
+        <div class="yn">
+          <div><span class="lab">What YES does</span>A YES VOTE would keep in place the law, which increases the regulation of firearms, including ghost guns, machine guns, and assault-style weapons.</div>
+          <div><span class="lab">What NO does</span>A NO VOTE would repeal this law.</div>
+        </div>
+        <div class="foot">Quoted verbatim from the Secretary of State's Information for Voters booklet · <span class="cite">Full text, p. 23</span></div>
+      </div>
+
+      <div class="card">
+        <div class="head"><span class="qnum">Question 7 · Initiative petition</span><span class="badge all">Everyone</span></div>
+        <h3>Single-family homes on smaller lots</h3>
+        <div class="dir">Direction: <b>changes who decides</b></div>
+        <p class="why">You own a home. This question changes what can be built on residential lots statewide, with local rules still applying. <span class="cite">AG summary, para 2</span></p>
+        <div class="yn">
+          <div><span class="lab">What YES does</span>A YES VOTE would allow single-family homes to be built on lots of 5,000 square feet or more in residential areas, subject to reasonable local regulation of certain aspects of those homes.</div>
+          <div><span class="lab">What NO does</span>A NO VOTE would make no change to the law relative to building single-family homes.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="head"><span class="qnum">Question 4 · Initiative petition</span><span class="badge all">Everyone</span></div>
+        <h3>Election Day registration</h3>
+        <div class="dir">Direction: <b>expands something you use</b></div>
+        <p class="why">This question changes a statewide rule for every voter. We found nothing in your answers that it targets specifically. <span class="cite">AG summary, para 1</span></p>
+        <div class="yn">
+          <div><span class="lab">What YES does</span>A YES VOTE would permit eligible citizens to register to vote or to update their voter registration address at their polling place on Election Day.</div>
+          <div><span class="lab">What NO does</span>A NO VOTE would make no change to the laws governing voter registration.</div>
+        </div>
+      </div>
+
+      <div class="collapsed">Probably not you · 6 more questions (public records, public defender union, primaries, revenue cap, conservation fund, cannabis retail) · tap to expand</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">The other two screens</div>
+  <div class="two">
+    <div class="pane">
+      <div class="t">Screen 1 · Who you are</div>
+      <div class="field">Your town<div class="box">Boston (Dorchester)</div></div>
+      <div class="field">Housing<div class="radios"><span>I rent</span><span class="on">I own</span><span>With family</span></div></div>
+      <div class="checks">
+        <label><i></i>I'm registered to vote</label>
+        <label><i></i>I work for the state</label>
+        <label><i></i>I've used a public defender</label>
+        <label><i class="on"></i>I own a gun</label>
+        <label><i></i>I use cannabis</label>
+      </div>
+      <div class="btn">Show my ballot</div>
+      <p style="font-size:12px;color:var(--muted)">Nothing you enter leaves your browser.</p>
+    </div>
+    <div class="pane">
+      <div class="t">Screen 3 · Your town on the map</div>
+      <div class="map" aria-label="Sketch of a Massachusetts town map shaded by one metric">
+        <svg viewBox="0 0 400 300" role="img">
+          <g stroke="var(--surface)" stroke-width="1.5">
+            <path d="M20 90 L90 70 L120 110 L80 150 L30 140 Z" fill="#9FB7DD"/>
+            <path d="M90 70 L160 60 L180 100 L120 110 Z" fill="#C6D5EC"/>
+            <path d="M120 110 L180 100 L200 150 L150 170 L80 150 Z" fill="#6E93CC"/>
+            <path d="M160 60 L240 55 L250 100 L180 100 Z" fill="#DCE6F5"/>
+            <path d="M180 100 L250 100 L270 150 L200 150 Z" fill="#9FB7DD"/>
+            <path d="M250 100 L320 90 L340 140 L270 150 Z" fill="#C6D5EC"/>
+            <path d="M200 150 L270 150 L260 210 L190 220 L150 170 Z" fill="#DCE6F5"/>
+            <path d="M270 150 L340 140 L350 190 L300 230 L260 210 Z" fill="#FFE45C" stroke="#4A3F00" stroke-width="2.5"/>
+            <path d="M30 140 L80 150 L150 170 L140 230 L60 220 Z" fill="#C6D5EC"/>
+            <path d="M320 90 L380 100 L370 160 L340 140 Z" fill="#6E93CC"/>
+          </g>
+          <text x="306" y="188" font-family="IBM Plex Mono, monospace" font-size="10" fill="#1C2228" text-anchor="middle">Boston</text>
+        </svg>
+      </div>
+      <div class="legend"><span>low</span><span class="sw"></span><span>high</span><span>· 2024 turnout, Q4</span></div>
+      <div class="kv"><div><b>Boston:</b> 62.4% turnout (2024)</div><div><b>State median:</b> 71.8%</div><div style="color:var(--muted);font-size:12px">Source: Secretary of State election statistics · numbers shown are placeholders for the pitch</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">What we will never do</div>
+  <div class="never">
+    <div>Recommend a vote, score a question, or use the words should, good, bad, support, oppose.</div>
+    <div>Compute dollar impacts or model tax revenue beyond quoting the official summary.</div>
+    <div>Store a profile on a server, require an account, or track anyone.</div>
+    <div>Ingest news summaries. If news and the Secretary of State disagree, we show the state.</div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Why this is not already built</div>
+  <h2>Two good tools exist. Neither does both halves.</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tool</th><th>Massachusetts</th><th>Personal to you</th><th>Town level</th><th>Quotes official text per sentence</th><th>Map</th></tr></thead>
+      <tbody>
+        <tr><td>MyBallot (Tufts cSPA)</td><td class="y">Yes</td><td class="n">No</td><td class="n">No</td><td class="n">Paraphrased</td><td class="n">No</td></tr>
+        <tr><td>Voter's Digest (open source, CA)</td><td class="n">No</td><td class="y">Situation chips</td><td class="n">No</td><td class="n">Links only</td><td class="n">No</td></tr>
+        <tr><td>maballotguide.com</td><td class="y">Yes</td><td class="n">No</td><td class="n">No</td><td class="n">Paraphrased</td><td class="n">No</td></tr>
+        <tr class="us"><td><b>Nine</b></td><td class="y">Yes</td><td class="y">Yes, re-sorted</td><td class="y">Yes</td><td class="y">Yes, with a chip</td><td class="y">2D, one metric</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Where the AI goes</div>
+  <h2>Two features, both grounded in the booklet</h2>
+  <div class="ai">
+    <div><h3>Ask the official text</h3><p>A box on each card. The model gets only that question's Attorney General summary and full text, and must cite a paragraph in every sentence. Ask "how should I vote" and it points you to the booklet.</p></div>
+    <div><h3>Draft a message to your election office</h3><p>80 words, built from the questions you flagged and their citations. You edit and copy it. The app never sends anything, and your profile never leaves the browser.</p></div>
+  </div>
+  <p>The relevance sorting itself is not AI. It is a small rules table we write and review by hand, so it runs instantly in the browser and never hallucinates.</p>
+</section>
+
+<section>
+  <div class="eyebrow">How two people build it in 8 hours</div>
+  <div class="plan">
+    <div class="col">
+      <div class="who">Person A · Content and logic</div>
+      <ol>
+        <li>Pull 9 questions from the official PDF into JSON <span>0:00 to 0:45</span></li>
+        <li>Tag table: which flags touch which question <span>0:45 to 1:30</span></li>
+        <li>Relevance function and 3 persona tests <span>1:30 to 2:30</span></li>
+        <li>Two AI routes with the key on the server <span>2:30 to 4:30</span></li>
+        <li>Banned-word lint, persona screenshots <span>6:00 to 7:00</span></li>
+      </ol>
+    </div>
+    <div class="col">
+      <div class="who">Person B · Screens</div>
+      <ol>
+        <li>Scaffold Next.js, push, deploy once <span>0:00 to 0:30</span></li>
+        <li>Intake screen with town type-ahead <span>0:30 to 1:30</span></li>
+        <li>Card, badges, YES/NO box, citation chip <span>1:30 to 3:30</span></li>
+        <li>2D town map with one metric <span>3:30 to 6:00</span></li>
+        <li>Kiro spec and the 2-minute pitch <span>7:00 to 8:00</span></li>
+      </ol>
+    </div>
+  </div>
+  <p>Already done tonight: the spec, the official PDF downloaded, the exact YES and NO wording verified for all 9 questions, and the Question 9 trap confirmed.</p>
+</section>
+
+<p class="pitchline">MyBallot tells you what the questions say. Voter's Digest tells you which ones are about you. Nobody has done both for Massachusetts, at the town level, with every sentence sourced. That is the whole product.</p>
+
+</div>
