@@ -1,0 +1,563 @@
+[
+  {
+    "id": "ma-2026-registration-deadline",
+    "kind": "deadline",
+    "place": {
+      "kind": "state",
+      "name": "Massachusetts"
+    },
+    "body": "Voters",
+    "title": "Last day to register to vote for November 3",
+    "summary": "Registration for the November 3 election closes today. Online registration stays open until 11:59 p.m.",
+    "at": "2026-10-24T23:59:00-04:00",
+    "source": {
+      "name": "Information for Voters 2026, Secretary of the Commonwealth",
+      "url": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-information-for-voters/guide.htm"
+    },
+    "everyone": false,
+    "topics": [
+      "voting_access"
+    ],
+    "touches": [
+      {
+        "fact": "registered_here",
+        "when": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "Register or update your address",
+        "url": "https://www.VoteInMA.com"
+      }
+    ],
+    "check": {
+      "kind": "quote",
+      "quote": {
+        "id": "ma-2026-registration-deadline-quote",
+        "text": "You must be registered to vote by Saturday, October 24, 2026, in order to vote in this election.",
+        "page": 4,
+        "locator": "Your 2026 Voting Options",
+        "status": "verified"
+      }
+    }
+  },
+  {
+    "id": "ma-2026-mail-ballot-deadline",
+    "kind": "deadline",
+    "place": {
+      "kind": "state",
+      "name": "Massachusetts"
+    },
+    "body": "Voters",
+    "title": "Vote by Mail applications due",
+    "summary": "A Vote by Mail application counts if it reaches your local election office by 5 p.m. on October 27.",
+    "at": "2026-10-27T17:00:00-04:00",
+    "location": "Your city or town election office",
+    "source": {
+      "name": "Information for Voters 2026, Secretary of the Commonwealth",
+      "url": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-information-for-voters/guide.htm"
+    },
+    "everyone": true,
+    "topics": [
+      "voting_access"
+    ],
+    "touches": [],
+    "actions": [
+      {
+        "label": "Apply to vote by mail",
+        "url": "https://www.VoteInMA.com"
+      }
+    ],
+    "check": {
+      "kind": "quote",
+      "quote": {
+        "id": "ma-2026-mail-ballot-deadline-quote",
+        "text": "Your Vote by Mail application will be honored as long as it reaches your local election office by 5 p.m. on Tuesday, October 27, 2026",
+        "page": 4,
+        "locator": "Voting by Mail",
+        "status": "verified"
+      }
+    }
+  },
+  {
+    "id": "ma-2026-early-voting",
+    "kind": "window",
+    "place": {
+      "kind": "state",
+      "name": "Massachusetts"
+    },
+    "body": "Voters",
+    "title": "Early voting in person",
+    "summary": "Every city and town offers early voting from October 17 to October 30, including hours on both weekends.",
+    "at": "2026-10-17T00:00:00-04:00",
+    "until": "2026-10-30T23:59:00-04:00",
+    "location": "Your city or town's early voting sites",
+    "source": {
+      "name": "Information for Voters 2026, Secretary of the Commonwealth",
+      "url": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-information-for-voters/guide.htm"
+    },
+    "everyone": true,
+    "topics": [
+      "voting_access"
+    ],
+    "touches": [],
+    "actions": [
+      {
+        "label": "Find early voting hours",
+        "url": "https://www.VoteInMA.com"
+      }
+    ],
+    "check": {
+      "kind": "quote",
+      "quote": {
+        "id": "ma-2026-early-voting-quote",
+        "text": "In-person early voting will begin on Saturday, October 17 and end on Friday, October 30.",
+        "page": 4,
+        "locator": "Voting Early",
+        "status": "verified"
+      }
+    }
+  },
+  {
+    "id": "ma-2026-election-day",
+    "kind": "election",
+    "place": {
+      "kind": "state",
+      "name": "Massachusetts"
+    },
+    "body": "Voters",
+    "title": "Election Day",
+    "summary": "Polls are open from 7 a.m. to 8 p.m. The ballot has nine statewide questions.",
+    "at": "2026-11-03T07:00:00-05:00",
+    "location": "Your assigned polling place",
+    "source": {
+      "name": "Information for Voters 2026, Secretary of the Commonwealth",
+      "url": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-information-for-voters/guide.htm"
+    },
+    "everyone": true,
+    "topics": [
+      "voting_access",
+      "elections"
+    ],
+    "touches": [],
+    "actions": [
+      {
+        "label": "Find your polling place",
+        "url": "https://www.VoteInMA.com"
+      }
+    ],
+    "check": {
+      "kind": "quote",
+      "quote": {
+        "id": "ma-2026-election-day-quote",
+        "text": "On Election Day, all polling places will be open from 7 a.m. until 8 p.m.",
+        "page": 2,
+        "locator": "Letter to voters",
+        "status": "verified"
+      }
+    }
+  },
+  {
+    "id": "ma-194-s2581",
+    "kind": "bill",
+    "place": {
+      "kind": "state",
+      "name": "Massachusetts"
+    },
+    "body": "Massachusetts Legislature",
+    "title": "School cellphone policy (S.2581)",
+    "summary": "Would have each public school or district adopt a policy on student use of personal electronic devices during the school day, with a way for families to reach students in an emergency. The Senate and House passed different versions, and a conference committee is working out the differences.",
+    "status": "In conference committee",
+    "lastAction": {
+      "date": "2026-05-20",
+      "text": "House: Committee of conference appointed"
+    },
+    "source": {
+      "name": "Massachusetts Legislature, S.2581",
+      "url": "https://malegislature.gov/Bills/194/S2581"
+    },
+    "everyone": false,
+    "topics": [
+      "schools"
+    ],
+    "touches": [
+      {
+        "fact": "kids_in_schools",
+        "when": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "Read the bill and its history",
+        "url": "https://malegislature.gov/Bills/194/S2581"
+      },
+      {
+        "label": "Find your legislators",
+        "url": "https://malegislature.gov/Search/FindMyLegislator"
+      }
+    ],
+    "check": {
+      "kind": "page",
+      "checkedOn": "2026-10-24"
+    }
+  },
+  {
+    "id": "ma-194-s2836",
+    "kind": "bill",
+    "place": {
+      "kind": "state",
+      "name": "Massachusetts"
+    },
+    "body": "Massachusetts Legislature",
+    "title": "Zoning for duplexes and small apartment buildings (S.2836)",
+    "summary": "Would limit local zoning rules that prohibit duplexes and small multifamily housing where public water and sewer exist, and would change minimum lot size and parking rules. The Housing committee reported it in December 2025, and it is in Senate Ways and Means.",
+    "status": "In Senate Ways and Means",
+    "lastAction": {
+      "date": "2025-12-11",
+      "text": "Senate: Reported favorably and referred to Senate Ways and Means"
+    },
+    "source": {
+      "name": "Massachusetts Legislature, S.2836",
+      "url": "https://malegislature.gov/Bills/194/S2836"
+    },
+    "everyone": false,
+    "topics": [
+      "housing_costs",
+      "local_control"
+    ],
+    "touches": [
+      {
+        "fact": "owns",
+        "when": true
+      },
+      {
+        "fact": "rents",
+        "when": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "Read the bill and its history",
+        "url": "https://malegislature.gov/Bills/194/S2836"
+      },
+      {
+        "label": "Find your legislators",
+        "url": "https://malegislature.gov/Search/FindMyLegislator"
+      }
+    ],
+    "check": {
+      "kind": "page",
+      "checkedOn": "2026-10-24"
+    }
+  },
+  {
+    "id": "ma-194-h4699",
+    "kind": "bill",
+    "place": {
+      "kind": "state",
+      "name": "Massachusetts"
+    },
+    "body": "Massachusetts Legislature",
+    "title": "Study of single-stair apartment buildings (H.4699)",
+    "summary": "Would set up a study of residential buildings served by a single stairway. The Housing committee reported it in November 2025, and it is in House Ways and Means.",
+    "status": "In House Ways and Means",
+    "lastAction": {
+      "date": "2025-11-06",
+      "text": "House: Reported favorably and referred to House Ways and Means"
+    },
+    "source": {
+      "name": "Massachusetts Legislature, H.4699",
+      "url": "https://malegislature.gov/Bills/194/H4699"
+    },
+    "everyone": false,
+    "topics": [
+      "housing_costs",
+      "public_safety"
+    ],
+    "touches": [],
+    "actions": [
+      {
+        "label": "Read the bill and its history",
+        "url": "https://malegislature.gov/Bills/194/H4699"
+      },
+      {
+        "label": "Find your legislators",
+        "url": "https://malegislature.gov/Search/FindMyLegislator"
+      }
+    ],
+    "check": {
+      "kind": "page",
+      "checkedOn": "2026-10-24"
+    }
+  },
+  {
+    "id": "ma-194-h1482",
+    "kind": "bill",
+    "place": {
+      "kind": "state",
+      "name": "Massachusetts"
+    },
+    "body": "Massachusetts Legislature",
+    "title": "Accessory dwelling unit trust fund (H.1482)",
+    "summary": "Would create a state trust fund for accessory dwelling units, such as in-law or backyard apartments. The Housing committee reported it in November 2025, and it is in House Ways and Means.",
+    "status": "In House Ways and Means",
+    "lastAction": {
+      "date": "2025-11-06",
+      "text": "House: Reported favorably and referred to House Ways and Means"
+    },
+    "source": {
+      "name": "Massachusetts Legislature, H.1482",
+      "url": "https://malegislature.gov/Bills/194/H1482"
+    },
+    "everyone": false,
+    "topics": [
+      "housing_costs"
+    ],
+    "touches": [
+      {
+        "fact": "owns",
+        "when": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "Read the bill and its history",
+        "url": "https://malegislature.gov/Bills/194/H1482"
+      },
+      {
+        "label": "Find your legislators",
+        "url": "https://malegislature.gov/Search/FindMyLegislator"
+      }
+    ],
+    "check": {
+      "kind": "page",
+      "checkedOn": "2026-10-24"
+    }
+  },
+  {
+    "id": "cam-council-2026-10-26",
+    "kind": "meeting",
+    "place": {
+      "kind": "town",
+      "name": "Cambridge",
+      "townId": "cambridge"
+    },
+    "body": "Cambridge City Council",
+    "title": "City Council meeting",
+    "summary": "The council's regular Monday meeting. Residents can speak during public comment by signing up by phone, online, or at the meeting.",
+    "at": "2026-10-26T17:30:00-04:00",
+    "location": "Sullivan Chamber, City Hall, 795 Massachusetts Ave",
+    "source": {
+      "name": "Cambridge City Council",
+      "url": "https://www.cambridgema.gov/citycouncil"
+    },
+    "everyone": false,
+    "topics": [
+      "local_control"
+    ],
+    "touches": [],
+    "actions": [
+      {
+        "label": "Sign up for public comment",
+        "url": "https://www.cambridgema.gov/publiccomment"
+      },
+      {
+        "label": "Council meeting information",
+        "url": "https://www.cambridgema.gov/citycouncil"
+      }
+    ],
+    "check": {
+      "kind": "page",
+      "checkedOn": "2026-10-24"
+    }
+  },
+  {
+    "id": "cam-council-2026-11-02",
+    "kind": "meeting",
+    "place": {
+      "kind": "town",
+      "name": "Cambridge",
+      "townId": "cambridge"
+    },
+    "body": "Cambridge City Council",
+    "title": "City Council meeting",
+    "summary": "The council's regular Monday meeting. Residents can speak during public comment by signing up by phone, online, or at the meeting.",
+    "at": "2026-11-02T17:30:00-05:00",
+    "location": "Sullivan Chamber, City Hall, 795 Massachusetts Ave",
+    "source": {
+      "name": "Cambridge City Council",
+      "url": "https://www.cambridgema.gov/citycouncil"
+    },
+    "everyone": false,
+    "topics": [
+      "local_control"
+    ],
+    "touches": [],
+    "actions": [
+      {
+        "label": "Sign up for public comment",
+        "url": "https://www.cambridgema.gov/publiccomment"
+      },
+      {
+        "label": "Council meeting information",
+        "url": "https://www.cambridgema.gov/citycouncil"
+      }
+    ],
+    "check": {
+      "kind": "page",
+      "checkedOn": "2026-10-24"
+    }
+  },
+  {
+    "id": "cam-council-2026-11-09",
+    "kind": "meeting",
+    "place": {
+      "kind": "town",
+      "name": "Cambridge",
+      "townId": "cambridge"
+    },
+    "body": "Cambridge City Council",
+    "title": "City Council meeting",
+    "summary": "The council's regular Monday meeting. Residents can speak during public comment by signing up by phone, online, or at the meeting.",
+    "at": "2026-11-09T17:30:00-05:00",
+    "location": "Sullivan Chamber, City Hall, 795 Massachusetts Ave",
+    "source": {
+      "name": "Cambridge City Council",
+      "url": "https://www.cambridgema.gov/citycouncil"
+    },
+    "everyone": false,
+    "topics": [
+      "local_control"
+    ],
+    "touches": [],
+    "actions": [
+      {
+        "label": "Sign up for public comment",
+        "url": "https://www.cambridgema.gov/publiccomment"
+      },
+      {
+        "label": "Council meeting information",
+        "url": "https://www.cambridgema.gov/citycouncil"
+      }
+    ],
+    "check": {
+      "kind": "page",
+      "checkedOn": "2026-10-24"
+    }
+  },
+  {
+    "id": "cam-council-2026-11-16",
+    "kind": "meeting",
+    "place": {
+      "kind": "town",
+      "name": "Cambridge",
+      "townId": "cambridge"
+    },
+    "body": "Cambridge City Council",
+    "title": "City Council meeting",
+    "summary": "The council's regular Monday meeting. Residents can speak during public comment by signing up by phone, online, or at the meeting.",
+    "at": "2026-11-16T17:30:00-05:00",
+    "location": "Sullivan Chamber, City Hall, 795 Massachusetts Ave",
+    "source": {
+      "name": "Cambridge City Council",
+      "url": "https://www.cambridgema.gov/citycouncil"
+    },
+    "everyone": false,
+    "topics": [
+      "local_control"
+    ],
+    "touches": [],
+    "actions": [
+      {
+        "label": "Sign up for public comment",
+        "url": "https://www.cambridgema.gov/publiccomment"
+      },
+      {
+        "label": "Council meeting information",
+        "url": "https://www.cambridgema.gov/citycouncil"
+      }
+    ],
+    "check": {
+      "kind": "page",
+      "checkedOn": "2026-10-24"
+    }
+  },
+  {
+    "id": "cam-school-committee-2026-11-17",
+    "kind": "meeting",
+    "place": {
+      "kind": "town",
+      "name": "Cambridge",
+      "townId": "cambridge"
+    },
+    "body": "Cambridge School Committee",
+    "title": "School Committee meeting",
+    "summary": "The School Committee sets policy and the budget for Cambridge Public Schools. Meetings include public comment.",
+    "at": "2026-11-17T18:00:00-05:00",
+    "location": "Dr. Henrietta Attles Meeting Room, Cambridge Rindge and Latin School, 459 Broadway",
+    "source": {
+      "name": "Cambridge School Committee",
+      "url": "https://www.cpsd.us/school-committee/overview"
+    },
+    "everyone": false,
+    "topics": [
+      "schools"
+    ],
+    "touches": [
+      {
+        "fact": "kids_in_schools",
+        "when": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "School Committee information",
+        "url": "https://www.cpsd.us/school-committee/overview"
+      }
+    ],
+    "check": {
+      "kind": "schedule",
+      "checkedOn": "2026-10-24",
+      "rule": "first and third Tuesday, 6 p.m., September through June"
+    }
+  },
+  {
+    "id": "cam-school-committee-2026-12-01",
+    "kind": "meeting",
+    "place": {
+      "kind": "town",
+      "name": "Cambridge",
+      "townId": "cambridge"
+    },
+    "body": "Cambridge School Committee",
+    "title": "School Committee meeting",
+    "summary": "The School Committee sets policy and the budget for Cambridge Public Schools. Meetings include public comment.",
+    "at": "2026-12-01T18:00:00-05:00",
+    "location": "Dr. Henrietta Attles Meeting Room, Cambridge Rindge and Latin School, 459 Broadway",
+    "source": {
+      "name": "Cambridge School Committee",
+      "url": "https://www.cpsd.us/school-committee/overview"
+    },
+    "everyone": false,
+    "topics": [
+      "schools"
+    ],
+    "touches": [
+      {
+        "fact": "kids_in_schools",
+        "when": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "School Committee information",
+        "url": "https://www.cpsd.us/school-committee/overview"
+      }
+    ],
+    "check": {
+      "kind": "schedule",
+      "checkedOn": "2026-10-24",
+      "rule": "first and third Tuesday, 6 p.m., September through June"
+    }
+  }
+]

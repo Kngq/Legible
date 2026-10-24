@@ -125,6 +125,10 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 20.3, 20.5, 20.6, 20.7, 20.9_
   - [x] 17.5 Move the current ballot page into a DocumentView opened from a feed card
     - _Requirements: 20.3_
+  - [x] 17.7 Rebuild the Legible seed into checked civic items (`npm run data:civic`) with `civicFeed` ranking and tests
+    - _Requirements: 20.9_
+  - [ ] 17.8 Render civic cards in the feed and let Up next consider them
+    - _Requirements: 20.5, 20.9_
   - [ ] 17.6 Add uploaded and sample documents to the feed in memory, tagged by town
     - _Requirements: 20.8_
 

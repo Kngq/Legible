@@ -220,7 +220,8 @@ Out of scope for this build: any 3D map; accounts or server-side storage of prof
 6. THE SYSTEM SHALL show an "Open questions for you" section listing facts that any feed document asks and the profile has not settled, answerable in place, and SHALL re-sort the feed when they change.
 7. IF the catalog has no documents for the user's town THEN THE SYSTEM SHALL say so plainly and offer to upload a town document.
 8. THE SYSTEM SHALL list uploaded and sample documents in the same feed, tagged by town and labeled AI draft, kept in the browser only.
-9. THE SYSTEM SHALL phrase the feed as where the person's life meets what is being decided, SHALL state deadlines as facts, and SHALL NOT phrase it as what the person ought to care about or create urgency.
+9. THE SYSTEM SHALL show civic items (election deadlines, voting windows, public meetings, state bills) in the same feed, each with its official source and how it was checked: word for word in an official PDF, read on the official page on a stated date, or following a published standing schedule. Meeting cards SHALL NOT list agenda items until a posted agenda is ingested.
+10. THE SYSTEM SHALL phrase the feed as where the person's life meets what is being decided, SHALL state deadlines as facts, and SHALL NOT phrase it as what the person ought to care about or create urgency.
 
 ### Requirement 23: Content pipeline
 

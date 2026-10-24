@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint:words": "tsx scripts/lint-words.ts",
-    "data:build": "tsx scripts/build-ballot.ts"
+    "data:build": "tsx scripts/build-ballot.ts",
+    "data:civic": "tsx scripts/build-civic.ts"
   },
   "dependencies": {
     "next": "16.4.3",

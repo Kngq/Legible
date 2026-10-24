@@ -249,7 +249,7 @@ Pure template in the browser. Inputs are selected measure numbers and one factua
 - **UploadPanel:** file input, extraction status, size and scanned-PDF errors, progress with cancel, verified-quote counter, flagged list, sample fallback.
 - **PrivacyPanel:** reads the `apiFetch` log and lists what was and was not sent.
 
-Visual system lives in CSS custom properties in `src/app/globals.css`, exposed as Tailwind utilities: grey `background`, white `surface` cards, `surface-muted` pills, black `primary` pill, ink and grey text only. Palette sampled from the chosen reference: `accent` violet (touches you, meter, feature card), `info` periwinkle (on your list), `attention` coral (new, AI draft, flagged), `positive` green (reviewed, verified), `ai` magenta (chat dock orb), plus `data-in` and `data-out` for budget charts. Each has a `-soft` tint for tags with ink text; strong fills take `on-strong` text. All pairs meet 4.5:1. Radii `sm` 10 / `md` 14 / `lg` 20 / `xl` 32, one `shadow-card`, one easing curve (`ease-nine`, 400 ms), four type sizes, Figtree. Light and dark themes. Re-sorting animates card positions unless reduced motion is preferred.
+Visual system lives in CSS custom properties in `src/app/globals.css`, exposed as Tailwind utilities: grey `background`, white `surface` cards, `surface-muted` pills, black `primary` pill, ink and grey text only. Palette sampled from the chosen reference: `accent` deep purple (touches you, meter, Up next card), `info` lilac (on your list), `attention` terracotta (new, AI draft, flagged), `positive` sand (reviewed, verified), `ai` light purple (chat dock orb), plus `data-in` and `data-out` for budget charts. Each has a `-soft` tint for tags and its own `-foreground`: white on purple, ink on lilac, terracotta, and sand. All pairs meet 4.5:1. Radii `sm` 10 / `md` 14 / `lg` 20 / `xl` 32, one `shadow-card`, one easing curve (`ease-nine`, 400 ms), four type sizes, Figtree. Light and dark themes. Re-sorting animates card positions unless reduced motion is preferred.
 
 ## Onboarding
 
@@ -382,11 +382,27 @@ Home is a feed of decisions, not a ballot page. Each item is one document: the s
 
 `public/catalog/ma.json` lists every document Nine has, for the whole state. The browser downloads the whole file through `apiFetch` (logged as "catalog, no profile data") and filters it locally: `place.kind === "state"` or `place.townId === profile.townId`. For each kept entry it loads the document JSON and runs `buildCards` locally to get `touches` and `topTouching`. The server never learns the town or any fact. Catalog and documents are static files, cacheable, and work offline after the first load.
 
+### Civic items
+
+Next to documents, the feed carries lighter **civic items**: election deadlines, voting windows, public meetings, and state bills (`src/lib/engine/civic.ts`, data in `src/data/civic-ma.json`). They have no measures. Each names its official source and how it was checked, shown on the card:
+
+| Check | Meaning | Label |
+|---|---|---|
+| `quote` | Found word for word in an official PDF (election dates in the voter booklet) | "Found word for word, page 4" |
+| `page` | A person read the official page on a date (bill status on malegislature.gov, council dates on cambridgema.gov) | "Checked against the official page on 2026-10-24" |
+| `schedule` | Date follows the body's published standing schedule; no agenda posted yet | "Usual schedule: first and third Tuesday, 6 p.m. Check the posted agenda." |
+
+An item touches the person when a profile fact matches one of its `touches` rules (the registration deadline touches `registered_here: false`; the school cellphone bill and School Committee meetings touch `kids_in_schools: true`). Election dates apply to everyone. Topics mark "On your list." `civicFeed` drops past items and orders touches, then followed topics, then everyone; within each, today, open windows, upcoming by date, then undated bills.
+
+Civic items mix into the feed with documents. Up next considers both: a deadline that touches the person today outranks a document decided next month. Meeting cards never list agenda items until a real posted agenda is ingested.
+
+Source data: `data/legible_ma_seed.json` (the team's Supabase seed) is rebuilt by `npm run data:civic` through `scripts/civic-ma.content.ts`, which replaces news and advocacy sources with official ones, rewrites summaries neutrally, maps the seed's topics and circumstances onto Nine's vocab, and lists every seed item it leaves out with the reason (ballot questions duplicated by the reviewed ballot; bills without an official citation). The build fails if a booklet quote is not found, a source is not an official domain, a banned word appears, or a seed item is unaccounted for.
+
 ### Layout, top to bottom
 
 1. **Header.** Town name ("Somerville") and "What is being decided near you"; the avatar with its completion ring on the right.
 2. **Nudge.** At most one card, for `nextItem(profile)` (see Onboarding).
-3. **Up next.** One large violet card for the most pressing upcoming item: the soonest `decideBy` among items with touches, else the soonest overall. It shows the title, "Town Meeting votes in 12 days", "3 of 14 articles touch you", and the first touching title. Tap opens the document.
+3. **Up next.** One large purple card for the most pressing upcoming item: the soonest `decideBy` among items with touches, else the soonest overall. It shows the title, "Town Meeting votes in 12 days", "3 of 14 articles touch you", and the first touching title. Tap opens the document.
 4. **Scope switch.** Black-pill segmented control: All, State, and the town name.
 5. **Feed list.** One card per item:
    - place tag (State, or the town) and document type ("Warrant", "Budget", "Ballot");
