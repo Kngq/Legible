@@ -69,7 +69,21 @@ describe("verifyExplainer", () => {
   it("finds the nearest section heading", () => {
     const n = normalize(TEXT);
     expect(sectionAt(n, n.indexOf("This act"))).toBe("Section 2");
+    expect(sectionAt("SECTION 1: A study. (b) Members.", 20)).toBe("Section 1");
+    // A bill that inserts a chapter: the chapter's own headings, not "section 2" in a sentence.
+    const chapter = "Section 1. Definitions as in section 9. Section 2. There shall be a fund.";
+    expect(sectionAt(chapter, chapter.indexOf("There shall"))).toBe("Section 2");
+    expect(sectionAt(chapter, chapter.indexOf("as in"))).toBe("Section 1");
     expect(sectionAt("no headings", 3)).toBeUndefined();
+  });
+
+  it("ties a version note to an entry in the official history", () => {
+    const history = [{ date: "2026-05-20", branch: "House", action: "House insisted on its amendment" }];
+    const ok = verifyExplainer({ draft: draft({ versionNotes: [{ text: "The House passed a different version.", action: "insisted on its amendment" }] }), text: TEXT, source, history });
+    expect(ok.errors).toEqual([]);
+    expect(ok.explainer.versionNotes[0].entry.date).toBe("2026-05-20");
+    const bad = verifyExplainer({ draft: draft({ versionNotes: [{ text: "Signed by the Governor.", action: "Signed by the Governor" }] }), text: TEXT, source, history });
+    expect(bad.errors.some((e) => e.includes("no official history entry"))).toBe(true);
   });
 });
 
@@ -96,5 +110,25 @@ describe("S.2836 as shipped", () => {
     expect(v.open).not.toContain("rents");
     const owner = answerFact(renter, "owns", true, { kind: "onboarding" }, t);
     expect(personalView(e, owner).matched[0]).toMatchObject({ fact: "owns", effect: "direct" });
+  });
+});
+
+describe("every bill as shipped", () => {
+  const bills = (civic as unknown as CivicItem[]).filter((i) => i.kind === "bill");
+
+  it("carries a verified explainer whose lines all cite found quotes", () => {
+    expect(bills.length).toBeGreaterThan(0);
+    for (const b of bills) {
+      const e = b.explainer;
+      expect(e, b.id).toBeDefined();
+      const found = new Set(e!.quotes.filter((q) => q.status !== "failed").map((q) => q.id));
+      for (const l of allLines(e!)) expect(found.has(l.quoteId), `${b.id}: ${l.text}`).toBe(true);
+    }
+  });
+
+  it("says S.2581 is the Senate's version, tied to the official history", () => {
+    const e = bills.find((b) => b.id === "ma-194-s2581")!.explainer!;
+    expect(e.versionNotes.map((n) => n.entry.date)).toEqual(["2026-04-08", "2026-05-20"]);
+    expect(e.takesEffect[0].pastOn).toBe("2026-09-01");
   });
 });

@@ -54,8 +54,10 @@ export interface Explainer {
   affects: CitedLine[];
   /** 3, personal: lines shown when the person's answer matches. */
   personal: PersonalRule[];
-  /** When parts would start, if the text says. */
-  takesEffect: { label: string; line: CitedLine }[];
+  /** When parts would start, if the text says. `pastOn`: from this day the date in the text has passed. */
+  takesEffect: { label: string; line: CitedLine; pastOn?: string }[];
+  /** Which version the saved text is, each note tied to an entry in the official history. */
+  versionNotes: { text: string; entry: HistoryEntry }[];
   /** 4. Where it stands: the official history, verbatim. */
   history: HistoryEntry[];
   quotes: Quote[];
@@ -80,5 +82,7 @@ export interface ExplainerDraft {
   changes: { heading: string; lines: DraftLine[] }[];
   affects: DraftLine[];
   personal: { fact: FactId; when: boolean; effect: Effect; lines: DraftLine[]; notStated?: { text: string; terms: string[] } }[];
-  takesEffect: { label: string; line: DraftLine }[];
+  takesEffect: { label: string; line: DraftLine; pastOn?: string }[];
+  /** Notes about the saved text's version; `action` must appear in an official history entry. */
+  versionNotes?: { text: string; action: string }[];
 }

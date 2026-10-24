@@ -7,6 +7,7 @@
 // against the saved bill text. Nothing here says the bill is law.
 import { useState } from "react";
 import type { CivicCard } from "@/lib/engine/civic";
+import { localISODate } from "@/lib/engine/feed";
 import type { PageSentence } from "@/lib/engine/measure-page";
 import { answerFact, canAskInCard, declineFact, skipFact, type Profile } from "@/lib/engine/profile";
 import { personalView } from "@/lib/explain/personal";
@@ -72,7 +73,21 @@ export function BillExplainer({
   const history = [...e.history].reverse();
   const shownHistory = allHistory ? history : history.slice(0, FIRST_HISTORY);
   const source = { kind: "item", itemId: card.item.id } as const;
-  const heading = touches ? `If ${[...new Set(matched.map(because))].join(" and ")}` : open.length ? "Could this reach you?" : "Probably not you";
+  const today = localISODate(new Date());
+  const notes = e.versionNotes.length > 0 && (
+    <ul className="mt-2 space-y-2 rounded-md bg-attention-soft px-3.5 py-3 text-small">
+      {e.versionNotes.map((n) => (
+        <li key={n.text}>
+          <span className="font-semibold">{n.text}</span>{" "}
+          <span className="text-muted-foreground">
+            Official history, {n.entry.date} · {n.entry.branch}: {n.entry.action}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+  const none = e.personal.length === 0;
+  const heading = touches ? `If ${[...new Set(matched.map(because))].join(" and ")}` : none ? "Not tied to your answers" : open.length ? "Could this reach you?" : "Probably not you";
 
   return (
     <>
@@ -86,6 +101,7 @@ export function BillExplainer({
         <section className="mt-6">
           <PartLabel n={2}>What would change</PartLabel>
           <p className="mt-1 text-small text-muted-foreground">If it became law. Each line opens the words in the bill it comes from.</p>
+          {notes}
           {groups.map((g) => (
             <div key={g.heading} className={ROW}>
               <h4 className={LABEL}>{g.heading}</h4>
@@ -149,7 +165,11 @@ export function BillExplainer({
 
           {!touches && (
             <p className="mt-1.5 text-body">
-              {open.length ? "One answer tells you whether a line here is about your situation." : "Nothing in your answers points to this bill."}
+              {none
+                ? "No line here depends on what you told Legible."
+                : open.length
+                  ? "One answer tells you whether a line here is about your situation."
+                  : "Nothing in your answers points to this bill."}
             </p>
           )}
 
@@ -186,7 +206,9 @@ export function BillExplainer({
             {e.takesEffect.map((t) => (
               <div key={t.label} className="mt-3">
                 <span className="inline-block rounded-sm border border-border px-2.5 py-1 text-small font-semibold">{t.label}</span>
+                {t.pastOn && today >= t.pastOn && <span className="ml-2 inline-block rounded-sm bg-attention-soft px-2.5 py-1 text-small font-semibold">Already passed</span>}
                 {line(t.line)}
+                {t.pastOn && today >= t.pastOn && <p className="text-small text-muted-foreground">This date in the saved text has already passed. A final version could set a new one.</p>}
               </div>
             ))}
           </div>
@@ -205,6 +227,7 @@ export function BillExplainer({
           {card.item.status && <span className="text-body font-semibold">{card.item.status}</span>}
         </div>
         <p className="mt-2 text-body">To become law, the House and the Senate would both have to pass the same version, and then the Governor would act on it.</p>
+        {notes}
         <p className={`${ROW} ${LABEL}`}>Official history, newest first</p>
         <ol className="mt-2 space-y-2 text-small">
           {shownHistory.map((h, k) => (

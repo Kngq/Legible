@@ -19,7 +19,8 @@ function walk(dir: string, out: string[] = []): string[] {
 }
 
 const SKIP_FILES = [path.join(root, "src/lib/vocab/banned.ts")];
-const VERBATIM_KEYS = new Set(["text", "officialTitle", "source"]);
+// history and entry: official bill history, verbatim (an explainer's timeline and the entry a version note cites).
+const VERBATIM_KEYS = new Set(["text", "officialTitle", "source", "history", "entry"]);
 
 /** Pull string literals and JSX text out of a TS/TSX file. */
 function appStrings(src: string): string[] {

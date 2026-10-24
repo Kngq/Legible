@@ -23,9 +23,13 @@ export interface VerifyResult {
   errors: string[];
 }
 
-/** "Section 4": the nearest bill section heading at or before `index` in normalized text. */
+/**
+ * "Section 4": the nearest bill section heading at or before `index` in normalized
+ * text. Bills head sections "SECTION 1." or "SECTION 1:"; a bill with none (one that
+ * inserts a whole chapter) is labeled by the chapter's own "Section 1." headings.
+ */
 export function sectionAt(normalized: string, index: number): string | undefined {
-  const re = /SECTION (\d+)\./g;
+  const re = /SECTION \d+[.:]/.test(normalized) ? /SECTION (\d+)[.:]/g : /\bSection (\d+)\./g;
   let found: string | undefined;
   for (let m = re.exec(normalized); m && m.index <= index; m = re.exec(normalized)) found = m[1];
   return found ? `Section ${found}` : undefined;
@@ -96,8 +100,15 @@ export function verifyExplainer({ draft, text, source, history }: VerifyInput): 
     personal,
     takesEffect: draft.takesEffect.flatMap((t, i) => {
       check(`takesEffect[${i}] label`, t.label, false);
+      if (t.pastOn && !/^\d{4}-\d{2}-\d{2}$/.test(t.pastOn)) errors.push(`takesEffect[${i}]: pastOn is not YYYY-MM-DD`);
       const l = line(t.line, `takesEffect[${i}]`);
-      return l ? [{ label: t.label, line: l }] : [];
+      return l ? [{ label: t.label, line: l, ...(t.pastOn ? { pastOn: t.pastOn } : {}) }] : [];
+    }),
+    versionNotes: (draft.versionNotes ?? []).flatMap((n, i) => {
+      check(`versionNotes[${i}]`, n.text, false);
+      const entry = history.find((h) => normalize(h.action).includes(normalize(n.action)));
+      if (!entry) errors.push(`versionNotes[${i}]: no official history entry says "${n.action}"`);
+      return entry ? [{ text: n.text, entry: { ...entry, action: normalize(entry.action) } }] : [];
     }),
     history,
     quotes: [...quotes.values()],
@@ -145,7 +156,16 @@ export const EXPLAINER_DRAFT_SCHEMA = {
     },
     takesEffect: {
       type: "array",
-      items: { type: "object", additionalProperties: false, required: ["label", "line"], properties: { label: { type: "string" }, line: { $ref: "#/$defs/line" } } },
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["label", "line"],
+        properties: { label: { type: "string" }, line: { $ref: "#/$defs/line" }, pastOn: { type: "string" } },
+      },
+    },
+    versionNotes: {
+      type: "array",
+      items: { type: "object", additionalProperties: false, required: ["text", "action"], properties: { text: { type: "string" }, action: { type: "string" } } },
     },
   },
   $defs: {
