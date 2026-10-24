@@ -40,7 +40,7 @@ const HEADLINES: Record<string, string> = {
   "ma-194-s2836": "Massachusetts is considering changes to housing rules",
   "ma-194-s2581": "A proposed statewide policy on student phones in school",
   "ma-194-h4699": "A proposed study of apartment buildings with one stairway",
-  "ma-194-h1482": "A proposed state fund for in-law and backyard apartments",
+  "ma-194-h1482": "A proposed fund for in-law and backyard apartments",
 };
 
 export function headline(c: CivicCard): string {
@@ -56,11 +56,51 @@ const EXPLAIN: Record<string, (c: CivicCard) => string> = {
   "ma-2026-registration-deadline": (c) =>
     `Registration ${c.timing === "today" ? "closes today" : "closes October 24"}. If you're eligible to vote in Massachusetts and haven't registered at your current address, you may need to act.`,
   "ma-2026-election-day": () => "Explore what's on your ballot, understand the questions, and find what you need before Election Day.",
+  // Bills: what is proposed, without committee history (that stays on the detail page).
   "ma-194-s2836": () => "A proposed bill would limit local rules that block duplexes and small apartment buildings where public water and sewer exist.",
+  "ma-194-h1482": () => "Massachusetts is considering a state trust fund for in-law and backyard apartments.",
+  "ma-194-h4699": () => "Massachusetts is considering a study of residential buildings served by a single stairway.",
+  "ma-194-s2581": () => "Massachusetts is considering having every public school or district set a policy on student phones during the school day.",
 };
 
+const firstSentence = (s: string) => /^.*?[.!?](?=\s|$)/.exec(s)?.[0] ?? s;
+
 export function explanation(c: CivicCard): string {
-  return EXPLAIN[c.item.id]?.(c) ?? c.item.summary;
+  const own = EXPLAIN[c.item.id]?.(c);
+  if (own) return own;
+  // A bill's summary ends with its committee history; the card keeps only what is proposed.
+  return c.item.kind === "bill" ? firstSentence(c.item.summary) : c.item.summary;
+}
+
+/** The subject a bill is filed under, for the card's small header: "Housing · H.1482". */
+const AREA: Partial<Record<TopicId, string>> = {
+  housing_costs: "Housing",
+  schools: "Schools",
+  local_control: "Local government",
+  public_safety: "Public safety",
+  voting_access: "Voting",
+  elections: "Elections",
+  taxes: "Taxes",
+  open_space: "Parks and open space",
+};
+
+/**
+ * The card's compact header: a quiet metadata line and a neutral status chip.
+ * Bills: "Housing · H.1482" and "Proposal under review", so nothing reads as law.
+ * Dated items: "Deadline · October 27" and "In 3 days" / "Today" / "Open now".
+ */
+export function cardHeader(c: CivicCard): { meta: string; status?: string } {
+  const i = c.item;
+  if (i.kind === "bill") {
+    const area = i.topics.map((t) => AREA[t]).find(Boolean) ?? "Proposed legislation";
+    return { meta: [area, billNumber(i.title)].filter(Boolean).join(" · "), status: "Proposal under review" };
+  }
+  if (!i.at) return { meta: CATEGORY[i.kind] };
+  const when = new Intl.DateTimeFormat("en-US", { timeZone: TZ, month: "long", day: "numeric" }).format(new Date(c.timing === "open" && i.until ? i.until : i.at));
+  const meta = `${CATEGORY[i.kind]} · ${c.timing === "open" ? `until ${when}` : when}`;
+  const status =
+    c.timing === "today" ? "Today" : c.timing === "open" ? (c.days === 0 ? "Closes today" : "Open now") : c.days === 1 ? "Tomorrow" : c.days !== undefined ? `In ${c.days} days` : undefined;
+  return { meta, status };
 }
 
 /** The date line: "Today · Registration closes 11:59 PM", "November 3 · in 10 days", "Under consideration". */
@@ -99,18 +139,6 @@ export interface Relevance {
   basis: string[];
 }
 
-/** A role noun for each fact, for "As a renter, …". Sensitive facts are never named this way. */
-const ROLE: Partial<Record<FactId, string>> = {
-  rents: "a renter",
-  owns: "a homeowner",
-  kids_in_schools: "a parent of a public school student",
-  state_employee: "a state employee",
-  runs_business_here: "a local business owner",
-  drives: "a driver",
-  rides_transit: "a transit rider",
-  wants_single_family: "someone hoping to build or buy a single-family home",
-};
-
 /** What a topic is about, in everyday words, for "could affect …". */
 const TOPIC_EFFECT: Partial<Record<TopicId, string>> = {
   housing_costs: "housing options in your community over time",
@@ -123,7 +151,6 @@ const TOPIC_EFFECT: Partial<Record<TopicId, string>> = {
   open_space: "parks and open land",
 };
 
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const phrase = (fact: FactId, value: boolean) => (value ? FACT_DEFS[fact].because.yes : FACT_DEFS[fact].because.no);
 const NOUN: Record<CivicCard["item"]["kind"], string> = { deadline: "deadline", window: "voting period", election: "election", meeting: "meeting", bill: "proposal" };
 
@@ -136,28 +163,27 @@ export function civicRelevance(c: CivicCard): Relevance | null {
     const said = phrase(b.fact, b.value);
     const basis = [`You told Legible ${said}.`];
     if (i.kind === "bill") {
-      const role = b.value ? ROLE[b.fact] : undefined;
       const effect = topic ? TOPIC_EFFECT[topic] : "your situation";
       return {
         kind: "potential",
-        text: role ? `As ${role}, you may want to see how this proposal could affect ${effect}.` : `This proposal could affect ${effect}.`,
+        text: `You mentioned that ${said}. This proposal could influence ${effect}.`,
         basis: [...basis, `This proposal concerns ${topic ? TOPIC_DEFS[topic].label.toLowerCase() : "that"}. It is not law, and any effect on you would be indirect.`],
       };
     }
     const voting = b.fact === "registered_here" || b.fact === "votes_in_primaries";
     return {
       kind: "direct",
-      text: `${cap(said.replace(/^you are not registered at your address$/, "you haven't registered at your current address"))}, so this ${NOUN[i.kind]} may be important${voting ? " if you're eligible to vote" : ""}.`,
+      text: `You mentioned that ${said.replace(/^you are not registered at your address$/, "you aren't registered at your current address")}. This ${NOUN[i.kind]} is for people in that situation${voting ? ", if you're eligible to vote" : ""}.`,
       basis: [...basis, `This ${NOUN[i.kind]} is about people in that situation.`],
     };
   }
   if (c.onYourList) {
     const t = i.topics.find(Boolean);
     const label = t ? TOPIC_DEFS[t].label.toLowerCase() : "this subject";
-    return { kind: "interest", text: `You follow ${label}, so this may be worth exploring.`, basis: [`You follow ${label}.`, "It matches your interests; nothing says it changes your situation."] };
+    return { kind: "interest", text: `You follow ${label}. This ${NOUN[i.kind]} is on that subject.`, basis: [`You follow ${label}.`, "It matches your interests; nothing says it changes your situation."] };
   }
   if (c.open.length) {
-    return { kind: "open", text: `This could matter if ${appliesIf(c.open).replace(/^Applies if /, "")}.`, basis: ["It depends on something you haven't told Legible yet."] };
+    return { kind: "open", text: `May be relevant if ${appliesIf(c.open).replace(/^Applies if /, "")}.`, basis: ["It depends on something you haven't told Legible yet."] };
   }
   return null;
 }
@@ -206,7 +232,7 @@ export function actionsFor(e: TimelineEntry): { primary: Action; secondary?: Act
     return { primary: { label: "Check your registration", to: { href: REGISTRATION_LOOKUP_URL } }, secondary: href(0) && { label: "Learn how to register", to: href(0)! } };
   }
   if (i.kind === "election" && e.ballot) return { primary: { label: "Explore your ballot", to: { open: "doc" } }, secondary: href(0) && { label: "Find voting information", to: href(0)! } };
-  if (i.kind === "bill") return { primary: { label: "Understand the proposal", to: { open: "item" } }, secondary: href(0) && { label: "Read the original bill", to: href(0)! } };
+  if (i.kind === "bill") return { primary: { label: "Explore proposal", to: { open: "item" } }, secondary: href(0) && { label: "Read original bill", to: href(0)! } };
   if (i.kind === "meeting") {
     const comment = i.actions.find((a) => a.url && /comment/i.test(a.label));
     return { primary: { label: "View meeting details", to: { open: "item" } }, secondary: comment && { label: "Learn how to comment", to: { href: comment.url! } } };

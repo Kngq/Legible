@@ -139,6 +139,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 17.17 Replace the floating ChatDock with a contextual Ask sheet on ballot cards and measure pages, with checked starter questions per measure; rename Nine to Legible in the ask route and vote check
   - [x] 17.18 Bring back the floating ask button (scoped to the open page) and add Ask about this on any highlight, sending highlighted text only when it is official wording
   - [x] 17.19 Rework Home's For you into one list, dates coming up soon first, then decisions that could affect you (everything else is on Explore); cards read category and date, headline, explanation, why it matters (direct, potential, interest), "Why you're seeing this", and named actions (home-copy.ts, with tests); rename profile areas to Your housing situation, Your household, Your voting information, Your interests
+  - [x] 17.20 Compact Home feed cards: header with subject, number, and status chip; short description without committee history; small "Why this may matter to you" box only when supported, grey line when an answer is missing; Explore proposal and Read original bill
     - _Requirements: 20.5, 20.9_
   - [ ] 17.6 Add uploaded and sample documents to the feed in memory, tagged by town
     - _Requirements: 20.8_

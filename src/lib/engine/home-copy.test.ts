@@ -4,7 +4,7 @@ import civicData from "@/data/civic-ma.json";
 import { asksHowToVote, findBannedWords } from "@/lib/vocab";
 import { civicCard, civicFeed, type CivicItem } from "./civic";
 import { buildFeed } from "./feed";
-import { actionsFor, billNumber, civicRelevance, dateLine, explanation, headline, homeSections, relevanceOf } from "./home-copy";
+import { actionsFor, billNumber, cardHeader, civicRelevance, dateLine, explanation, headline, homeSections, relevanceOf } from "./home-copy";
 import { answerFact, emptyProfile, setTopic, type Profile } from "./profile";
 import { buildTimeline } from "./timeline";
 import type { DocumentData } from "./types";
@@ -32,6 +32,20 @@ describe("headline and explanation", () => {
     expect(billNumber(c.item.title)).toBe("S.2836");
     const e = buildTimeline([], civicFeed(items, withFacts({ rents: true }), today), today).find((x) => x.key === "c:ma-194-s2836")!;
     expect(dateLine(e, today)).toBe("S.2836 · Under consideration");
+    expect(cardHeader(c)).toEqual({ meta: "Housing · S.2836", status: "Proposal under review" });
+  });
+
+  it("keeps committee history off the card", () => {
+    for (const i of items.filter((x) => x.kind === "bill")) {
+      const text = explanation(card(i.id));
+      expect(text).not.toMatch(/committee|Ways and Means|reported/i);
+      expect(text.split(/(?<=\.)\s/).length).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it("puts the date in the header and how soon in the status chip", () => {
+    expect(cardHeader(card("ma-2026-mail-ballot-deadline"))).toEqual({ meta: "Deadline · October 27", status: "In 3 days" });
+    expect(cardHeader(card("ma-2026-registration-deadline")).status).toBe("Today");
   });
 
   it("says registration closes today only on the day it does", () => {
@@ -47,14 +61,14 @@ describe("relevance", () => {
   it("explains a deadline directly, from the one answer that matters, with the eligibility caveat", () => {
     const r = civicRelevance(card("ma-2026-registration-deadline", withFacts({ registered_here: false, rents: true, state_employee: true })))!;
     expect(r.kind).toBe("direct");
-    expect(r.text).toBe("You haven't registered at your current address, so this deadline may be important if you're eligible to vote.");
+    expect(r.text).toBe("You mentioned that you aren't registered at your current address. This deadline is for people in that situation, if you're eligible to vote.");
     expect(r.text).not.toMatch(/\byou rent\b|work for the state/);
   });
 
   it("explains a bill as a potential, indirect connection", () => {
     const r = civicRelevance(card("ma-194-s2836", withFacts({ rents: true })))!;
     expect(r.kind).toBe("potential");
-    expect(r.text).toBe("As a renter, you may want to see how this proposal could affect housing options in your community over time.");
+    expect(r.text).toBe("You mentioned that you rent. This proposal could influence housing options in your community over time.");
     expect(r.basis.join(" ")).toMatch(/not law/);
   });
 
@@ -66,6 +80,12 @@ describe("relevance", () => {
   it("invents nothing when there is no connection", () => {
     expect(civicRelevance(card("ma-194-h4699"))).toBeNull();
   });
+
+  it("never assumes a renter does not own: owning stays an open question", () => {
+    const r = civicRelevance(card("ma-194-h1482", withFacts({ rents: true })));
+    expect(r?.kind).toBe("open");
+    expect(r?.text).toBe("May be relevant if you own your home.");
+  });
 });
 
 describe("actions", () => {
@@ -76,8 +96,8 @@ describe("actions", () => {
     const by = (k: string) => actionsFor(t.find((e) => e.key === k)!);
     expect(by("c:ma-2026-registration-deadline").primary.label).toBe("Check your registration");
     expect(by("c:ma-2026-election-day").primary).toEqual({ label: "Explore your ballot", to: { open: "doc" } });
-    expect(by("c:ma-194-s2836").primary.label).toBe("Understand the proposal");
-    expect(by("c:ma-194-s2836").secondary?.label).toBe("Read the original bill");
+    expect(by("c:ma-194-s2836").primary).toEqual({ label: "Explore proposal", to: { open: "item" } });
+    expect(by("c:ma-194-s2836").secondary?.label).toBe("Read original bill");
   });
 });
 
