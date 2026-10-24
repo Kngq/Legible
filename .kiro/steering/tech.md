@@ -9,6 +9,7 @@ inclusion: always
 - **AI:** Anthropic TypeScript SDK (`@anthropic-ai/sdk`), model `claude-opus-5`, called only from server route handlers. Structured JSON output via `output_config.format`. Claude's built-in citations cannot be combined with structured output, so quotes come back as JSON fields and the app verifies them itself.
 - **PDF:** text extraction in the browser with `pdfjs-dist`. Text-based PDFs only; no OCR.
 - **Tests:** Vitest for pure logic (engine, quote verification, lint).
+- **Installable web app:** `src/app/manifest.ts`, icons in `public/icons/` and `src/app/apple-icon.png`, theme colours in `src/lib/theme-color.ts` (keep in step with `globals.css`). No service worker: the app never opens from a cache. See "Installable web app (PWA)" in the design.
 
 ## Commands
 

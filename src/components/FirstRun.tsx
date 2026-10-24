@@ -219,7 +219,7 @@ export function FirstRun({
         {body}
       </main>
 
-      <footer className="sticky bottom-0 -mx-4 mt-6 space-y-1 bg-background/95 px-4 pb-2 pt-3 backdrop-blur sm:mx-0 sm:px-0">
+      <footer className="sticky bottom-0 -mx-4 mt-6 space-y-1 bg-background/95 px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur sm:mx-0 sm:px-0">
         {screen === "start" && (
           <Button className="w-full" onClick={() => go("welcome")}>
             Get started

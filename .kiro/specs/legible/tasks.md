@@ -209,6 +209,16 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [ ] 23.8 Turn `PLANT_ENABLED` on in production after the visual sign-off and 23.7, and retire the ring layout and the old hero
   - [ ] 23.9 Decide the header avatar's "!" badge for unset interests (keep, soften to a dot, or remove)
 
+- [ ] 24. Installable web app (see "Installable web app (PWA)" in `design.md`)
+  - [x] 24.1 Manifest (`src/app/manifest.ts`), icons from the Legible mark (192, 512, maskable 512, Apple 180), theme colour from the Notebook tokens (`src/lib/theme-color.ts`), standalone display, `viewport` with `viewport-fit=cover` and `appleWebApp` metadata
+    - _Requirements: 16.4_
+  - [x] 24.2 Mobile pass at 375 and 390 px: no sideways scroll during slide-ins, safe areas for the onboarding footer and the citation sheet, 16 px Ask Kiro field on phones, larger tap area for the compact Details toggle; desktop unchanged
+    - _Requirements: 16.1, 16.5, 16.7_
+  - [x] 24.3 No service worker or caching; document what needs the internet and the limitations
+    - _Requirements: 16.6_
+  - [ ] 24.4 Device check before the election: install on an iPhone (Safari) and an Android phone (Chrome); check the icon, the standalone window, the status bar in light and dark, the home indicator gap, keyboard over Ask Kiro, and landscape
+  - [ ] 24.5 Capacitor wrapper: waits for approval (see the Capacitor audit)
+
 - [ ] 12. Acceptance and demo
   - [ ] 12.1 Run lint, lint:words, tests, and build; fix failures
   - [ ] 12.2 Do a keyboard pass and a 375 px pass

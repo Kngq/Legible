@@ -230,7 +230,7 @@ function WhyToggle({ open, onToggle, compact = false }: { open: boolean; onToggl
       type="button"
       onClick={onToggle}
       aria-expanded={open}
-      className={`relative z-10 inline-flex items-center gap-1 text-small font-semibold text-accent interactive hover:text-primary-hover ${compact ? "min-h-6 align-middle" : "min-h-9"} ${FOCUS}`}
+      className={`relative z-10 inline-flex items-center gap-1 text-small font-semibold text-accent interactive hover:text-primary-hover ${compact ? "min-h-6 align-middle touch-target" : "min-h-9"} ${FOCUS}`}
     >
       {compact ? "Details" : "Why you're seeing this"}
       <span aria-hidden="true" className={`transition-transform duration-(--dur-base) ease-legible ${open ? "rotate-180" : ""}`}>

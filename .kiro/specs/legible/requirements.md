@@ -205,6 +205,10 @@ Out of scope for this build: any 3D map; accounts or server-side storage of prof
 1. THE SYSTEM SHALL work at 375 px width with no horizontal scrolling.
 2. THE SYSTEM SHALL support keyboard operation for every control, including the avatar badges and citation highlights.
 3. WHEN the user prefers reduced motion THE SYSTEM SHALL re-sort cards without animation.
+4. THE SYSTEM SHALL be installable to a phone's home screen as a web app (a manifest with the Legible name, the Legible mark as 192 and 512 px icons plus a maskable icon, the Notebook page colour as theme colour, standalone display), without new permissions, accounts, analytics, or tracking.
+5. THE SYSTEM SHALL keep content and bottom controls clear of the notch and home indicator on notched phones, and SHALL size text fields at 16 px or more on phones so the page does not zoom on focus.
+6. THE SYSTEM SHALL NOT show saved civic information as though it were current: with no network the installed app does not open from a cache, and everything it shows comes from the latest deploy.
+7. THE SYSTEM SHALL work at 390 px width with no horizontal scrolling, including during screen transitions.
 
 ### Requirement 20: Home feed of decisions from a public catalog
 

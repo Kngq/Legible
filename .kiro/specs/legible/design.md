@@ -549,6 +549,37 @@ The civic build fails if any item has no original record.
 
 **No model configured.** `/api/ask` and `/api/suggest` answer 503: the menu keeps its rule-based questions, and Kiro says it isn't connected yet and shows the official passage and source instead of an explanation. The local how-to-vote check still runs first.
 
+## Installable web app (PWA)
+
+Legible can be added to a phone's home screen and opens in its own window, with no browser bar. It is the same website: same code, same deploy, same browser-only profile. Nothing new is sent, stored, or asked for.
+
+**What ships.**
+- `src/app/manifest.ts` (served as `/manifest.webmanifest`): name and short name Legible, `display: standalone`, `start_url` and `scope` `/`, background and theme colour the Notebook page colour.
+- Icons: the Legible mark from `public/icons/legible-mark.svg` on the page colour, in `public/icons/icon-192.png`, `icon-512.png`, `icon-maskable-512.png` (mark kept inside the 80% safe zone), and `src/app/apple-icon.png` (180 px, opaque, for iOS). No new artwork.
+- `src/app/layout.tsx`: `viewport` (`viewport-fit=cover`, theme colour per light and dark scheme from `src/lib/theme-color.ts`, zoom allowed) and `appleWebApp` (title Legible, default status bar, so the page starts below it).
+- Mobile fixes, checked at 375 and 390 px: `overflow-x: clip` on the page so screen slide-ins never scroll sideways; body padding for the left and right safe-area insets (landscape notch); the onboarding footer and the "How do we know this?" sheet clear the home indicator (the profile sheet and the Kiro launcher already did); the Ask Kiro field is 16 px on phones, so iOS does not zoom in on focus, with a 44 px Ask button; the compact Details toggle on feed rows gets an invisible larger tap area on touch screens (`touch-target`), so a near miss does not open the row. Desktop is unchanged.
+
+**Installing.**
+- iPhone and iPad: open Legible in Safari, tap Share, then Add to Home Screen. (iOS 16.4 and later also offer this from the share menu in other browsers.)
+- Android: open Legible in Chrome, open the menu, then Install app (or Add to Home screen). Some versions show an install banner.
+- Desktop Chrome and Edge show an install icon in the address bar. Not needed for the election, but it works.
+
+**What needs the internet.**
+- Opening the app. There is no service worker, so a launch with no connection shows the browser's offline page rather than old information.
+- Ask Kiro and the suggested questions on a highlight (`/api/ask`, `/api/suggest`).
+- Official sources: the booklet PDF, bill pages, mass.gov and other links open from the network.
+
+Once a page has loaded, everything Legible itself shows (the feed, ballot explanations, quotes and citations, the profile) runs in the browser and keeps working if the connection drops, as before. All of it comes from the deploy the page was loaded from; there are no separate live updates, so there is nothing that could be shown stale while looking current. Kiro already says when it is offline.
+
+**Limitations of this first version.**
+- No offline launch and no caching, on purpose (see above). If offline launch is added later, cached content must say when it was published and that it may be out of date.
+- iOS keeps a home-screen app's storage apart from Safari's. A profile remembered in Safari does not carry into the installed app; the person sets it up once there. On Android, the installed app shares Chrome's storage for the site.
+- Links shared from the app open in the browser, not in the installed app. External links (`target="_blank"`) open in the browser or its in-app view.
+- No push notifications, badges, or background work.
+- The install prompt cannot be triggered by the page on iOS; the person uses the Share menu.
+
+**Toward Capacitor (not started).** This work is what a Capacitor wrapper would need from the web app anyway: icon sources at 512 px, the theme colours in one TypeScript file, safe-area handling under `viewport-fit=cover` (which native web views use), phone-sized form fields, and no service worker that could compete with bundled files. No server dependency was added. The remaining steps (a mobile-only static export, an API base URL with CORS on the two routes, native links, share, and back button) are in the Capacitor audit and wait for approval.
+
 ## Error handling
 
 | Situation | Behavior |
