@@ -1,0 +1,565 @@
+{
+  "meta": {
+    "name": "Legible demo seed — Massachusetts",
+    "state": "MA",
+    "demo_town": "Cambridge",
+    "compiled_on": "2026-10-24",
+    "notes": [
+      "Mirrors the Supabase schema: jurisdictions, topics, civic_items (+ item_topics inline), profiles, user_jurisdictions, user_topics, user_item_actions.",
+      "verification.status: 'verified' = checked against a news or government source on compiled_on; 'schedule_based' = date derived from the body's standing schedule, not a posted agenda; 'illustrative' = realistic placeholder for the demo — replace with the real posted agenda before showing it as fact.",
+      "embedding is null on purpose: fill it with a one-off script before loading so the demo needs no live API.",
+      "Timestamps are America/New_York (EDT -04:00 until Nov 1, 2026; EST -05:00 after)."
+    ]
+  },
+
+  "topics": [
+    { "slug": "housing", "name": "Housing and zoning" },
+    { "slug": "education", "name": "Schools" },
+    { "slug": "taxes_budget", "name": "Taxes and budget" },
+    { "slug": "transportation", "name": "Transportation" },
+    { "slug": "environment", "name": "Environment and energy" },
+    { "slug": "public_safety", "name": "Public safety" },
+    { "slug": "health", "name": "Health" },
+    { "slug": "jobs_business", "name": "Jobs and business" },
+    { "slug": "civil_rights", "name": "Civil rights" },
+    { "slug": "elections_government", "name": "Elections and government" },
+    { "slug": "parks_recreation", "name": "Parks and recreation" }
+  ],
+
+  "circumstance_topics": [
+    { "circumstance": "renter", "topic_slug": "housing", "boost": 2 },
+    { "circumstance": "homeowner", "topic_slug": "housing", "boost": 2 },
+    { "circumstance": "homeowner", "topic_slug": "taxes_budget", "boost": 1 },
+    { "circumstance": "parent_k12", "topic_slug": "education", "boost": 3 },
+    { "circumstance": "college_student", "topic_slug": "education", "boost": 1 },
+    { "circumstance": "college_student", "topic_slug": "housing", "boost": 1 },
+    { "circumstance": "small_business", "topic_slug": "jobs_business", "boost": 2 },
+    { "circumstance": "small_business", "topic_slug": "taxes_budget", "boost": 1 },
+    { "circumstance": "senior", "topic_slug": "health", "boost": 1 },
+    { "circumstance": "senior", "topic_slug": "taxes_budget", "boost": 1 },
+    { "circumstance": "transit_rider", "topic_slug": "transportation", "boost": 2 },
+    { "circumstance": "driver", "topic_slug": "transportation", "boost": 1 }
+  ],
+
+  "jurisdictions": [
+    {
+      "id": "ocd-division/country:us/state:ma",
+      "name": "Massachusetts",
+      "level": "state",
+      "state_code": "MA"
+    },
+    {
+      "id": "ocd-division/country:us/state:ma/county:middlesex",
+      "name": "Middlesex County",
+      "level": "county",
+      "state_code": "MA"
+    },
+    {
+      "id": "ocd-division/country:us/state:ma/place:cambridge",
+      "name": "City of Cambridge",
+      "level": "municipality",
+      "state_code": "MA"
+    },
+    {
+      "id": "ocd-division/country:us/state:ma/school_district:cambridge",
+      "name": "Cambridge Public Schools",
+      "level": "school_district",
+      "state_code": "MA"
+    }
+  ],
+
+  "civic_items": [
+    {
+      "id": "ma-2026-voter-registration-deadline",
+      "kind": "election",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "title": "Last day to register to vote for the November 3 election",
+      "summary_plain": "Today is the deadline to register or update your address so you can vote on November 3. If you've moved since the last election, update your registration so you get the right ballot.",
+      "status": "deadline",
+      "starts_at": "2026-10-24T23:59:00-04:00",
+      "location": "Online at the Secretary of the Commonwealth's website, or your city or town clerk",
+      "source_url": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-information-for-voters/guide.htm",
+      "topics": ["elections_government"],
+      "actions": ["register_to_vote", "check_registration"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-2026-mail-ballot-request-deadline",
+      "kind": "election",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "title": "Deadline to request a mail-in ballot",
+      "summary_plain": "Your request for a mail-in ballot has to reach your local election office by October 27. After that, plan to vote early in person or on Election Day.",
+      "status": "deadline",
+      "starts_at": "2026-10-27T17:00:00-04:00",
+      "location": "Your city or town clerk",
+      "source_url": "https://commonwealthbeacon.org/ballot-question/",
+      "topics": ["elections_government"],
+      "actions": ["request_mail_ballot"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-2026-early-voting",
+      "kind": "election",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "title": "Early in-person voting is open",
+      "summary_plain": "Early voting started October 17. You can vote in person before Election Day at your town's early voting locations; hours vary by town.",
+      "status": "open",
+      "starts_at": "2026-10-17T09:00:00-04:00",
+      "ends_at": "2026-10-30T17:00:00-04:00",
+      "location": "Your city or town's early voting sites",
+      "source_url": "https://commonwealthbeacon.org/ballot-question/",
+      "topics": ["elections_government"],
+      "actions": ["find_early_voting_site", "add_to_calendar"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-2026-general-election",
+      "kind": "election",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "title": "State election — November 3, 2026",
+      "summary_plain": "Election Day. Along with candidates, Massachusetts voters will decide nine statewide ballot questions, tying the state's record from 1994.",
+      "status": "upcoming",
+      "starts_at": "2026-11-03T07:00:00-05:00",
+      "location": "Your assigned polling place",
+      "source_url": "https://www.cbsnews.com/boston/news/massachusetts-ballot-questions-2026/",
+      "topics": ["elections_government"],
+      "actions": ["find_polling_place", "add_to_calendar", "view_my_ballot"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+
+    {
+      "id": "ma-2026-q1",
+      "kind": "ballot_measure",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "Question 1",
+      "title": "Question 1: Apply the public records law to the Legislature and governor's office",
+      "summary_plain": "Right now the Legislature is fully exempt from the public records law, and the governor's office has claimed an exemption. This question would make most of their records requestable by the public, while still letting them withhold communications about helping constituents and developing policy.",
+      "yes_means": "The Legislature and governor's office would be covered by the public records law, with some exceptions.",
+      "no_means": "The Legislature stays exempt, and the governor's office can keep claiming an exemption.",
+      "status": "on_ballot",
+      "starts_at": "2026-11-03T07:00:00-05:00",
+      "source_url": "https://brookline.news/the-2026-massachusetts-ballot-questions-explained/",
+      "topics": ["elections_government", "civil_rights"],
+      "actions": ["read_full_text", "add_to_my_ballot_notes"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-2026-q2",
+      "kind": "ballot_measure",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "Question 2",
+      "title": "Question 2: Let public defender office staff unionize",
+      "summary_plain": "Employees of the Committee for Public Counsel Services, the state's public defender agency, can't currently bargain collectively. This would let them form a union and negotiate pay, benefits, leave, and working conditions.",
+      "yes_means": "CPCS employees could form a union and collectively bargain.",
+      "no_means": "CPCS employees still couldn't collectively bargain.",
+      "status": "on_ballot",
+      "starts_at": "2026-11-03T07:00:00-05:00",
+      "source_url": "https://brookline.news/the-2026-massachusetts-ballot-questions-explained/",
+      "topics": ["jobs_business", "public_safety"],
+      "actions": ["read_full_text", "add_to_my_ballot_notes"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-2026-q3",
+      "kind": "ballot_measure",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "Question 3",
+      "title": "Question 3: Replace party primaries with one all-party primary",
+      "summary_plain": "Starting in 2028, every candidate for state office would run in one shared primary, and the top two vote-getters would advance to November — even if they're from the same party.",
+      "yes_means": "One all-party primary; the top two finishers advance to the general election, starting in 2028.",
+      "no_means": "Separate party primaries continue.",
+      "status": "on_ballot",
+      "starts_at": "2026-11-03T07:00:00-05:00",
+      "source_url": "https://brookline.news/the-2026-massachusetts-ballot-questions-explained/",
+      "topics": ["elections_government"],
+      "actions": ["read_full_text", "add_to_my_ballot_notes"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-2026-q4",
+      "kind": "ballot_measure",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "Question 4",
+      "title": "Question 4: Allow voter registration on Election Day",
+      "summary_plain": "Today you have to register 10 days before an election. This would let eligible residents register and vote at their polling place on Election Day, and let registered voters update their address there (but not their party).",
+      "yes_means": "Same-day registration at the polls on Election Day.",
+      "no_means": "The 10-day registration deadline stays.",
+      "status": "on_ballot",
+      "starts_at": "2026-11-03T07:00:00-05:00",
+      "source_url": "https://brookline.news/the-2026-massachusetts-ballot-questions-explained/",
+      "topics": ["elections_government", "civil_rights"],
+      "actions": ["read_full_text", "add_to_my_ballot_notes"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-2026-q5",
+      "kind": "ballot_measure",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "Question 5",
+      "title": "Question 5: Change the state tax revenue cap and rebates",
+      "summary_plain": "Massachusetts already limits how much tax revenue it can keep, and refunds the excess. This would base the cap on last year's actual revenue (grown by wage growth) instead of last year's cap, and count millionaire's-surtax revenue toward it — making taxpayer rebates more likely.",
+      "yes_means": "A tighter cap formula; the state would owe rebates more often.",
+      "no_means": "The current cap formula stays.",
+      "status": "on_ballot",
+      "starts_at": "2026-11-03T07:00:00-05:00",
+      "source_url": "https://brookline.news/the-2026-massachusetts-ballot-questions-explained/",
+      "topics": ["taxes_budget"],
+      "actions": ["read_full_text", "add_to_my_ballot_notes"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-2026-q6",
+      "kind": "ballot_measure",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "Question 6",
+      "title": "Question 6: Dedicated conservation fund from sporting goods sales tax",
+      "summary_plain": "This would send up to $100 million a year of the existing sales tax collected on sporting goods into a new natural resource conservation fund, overseen by a 15-member board. It doesn't add a new tax; the Legislature would still control spending.",
+      "yes_means": "Creates the fund and routes that sales tax revenue to it.",
+      "no_means": "Conservation stays in the regular budget; the revenue stays in the General Fund.",
+      "status": "on_ballot",
+      "starts_at": "2026-11-03T07:00:00-05:00",
+      "source_url": "https://brookline.news/the-2026-massachusetts-ballot-questions-explained/",
+      "topics": ["environment", "parks_recreation", "taxes_budget"],
+      "actions": ["read_full_text", "add_to_my_ballot_notes"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-2026-q7",
+      "kind": "ballot_measure",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "Question 7",
+      "title": "Question 7: Allow single-family homes on smaller lots",
+      "summary_plain": "On lots with public water and sewer, towns couldn't require more than 5,000 square feet of land or 50 feet of street frontage to build a single-family home. Supporters say it enables cheaper 'starter homes'; it would take some lot-size decisions away from towns.",
+      "yes_means": "A statewide cap on minimum lot size (5,000 sq ft) and frontage (50 ft) where public water and sewer exist.",
+      "no_means": "Lot-size rules stay mostly local.",
+      "status": "on_ballot",
+      "starts_at": "2026-11-03T07:00:00-05:00",
+      "source_url": "https://brookline.news/the-2026-massachusetts-ballot-questions-explained/",
+      "topics": ["housing"],
+      "actions": ["read_full_text", "add_to_my_ballot_notes"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-2026-q8",
+      "kind": "ballot_measure",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "Question 8",
+      "title": "Question 8: Repeal recreational marijuana sales",
+      "summary_plain": "This would undo the recreational part of the 2016 law that legalized cannabis. Retail shops would have to become medical dispensaries or sell to one; medical marijuana would continue. Adults with one to two ounces could face a $100 fine.",
+      "yes_means": "Ends recreational marijuana sales; medical stays.",
+      "no_means": "Licensed recreational sales to adults 21+ continue.",
+      "status": "on_ballot",
+      "starts_at": "2026-11-03T07:00:00-05:00",
+      "source_url": "https://brookline.news/the-2026-massachusetts-ballot-questions-explained/",
+      "topics": ["health", "jobs_business", "public_safety"],
+      "actions": ["read_full_text", "add_to_my_ballot_notes"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-2026-q9",
+      "kind": "ballot_measure",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "Question 9",
+      "measure_type": "veto_referendum",
+      "title": "Question 9: Keep or repeal the 2024 gun law",
+      "summary_plain": "A referendum on the gun law passed in 2024, which covers ghost guns and 3-D printed guns, expands the 'red flag' law, and broadens the assault weapon definition. Because it's a referendum on an existing law, a YES vote keeps the law.",
+      "yes_means": "Keeps the 2024 gun law in place.",
+      "no_means": "Repeals the 2024 gun law.",
+      "status": "on_ballot",
+      "starts_at": "2026-11-03T07:00:00-05:00",
+      "source_url": "https://brookline.news/the-2026-massachusetts-ballot-questions-explained/",
+      "topics": ["public_safety"],
+      "actions": ["read_full_text", "add_to_my_ballot_notes"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24", "note": "One outlet described YES as repeal; YES = keep matches how MA veto referendums are worded. Confirm against the official ballot wording." },
+      "embedding": null
+    },
+
+    {
+      "id": "ma-194-s2581",
+      "kind": "bill",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "S.2581",
+      "title": "Statewide school cellphone policy (An Act to promote student learning and mental health)",
+      "summary_plain": "Would require every public school district to adopt and enforce a policy limiting student cellphone use during the school day. The Senate passed it in July 2025; the House hasn't agreed on a final version, and lawmakers have until early January 2027 to make a deal.",
+      "status": "passed_senate",
+      "status_history": [
+        { "date": "2025-07-31", "action": "Passed Senate" },
+        { "date": "2026-09-07", "action": "Still unresolved between House and Senate (reported)" }
+      ],
+      "source_url": "https://www.bostonglobe.com/2026/09/07/metro/cell-phone-ban-bill-massachusetts-legislature/",
+      "topics": ["education", "health"],
+      "actions": ["follow", "contact_my_legislator", "read_full_text"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-194-yimby",
+      "kind": "bill",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "H.1572 / S.2836",
+      "title": "An Act to Promote Yes in My Backyard (YIMBY bill)",
+      "summary_plain": "A broad zoning reform bill meant to make it easier to build housing. The House didn't act after a September hearing. The Senate committee advanced an amended version in December, but it has sat in Senate Ways and Means since. Its duplex provision was moved into the economic development bill.",
+      "status": "stalled",
+      "source_url": "https://www.abundanthousingma.org/2025-2026-legislative-session-housing-policy-recap",
+      "topics": ["housing"],
+      "actions": ["follow", "contact_my_legislator", "read_full_text"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-194-econ-dev",
+      "kind": "bill",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "title": "Economic development bill: duplexes by right, faith-based housing, tenant right to purchase",
+      "summary_plain": "The House and Senate passed different versions and are negotiating. Proposals include allowing duplexes anywhere single-family homes are allowed (Senate), letting religious institutions build affordable multifamily housing on their land (House), and giving tenants a right to match an offer to buy their building (both). Deadline to finish: January 5, 2027.",
+      "status": "in_conference",
+      "status_history": [
+        { "date": "2026-06-23", "action": "Passed Senate" },
+        { "date": "2026-07", "action": "Passed House (different version)" }
+      ],
+      "source_url": "https://www.abundanthousingma.org/2025-2026-legislative-session-housing-policy-recap",
+      "topics": ["housing", "jobs_business"],
+      "actions": ["follow", "contact_my_legislator"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-194-fy27-variance",
+      "kind": "bill",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "FY2027 budget",
+      "title": "Zoning variance reform (in the FY2027 state budget) — now law",
+      "summary_plain": "Makes it easier for local zoning boards to grant exceptions for housing: the standard drops from 'substantial hardship' to 'practical difficulty', boards can weigh the public need for housing, and approvals last two years instead of one.",
+      "status": "signed",
+      "status_history": [{ "date": "2026-07-09", "action": "Signed by Governor Healey; effective immediately" }],
+      "source_url": "https://www.abundanthousingma.org/2025-2026-legislative-session-housing-policy-recap",
+      "topics": ["housing"],
+      "actions": ["read_full_text"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-194-multifamily-sales-tax",
+      "kind": "bill",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "Supplemental budget",
+      "title": "Sales tax exemption for multifamily construction materials — now law",
+      "summary_plain": "Building materials for multifamily housing are exempt from sales tax when the project is in a lower-income census tract (median income under 120% of area median) or at least 15% of units are income-restricted.",
+      "status": "signed",
+      "status_history": [{ "date": "2026-06-28", "action": "Signed by Governor Healey" }],
+      "source_url": "https://www.abundanthousingma.org/2025-2026-legislative-session-housing-policy-recap",
+      "topics": ["housing", "taxes_budget"],
+      "actions": ["read_full_text"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-194-single-stair",
+      "kind": "bill",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "H.1542 / S.964",
+      "title": "Study single-stair apartment buildings",
+      "summary_plain": "Would study when small apartment buildings with one staircase (common in Europe, cheaper to build) should be allowed. The bill is parked in Ways and Means, but the governor created an advisory group based on it by executive order.",
+      "status": "in_committee",
+      "source_url": "https://www.abundanthousingma.org/2025-2026-legislative-session-housing-policy-recap",
+      "topics": ["housing", "public_safety"],
+      "actions": ["follow"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-194-adu-trust",
+      "kind": "bill",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "external_id": "H.1482 / S.969",
+      "title": "Accessory dwelling unit (ADU) trust fund",
+      "summary_plain": "Would create a state fund to help homeowners build backyard or in-law apartments. Reported favorably by the Housing committee but hasn't moved out of Ways and Means.",
+      "status": "in_committee",
+      "source_url": "https://www.abundanthousingma.org/2025-2026-legislative-session-housing-policy-recap",
+      "topics": ["housing"],
+      "actions": ["follow", "contact_my_legislator"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+    {
+      "id": "ma-194-energy",
+      "kind": "bill",
+      "jurisdiction_id": "ocd-division/country:us/state:ma",
+      "title": "Energy affordability bill",
+      "summary_plain": "The House and Senate passed different energy bills and are still negotiating. One major difference: the House version would cut the Mass Save efficiency program's budget by about $1 billion.",
+      "status": "in_conference",
+      "source_url": "https://aimnet.org/key-bills-remain-active-as-legislature-ends-formal-sessions/",
+      "topics": ["environment", "taxes_budget"],
+      "actions": ["follow", "contact_my_legislator"],
+      "verification": { "status": "verified", "checked_on": "2026-10-24" },
+      "embedding": null
+    },
+
+    {
+      "id": "cam-council-2026-10-26",
+      "kind": "meeting",
+      "jurisdiction_id": "ocd-division/country:us/state:ma/place:cambridge",
+      "body": "Cambridge City Council",
+      "title": "City Council regular meeting",
+      "summary_plain": "The council's weekly Monday meeting. Residents can sign up for public comment at the start of the meeting.",
+      "agenda_highlights": [
+        { "item": "City Manager's agenda and policy orders", "topics": ["elections_government"] },
+        { "item": "Update on bike lane and street safety projects (illustrative)", "topics": ["transportation"] },
+        { "item": "Affordable housing trust funding update (illustrative)", "topics": ["housing"] }
+      ],
+      "status": "scheduled",
+      "starts_at": "2026-10-26T17:30:00-04:00",
+      "location": "Sullivan Chamber, City Hall, 795 Massachusetts Ave",
+      "source_url": "https://www.cambridgema.gov/citycouncil",
+      "topics": ["housing", "transportation", "elections_government"],
+      "actions": ["add_to_calendar", "sign_up_public_comment", "watch_live"],
+      "verification": { "status": "schedule_based", "checked_on": "2026-10-24", "note": "Monday 5:30pm is the council's standing schedule; agenda items are illustrative." },
+      "embedding": null
+    },
+    {
+      "id": "cam-council-2026-11-09",
+      "kind": "meeting",
+      "jurisdiction_id": "ocd-division/country:us/state:ma/place:cambridge",
+      "body": "Cambridge City Council",
+      "title": "City Council regular meeting",
+      "summary_plain": "Weekly council meeting. Public comment opens at the start.",
+      "agenda_highlights": [
+        { "item": "Zoning petition on multifamily housing near transit (illustrative)", "topics": ["housing", "transportation"] },
+        { "item": "Climate resilience and tree canopy report (illustrative)", "topics": ["environment"] }
+      ],
+      "status": "scheduled",
+      "starts_at": "2026-11-09T17:30:00-05:00",
+      "location": "Sullivan Chamber, City Hall, 795 Massachusetts Ave",
+      "source_url": "https://www.cambridgema.gov/citycouncil",
+      "topics": ["housing", "transportation", "environment"],
+      "actions": ["add_to_calendar", "sign_up_public_comment", "watch_live"],
+      "verification": { "status": "schedule_based", "checked_on": "2026-10-24", "note": "Agenda items are illustrative." },
+      "embedding": null
+    },
+    {
+      "id": "cam-council-2026-11-16",
+      "kind": "meeting",
+      "jurisdiction_id": "ocd-division/country:us/state:ma/place:cambridge",
+      "body": "Cambridge City Council",
+      "title": "City Council regular meeting",
+      "summary_plain": "Weekly council meeting. Public comment opens at the start.",
+      "agenda_highlights": [
+        { "item": "Small business support and storefront vacancy policy order (illustrative)", "topics": ["jobs_business"] },
+        { "item": "Property tax classification preview (illustrative)", "topics": ["taxes_budget", "housing"] }
+      ],
+      "status": "scheduled",
+      "starts_at": "2026-11-16T17:30:00-05:00",
+      "location": "Sullivan Chamber, City Hall, 795 Massachusetts Ave",
+      "source_url": "https://www.cambridgema.gov/citycouncil",
+      "topics": ["jobs_business", "taxes_budget", "housing"],
+      "actions": ["add_to_calendar", "sign_up_public_comment", "watch_live"],
+      "verification": { "status": "schedule_based", "checked_on": "2026-10-24", "note": "Agenda items are illustrative." },
+      "embedding": null
+    },
+    {
+      "id": "cam-school-committee-2026-11-17",
+      "kind": "meeting",
+      "jurisdiction_id": "ocd-division/country:us/state:ma/school_district:cambridge",
+      "body": "Cambridge School Committee",
+      "title": "School Committee regular meeting",
+      "summary_plain": "The School Committee sets policy and the budget for Cambridge Public Schools. Families can speak during public comment.",
+      "agenda_highlights": [
+        { "item": "Student cellphone policy update, in light of the pending state bill (illustrative)", "topics": ["education"] },
+        { "item": "FY2028 budget priorities discussion (illustrative)", "topics": ["education", "taxes_budget"] }
+      ],
+      "status": "scheduled",
+      "starts_at": "2026-11-17T18:00:00-05:00",
+      "location": "Dr. Henrietta Attles Meeting Room, Cambridge Rindge and Latin School, 459 Broadway",
+      "source_url": "https://www.cpsd.us/school-committee/overview",
+      "topics": ["education", "taxes_budget"],
+      "actions": ["add_to_calendar", "sign_up_public_comment", "watch_live"],
+      "verification": { "status": "schedule_based", "checked_on": "2026-10-24", "note": "Committee meets 1st and 3rd Tuesday, Sept–June, 6pm. Nov 3 (1st Tuesday) is Election Day and may be rescheduled, so it's omitted. Agenda items are illustrative." },
+      "embedding": null
+    },
+    {
+      "id": "cam-school-committee-2026-12-01",
+      "kind": "meeting",
+      "jurisdiction_id": "ocd-division/country:us/state:ma/school_district:cambridge",
+      "body": "Cambridge School Committee",
+      "title": "School Committee regular meeting",
+      "summary_plain": "Regular School Committee meeting with public comment.",
+      "agenda_highlights": [
+        { "item": "Enrollment and school assignment report (illustrative)", "topics": ["education"] }
+      ],
+      "status": "scheduled",
+      "starts_at": "2026-12-01T18:00:00-05:00",
+      "location": "Dr. Henrietta Attles Meeting Room, Cambridge Rindge and Latin School, 459 Broadway",
+      "source_url": "https://www.cpsd.us/school-committee/overview",
+      "topics": ["education"],
+      "actions": ["add_to_calendar", "sign_up_public_comment", "watch_live"],
+      "verification": { "status": "schedule_based", "checked_on": "2026-10-24", "note": "Agenda items are illustrative." },
+      "embedding": null
+    }
+  ],
+
+  "demo_users": [
+    {
+      "profile": {
+        "id": "00000000-0000-0000-0000-000000000001",
+        "display_name": "Demo renter",
+        "zip": "02139",
+        "circumstances": ["renter", "transit_rider"],
+        "preferred_language": "en",
+        "reading_level": "plain",
+        "notify_frequency": "weekly"
+      },
+      "jurisdictions": [
+        "ocd-division/country:us/state:ma",
+        "ocd-division/country:us/state:ma/county:middlesex",
+        "ocd-division/country:us/state:ma/place:cambridge"
+      ],
+      "topics": [
+        { "topic_slug": "housing", "weight": 3 },
+        { "topic_slug": "transportation", "weight": 2 },
+        { "topic_slug": "environment", "weight": 1 }
+      ],
+      "item_actions": [
+        { "item_id": "ma-194-econ-dev", "action": "follow" },
+        { "item_id": "ma-2026-q8", "action": "dismiss" }
+      ]
+    },
+    {
+      "profile": {
+        "id": "00000000-0000-0000-0000-000000000002",
+        "display_name": "Demo parent homeowner",
+        "zip": "02138",
+        "circumstances": ["homeowner", "parent_k12", "driver"],
+        "preferred_language": "en",
+        "reading_level": "standard",
+        "notify_frequency": "weekly"
+      },
+      "jurisdictions": [
+        "ocd-division/country:us/state:ma",
+        "ocd-division/country:us/state:ma/county:middlesex",
+        "ocd-division/country:us/state:ma/place:cambridge",
+        "ocd-division/country:us/state:ma/school_district:cambridge"
+      ],
+      "topics": [
+        { "topic_slug": "education", "weight": 3 },
+        { "topic_slug": "taxes_budget", "weight": 2 },
+        { "topic_slug": "public_safety", "weight": 1 }
+      ],
+      "item_actions": [
+        { "item_id": "ma-194-s2581", "action": "follow" },
+        { "item_id": "ma-2026-q5", "action": "save" }
+      ]
+    }
+  ]
+}
