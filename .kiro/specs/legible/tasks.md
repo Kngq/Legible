@@ -134,7 +134,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 17.12 Redesign Home around three questions: welcome, Coming up (top three), What matters to you (home, work, elections with Added/Edit), Happening near you (with local meetings and bills), How Legible works; update cards with plain dates, why, and real actions; "Clear my information" with a confirm step in the profile sheet
   - [x] 17.13 Split Home and Explore: Home is the welcome, What matters to you, and For you; Explore (`#/explore`, Home · Explore tabs) holds every update, decided items, and How Legible works
   - [x] 17.14 Add three optional Duolingo-style questions after the town in first run (progress bar, Skip records nothing, Finish later) and a keep-on-device screen when anything was answered
-  - [x] 17.15 Restyle first run after Duolingo: placeholder mascot logo, mission screen, "Just N quick questions", speech-bubble questions, lipped buttons and cards, progress bar with percentage
+  - [x] 17.15 Pace first run like language-app onboarding without copying its look: one welcome screen with the mission and a placeholder logo, one question per screen with a progress bar and percentage, the app's own buttons and option cards
     - _Requirements: 20.5, 20.9_
   - [ ] 17.6 Add uploaded and sample documents to the feed in memory, tagged by town
     - _Requirements: 20.8_

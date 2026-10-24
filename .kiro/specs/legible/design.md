@@ -267,16 +267,14 @@ Onboarding belongs to the platform, not to any one document. Every screen is the
 
 ### First run
 
-Modeled on Duolingo's opening: a mascot with a speech bubble, one thing per screen, a big pressable Continue button with a darker lip, and a progress bar with the percentage beside it. White page. The mascot is a **placeholder logo** (an abstract rounded mark with a face, `Mascot` in `FirstRun.tsx`, named Legi in the copy) until a real one is drawn; it never imitates another product's character.
+One question per screen with a progress bar and a percentage, Skip on every question, and the app's own buttons and option cards. It borrows the pacing of language-app onboarding without its look: no talking character, no speech bubbles, no chunky uppercase buttons. A **placeholder logo** (`Logo` in `FirstRun.tsx`, a purple rounded square with "L") stands in until the real mark exists.
 
 | # | Screen | Copy | Controls |
 |---|---|---|---|
-| 0 | Hello | "Hi there! I'm Legi, your guide to what's being decided near you." | "Get started"; text button "Just show me everything" goes to Home with no town. |
-| 1 | Mission | "Our mission: make public decisions understandable, personal, and easy to act on, without ever telling you how to vote." | "Continue". |
-| 2 | Count | "Just N quick questions before we show what's happening near you! Only your town is needed. Your answers stay in this browser." N is the length of the question list (4). | "Continue". |
-| 3 | Where do you live? | Mascot left, question in a bubble right; the town field below. | Progress bar and percent (0%, 25%, 50%, 75%); "Continue" once a town is picked; "Skip". |
-| 4–6 | Your home, your work, how you vote | "Which of these fits your home?" and so on, "Pick all that apply." Bordered cards with a lip, tinted purple when picked, plus None of these. | "Continue" ("Finish" on the last), "Prefer not to say", "Skip" (records nothing), "Finish later". |
-| 7 | Keep (only if something was answered and storage works) | "Nice work! Keep your answers on this device so Legible stays personal next time? Clear my information erases them any time." | "Keep on this device", "Not now". The bar reads 100%. |
+| 0 | Welcome | Logo, "See what's being decided near you", the mission ("Legible makes public decisions understandable, personal, and easy to act on. It never tells you how to vote."), and three checks: N quick questions, about a minute; only your town is needed; answers stay in this browser. N is the length of the question list (4). | "Get started"; text button "Just show me everything" goes to Home with no town. |
+| 1 | Where do you live? | "Question 1 of 4", the town field. | Thin progress bar with the percent (0%, 25%, 50%, 75%); "Continue" once a town is picked; "Skip". |
+| 2–4 | Your home, your work, how you vote | "Question 2 of 4 · optional", "Which of these fits your home?", "Pick all that apply.", the same option cards as the profile sheet plus None of these. | "Continue" ("Finish" on the last), "Prefer not to say", "Skip" (records nothing), "Finish later". |
+| 5 | Keep (only if something was answered and storage works) | Logo, "Keep your answers on this device?" | "Keep on this device", "Not now". The bar reads 100%. |
 
 Who you live with, getting around, and subjects stay in the profile sheet. The feed opens with the ring at 14% (town only) and up to 57% if all three optional areas are answered.
 
