@@ -148,7 +148,11 @@ export function ProfileSheet({
           <>
             {/* The plant is the profile's centrepiece. Profile completion stays a
                 separate, quieter line below it and never moves the plant. */}
-            <PlantCompanion onSeeGrowth={() => open({ kind: "growth" })} />
+            <PlantCompanion
+              name={profile.name}
+              onNameChange={(name) => setProfile({ ...profile, name })}
+              onSeeGrowth={() => open({ kind: "growth" })}
+            />
             <div className="mt-5 border-t border-border pt-4">
               <h3 className="text-body font-semibold">Your profile details</h3>
               <p className="text-small text-muted-foreground">
@@ -173,25 +177,28 @@ export function ProfileSheet({
           </div>
         )}
 
-        {/* Name: used for the greeting on Home. Browser-only, like every answer. */}
-        <section aria-labelledby="name-h" className="mt-4 rounded-lg bg-surface p-4 shadow-card">
-          <label id="name-h" htmlFor="profile-name" className="block text-body font-semibold">
-            Your name
-          </label>
-          <p className="mt-1 text-small text-muted-foreground">
-            For a friendly hello on your home screen. It stays in this browser.
-          </p>
-          <input
-            id="profile-name"
-            type="text"
-            value={profile.name ?? ""}
-            onChange={(e) => setProfile({ ...profile, name: e.target.value.slice(0, 40) || undefined })}
-            maxLength={40}
-            autoComplete="given-name"
-            placeholder="Your first name or nickname"
-            className={`mt-3 h-11 w-full rounded-md bg-surface-muted px-4 text-body placeholder:text-muted-foreground ${FOCUS}`}
-          />
-        </section>
+        {/* Name: used for the greeting on Home. Browser-only, like every answer.
+            With the plant on, the name is shown and edited under the plant instead. */}
+        {!growth.enabled && (
+          <section aria-labelledby="name-h" className="mt-4 rounded-lg bg-surface p-4 shadow-card">
+            <label id="name-h" htmlFor="profile-name" className="block text-body font-semibold">
+              Your name
+            </label>
+            <p className="mt-1 text-small text-muted-foreground">
+              For a friendly hello on your home screen. It stays in this browser.
+            </p>
+            <input
+              id="profile-name"
+              type="text"
+              value={profile.name ?? ""}
+              onChange={(e) => setProfile({ ...profile, name: e.target.value.slice(0, 40) || undefined })}
+              maxLength={40}
+              autoComplete="given-name"
+              placeholder="Your first name or nickname"
+              className={`mt-3 h-11 w-full rounded-md bg-surface-muted px-4 text-body placeholder:text-muted-foreground ${FOCUS}`}
+            />
+          </section>
+        )}
 
         {/* Interests: the subjects a person follows. Editable here directly. */}
         {(() => {

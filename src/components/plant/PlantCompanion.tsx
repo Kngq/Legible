@@ -1,10 +1,11 @@
 "use client";
 
-// "Your civic journey": the plant at the top of Civic Profile, with its totals and
-// the way into the Growth Story. Stage and totals come from useGrowth, the same
+// The top of Civic Profile: the plant as the person's avatar, their name (the
+// existing profile name, edited in place), their totals, and the way into the
+// Growth Story. The name never affects growth. Stage and totals come from useGrowth, the same
 // source as the header avatar. Counts show only when a history exists; nothing
 // here invents activity.
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { GrowthTotals } from "@/lib/growth";
 import { FOCUS } from "../ui";
 import { CivicPlant } from "./CivicPlant";
@@ -27,10 +28,16 @@ export function PreviewTag() {
 }
 
 export function PlantCompanion({
+  name,
+  onNameChange,
   onSeeGrowth,
   signal,
   plantSize = 140,
 }: {
+  /** The saved profile name, if any. */
+  name?: string;
+  /** Saves the profile name (undefined clears it). Absent hides the name controls. */
+  onNameChange?: (name: string | undefined) => void;
   /** Opens the Growth Story. Absent hides the link. */
   onSeeGrowth?: () => void;
   signal?: { tap: number; milestone: number };
@@ -44,10 +51,7 @@ export function PlantCompanion({
   return (
     <section aria-labelledby="plant-h" className="-mt-3 flex flex-col items-center text-center">
       <CivicPlant stage={g.stage} size={plantSize} signal={signal} className="cursor-pointer select-none" />
-      <h3 id="plant-h" className="mt-1 font-display text-[1.25rem] font-normal leading-tight">
-        Your civic journey
-      </h3>
-      <p className="mt-1 text-small text-muted-foreground">Every decision you explore helps your plant grow.</p>
+      <Identity name={name?.trim() || undefined} onNameChange={onNameChange} />
       {onSeeGrowth && (
         <button
           type="button"
@@ -93,5 +97,99 @@ export function PlantCompanion({
         </p>
       )}
     </section>
+  );
+}
+
+/** The name under the plant, or "Your civic journey" without one, with an inline editor. */
+function Identity({ name, onNameChange }: { name?: string; onNameChange?: (name: string | undefined) => void }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+  const start = () => {
+    setDraft(name ?? "");
+    setEditing(true);
+  };
+  const save = () => {
+    onNameChange?.(draft.trim().slice(0, 40) || undefined);
+    setEditing(false);
+  };
+
+  if (editing && onNameChange) {
+    return (
+      <form
+        className="mt-2 flex w-full max-w-xs flex-col items-center gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          save();
+        }}
+      >
+        <label htmlFor="profile-name" className="sr-only">
+          Your first name or nickname
+        </label>
+        <input
+          id="profile-name"
+          type="text"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value.slice(0, 40))}
+          onKeyDown={(e) => {
+            // Escape cancels the edit instead of closing the profile.
+            if (e.key === "Escape") {
+              e.stopPropagation();
+              setEditing(false);
+            }
+          }}
+          maxLength={40}
+          autoComplete="given-name"
+          placeholder="Your first name or nickname"
+          autoFocus
+          className={`h-11 w-full rounded-md bg-surface-muted px-4 text-center text-body placeholder:text-muted-foreground ${FOCUS}`}
+        />
+        <p className="text-small text-muted-foreground">Optional. For a friendly hello, and it stays in this browser.</p>
+        <div className="flex gap-2">
+          <button type="submit" className={`min-h-10 rounded-md bg-primary px-4 text-small font-semibold text-primary-foreground hover:bg-primary-hover ${FOCUS}`}>
+            Save
+          </button>
+          <button type="button" onClick={() => setEditing(false)} className={`min-h-10 rounded-md px-3 text-small font-semibold text-muted-foreground hover:text-foreground ${FOCUS}`}>
+            Cancel
+          </button>
+        </div>
+      </form>
+    );
+  }
+
+  return name ? (
+    <>
+      <div className="mt-1 flex items-baseline justify-center gap-2">
+        <h3 id="plant-h" className="font-display text-[1.5rem] font-normal leading-tight">
+          {name}
+        </h3>
+        {onNameChange && (
+          <button
+            type="button"
+            onClick={start}
+            aria-label="Edit your name"
+            className={`rounded-sm px-1 text-small font-semibold text-primary underline-offset-4 hover:underline ${FOCUS}`}
+          >
+            Edit
+          </button>
+        )}
+      </div>
+      <p className="mt-1 text-small text-muted-foreground">Your civic journey, growing with you.</p>
+    </>
+  ) : (
+    <>
+      <h3 id="plant-h" className="mt-1 font-display text-[1.25rem] font-normal leading-tight">
+        Your civic journey
+      </h3>
+      <p className="mt-1 text-small text-muted-foreground">Every decision you explore helps your plant grow.</p>
+      {onNameChange && (
+        <button
+          type="button"
+          onClick={start}
+          className={`mt-0.5 rounded-sm px-1 text-small text-muted-foreground underline underline-offset-4 hover:text-foreground ${FOCUS}`}
+        >
+          Add your name
+        </button>
+      )}
+    </>
   );
 }
