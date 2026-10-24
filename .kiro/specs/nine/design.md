@@ -410,12 +410,14 @@ Copy rule: the feed heading is "Where your life meets what is being decided." Ne
 
 Nothing in the browser crawls the web. The team runs an ingest script that turns public documents into catalog entries, with the same model, schema, and quote verification as the analyze route.
 
-**Sources.** `data/sources/ma.json` is a hand-curated list, one row per document: `{ id, townId?, docType, url, decideBy, title }`. URLs point to official PDFs on town, city, school, or state sites (clerk warrants, school committee budgets, planning board hearing notices). Curating the list is a person's job; Nine does not scrape arbitrary sites in this build.
+**Sources.** `data/sources/ma.json` is a hand-curated list, one row per document: `{ id, townId?, docType, title, url, file?, decideBy, note? }`. URLs point to official PDFs on town, city, school, or state sites (clerk warrants, school committee budgets, planning board hearing notices). Curating the list is a person's job; Nine does not scrape arbitrary sites in this build.
+
+Some city sites block scripts (newtonma.gov answers 403 behind Akamai). For those rows a person saves the PDF from a browser to `file` (under `data/sources/files/`), and ingest reads the file instead of downloading. `url` is still kept, because it is the citation shown to users.
 
 **`npm run ingest`** (`scripts/ingest.ts`), for each source:
 
-1. Download the PDF, record `source.hash` (SHA-256). Skip when the hash matches the last run.
-2. Extract page text with `pdfjs-dist` (same code as uploads). Stop with a clear error on a scanned PDF.
+1. Read `file` if set, else download `url`. Record `source.hash` (SHA-256). Skip when the hash matches the last run.
+2. Extract page text with `pdfjs-dist` (same code as uploads). Stop with a clear error on a scanned PDF, and report which pages had no text layer when only some do.
 3. Draft measures with the shared analyze module (`src/lib/analyze`, used by both the route and this script): `claude-opus-5`, structured output, untrusted-document system prompt, fixed vocabularies.
 4. Run `verifyMeasures`. Measures with a failed quote or a banned word go to `flagged` and are not shown. A document with zero verified measures is not listed.
 5. Write `public/docs/<id>.json` with `provenance: "ai_draft"`, `pagesHash`, `docType`, and `decideBy`.
@@ -425,7 +427,7 @@ Nothing in the browser crawls the web. The team runs an ingest script that turns
 
 **Schedule.** For the event, run once by hand before the demo for the chosen towns, and commit the output. Later, a daily scheduled CI job runs ingest and opens a pull request with the changes, so a person sees every new document before it ships.
 
-**Demo towns.** To be chosen by the team: two or three towns with a recent text PDF (a warrant or budget) and an upcoming date. Open item.
+**Demo towns.** Cambridge and Newton. Candidate sources are in `data/sources/ma.json`: Cambridge's Alexandria Technology Square zoning petition (Council must act by January 4, 2027), Newton's Land Use Committee public hearing (November 10, 2026), and Newton's Zoning & Planning Committee agenda (October 26, 2026).
 
 ## Reliability layer
 

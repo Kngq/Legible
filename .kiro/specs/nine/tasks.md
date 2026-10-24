@@ -133,7 +133,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 23.2_
   - [ ] 20.2 Write `scripts/ingest.ts` and `npm run ingest`: download, hash, extract, analyze, verify, write `public/docs/<id>.json`, rebuild the catalog
     - _Requirements: 23.2, 23.3, 23.4, 23.5_
-  - [ ] 20.3 Pick two or three demo towns with a recent text PDF and an upcoming date; add them to `data/sources/ma.json` and run ingest
+  - [ ] 20.3 Demo towns Cambridge and Newton: sources listed in `data/sources/ma.json`; save the Newton PDFs by hand, find a text source for Cambridge, then run ingest
     - _Requirements: 23.1_
   - [ ] 20.4 Review one ingested document by hand and record it in `data/reviews/`
     - _Requirements: 23.3_

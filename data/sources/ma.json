@@ -1,0 +1,31 @@
+[
+  {
+    "id": "cambridge-pet-2026-03",
+    "townId": "cambridge",
+    "docType": "hearing",
+    "title": "Alexandria Technology Square zoning petition (PET-2026-03)",
+    "url": "https://www.cambridgema.gov/-/media/Files/CDD/ZoningDevel/Amendments/2026/alexandriatdr/pet202603.pdf",
+    "decideBy": { "date": "2027-01-04", "who": "City Council", "how": "meeting" },
+    "note": "Council must act before the petition expires on 2027-01-04. Only page 1 has a text layer; pages 2-6 are scanned. Look for a text CDD memo or Planning Board report before ingesting."
+  },
+  {
+    "id": "newton-land-use-2026-11-10",
+    "townId": "newton",
+    "docType": "hearing",
+    "title": "City Council Land Use Committee public hearing, November 10, 2026",
+    "url": "https://www.newtonma.gov/home/showpublisheddocument/143392/639283480352692507",
+    "file": "data/sources/files/newton-land-use-2026-11-10.pdf",
+    "decideBy": { "date": "2026-11-10", "who": "Land Use Committee", "how": "meeting" },
+    "note": "newtonma.gov returns 403 to scripts (Akamai). Save the PDF by hand from the Electronic Posting Board to the file path."
+  },
+  {
+    "id": "newton-zap-2026-10-26",
+    "townId": "newton",
+    "docType": "agenda",
+    "title": "City Council Zoning & Planning Committee agenda, October 26, 2026",
+    "url": "https://www.newtonma.gov/home/showpublisheddocument/143356",
+    "file": "data/sources/files/newton-zap-2026-10-26.pdf",
+    "decideBy": { "date": "2026-10-26", "who": "Zoning & Planning Committee", "how": "meeting" },
+    "note": "Same 403 as above; save by hand."
+  }
+]
