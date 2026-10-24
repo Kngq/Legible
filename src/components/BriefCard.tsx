@@ -43,7 +43,7 @@ const KIND_LABEL: Record<RelevanceKind, string> = {
 };
 
 /** Supported by the matching data: the only relevance that gets the plum accent. */
-const supported = (r: Relevance | null): r is Relevance => r?.kind === "direct" || r?.kind === "potential";
+const relevant = (r: Relevance | null): r is Relevance => r?.kind === "direct" || r?.kind === "potential";
 
 const LINK = `group inline-flex min-h-11 items-center gap-1.5 text-small font-semibold text-muted-foreground underline decoration-border underline-offset-4 interactive hover:text-foreground hover:decoration-foreground ${FOCUS}`;
 const BUTTON = `group inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-4.5 text-body font-semibold text-primary-foreground interactive press hover:bg-primary-hover ${FOCUS}`;
@@ -275,7 +275,7 @@ function FeaturedNote({ d, onOpenProfile }: { d: Decision; onOpenProfile: (v: Sh
       </p>
     );
   }
-  const strong = supported(r);
+  const strong = relevant(r);
   return (
     <div className={`mt-5 rounded-md px-4 py-3.5 sm:px-5 ${strong ? "bg-accent-soft" : "bg-info-soft"}`}>
       <div className="flex items-center justify-between gap-3">
@@ -344,7 +344,7 @@ function RowRelevance({ d, why, onWhy, onOpenProfile }: { d: Decision; why: bool
     );
   return (
     <p className="mt-1 text-small text-muted-foreground">
-      <span className={`font-semibold ${supported(r) ? "text-accent" : "text-foreground"}`}>{KIND_LABEL[r.kind]}.</span> {r.text}{" "}
+      <span className={`font-semibold ${relevant(r) ? "text-accent" : "text-foreground"}`}>{KIND_LABEL[r.kind]}.</span> {r.text}{" "}
       <span className="whitespace-nowrap">
         <WhyToggle open={why} onToggle={onWhy} compact />
       </span>
@@ -373,7 +373,7 @@ export function DecisionRow({ d, onOpenProfile }: { d: Decision; onOpenProfile: 
     <li className="relative -mx-3 grid grid-cols-[2.25rem_1fr] gap-x-3.5 rounded-md px-3 py-4 interactive hover:bg-surface sm:grid-cols-[2.5rem_1fr]">
       <span
         aria-hidden="true"
-        className={`mt-0.5 flex size-9 items-center justify-center rounded-full sm:size-10 ${supported(d.relevance) ? "bg-accent-soft text-accent" : "bg-surface text-foreground shadow-hairline"}`}
+        className={`mt-0.5 flex size-9 items-center justify-center rounded-full sm:size-10 ${relevant(d.relevance) ? "bg-accent-soft text-accent" : "bg-surface text-foreground shadow-hairline"}`}
       >
         <Part name={d.part} size={18} strokeWidth={1.8} />
       </span>
