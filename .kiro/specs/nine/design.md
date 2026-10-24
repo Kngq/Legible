@@ -221,7 +221,7 @@ Pure template in the browser. Inputs are selected measure numbers and one factua
 
 ## UI components
 
-- **Onboarding:** three skippable steps, town, everyday facts, topics, then the remember toggle.
+- **Onboarding:** one question per screen: hello, ZIP, one screen per everyday fact, subjects, keep it, done. Progress bar, back, Skip, pinned primary button.
 - **TownPicker:** type-ahead over a bundled list of 351 municipalities with aliases.
 - **Feed:** catalog entries for the person's state and town with touch counts, trust labels, and the open-questions section.
 - **ChatDock:** bottom-corner button and panel scoped to the open document or measure, citations on every sentence.
@@ -238,14 +238,34 @@ Visual system lives in CSS custom properties in `src/app/globals.css`, exposed a
 
 ## Onboarding
 
-Goal: a life profile in under a minute, then the feed. Four screens, each with a Skip link top right and a progress line "1 of 3" (the last screen is not counted). Mobile first at 375 px, one column, controls at least 44 px tall.
+Goal: a life profile in under a minute, then the feed. Pattern borrowed from Duolingo: one question per screen, a thin progress bar on top, a back arrow top left, Skip top right, one big button pinned to the bottom that stays grey until the answer is valid, and a friendly figure with a speech bubble on the first and last screens. Mobile first at 375 px, one column, tap targets at least 48 px.
 
-| Screen | Heading | Controls | On skip |
-|---|---|---|---|
-| 1 Town | "Where do you live?" with the line "Your town decides which documents you see." | TownPicker type-ahead, 351 municipalities with aliases. Continue, or "I don't see my town" which continues with no town. | State documents only. |
-| 2 Everyday facts | "A few facts about your life" with the line "Each one sorts the decisions below. Nothing here leaves your browser." | One row per `onboardingFacts(feedDocs)`: the everyday facts some document in the feed actually reads (six for the 2026 ballot alone). Each row is a three-way chip group: Yes, No, Prefer not to say. Under the list, a live line "Your answers so far sort N of M measures." | Every row left blank is recorded as skipped once ("Skip for now"). |
-| 3 Subjects you follow | "Subjects you follow" with the line "These mark measures as on your list. They never affect which ones touch you." | The fixed topic chips, plus a text box. Typing runs `matchTopics` locally and lights the matching chip; the text is discarded on blur. Continue sets `topicsConfirmedAt`, even with no chips on. | No topics, `topicsConfirmedAt` unset. |
-| 4 Memory | "Keep this on this device?" | A single toggle, default off, with the line "Off means a refresh clears everything. On stores your profile in this browser only. Forget me removes it at any time." Button: "Show my decisions." | Not skippable; it is one toggle. |
+The figure is the Nine avatar (line-drawn, see Avatar). It starts blank and gains one part per answer (a key for renting, a ballot for registered), so the person watches the profile assemble. It never shows red or blue and never reflects a sensitive fact.
+
+**No account, no sign-in.** Duolingo's "Create profile" exists to sync progress to a server. Nine's promise is that the profile never leaves the browser, so its counterpart is "Keep this on this device" (screen 10). There is no name, email, or password step anywhere. If cross-device use is wanted after the event, the candidate is an export code the person copies to another browser, not an account.
+
+**No name.** A name adds nothing to sorting, and a name stored next to "owns a firearm" turns a shared or screenshotted device into an identifying record. Greetings use the town instead: "Here is your ballot, Somerville."
+
+| # | Screen | Heading and copy | Controls | Valid when | Skip |
+|---|---|---|---|---|---|
+| 0 | Hello | Bubble: "Nine questions are on your November 3 ballot. Let's find the ones that touch you." | Primary "Get started". Text button "Show me all nine" goes straight to the feed, unsorted. | always | n/a |
+| 1 | ZIP | "What's your ZIP code?" Under the field: "Picks your town's documents. Stays in your browser." | Numeric field, 5 digits. A valid Massachusetts ZIP shows a check and the town name under the field. A ZIP that spans towns shows those towns as chips to pick one. Link "Type your town instead" opens the TownPicker type-ahead. | one town resolved | state documents only |
+| 2 | Home | "Do you rent or own your home?" Tag: "Sorts Q7" | Four option cards: Rent, Own, Both, Neither. Text button "Prefer not to say". Tapping an option advances; no Next needed. | tap | rents and owns skipped once |
+| 3 | Building | "Are you hoping to build or buy a single-family home?" Tag: "Sorts Q7" | Option cards Yes, No; "Prefer not to say". Auto-advance. | tap | skipped once |
+| 4 | Registered | "Are you registered to vote at your current address?" Tag: "Sorts Q4" | same | tap | skipped once |
+| 5 | Primaries | "Do you usually vote in state primaries?" Tag: "Sorts Q3" | same | tap | skipped once |
+| 6 | Work | "Do you work for the state?" Tag: "Sorts Q2" | same | tap | skipped once |
+| 7 | Subjects | "Pick any subjects you follow." Under: "These add an On your list tag. They never change which questions touch you." | Topic chips, multi-select, plus a type-to-match box. Primary "Continue" sets `topicsConfirmedAt` even with none picked. | always | no topics |
+| 8 | Keep it | Bubble: "Want Nine to remember this next time?" Under: "It stays in this browser only. Forget me erases it any time." | Primary "Keep on this device" sets `remember`. Text button "Not now". | always | n/a |
+| 9 | Done | Bubble, counts computed live: "4 of the 9 questions touch you." Under it the personalization meter: "Your feed is 72% sorted. 3 more questions wait on the cards they affect." | Primary "Show my ballot". | always | n/a |
+
+Screens 3 to 6 are generated from `onboardingFacts(feedDocs)`, so the count changes with the feed: a town document that reads `kids_in_schools` adds a screen. The rent/own screen covers two facts at once. Each fact screen carries a small lime tag naming the measures it sorts, so every question shows its reason.
+
+Progress bar: steps, not the meter. It fills by screen, including skipped ones, so skipping never feels stuck. The meter appears only on the Done screen and afterward in the feed header.
+
+Motion: screens slide left on advance and right on back, using `ease-nine`. The avatar part fades in on answer. Both drop to instant under reduced motion.
+
+ZIP data: a bundled Massachusetts ZIP-to-town table (`src/data/zips.json`), built from the Census ZCTA to county subdivision relationship file. Lookup runs in the browser. Only `townId` is stored; the ZIP itself is discarded once the town is resolved.
 
 Rules:
 
@@ -255,7 +275,7 @@ Rules:
 - Sensitive facts (`SENSITIVE_FACTS`) never appear here. They are asked inside the card that depends on them, with the reason visible.
 - Every answer is written with its source (`{ kind: "onboarding" }`) and timestamp, so the UI can later say "you answered this during setup" on a because chip.
 - A fact skipped here may be asked once more, inside a card. Declined there, it is never asked again (`MAX_SKIP_TIMES`).
-- Onboarding can be reopened from the feed header ("Edit your profile"), from any because chip, and from any avatar badge, landing on the relevant screen.
+- Onboarding can be reopened from the feed header ("Edit your profile"), from any because chip, and from any avatar badge, landing on that one screen with Done returning to where the person was.
 - Persona profiles bypass onboarding entirely and are never written to storage.
 - Copy never uses the banned words and never says "political." The phrase is "life profile."
 
@@ -267,7 +287,7 @@ A small bar with a count, "Your feed is 72% sorted for you," shown on the onboar
 
 | Item | Done when | Asked in |
 |---|---|---|
-| Town | `townId` is set | onboarding screen 1 |
+| Town | `townId` is set | onboarding screen 1 (ZIP) |
 | Subjects you follow | at least one topic on, or Continue on screen 3 with none | onboarding screen 3 |
 | Each fact some feed document reads | answered Yes or No, or "Prefer not to say" | onboarding screen 2 for everyday facts; the card that uses it for sensitive facts |
 
@@ -278,8 +298,8 @@ A small bar with a count, "Your feed is 72% sorted for you," shown on the onboar
 | Step | Items | Running total |
 |---|---|---|
 | Screen 1 town | town | 1 of 11, 9% |
-| Screen 2 everyday facts | rents, owns, wants_single_family (Q7); registered_here (Q4); votes_in_primaries (Q3); state_employee (Q2) | 7 of 11, 63% |
-| Screen 3 subjects | topics | 8 of 11, 72% |
+| Screens 2 to 6 everyday facts | rents, owns, wants_single_family (Q7); registered_here (Q4); votes_in_primaries (Q3); state_employee (Q2) | 7 of 11, 63% |
+| Screen 7 subjects | topics | 8 of 11, 72% |
 | Cards | buys_cannabis (Q8), public_defender_contact (Q2), owns_firearm (Q9) | 11 of 11, 100% |
 
 A town document adds the facts it reads (for example `kids_in_schools`, `runs_business_here`) to the denominator. When that happens the meter says "2 new questions from Town Meeting warrant" instead of silently dropping.
@@ -301,21 +321,21 @@ Everything Nine gathers, where it comes from, where it lives, and what it is for
 
 | Field | Gathered by | Stored | Used for |
 |---|---|---|---|
-| `townId` | onboarding screen 1, or feed header | profile | filtering the catalog in the browser; town context on cards later |
+| `townId` | onboarding screen 1 (ZIP or town name, resolved locally; the ZIP is not kept), or feed header | profile | filtering the catalog in the browser; town context on cards later |
 | `facts[id].value` | onboarding, a card, open questions, or an edit | profile | firing rules: "Touches you," direction, why sentences |
 | `facts[id].source`, `.at` | set automatically with each answer | profile | explaining where an answer came from; tests for ask-once rules |
 | `skipped[id].times`, `.source`, `.at` | set automatically on each skip | profile | never re-asking past the limit |
 | `topics[id].via`, `.at` | onboarding screen 3 or a chip | profile | "On your list"; the typed text is never stored |
-| `topicsConfirmedAt` | Continue on onboarding screen 3 | profile | the personalization meter's topics item |
+| `topicsConfirmedAt` | Continue on onboarding screen 7 | profile | the personalization meter's topics item |
 | `source` | set by the persona switcher | profile | keeping persona views out of storage |
 | `createdAt`, `updatedAt` | automatic | profile | "Forget me" confirmation, migrations |
-| `preferences.remember` | onboarding screen 4 or header | preferences | whether anything is written to storage at all |
+| `preferences.remember` | onboarding screen 8 or header | preferences | whether anything is written to storage at all |
 | `preferences.onboardingDone` | end of onboarding | preferences | skipping onboarding on return visits |
 | `session.openedDocuments` | opening a document or expanding a card | memory, storage only if remember is on | restoring the view; feed ordering tiebreak |
 | `session.dismissedOpenQuestions` | dismissing an open question on the feed | memory, storage only if remember is on | not nagging |
 | `session.activePersonaId` | persona switcher | memory only | restoring the self profile when the persona view closes |
 
-Never gathered: name, email, phone, age, party, income, address beyond the town, free text about the person, typed topic text, IP address, device fingerprint, analytics events. Reduced-motion comes from the operating system setting at render time and is not stored.
+Never gathered: name, email, password, account, phone, age, party, income, address beyond the town, free text about the person, typed topic text, IP address, device fingerprint, analytics events. Reduced-motion comes from the operating system setting at render time and is not stored.
 
 Derived, never stored: sorted cards, touch counts, avatar parts, because chips. All recomputed by `buildCards` whenever the profile changes.
 

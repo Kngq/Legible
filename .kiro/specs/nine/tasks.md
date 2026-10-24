@@ -99,7 +99,11 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
 - [ ] 16. Onboarding (B)
   - [x] 16.0 Profile schema with answer sources, skip counts, topic provenance, storage parsing, and tests (`src/lib/engine/profile.ts`)
     - _Requirements: 1.5, 1.6, 10.4_
-  - [ ] 16.1 Build the three-step skippable onboarding with town, everyday fact chips, topic chips, and the remember toggle
+  - [ ] 16.1 Build the one-question-per-screen onboarding: hello, ZIP, fact screens from `onboardingFacts`, subjects, keep it, done
+    - _Requirements: 1.2, 1.4, 1.5_
+  - [ ] 16.6 Bundle the Massachusetts ZIP-to-town table from the Census ZCTA relationship file, with a lookup and tests
+    - _Requirements: 1.1_
+  - [ ] 16.7 Build the onboarding avatar that gains one part per answer
     - _Requirements: 1.2, 1.4, 1.5_
   - [ ] 16.2 Store skipped facts and enforce ask-once-more inside cards
     - _Requirements: 1.6_

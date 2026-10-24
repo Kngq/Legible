@@ -31,10 +31,10 @@ Out of scope for this build: any 3D map; accounts or server-side storage of prof
 
 #### Acceptance Criteria
 
-1. WHEN the user types in the town field THE SYSTEM SHALL suggest matches from all 351 Massachusetts municipalities, including common aliases such as "Manchester-by-the-Sea" and "North Attleborough."
+1. WHEN the user enters a Massachusetts ZIP code THE SYSTEM SHALL resolve it to a town in the browser, offer a choice when the ZIP spans towns, and keep only the town. THE SYSTEM SHALL also offer a town type-ahead over all 351 municipalities, including common aliases such as "Manchester-by-the-Sea" and "North Attleborough."
 2. WHEN the user completes or skips onboarding THE SYSTEM SHALL show the home feed immediately, with no further form.
 3. IF the user cannot find their town THEN THE SYSTEM SHALL let them continue without one and show state documents only.
-4. THE SYSTEM SHALL run onboarding in three skippable steps: town; everyday facts as Yes, No, or Prefer not to say chips; topics as chips plus a type-to-match box; followed by a "Remember on this device" toggle that defaults to off.
+4. THE SYSTEM SHALL run onboarding one question per screen with a progress bar, back, and Skip: ZIP; one screen per everyday fact with Yes, No, and Prefer not to say; topics; a "Keep on this device" choice that defaults to not kept; and a done screen showing how many measures touch the user. Onboarding SHALL NOT include sign-in, account creation, or a name.
 5. THE SYSTEM SHALL ask only everyday facts in onboarding, and only those that at least one document in the user's feed reads. Sensitive facts (owns_firearm, buys_cannabis, public_defender_contact) SHALL be asked only inside the card that depends on them.
 6. THE SYSTEM SHALL record skipped facts so that a fact skipped in onboarding is asked at most once more, inside a card, and a fact declined there is not asked again.
 7. THE SYSTEM SHALL let the user reopen and edit the profile from the home feed and from any because chip or avatar badge.
