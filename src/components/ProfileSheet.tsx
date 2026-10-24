@@ -9,6 +9,8 @@ import { nextItem, personalization, type ChecklistItem } from "@/lib/engine/pers
 import { answerArea, confirmTopics, declineArea, type Profile } from "@/lib/engine/profile";
 import { LIFE_AREAS, TOPIC_DEFS, TOPIC_IDS, type FactId, type LifeAreaId } from "@/lib/vocab";
 import { AvatarRing } from "./AvatarRing";
+import { PlantCompanion } from "./plant/PlantCompanion";
+import { SIMULATED_COUNTS } from "./plant/simulated";
 import { SavedNote } from "./SavedNote";
 import { Glyph, Part } from "./icons";
 import { AreaStep, FACT_SHORT, TopicsStep, TownStep, townName } from "./profile-steps";
@@ -145,6 +147,14 @@ export function ProfileSheet({
             </Button>
           )}
         </div>
+
+        {/* The plant companion. Development only, with simulated counts, until it is
+            connected to real milestones. */}
+        {process.env.NODE_ENV === "development" && (
+          <div className="mt-4">
+            <PlantCompanion stage={3} counts={SIMULATED_COUNTS[3]} simulated />
+          </div>
+        )}
 
         {/* Name: used for the greeting on Home. Browser-only, like every answer. */}
         <section aria-labelledby="name-h" className="mt-4 rounded-lg bg-surface p-4 shadow-card">
