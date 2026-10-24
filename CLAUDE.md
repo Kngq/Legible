@@ -12,9 +12,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm run dev      # dev server at http://localhost:3000 (Turbopack)
 npm run build    # production build; also generates Next's global types (LayoutProps etc.)
 npm run lint     # eslint
+npm test         # vitest (pure logic and data checks)
+npm run lint:words  # banned-word check over app strings and src/data
+npm run data:build  # regenerate src/data/ballot-2026.json from data/questions.json + scripts/ballot-2026.content.ts
 ```
 
-No test runner is set up yet. `npx tsc --noEmit` fails on `LayoutProps` until `npm run build` or `next dev` has run once.
+`npx tsc --noEmit` fails on `LayoutProps` until `npm run build` or `next dev` has run once.
 
 Next.js 16 differs from older versions. Check `node_modules/next/dist/docs/` before using an API you are not sure about (see `AGENTS.md`).
 
@@ -26,7 +29,8 @@ Next.js 16 differs from older versions. Check `node_modules/next/dist/docs/` bef
 ## Structure
 
 - `src/app/` App Router. `page.tsx` is intentionally blank so far. Planned layout is in `.kiro/steering/structure.md`.
-- `data/questions.json` is machine-extracted from the official booklet by `data/extract_questions.py` (source text in `data/official/`). Review before shipping; the sec.state.ma.us HTML pages are bot-walled, so the PDF is the source of truth.
+- `data/questions.json` is machine-extracted from the official booklet by `data/extract_questions.py` (source text in `data/official/`; `IFV_2026_English.pages.json` is the per-page text used to locate quotes). The sec.state.ma.us HTML pages are bot-walled, so the PDF is the source of truth.
+- `scripts/ballot-2026.content.ts` holds the hand-authored short titles, rules, why sentences, and extra quotes. `npm run data:build` locates every quote word for word in the page text and fails if one is missing. Quotes stay `verified` until a person sets `reviewedBy` on the measure, which flips them to `reviewed`.
 - `docs/` original spec, decisions log, teammate pitch.
 - `.kiro/` Kiro steering and spec. Kiro is required by the event, so keep these current.
 

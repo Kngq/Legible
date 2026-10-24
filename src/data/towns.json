@@ -1,0 +1,2572 @@
+[
+ {
+  "id": "boston",
+  "name": "Boston",
+  "type": "city",
+  "county": "Suffolk",
+  "aliases": [
+   "Dorchester",
+   "Roxbury",
+   "Jamaica Plain",
+   "South Boston",
+   "East Boston",
+   "Charlestown",
+   "Brighton",
+   "Allston",
+   "Hyde Park",
+   "Roslindale",
+   "West Roxbury",
+   "Mattapan",
+   "Back Bay",
+   "Fenway",
+   "South End",
+   "Beacon Hill",
+   "North End"
+  ]
+ },
+ {
+  "id": "worcester",
+  "name": "Worcester",
+  "type": "city",
+  "county": "Worcester",
+  "aliases": [
+   "Tatnuck"
+  ]
+ },
+ {
+  "id": "springfield",
+  "name": "Springfield",
+  "type": "city",
+  "county": "Hampden",
+  "aliases": [
+   "Indian Orchard"
+  ]
+ },
+ {
+  "id": "cambridge",
+  "name": "Cambridge",
+  "type": "city",
+  "county": "Middlesex",
+  "aliases": [
+   "Cambridgeport",
+   "Harvard Square",
+   "Central Square"
+  ]
+ },
+ {
+  "id": "lowell",
+  "name": "Lowell",
+  "type": "city",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "brockton",
+  "name": "Brockton",
+  "type": "city",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "quincy",
+  "name": "Quincy",
+  "type": "city",
+  "county": "Norfolk",
+  "aliases": [
+   "Wollaston",
+   "Squantum"
+  ]
+ },
+ {
+  "id": "lynn",
+  "name": "Lynn",
+  "type": "city",
+  "county": "Essex",
+  "aliases": [
+   "East Lynn"
+  ]
+ },
+ {
+  "id": "new-bedford",
+  "name": "New Bedford",
+  "type": "city",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "fall-river",
+  "name": "Fall River",
+  "type": "city",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "lawrence",
+  "name": "Lawrence",
+  "type": "city",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "newton",
+  "name": "Newton",
+  "type": "city",
+  "county": "Middlesex",
+  "aliases": [
+   "Chestnut Hill",
+   "Newton Centre",
+   "Newton Center",
+   "West Newton",
+   "Waban",
+   "Auburndale",
+   "Newtonville",
+   "Newton Highlands"
+  ]
+ },
+ {
+  "id": "somerville",
+  "name": "Somerville",
+  "type": "city",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "framingham",
+  "name": "Framingham",
+  "type": "city",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "haverhill",
+  "name": "Haverhill",
+  "type": "city",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "malden",
+  "name": "Malden",
+  "type": "city",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "waltham",
+  "name": "Waltham",
+  "type": "city",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "brookline",
+  "name": "Brookline",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "revere",
+  "name": "Revere",
+  "type": "city",
+  "county": "Suffolk",
+  "aliases": []
+ },
+ {
+  "id": "plymouth",
+  "name": "Plymouth",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": [
+   "Manomet",
+   "Cedarville"
+  ]
+ },
+ {
+  "id": "medford",
+  "name": "Medford",
+  "type": "city",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "taunton",
+  "name": "Taunton",
+  "type": "city",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "weymouth",
+  "name": "Weymouth",
+  "type": "city",
+  "county": "Norfolk",
+  "aliases": [
+   "North Weymouth",
+   "South Weymouth",
+   "East Weymouth"
+  ]
+ },
+ {
+  "id": "chicopee",
+  "name": "Chicopee",
+  "type": "city",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "peabody",
+  "name": "Peabody",
+  "type": "city",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "methuen",
+  "name": "Methuen",
+  "type": "city",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "everett",
+  "name": "Everett",
+  "type": "city",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "barnstable",
+  "name": "Barnstable",
+  "type": "city",
+  "county": "Barnstable",
+  "aliases": [
+   "Hyannis",
+   "Osterville",
+   "Centerville",
+   "Cotuit",
+   "Marstons Mills"
+  ]
+ },
+ {
+  "id": "attleboro",
+  "name": "Attleboro",
+  "type": "city",
+  "county": "Bristol",
+  "aliases": [
+   "Attleborough"
+  ]
+ },
+ {
+  "id": "arlington",
+  "name": "Arlington",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "salem",
+  "name": "Salem",
+  "type": "city",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "pittsfield",
+  "name": "Pittsfield",
+  "type": "city",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "leominster",
+  "name": "Leominster",
+  "type": "city",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "beverly",
+  "name": "Beverly",
+  "type": "city",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "billerica",
+  "name": "Billerica",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "fitchburg",
+  "name": "Fitchburg",
+  "type": "city",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "marlborough",
+  "name": "Marlborough",
+  "type": "city",
+  "county": "Middlesex",
+  "aliases": [
+   "Marlboro"
+  ]
+ },
+ {
+  "id": "woburn",
+  "name": "Woburn",
+  "type": "city",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "westfield",
+  "name": "Westfield",
+  "type": "city",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "chelsea",
+  "name": "Chelsea",
+  "type": "city",
+  "county": "Suffolk",
+  "aliases": []
+ },
+ {
+  "id": "amherst",
+  "name": "Amherst",
+  "type": "city",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "braintree",
+  "name": "Braintree",
+  "type": "city",
+  "county": "Norfolk",
+  "aliases": [
+   "South Braintree"
+  ]
+ },
+ {
+  "id": "shrewsbury",
+  "name": "Shrewsbury",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "holyoke",
+  "name": "Holyoke",
+  "type": "city",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "natick",
+  "name": "Natick",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "andover",
+  "name": "Andover",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "chelmsford",
+  "name": "Chelmsford",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "watertown",
+  "name": "Watertown",
+  "type": "city",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "randolph",
+  "name": "Randolph",
+  "type": "city",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "lexington",
+  "name": "Lexington",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "dartmouth",
+  "name": "Dartmouth",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": [
+   "North Dartmouth",
+   "South Dartmouth"
+  ]
+ },
+ {
+  "id": "franklin",
+  "name": "Franklin",
+  "type": "city",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "dracut",
+  "name": "Dracut",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "falmouth",
+  "name": "Falmouth",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": [
+   "Woods Hole",
+   "East Falmouth",
+   "North Falmouth"
+  ]
+ },
+ {
+  "id": "needham",
+  "name": "Needham",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "norwood",
+  "name": "Norwood",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "tewksbury",
+  "name": "Tewksbury",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "north-andover",
+  "name": "North Andover",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "north-attleborough",
+  "name": "North Attleborough",
+  "type": "city",
+  "county": "Bristol",
+  "aliases": [
+   "North Attleboro"
+  ]
+ },
+ {
+  "id": "milford",
+  "name": "Milford",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "melrose",
+  "name": "Melrose",
+  "type": "city",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "gloucester",
+  "name": "Gloucester",
+  "type": "city",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "northampton",
+  "name": "Northampton",
+  "type": "city",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "wellesley",
+  "name": "Wellesley",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "stoughton",
+  "name": "Stoughton",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "west-springfield",
+  "name": "West Springfield",
+  "type": "city",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "agawam",
+  "name": "Agawam",
+  "type": "city",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "bridgewater",
+  "name": "Bridgewater",
+  "type": "city",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "milton",
+  "name": "Milton",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "saugus",
+  "name": "Saugus",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "danvers",
+  "name": "Danvers",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "belmont",
+  "name": "Belmont",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "wakefield",
+  "name": "Wakefield",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "walpole",
+  "name": "Walpole",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "burlington",
+  "name": "Burlington",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "marshfield",
+  "name": "Marshfield",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "reading",
+  "name": "Reading",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "dedham",
+  "name": "Dedham",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "easton",
+  "name": "Easton",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": [
+   "North Easton",
+   "South Easton"
+  ]
+ },
+ {
+  "id": "yarmouth",
+  "name": "Yarmouth",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": [
+   "South Yarmouth",
+   "West Yarmouth"
+  ]
+ },
+ {
+  "id": "westford",
+  "name": "Westford",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "canton",
+  "name": "Canton",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "hingham",
+  "name": "Hingham",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "middleborough",
+  "name": "Middleborough",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": [
+   "Middleboro"
+  ]
+ },
+ {
+  "id": "acton",
+  "name": "Acton",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "mansfield",
+  "name": "Mansfield",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "wilmington",
+  "name": "Wilmington",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "wareham",
+  "name": "Wareham",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": [
+   "Onset"
+  ]
+ },
+ {
+  "id": "stoneham",
+  "name": "Stoneham",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "winchester",
+  "name": "Winchester",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "westborough",
+  "name": "Westborough",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": [
+   "Westboro"
+  ]
+ },
+ {
+  "id": "gardner",
+  "name": "Gardner",
+  "type": "city",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "ludlow",
+  "name": "Ludlow",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "bourne",
+  "name": "Bourne",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": [
+   "Buzzards Bay",
+   "Sagamore",
+   "Pocasset"
+  ]
+ },
+ {
+  "id": "marblehead",
+  "name": "Marblehead",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "sandwich",
+  "name": "Sandwich",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": []
+ },
+ {
+  "id": "hudson",
+  "name": "Hudson",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "holden",
+  "name": "Holden",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "grafton",
+  "name": "Grafton",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "winthrop",
+  "name": "Winthrop",
+  "type": "city",
+  "county": "Suffolk",
+  "aliases": []
+ },
+ {
+  "id": "norton",
+  "name": "Norton",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "scituate",
+  "name": "Scituate",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "sudbury",
+  "name": "Sudbury",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "ashland",
+  "name": "Ashland",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "hopkinton",
+  "name": "Hopkinton",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "foxborough",
+  "name": "Foxborough",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": [
+   "Foxboro"
+  ]
+ },
+ {
+  "id": "sharon",
+  "name": "Sharon",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "concord",
+  "name": "Concord",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "pembroke",
+  "name": "Pembroke",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "somerset",
+  "name": "Somerset",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "newburyport",
+  "name": "Newburyport",
+  "type": "city",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "south-hadley",
+  "name": "South Hadley",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "rockland",
+  "name": "Rockland",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "webster",
+  "name": "Webster",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "greenfield",
+  "name": "Greenfield",
+  "type": "city",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "southbridge",
+  "name": "Southbridge",
+  "type": "city",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "amesbury",
+  "name": "Amesbury",
+  "type": "city",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "swansea",
+  "name": "Swansea",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "abington",
+  "name": "Abington",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "bellingham",
+  "name": "Bellingham",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "auburn",
+  "name": "Auburn",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "east-longmeadow",
+  "name": "East Longmeadow",
+  "type": "city",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "westport",
+  "name": "Westport",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "northbridge",
+  "name": "Northbridge",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "westwood",
+  "name": "Westwood",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "easthampton",
+  "name": "Easthampton",
+  "type": "city",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "duxbury",
+  "name": "Duxbury",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "fairhaven",
+  "name": "Fairhaven",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "longmeadow",
+  "name": "Longmeadow",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "northborough",
+  "name": "Northborough",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": [
+   "Northboro"
+  ]
+ },
+ {
+  "id": "north-reading",
+  "name": "North Reading",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "seekonk",
+  "name": "Seekonk",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "clinton",
+  "name": "Clinton",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "belchertown",
+  "name": "Belchertown",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "raynham",
+  "name": "Raynham",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "whitman",
+  "name": "Whitman",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "swampscott",
+  "name": "Swampscott",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "mashpee",
+  "name": "Mashpee",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": []
+ },
+ {
+  "id": "holliston",
+  "name": "Holliston",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "hanover",
+  "name": "Hanover",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "dennis",
+  "name": "Dennis",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": [
+   "Dennisport",
+   "Dennis Port",
+   "East Dennis"
+  ]
+ },
+ {
+  "id": "wilbraham",
+  "name": "Wilbraham",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": [
+   "North Wilbraham"
+  ]
+ },
+ {
+  "id": "east-bridgewater",
+  "name": "East Bridgewater",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "bedford",
+  "name": "Bedford",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "nantucket",
+  "name": "Nantucket",
+  "type": "town",
+  "county": "Nantucket",
+  "aliases": []
+ },
+ {
+  "id": "uxbridge",
+  "name": "Uxbridge",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "wayland",
+  "name": "Wayland",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "millbury",
+  "name": "Millbury",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "ipswich",
+  "name": "Ipswich",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "kingston",
+  "name": "Kingston",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "harwich",
+  "name": "Harwich",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": []
+ },
+ {
+  "id": "oxford",
+  "name": "Oxford",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "charlton",
+  "name": "Charlton",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "medway",
+  "name": "Medway",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "lynnfield",
+  "name": "Lynnfield",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "north-adams",
+  "name": "North Adams",
+  "type": "city",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "medfield",
+  "name": "Medfield",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "rehoboth",
+  "name": "Rehoboth",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "palmer",
+  "name": "Palmer",
+  "type": "city",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "tyngsborough",
+  "name": "Tyngsborough",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": [
+   "Tyngsboro"
+  ]
+ },
+ {
+  "id": "wrentham",
+  "name": "Wrentham",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "spencer",
+  "name": "Spencer",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "athol",
+  "name": "Athol",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "dudley",
+  "name": "Dudley",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "weston",
+  "name": "Weston",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "lunenburg",
+  "name": "Lunenburg",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "norfolk",
+  "name": "Norfolk",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "carver",
+  "name": "Carver",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "pepperell",
+  "name": "Pepperell",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "lakeville",
+  "name": "Lakeville",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "holbrook",
+  "name": "Holbrook",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "norwell",
+  "name": "Norwell",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "groton",
+  "name": "Groton",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "leicester",
+  "name": "Leicester",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "maynard",
+  "name": "Maynard",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "hanson",
+  "name": "Hanson",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "acushnet",
+  "name": "Acushnet",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "southborough",
+  "name": "Southborough",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": [
+   "Southboro"
+  ]
+ },
+ {
+  "id": "winchendon",
+  "name": "Winchendon",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "brewster",
+  "name": "Brewster",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": []
+ },
+ {
+  "id": "littleton",
+  "name": "Littleton",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "hull",
+  "name": "Hull",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "ware",
+  "name": "Ware",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "plainville",
+  "name": "Plainville",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "sturbridge",
+  "name": "Sturbridge",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "middleton",
+  "name": "Middleton",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "sutton",
+  "name": "Sutton",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "salisbury",
+  "name": "Salisbury",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "southwick",
+  "name": "Southwick",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "blackstone",
+  "name": "Blackstone",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "freetown",
+  "name": "Freetown",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "townsend",
+  "name": "Townsend",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "rutland",
+  "name": "Rutland",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "douglas",
+  "name": "Douglas",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "montague",
+  "name": "Montague",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": [
+   "Turners Falls"
+  ]
+ },
+ {
+  "id": "ayer",
+  "name": "Ayer",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "georgetown",
+  "name": "Georgetown",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "millis",
+  "name": "Millis",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "lancaster",
+  "name": "Lancaster",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "cohasset",
+  "name": "Cohasset",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "westminster",
+  "name": "Westminster",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "boxford",
+  "name": "Boxford",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "adams",
+  "name": "Adams",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "monson",
+  "name": "Monson",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "templeton",
+  "name": "Templeton",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "dighton",
+  "name": "Dighton",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "upton",
+  "name": "Upton",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "sterling",
+  "name": "Sterling",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "west-boylston",
+  "name": "West Boylston",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "halifax",
+  "name": "Halifax",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "west-bridgewater",
+  "name": "West Bridgewater",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "orange",
+  "name": "Orange",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "hamilton",
+  "name": "Hamilton",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "williamstown",
+  "name": "Williamstown",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "shirley",
+  "name": "Shirley",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "stow",
+  "name": "Stow",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "great-barrington",
+  "name": "Great Barrington",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": [
+   "Housatonic"
+  ]
+ },
+ {
+  "id": "lincoln",
+  "name": "Lincoln",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "rockport",
+  "name": "Rockport",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "harvard",
+  "name": "Harvard",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "berkley",
+  "name": "Berkley",
+  "type": "town",
+  "county": "Bristol",
+  "aliases": []
+ },
+ {
+  "id": "groveland",
+  "name": "Groveland",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "merrimac",
+  "name": "Merrimac",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "newbury",
+  "name": "Newbury",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "chatham",
+  "name": "Chatham",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": []
+ },
+ {
+  "id": "topsfield",
+  "name": "Topsfield",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "mattapoisett",
+  "name": "Mattapoisett",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "dalton",
+  "name": "Dalton",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "ashburnham",
+  "name": "Ashburnham",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "orleans",
+  "name": "Orleans",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": []
+ },
+ {
+  "id": "mendon",
+  "name": "Mendon",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "southampton",
+  "name": "Southampton",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "rowley",
+  "name": "Rowley",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "granby",
+  "name": "Granby",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "hopedale",
+  "name": "Hopedale",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "dover",
+  "name": "Dover",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "lee",
+  "name": "Lee",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "eastham",
+  "name": "Eastham",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": []
+ },
+ {
+  "id": "rochester",
+  "name": "Rochester",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "bolton",
+  "name": "Bolton",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "barre",
+  "name": "Barre",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "boxborough",
+  "name": "Boxborough",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": [
+   "Boxboro"
+  ]
+ },
+ {
+  "id": "manchester-by-the-sea",
+  "name": "Manchester-by-the-Sea",
+  "type": "town",
+  "county": "Essex",
+  "aliases": [
+   "Manchester"
+  ]
+ },
+ {
+  "id": "marion",
+  "name": "Marion",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "oak-bluffs",
+  "name": "Oak Bluffs",
+  "type": "town",
+  "county": "Dukes",
+  "aliases": []
+ },
+ {
+  "id": "hadley",
+  "name": "Hadley",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "carlisle",
+  "name": "Carlisle",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "edgartown",
+  "name": "Edgartown",
+  "type": "town",
+  "county": "Dukes",
+  "aliases": []
+ },
+ {
+  "id": "lenox",
+  "name": "Lenox",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "deerfield",
+  "name": "Deerfield",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "paxton",
+  "name": "Paxton",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "wenham",
+  "name": "Wenham",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "warren",
+  "name": "Warren",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "hampden",
+  "name": "Hampden",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "boylston",
+  "name": "Boylston",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "tisbury",
+  "name": "Tisbury",
+  "type": "town",
+  "county": "Dukes",
+  "aliases": [
+   "Vineyard Haven"
+  ]
+ },
+ {
+  "id": "avon",
+  "name": "Avon",
+  "type": "town",
+  "county": "Norfolk",
+  "aliases": []
+ },
+ {
+  "id": "north-brookfield",
+  "name": "North Brookfield",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "west-newbury",
+  "name": "West Newbury",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "sherborn",
+  "name": "Sherborn",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "hubbardston",
+  "name": "Hubbardston",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "west-brookfield",
+  "name": "West Brookfield",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "brimfield",
+  "name": "Brimfield",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "essex",
+  "name": "Essex",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "provincetown",
+  "name": "Provincetown",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": []
+ },
+ {
+  "id": "sunderland",
+  "name": "Sunderland",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "wellfleet",
+  "name": "Wellfleet",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": []
+ },
+ {
+  "id": "west-tisbury",
+  "name": "West Tisbury",
+  "type": "town",
+  "county": "Dukes",
+  "aliases": []
+ },
+ {
+  "id": "princeton",
+  "name": "Princeton",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "brookfield",
+  "name": "Brookfield",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "dunstable",
+  "name": "Dunstable",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "hatfield",
+  "name": "Hatfield",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "nahant",
+  "name": "Nahant",
+  "type": "town",
+  "county": "Essex",
+  "aliases": []
+ },
+ {
+  "id": "sheffield",
+  "name": "Sheffield",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "cheshire",
+  "name": "Cheshire",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "ashby",
+  "name": "Ashby",
+  "type": "town",
+  "county": "Middlesex",
+  "aliases": []
+ },
+ {
+  "id": "millville",
+  "name": "Millville",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "berlin",
+  "name": "Berlin",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "lanesborough",
+  "name": "Lanesborough",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": [
+   "Lanesboro"
+  ]
+ },
+ {
+  "id": "plympton",
+  "name": "Plympton",
+  "type": "town",
+  "county": "Plymouth",
+  "aliases": []
+ },
+ {
+  "id": "northfield",
+  "name": "Northfield",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "hardwick",
+  "name": "Hardwick",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "holland",
+  "name": "Holland",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "williamsburg",
+  "name": "Williamsburg",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "truro",
+  "name": "Truro",
+  "type": "town",
+  "county": "Barnstable",
+  "aliases": []
+ },
+ {
+  "id": "east-brookfield",
+  "name": "East Brookfield",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "bernardston",
+  "name": "Bernardston",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "huntington",
+  "name": "Huntington",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "stockbridge",
+  "name": "Stockbridge",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "becket",
+  "name": "Becket",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "hinsdale",
+  "name": "Hinsdale",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "shelburne",
+  "name": "Shelburne",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "leverett",
+  "name": "Leverett",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "oakham",
+  "name": "Oakham",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "wales",
+  "name": "Wales",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "buckland",
+  "name": "Buckland",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "conway",
+  "name": "Conway",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "phillipston",
+  "name": "Phillipston",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "shutesbury",
+  "name": "Shutesbury",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "ashfield",
+  "name": "Ashfield",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "erving",
+  "name": "Erving",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "clarksburg",
+  "name": "Clarksburg",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "russell",
+  "name": "Russell",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "otis",
+  "name": "Otis",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "westhampton",
+  "name": "Westhampton",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "whately",
+  "name": "Whately",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "colrain",
+  "name": "Colrain",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "gill",
+  "name": "Gill",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "granville",
+  "name": "Granville",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "new-marlborough",
+  "name": "New Marlborough",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "richmond",
+  "name": "Richmond",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "egremont",
+  "name": "Egremont",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "west-stockbridge",
+  "name": "West Stockbridge",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "pelham",
+  "name": "Pelham",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "royalston",
+  "name": "Royalston",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "chester",
+  "name": "Chester",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "blandford",
+  "name": "Blandford",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "chilmark",
+  "name": "Chilmark",
+  "type": "town",
+  "county": "Dukes",
+  "aliases": []
+ },
+ {
+  "id": "petersham",
+  "name": "Petersham",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "worthington",
+  "name": "Worthington",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "chesterfield",
+  "name": "Chesterfield",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "charlemont",
+  "name": "Charlemont",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "monterey",
+  "name": "Monterey",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "new-braintree",
+  "name": "New Braintree",
+  "type": "town",
+  "county": "Worcester",
+  "aliases": []
+ },
+ {
+  "id": "sandisfield",
+  "name": "Sandisfield",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "new-salem",
+  "name": "New Salem",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "goshen",
+  "name": "Goshen",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "wendell",
+  "name": "Wendell",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "windsor",
+  "name": "Windsor",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "cummington",
+  "name": "Cummington",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "montgomery",
+  "name": "Montgomery",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "peru",
+  "name": "Peru",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "warwick",
+  "name": "Warwick",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "hancock",
+  "name": "Hancock",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "leyden",
+  "name": "Leyden",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "heath",
+  "name": "Heath",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "florida",
+  "name": "Florida",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "savoy",
+  "name": "Savoy",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "plainfield",
+  "name": "Plainfield",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "washington",
+  "name": "Washington",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "alford",
+  "name": "Alford",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "tolland",
+  "name": "Tolland",
+  "type": "town",
+  "county": "Hampden",
+  "aliases": []
+ },
+ {
+  "id": "aquinnah",
+  "name": "Aquinnah",
+  "type": "town",
+  "county": "Dukes",
+  "aliases": []
+ },
+ {
+  "id": "tyringham",
+  "name": "Tyringham",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "rowe",
+  "name": "Rowe",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "middlefield",
+  "name": "Middlefield",
+  "type": "town",
+  "county": "Hampshire",
+  "aliases": []
+ },
+ {
+  "id": "hawley",
+  "name": "Hawley",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "new-ashford",
+  "name": "New Ashford",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": []
+ },
+ {
+  "id": "mount-washington",
+  "name": "Mount Washington",
+  "type": "town",
+  "county": "Berkshire",
+  "aliases": [
+   "Mt Washington",
+   "Mt. Washington"
+  ]
+ },
+ {
+  "id": "monroe",
+  "name": "Monroe",
+  "type": "town",
+  "county": "Franklin",
+  "aliases": []
+ },
+ {
+  "id": "gosnold",
+  "name": "Gosnold",
+  "type": "town",
+  "county": "Dukes",
+  "aliases": []
+ }
+]

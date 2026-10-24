@@ -3,23 +3,23 @@
 Owner hints: A is content and logic, B is screens. Stretch tasks are marked optional and are cut first.
 
 - [ ] 1. Foundations
-  - [ ] 1.1 Add Vitest with an `npm test` script and a sample passing test
+  - [x] 1.1 Add Vitest with an `npm test` script and a sample passing test
     - _Requirements: 7.3, 12.1_
-  - [ ] 1.2 Create `src/lib/vocab` with directions, life facts (question text, avatar part), topics (label, avatar part, word list), and banned words
+  - [x] 1.2 Create `src/lib/vocab` with directions, life facts (question text, avatar part), topics (label, avatar part, word list), and banned words
     - _Requirements: 3.5, 4.1, 4.2, 7.1_
-  - [ ] 1.3 Write `npm run lint:words` to scan app strings, `src/data`, and `public/demo`, skipping verbatim quote fields
+  - [x] 1.3 Write `npm run lint:words` to scan app strings, `src/data`, and `public/demo`, skipping verbatim quote fields
     - _Requirements: 7.3, 13.2, 15.3_
-  - [ ] 1.4 Add the bundled list of 351 municipalities with aliases
+  - [x] 1.4 Add the bundled list of 351 municipalities with aliases
     - _Requirements: 1.1_
 
 - [ ] 2. Reviewed ballot data (A)
-  - [ ] 2.1 Write a script converting `data/questions.json` into `src/data/ballot-2026.json` in the Document format
+  - [x] 2.1 Write a script converting `data/questions.json` into `src/data/ballot-2026.json` in the Document format
     - _Requirements: 2.1_
-  - [ ] 2.2 Fill short titles, rules, why sentences with quote ids, ask facts, and topics using the draft rule table in design.md
+  - [x] 2.2 Fill short titles, rules, why sentences with quote ids, ask facts, and topics using the draft rule table in design.md
     - _Requirements: 3.1, 6.3, 8.1_
   - [ ] 2.3 Check every quote against the official PDF and mark it reviewed
     - _Requirements: 2.2_
-  - [ ] 2.4 Add data tests: every why sentence cites an existing quote; Question 9 YES says the law stays in place
+  - [x] 2.4 Add data tests: every why sentence cites an existing quote; Question 9 YES says the law stays in place
     - _Requirements: 2.3, 8.1_
 
 - [ ] 3. Personalization engine (A)

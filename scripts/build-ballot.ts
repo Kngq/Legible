@@ -1,0 +1,160 @@
+// Convert data/questions.json + hand-authored content into src/data/ballot-2026.json
+// in the DocumentData format. Every quote is located word for word in the official
+// booklet's page text; the build fails if any quote is missing.
+//
+//   npx tsx scripts/build-ballot.ts
+import fs from "node:fs";
+import path from "node:path";
+import type { DocumentData, Measure, Quote, WhySentence } from "@/lib/engine/types";
+import { findBannedWords } from "@/lib/vocab";
+import { locateQuote, normalize } from "@/lib/verify/normalize";
+import { CONTENT } from "./ballot-2026.content";
+
+interface RawQuestion {
+  id: number;
+  official_title: string;
+  type: "initiative" | "referendum";
+  ag_summary: string;
+  yes_means: string;
+  no_means: string;
+  fiscal_statement: string | null;
+  full_text_url: string;
+}
+
+const root = path.resolve(__dirname, "..");
+const raw: RawQuestion[] = JSON.parse(
+  fs.readFileSync(path.join(root, "data/questions.json"), "utf8"),
+);
+const pages: string[] = JSON.parse(
+  fs.readFileSync(path.join(root, "data/official/IFV_2026_English.pages.json"), "utf8"),
+);
+const normPages = pages.map(normalize);
+
+const errors: string[] = [];
+
+/** The extractor cut some summaries at a page-number line. Re-read the summary from its page. */
+function repairSummary(q: RawQuestion): string {
+  const head = normalize(q.ag_summary).slice(0, 80);
+  for (let i = 0; i < normPages.length; i++) {
+    const start = normPages[i].indexOf(head);
+    if (start < 0) continue;
+    const marker = `QUESTION ${q.id}:`;
+    const end = normPages[i].indexOf(marker, start);
+    if (end > start) return normPages[i].slice(start, end).trim();
+  }
+  errors.push(`Q${q.id}: summary start not found in any page`);
+  return normalize(q.ag_summary);
+}
+
+/** Read the fiscal statement from the question's own pages: after the A&F credit, before the arguments. */
+function readFiscal(q: RawQuestion, summaryPage: number | undefined): string | null {
+  if (!summaryPage) return null;
+  for (const i of [summaryPage - 1, summaryPage]) {
+    const page = normPages[i] ?? "";
+    const credit = "Administration and Finance.";
+    const start = page.indexOf(credit);
+    if (start < 0) continue;
+    const body = page.slice(start + credit.length);
+    const end = Math.min(...["ARGUMENTS", "IN FAVOR", "QUESTION "].map((m) => body.indexOf(m)).filter((n) => n >= 0));
+    const text = (Number.isFinite(end) ? body.slice(0, end) : body).trim();
+    if (text.length > 20) return text;
+  }
+  errors.push(`Q${q.id}: fiscal statement not found on pages ${summaryPage}-${summaryPage + 1}`);
+  return null;
+}
+
+function makeQuote(id: string, text: string, locator: string, reviewed: boolean, hintPage?: number): Quote {
+  const where = locateQuote(text, pages, hintPage);
+  if (!where) errors.push(`${id}: quote not found word for word: "${text.slice(0, 70)}..."`);
+  return {
+    id,
+    text: normalize(text),
+    page: where?.page,
+    locator,
+    status: where ? (reviewed ? "reviewed" : "verified") : "failed",
+  };
+}
+
+const measures: Measure[] = CONTENT.map((c) => {
+  const q = raw.find((r) => r.id === c.number);
+  if (!q) throw new Error(`No raw question ${c.number}`);
+  const p = `q${c.number}`;
+  const reviewed = Boolean(c.reviewedBy);
+
+  const summary = makeQuote(`${p}-summary`, repairSummary(q), "AG summary", reviewed);
+  const hint = summary.page;
+  const quotes: Record<string, Quote> = {
+    summary,
+    yes: makeQuote(`${p}-yes`, q.yes_means, "YES statement", reviewed, hint),
+    no: makeQuote(`${p}-no`, q.no_means, "NO statement", reviewed, hint),
+  };
+  const fiscal = readFiscal(q, hint);
+  if (fiscal) quotes.fiscal = makeQuote(`${p}-fiscal`, fiscal, "Fiscal statement", reviewed, hint);
+  for (const e of c.quotes) quotes[e.id] = makeQuote(`${p}-${e.id}`, e.text, e.locator, reviewed, hint);
+
+  const why = (w: { text: string; quote: string }, where: string): WhySentence => {
+    if (!quotes[w.quote]) errors.push(`${p} ${where}: cites unknown quote "${w.quote}"`);
+    const banned = findBannedWords(w.text);
+    if (banned.length) errors.push(`${p} ${where}: banned words ${banned.join(", ")}`);
+    return { text: w.text, quoteId: quotes[w.quote]?.id ?? w.quote };
+  };
+  for (const s of [c.title]) {
+    const banned = findBannedWords(s);
+    if (banned.length) errors.push(`${p} title: banned words ${banned.join(", ")}`);
+  }
+  if (c.overview.length > 2) errors.push(`${p}: overview has more than 2 sentences`);
+
+  return {
+    id: `ballot-2026-${p}`,
+    number: String(c.number),
+    title: c.title,
+    officialTitle: q.official_title,
+    kind: q.type,
+    summary: quotes.summary,
+    outcomes: { yes: quotes.yes, no: quotes.no },
+    fiscal: quotes.fiscal,
+    appliesToEveryone: c.appliesToEveryone,
+    everyoneDirection: c.everyoneDirection,
+    overview: c.overview.map((w, i) => why(w, `overview[${i}]`)),
+    rules: c.rules.map((r) => {
+      if (r.why.length > 2) errors.push(`${p} rule ${r.fact}: more than 2 why sentences`);
+      return {
+        fact: r.fact,
+        ...(r.when === false ? { when: false } : {}),
+        direction: r.direction,
+        why: r.why.map((w, i) => why(w, `rule ${r.fact} why[${i}]`)),
+      };
+    }),
+    askFacts: c.askFacts,
+    topics: c.topics,
+    quotes: Object.values(quotes),
+    sourceUrl: q.full_text_url,
+  };
+});
+
+const allReviewed = CONTENT.every((c) => c.reviewedBy);
+const doc: DocumentData = {
+  id: "ballot-2026",
+  title: "Massachusetts State Election Ballot Questions, November 3, 2026",
+  place: { kind: "state", name: "Massachusetts" },
+  date: "2026-11-03",
+  source: {
+    name: "Information for Voters 2026, Secretary of the Commonwealth. Summaries by the Attorney General; YES and NO statements by the Attorney General and the Secretary jointly.",
+    url: "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-Information-for-voters/",
+  },
+  provenance: allReviewed ? "reviewed" : "verified",
+  measures,
+};
+
+if (errors.length) {
+  console.error("build-ballot failed:\n  " + errors.join("\n  "));
+  process.exit(1);
+}
+
+const out = path.join(root, "src/data/ballot-2026.json");
+fs.writeFileSync(out, JSON.stringify(doc, null, 2) + "\n");
+const nQuotes = measures.reduce((n, m) => n + m.quotes.length, 0);
+console.log(`wrote ${path.relative(root, out)}: ${measures.length} measures, ${nQuotes} quotes located, provenance=${doc.provenance}`);
+for (const m of measures) {
+  console.log(`  Q${m.number} p${m.summary.page} ${m.title} | ${m.quotes.map((q) => `${q.id.split("-")[1]}:p${q.page}`).join(" ")}`);
+}

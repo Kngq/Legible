@@ -1,0 +1,1039 @@
+{
+  "id": "ballot-2026",
+  "title": "Massachusetts State Election Ballot Questions, November 3, 2026",
+  "place": {
+    "kind": "state",
+    "name": "Massachusetts"
+  },
+  "date": "2026-11-03",
+  "source": {
+    "name": "Information for Voters 2026, Secretary of the Commonwealth. Summaries by the Attorney General; YES and NO statements by the Attorney General and the Secretary jointly.",
+    "url": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-Information-for-voters/"
+  },
+  "provenance": "verified",
+  "measures": [
+    {
+      "id": "ballot-2026-q1",
+      "number": "1",
+      "title": "Public records for the Legislature and Governor",
+      "officialTitle": "Expanding the Public Records Law",
+      "kind": "initiative",
+      "summary": {
+        "id": "q1-summary",
+        "text": "This proposed law would make most records held by the Legislature and the Office of the Governor public records under the Massachusetts Public Records Law. This proposed law would exempt documents related to the development of public policy and communications between legislators and their constituents, if those communications are reasonably related to a constituent's request for assistance in obtaining government-provided benefits or services or interacting with a government agency.",
+        "page": 6,
+        "locator": "AG summary",
+        "status": "verified"
+      },
+      "outcomes": {
+        "yes": {
+          "id": "q1-yes",
+          "text": "A YES VOTE would make most records held by the Legislature and the Office of the Governor public records under the Massachusetts Public Records Law.",
+          "page": 6,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        "no": {
+          "id": "q1-no",
+          "text": "A NO VOTE would make no change to the Massachusetts Public Records Law.",
+          "page": 6,
+          "locator": "NO statement",
+          "status": "verified"
+        }
+      },
+      "fiscal": {
+        "id": "q1-fiscal",
+        "text": "The proposed law has no discernible material fiscal consequences for state and municipal government finances.",
+        "page": 6,
+        "locator": "Fiscal statement",
+        "status": "verified"
+      },
+      "appliesToEveryone": true,
+      "everyoneDirection": "who_decides",
+      "overview": [
+        {
+          "text": "Most records of the Legislature and the Governor's office would become public records.",
+          "quoteId": "q1-c1"
+        },
+        {
+          "text": "Policy drafts and constituent requests for help with benefits or agencies would stay exempt.",
+          "quoteId": "q1-c2"
+        }
+      ],
+      "rules": [],
+      "askFacts": [],
+      "topics": [
+        "government_transparency"
+      ],
+      "quotes": [
+        {
+          "id": "q1-summary",
+          "text": "This proposed law would make most records held by the Legislature and the Office of the Governor public records under the Massachusetts Public Records Law. This proposed law would exempt documents related to the development of public policy and communications between legislators and their constituents, if those communications are reasonably related to a constituent's request for assistance in obtaining government-provided benefits or services or interacting with a government agency.",
+          "page": 6,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q1-yes",
+          "text": "A YES VOTE would make most records held by the Legislature and the Office of the Governor public records under the Massachusetts Public Records Law.",
+          "page": 6,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        {
+          "id": "q1-no",
+          "text": "A NO VOTE would make no change to the Massachusetts Public Records Law.",
+          "page": 6,
+          "locator": "NO statement",
+          "status": "verified"
+        },
+        {
+          "id": "q1-fiscal",
+          "text": "The proposed law has no discernible material fiscal consequences for state and municipal government finances.",
+          "page": 6,
+          "locator": "Fiscal statement",
+          "status": "verified"
+        },
+        {
+          "id": "q1-c1",
+          "text": "make most records held by the Legislature and the Office of the Governor public records under the Massachusetts Public Records Law",
+          "page": 6,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q1-c2",
+          "text": "exempt documents related to the development of public policy and communications between legislators and their constituents",
+          "page": 6,
+          "locator": "AG summary",
+          "status": "verified"
+        }
+      ],
+      "sourceUrl": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-Information-for-voters/2026-ballot-question1.htm"
+    },
+    {
+      "id": "ballot-2026-q2",
+      "number": "2",
+      "title": "Public defender union",
+      "officialTitle": "Collective Bargaining for CPCS Employees",
+      "kind": "initiative",
+      "summary": {
+        "id": "q2-summary",
+        "text": "This proposed law would specify that employees of the Committee for Public Counsel Services (\"CPCS\") are permitted to engage in collective bargaining with their employer. It would also require CPCS, after executing a collective bargaining agreement, to request the appropriation necessary to fund such agreement from the Governor.",
+        "page": 8,
+        "locator": "AG summary",
+        "status": "verified"
+      },
+      "outcomes": {
+        "yes": {
+          "id": "q2-yes",
+          "text": "A YES VOTE would specify that Committee for Public Counsel Services employees may form a union to collectively bargain with their employer.",
+          "page": 8,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        "no": {
+          "id": "q2-no",
+          "text": "A NO VOTE would make no change to the law governing labor relations for Committee for Public Counsel Service employees.",
+          "page": 8,
+          "locator": "NO statement",
+          "status": "verified"
+        }
+      },
+      "fiscal": {
+        "id": "q2-fiscal",
+        "text": "The proposed law may have an impact on state finances. CPCS receives its funding, in part, from state government appropriations. The fiscal impact of the proposed law is difficult to project due to the uncertainty regarding the outcomes of any such collective bargaining by CPCS employees.",
+        "page": 8,
+        "locator": "Fiscal statement",
+        "status": "verified"
+      },
+      "appliesToEveryone": false,
+      "overview": [
+        {
+          "text": "Staff of the Committee for Public Counsel Services, the state's public defender agency, could bargain collectively.",
+          "quoteId": "q2-c1"
+        }
+      ],
+      "rules": [
+        {
+          "fact": "public_defender_contact",
+          "direction": "rule_change",
+          "why": [
+            {
+              "text": "The lawyers and staff who represent people through the Committee for Public Counsel Services could form a union.",
+              "quoteId": "q2-yes"
+            },
+            {
+              "text": "After a contract is signed, the agency would have to ask the Governor for the money to fund it.",
+              "quoteId": "q2-c2"
+            }
+          ]
+        },
+        {
+          "fact": "state_employee",
+          "direction": "rule_change",
+          "why": [
+            {
+              "text": "This changes the labor rules for one group of state employees, the staff of the public defender agency.",
+              "quoteId": "q2-no"
+            }
+          ]
+        }
+      ],
+      "askFacts": [
+        "public_defender_contact",
+        "state_employee"
+      ],
+      "topics": [
+        "labor",
+        "criminal_justice"
+      ],
+      "quotes": [
+        {
+          "id": "q2-summary",
+          "text": "This proposed law would specify that employees of the Committee for Public Counsel Services (\"CPCS\") are permitted to engage in collective bargaining with their employer. It would also require CPCS, after executing a collective bargaining agreement, to request the appropriation necessary to fund such agreement from the Governor.",
+          "page": 8,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q2-yes",
+          "text": "A YES VOTE would specify that Committee for Public Counsel Services employees may form a union to collectively bargain with their employer.",
+          "page": 8,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        {
+          "id": "q2-no",
+          "text": "A NO VOTE would make no change to the law governing labor relations for Committee for Public Counsel Service employees.",
+          "page": 8,
+          "locator": "NO statement",
+          "status": "verified"
+        },
+        {
+          "id": "q2-fiscal",
+          "text": "The proposed law may have an impact on state finances. CPCS receives its funding, in part, from state government appropriations. The fiscal impact of the proposed law is difficult to project due to the uncertainty regarding the outcomes of any such collective bargaining by CPCS employees.",
+          "page": 8,
+          "locator": "Fiscal statement",
+          "status": "verified"
+        },
+        {
+          "id": "q2-c1",
+          "text": "employees of the Committee for Public Counsel Services (\"CPCS\") are permitted to engage in collective bargaining with their employer",
+          "page": 8,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q2-c2",
+          "text": "require CPCS, after executing a collective bargaining agreement, to request the appropriation necessary to fund such agreement from the Governor",
+          "page": 8,
+          "locator": "AG summary",
+          "status": "verified"
+        }
+      ],
+      "sourceUrl": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-Information-for-voters/2026-ballot-question2.htm"
+    },
+    {
+      "id": "ballot-2026-q3",
+      "number": "3",
+      "title": "Single all-candidate primary",
+      "officialTitle": "State Primary Elections",
+      "kind": "initiative",
+      "summary": {
+        "id": "q3-summary",
+        "text": "This proposed law would eliminate political party primaries for state elections and instead establish a system where there would be a single, all-party primary in which all candidates, regardless of their party affiliation, would be listed on one ballot, and voters could vote for any candidate on the ballot. The two candidates receiving the most votes in the primary would advance to the general election ballot. This proposed law would require candidates for governor and lieutenant governor to run and be listed jointly on the ballot in the primary. This proposed law would provide political party status to any group whose candidates for any statewide office received at least 3% of the ballots cast in the state primary.",
+        "page": 10,
+        "locator": "AG summary",
+        "status": "verified"
+      },
+      "outcomes": {
+        "yes": {
+          "id": "q3-yes",
+          "text": "A YES VOTE would eliminate separate party primaries for state elections and require a single primary in which all candidates appear on one ballot, voters could vote for any candidate, and the top two candidates would advance to the general election.",
+          "page": 10,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        "no": {
+          "id": "q3-no",
+          "text": "A NO VOTE would make no change to the laws governing primary elections.",
+          "page": 10,
+          "locator": "NO statement",
+          "status": "verified"
+        }
+      },
+      "fiscal": {
+        "id": "q3-fiscal",
+        "text": "The proposed law has no discernible material fiscal consequences for state and municipal government finances",
+        "page": 10,
+        "locator": "Fiscal statement",
+        "status": "verified"
+      },
+      "appliesToEveryone": true,
+      "everyoneDirection": "who_decides",
+      "overview": [
+        {
+          "text": "Which candidates reach the November ballot would be decided in one shared primary instead of party primaries.",
+          "quoteId": "q3-c1"
+        }
+      ],
+      "rules": [
+        {
+          "fact": "votes_in_primaries",
+          "direction": "rule_change",
+          "why": [
+            {
+              "text": "Instead of a party primary ballot, you would see one ballot listing every candidate.",
+              "quoteId": "q3-c1"
+            },
+            {
+              "text": "The two candidates with the most primary votes would advance to the general election.",
+              "quoteId": "q3-c2"
+            }
+          ]
+        }
+      ],
+      "askFacts": [
+        "votes_in_primaries"
+      ],
+      "topics": [
+        "elections"
+      ],
+      "quotes": [
+        {
+          "id": "q3-summary",
+          "text": "This proposed law would eliminate political party primaries for state elections and instead establish a system where there would be a single, all-party primary in which all candidates, regardless of their party affiliation, would be listed on one ballot, and voters could vote for any candidate on the ballot. The two candidates receiving the most votes in the primary would advance to the general election ballot. This proposed law would require candidates for governor and lieutenant governor to run and be listed jointly on the ballot in the primary. This proposed law would provide political party status to any group whose candidates for any statewide office received at least 3% of the ballots cast in the state primary.",
+          "page": 10,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q3-yes",
+          "text": "A YES VOTE would eliminate separate party primaries for state elections and require a single primary in which all candidates appear on one ballot, voters could vote for any candidate, and the top two candidates would advance to the general election.",
+          "page": 10,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        {
+          "id": "q3-no",
+          "text": "A NO VOTE would make no change to the laws governing primary elections.",
+          "page": 10,
+          "locator": "NO statement",
+          "status": "verified"
+        },
+        {
+          "id": "q3-fiscal",
+          "text": "The proposed law has no discernible material fiscal consequences for state and municipal government finances",
+          "page": 10,
+          "locator": "Fiscal statement",
+          "status": "verified"
+        },
+        {
+          "id": "q3-c1",
+          "text": "a single, all-party primary in which all candidates, regardless of their party affiliation, would be listed on one ballot, and voters could vote for any candidate on the ballot",
+          "page": 10,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q3-c2",
+          "text": "The two candidates receiving the most votes in the primary would advance to the general election ballot.",
+          "page": 10,
+          "locator": "AG summary",
+          "status": "verified"
+        }
+      ],
+      "sourceUrl": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-Information-for-voters/2026-ballot-question3.htm"
+    },
+    {
+      "id": "ballot-2026-q4",
+      "number": "4",
+      "title": "Election Day registration",
+      "officialTitle": "Election Day Registration",
+      "kind": "initiative",
+      "summary": {
+        "id": "q4-summary",
+        "text": "This proposed law would permit eligible individuals to register to vote or update their voter registration address on Election Day. An individual who is eligible to vote could register to vote on Election Day by going to the polling place in the precinct where they live during voting hours and presenting proof of residency and signing a written oath. Proof of residency could be a valid photo identification, or documentation showing the individual's name and the address where the individual resides, such as a current utility bill, bank statement, government check, residential lease, wireless telephone statement, paycheck, current student fee statement or other document from a post-secondary school, or another government document or correspondence. The written oath would require the individual to certify that they are a citizen of the United States, are at least 18 years old, are not legally prohibited from voting, and have not and will not vote in the same election at another location. The oath would require the individual to acknowledge that providing false information is a felony punishable by not more than 5 years imprisonment or a fine of not more than $10,000, or both. If an individual did not present proof of residency, they would be allowed to cast a provisional ballot, which would be counted only if the individual returned to provide the required information before the close of polls for a municipal election; within two days after a state primary; or within six days after a state election. Individuals who register to vote on Election Day would be registered to vote in future elections as well as in the election taking place that day. Individuals who are already registered to vote would not be able to change their political party affiliation on Election Day. The proposed law would take effect on January 1, 2028.",
+        "page": 12,
+        "locator": "AG summary",
+        "status": "verified"
+      },
+      "outcomes": {
+        "yes": {
+          "id": "q4-yes",
+          "text": "A YES VOTE would permit eligible citizens to register to vote or to update their voter registration address at their polling place on Election Day.",
+          "page": 12,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        "no": {
+          "id": "q4-no",
+          "text": "A NO VOTE would make no change to the laws governing voter registration.",
+          "page": 12,
+          "locator": "NO statement",
+          "status": "verified"
+        }
+      },
+      "fiscal": {
+        "id": "q4-fiscal",
+        "text": "The proposed law has no discernible material fiscal consequences for state and municipal government finances.",
+        "page": 12,
+        "locator": "Fiscal statement",
+        "status": "verified"
+      },
+      "appliesToEveryone": true,
+      "everyoneDirection": "rule_change",
+      "overview": [
+        {
+          "text": "Eligible residents could register or update their address at the polls on Election Day, starting in 2028.",
+          "quoteId": "q4-c1"
+        }
+      ],
+      "rules": [
+        {
+          "fact": "registered_here",
+          "when": false,
+          "direction": "expands",
+          "why": [
+            {
+              "text": "You could register, or fix your address, at your polling place on Election Day with proof of residency.",
+              "quoteId": "q4-c1"
+            },
+            {
+              "text": "It would take effect on January 1, 2028, so it applies to later elections, not this one.",
+              "quoteId": "q4-c2"
+            }
+          ]
+        }
+      ],
+      "askFacts": [
+        "registered_here"
+      ],
+      "topics": [
+        "voting_access"
+      ],
+      "quotes": [
+        {
+          "id": "q4-summary",
+          "text": "This proposed law would permit eligible individuals to register to vote or update their voter registration address on Election Day. An individual who is eligible to vote could register to vote on Election Day by going to the polling place in the precinct where they live during voting hours and presenting proof of residency and signing a written oath. Proof of residency could be a valid photo identification, or documentation showing the individual's name and the address where the individual resides, such as a current utility bill, bank statement, government check, residential lease, wireless telephone statement, paycheck, current student fee statement or other document from a post-secondary school, or another government document or correspondence. The written oath would require the individual to certify that they are a citizen of the United States, are at least 18 years old, are not legally prohibited from voting, and have not and will not vote in the same election at another location. The oath would require the individual to acknowledge that providing false information is a felony punishable by not more than 5 years imprisonment or a fine of not more than $10,000, or both. If an individual did not present proof of residency, they would be allowed to cast a provisional ballot, which would be counted only if the individual returned to provide the required information before the close of polls for a municipal election; within two days after a state primary; or within six days after a state election. Individuals who register to vote on Election Day would be registered to vote in future elections as well as in the election taking place that day. Individuals who are already registered to vote would not be able to change their political party affiliation on Election Day. The proposed law would take effect on January 1, 2028.",
+          "page": 12,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q4-yes",
+          "text": "A YES VOTE would permit eligible citizens to register to vote or to update their voter registration address at their polling place on Election Day.",
+          "page": 12,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        {
+          "id": "q4-no",
+          "text": "A NO VOTE would make no change to the laws governing voter registration.",
+          "page": 12,
+          "locator": "NO statement",
+          "status": "verified"
+        },
+        {
+          "id": "q4-fiscal",
+          "text": "The proposed law has no discernible material fiscal consequences for state and municipal government finances.",
+          "page": 12,
+          "locator": "Fiscal statement",
+          "status": "verified"
+        },
+        {
+          "id": "q4-c1",
+          "text": "permit eligible individuals to register to vote or update their voter registration address on Election Day",
+          "page": 12,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q4-c2",
+          "text": "The proposed law would take effect on January 1, 2028.",
+          "page": 12,
+          "locator": "AG summary",
+          "status": "verified"
+        }
+      ],
+      "sourceUrl": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-Information-for-voters/2026-ballot-question4.htm"
+    },
+    {
+      "id": "ballot-2026-q5",
+      "number": "5",
+      "title": "State revenue limit and rebate",
+      "officialTitle": "State Revenue Limit & Rebate",
+      "kind": "initiative",
+      "summary": {
+        "id": "q5-summary",
+        "text": "This proposed law would change the limit on how much revenue the state can collect in a given year. The proposal would limit state revenue in a given year to the net amount of state revenue from the year before, increased by a rate equal to the average growth of wages and salaries in Massachusetts over the most recent three years. If revenue collected by the state in a given year exceeds the limit, the excess amount would be refunded to taxpayers the following year. The proposed law would include all revenue from the surtax on incomes over $1 million when calculating the revenue limit and when determining whether state revenue exceeds the limit. The provisions of the proposed law would all be effective as of July 1, 2027. The proposed law states that, if any of its parts were declared invalid, the other parts would stay in effect.",
+        "page": 14,
+        "locator": "AG summary",
+        "status": "verified"
+      },
+      "outcomes": {
+        "yes": {
+          "id": "q5-yes",
+          "text": "A YES VOTE would change the limit on state revenue collection, tying it to prior year collections plus average wage and salary growth, and provide for a rebate of revenue exceeding that limit.",
+          "page": 14,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        "no": {
+          "id": "q5-no",
+          "text": "A NO VOTE would make no change in the law relative to state revenue collection.",
+          "page": 14,
+          "locator": "NO statement",
+          "status": "verified"
+        }
+      },
+      "fiscal": {
+        "id": "q5-fiscal",
+        "text": "The proposed law would put stricter limits on allowable annual revenue growth available for budgeting. As a result, the proposal would reduce the amount of money available to support the state budget, which includes local aid for schools and municipal budgets. The proposal would also reduce the amounts available to build the state's Stabilization, or \"rainy day,\" Fund - a reserve of money set aside to help Massachusetts manage economic downturns or emergencies without raising taxes or making major spending cuts. Depending on future conditions, the proposal could change the frequency of statutorily-required refunds to taxpayers.",
+        "page": 14,
+        "locator": "Fiscal statement",
+        "status": "verified"
+      },
+      "appliesToEveryone": true,
+      "everyoneDirection": "rule_change",
+      "overview": [
+        {
+          "text": "The state's yearly revenue limit would be tied to last year's revenue plus average wage growth.",
+          "quoteId": "q5-c1"
+        },
+        {
+          "text": "Revenue above the limit would be refunded to taxpayers the following year.",
+          "quoteId": "q5-c2"
+        }
+      ],
+      "rules": [],
+      "askFacts": [],
+      "topics": [
+        "taxes"
+      ],
+      "quotes": [
+        {
+          "id": "q5-summary",
+          "text": "This proposed law would change the limit on how much revenue the state can collect in a given year. The proposal would limit state revenue in a given year to the net amount of state revenue from the year before, increased by a rate equal to the average growth of wages and salaries in Massachusetts over the most recent three years. If revenue collected by the state in a given year exceeds the limit, the excess amount would be refunded to taxpayers the following year. The proposed law would include all revenue from the surtax on incomes over $1 million when calculating the revenue limit and when determining whether state revenue exceeds the limit. The provisions of the proposed law would all be effective as of July 1, 2027. The proposed law states that, if any of its parts were declared invalid, the other parts would stay in effect.",
+          "page": 14,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q5-yes",
+          "text": "A YES VOTE would change the limit on state revenue collection, tying it to prior year collections plus average wage and salary growth, and provide for a rebate of revenue exceeding that limit.",
+          "page": 14,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        {
+          "id": "q5-no",
+          "text": "A NO VOTE would make no change in the law relative to state revenue collection.",
+          "page": 14,
+          "locator": "NO statement",
+          "status": "verified"
+        },
+        {
+          "id": "q5-fiscal",
+          "text": "The proposed law would put stricter limits on allowable annual revenue growth available for budgeting. As a result, the proposal would reduce the amount of money available to support the state budget, which includes local aid for schools and municipal budgets. The proposal would also reduce the amounts available to build the state's Stabilization, or \"rainy day,\" Fund - a reserve of money set aside to help Massachusetts manage economic downturns or emergencies without raising taxes or making major spending cuts. Depending on future conditions, the proposal could change the frequency of statutorily-required refunds to taxpayers.",
+          "page": 14,
+          "locator": "Fiscal statement",
+          "status": "verified"
+        },
+        {
+          "id": "q5-c1",
+          "text": "limit state revenue in a given year to the net amount of state revenue from the year before, increased by a rate equal to the average growth of wages and salaries in Massachusetts over the most recent three years",
+          "page": 14,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q5-c2",
+          "text": "the excess amount would be refunded to taxpayers the following year",
+          "page": 14,
+          "locator": "AG summary",
+          "status": "verified"
+        }
+      ],
+      "sourceUrl": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-Information-for-voters/2026-ballot-question5.htm"
+    },
+    {
+      "id": "ballot-2026-q6",
+      "number": "6",
+      "title": "Conservation fund",
+      "officialTitle": "Natural Resource Conservation Fund",
+      "kind": "initiative",
+      "summary": {
+        "id": "q6-summary",
+        "text": "This proposed law would establish a Nature for All Fund that, subject to appropriation by the Legislature, would receive 50% of state taxes collected from the sale and use of sporting goods, recreational vehicles, and golf courses for the first year of its operation. After July 1, 2028, the Nature for All Fund would begin receiving, subject to appropriation by the Legislature, 100% of state taxes collected on the sale and use of sporting goods, recreational vehicles, and golf courses. The sales tax revenue received by the Nature for All Fund would exclude sales tax revenue transferred to the Massachusetts Bay Transportation Authority State and Local Contribution Fund and the School Modernization and Reconstruction Trust Fund. The proposed law would allow the state Executive Office of Energy and Environmental Affairs to spend the money in the Nature for All Fund for natural resource conservation. The proposed law would allow public and private donations to the Nature for All Fund. The proposed law would prevent the state comptroller from transferring surplus funds in the Nature for All Fund at the end of the fiscal year. It would also allow state agencies, municipalities, public charities involved in natural resource conservation, tribal governments, and other regional public entities to receive money from the Nature for All Fund. Natural resource conservation would include the conservation or restoration of land to protect drinking water, streams, rivers, lakes, coasts, farms, forests, connectivity between open spaces, and lands and natural resources of indigenous cultural significance. Natural resource conservation would also include the creation, improvement, and management of parks, trails, greenspaces or outdoor recreation access. The proposed law would establish a 15-member Nature for All Board that consists of five state officials and ten members of the public appointed by the Governor. The proposed law would require the ten members of the public to include representatives of underserved communities and indigenous peoples and at least one person with expertise or experience in natural resource conservation. The proposed law would allow the state Executive Office of Energy and Environmental Affairs to spend money from the Nature for All Fund to hire staff to manage the fund. The proposed law would also require the Nature for All Board to establish rules about how the money in the Nature for All Fund should be spent, including rules regarding alignment with environmental justice principles, access to and restoration of lands and natural resources of indigenous cultural significance, promotion of affordable housing development, and other matters regarding spending and bond issuance. The proposed law would require the state Executive Office of Energy and Environmental Affairs to submit an annual report to various state committees regarding the funds spent to buy or improve land in cities and towns containing environmental justice populations. The proposed law would take effect on July 1, 2027.",
+        "page": 16,
+        "locator": "AG summary",
+        "status": "verified"
+      },
+      "outcomes": {
+        "yes": {
+          "id": "q6-yes",
+          "text": "A YES VOTE would create a fund that could be utilized for natural resource conservation that would receive some state taxes collected on the sale and use of sporting goods and recreational vehicles, and the use of golf courses.",
+          "page": 16,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        "no": {
+          "id": "q6-no",
+          "text": "A NO VOTE would not create this natural resource conservation fund or change how sales and use taxes are spent.",
+          "page": 16,
+          "locator": "NO statement",
+          "status": "verified"
+        }
+      },
+      "fiscal": {
+        "id": "q6-fiscal",
+        "text": "The proposed law would have a significant impact on state and local budgets. While a full fiscal analysis is not feasible, it is estimated that, on an annual basis, the proposed law would automatically divert tens of millions of dollars of tax receipts that are currently supporting the state operating budget to the new fund. This proposed law would also have substantial implementation costs.",
+        "page": 17,
+        "locator": "Fiscal statement",
+        "status": "verified"
+      },
+      "appliesToEveryone": false,
+      "overview": [
+        {
+          "text": "A Nature for All Fund would receive part of the sales tax on sporting goods, recreational vehicles, and golf for conservation.",
+          "quoteId": "q6-c1"
+        },
+        {
+          "text": "Cities and towns, state agencies, tribal governments, and conservation charities could receive money from it.",
+          "quoteId": "q6-c2"
+        }
+      ],
+      "rules": [],
+      "askFacts": [],
+      "topics": [
+        "open_space"
+      ],
+      "quotes": [
+        {
+          "id": "q6-summary",
+          "text": "This proposed law would establish a Nature for All Fund that, subject to appropriation by the Legislature, would receive 50% of state taxes collected from the sale and use of sporting goods, recreational vehicles, and golf courses for the first year of its operation. After July 1, 2028, the Nature for All Fund would begin receiving, subject to appropriation by the Legislature, 100% of state taxes collected on the sale and use of sporting goods, recreational vehicles, and golf courses. The sales tax revenue received by the Nature for All Fund would exclude sales tax revenue transferred to the Massachusetts Bay Transportation Authority State and Local Contribution Fund and the School Modernization and Reconstruction Trust Fund. The proposed law would allow the state Executive Office of Energy and Environmental Affairs to spend the money in the Nature for All Fund for natural resource conservation. The proposed law would allow public and private donations to the Nature for All Fund. The proposed law would prevent the state comptroller from transferring surplus funds in the Nature for All Fund at the end of the fiscal year. It would also allow state agencies, municipalities, public charities involved in natural resource conservation, tribal governments, and other regional public entities to receive money from the Nature for All Fund. Natural resource conservation would include the conservation or restoration of land to protect drinking water, streams, rivers, lakes, coasts, farms, forests, connectivity between open spaces, and lands and natural resources of indigenous cultural significance. Natural resource conservation would also include the creation, improvement, and management of parks, trails, greenspaces or outdoor recreation access. The proposed law would establish a 15-member Nature for All Board that consists of five state officials and ten members of the public appointed by the Governor. The proposed law would require the ten members of the public to include representatives of underserved communities and indigenous peoples and at least one person with expertise or experience in natural resource conservation. The proposed law would allow the state Executive Office of Energy and Environmental Affairs to spend money from the Nature for All Fund to hire staff to manage the fund. The proposed law would also require the Nature for All Board to establish rules about how the money in the Nature for All Fund should be spent, including rules regarding alignment with environmental justice principles, access to and restoration of lands and natural resources of indigenous cultural significance, promotion of affordable housing development, and other matters regarding spending and bond issuance. The proposed law would require the state Executive Office of Energy and Environmental Affairs to submit an annual report to various state committees regarding the funds spent to buy or improve land in cities and towns containing environmental justice populations. The proposed law would take effect on July 1, 2027.",
+          "page": 16,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q6-yes",
+          "text": "A YES VOTE would create a fund that could be utilized for natural resource conservation that would receive some state taxes collected on the sale and use of sporting goods and recreational vehicles, and the use of golf courses.",
+          "page": 16,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        {
+          "id": "q6-no",
+          "text": "A NO VOTE would not create this natural resource conservation fund or change how sales and use taxes are spent.",
+          "page": 16,
+          "locator": "NO statement",
+          "status": "verified"
+        },
+        {
+          "id": "q6-fiscal",
+          "text": "The proposed law would have a significant impact on state and local budgets. While a full fiscal analysis is not feasible, it is estimated that, on an annual basis, the proposed law would automatically divert tens of millions of dollars of tax receipts that are currently supporting the state operating budget to the new fund. This proposed law would also have substantial implementation costs.",
+          "page": 17,
+          "locator": "Fiscal statement",
+          "status": "verified"
+        },
+        {
+          "id": "q6-c1",
+          "text": "receive 50% of state taxes collected from the sale and use of sporting goods, recreational vehicles, and golf courses for the first year of its operation",
+          "page": 16,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q6-c2",
+          "text": "allow state agencies, municipalities, public charities involved in natural resource conservation, tribal governments, and other regional public entities to receive money from the Nature for All Fund",
+          "page": 16,
+          "locator": "AG summary",
+          "status": "verified"
+        }
+      ],
+      "sourceUrl": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-Information-for-voters/2026-ballot-question6.htm"
+    },
+    {
+      "id": "ballot-2026-q7",
+      "number": "7",
+      "title": "Single-family homes on 5,000 sq ft lots",
+      "officialTitle": "Single Family Homes",
+      "kind": "initiative",
+      "summary": {
+        "id": "q7-summary",
+        "text": "This proposed law would allow single-family homes to be built in a residentially zoned area as long as the land on which it is to be constructed is at least 5,000 square feet, has at least 50 feet of land bordering the street, road, or public way that it faces, and has access to public sewer and water services. The proposed law would allow cities and towns to reasonably regulate certain aspects of those single-family homes, including their height, distance from neighboring buildings, open space, parking requirements, and whether they can be rented out on a short-term basis. The proposed law would also allow the Executive Office of Housing and Livable Communities to issue guidance or regulations to administer the proposed law.",
+        "page": 18,
+        "locator": "AG summary",
+        "status": "verified"
+      },
+      "outcomes": {
+        "yes": {
+          "id": "q7-yes",
+          "text": "A YES VOTE would allow single-family homes to be built on lots of 5,000 square feet or more in residential areas, subject to reasonable local regulation of certain aspects of those homes.",
+          "page": 18,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        "no": {
+          "id": "q7-no",
+          "text": "A NO VOTE would make no change to the law relative to building single-family homes.",
+          "page": 18,
+          "locator": "NO statement",
+          "status": "verified"
+        }
+      },
+      "fiscal": {
+        "id": "q7-fiscal",
+        "text": "If the proposed law enables the growth of housing in communities, it could provide positive new growth revenues to municipalities. However, it is difficult to project the potential scale of new growth tied to the proposed law. The proposed law thus has no discernible material fiscal consequences for state and municipal government finances.",
+        "page": 18,
+        "locator": "Fiscal statement",
+        "status": "verified"
+      },
+      "appliesToEveryone": false,
+      "overview": [
+        {
+          "text": "Single-family homes could be built on residential lots of 5,000 square feet or more with sewer and water.",
+          "quoteId": "q7-yes"
+        }
+      ],
+      "rules": [
+        {
+          "fact": "wants_single_family",
+          "direction": "expands",
+          "why": [
+            {
+              "text": "A single-family home could be built in any residential zone on a lot of at least 5,000 square feet.",
+              "quoteId": "q7-c1"
+            },
+            {
+              "text": "The lot would also need 50 feet of street frontage and public sewer and water.",
+              "quoteId": "q7-c2"
+            }
+          ]
+        },
+        {
+          "fact": "owns",
+          "direction": "rule_change",
+          "why": [
+            {
+              "text": "Lots of 5,000 square feet or more in your residential zone could get a single-family home.",
+              "quoteId": "q7-yes"
+            },
+            {
+              "text": "Your city or town would keep the power to regulate height, setbacks, open space, parking, and short-term rentals.",
+              "quoteId": "q7-c3"
+            }
+          ]
+        },
+        {
+          "fact": "rents",
+          "direction": "rule_change",
+          "why": [
+            {
+              "text": "Where you rent, residential lots of 5,000 square feet or more could get new single-family homes.",
+              "quoteId": "q7-yes"
+            },
+            {
+              "text": "Whether those homes can be rented short-term would stay up to the city or town.",
+              "quoteId": "q7-c3"
+            }
+          ]
+        }
+      ],
+      "askFacts": [
+        "rents",
+        "owns",
+        "wants_single_family"
+      ],
+      "topics": [
+        "housing_costs",
+        "local_control"
+      ],
+      "quotes": [
+        {
+          "id": "q7-summary",
+          "text": "This proposed law would allow single-family homes to be built in a residentially zoned area as long as the land on which it is to be constructed is at least 5,000 square feet, has at least 50 feet of land bordering the street, road, or public way that it faces, and has access to public sewer and water services. The proposed law would allow cities and towns to reasonably regulate certain aspects of those single-family homes, including their height, distance from neighboring buildings, open space, parking requirements, and whether they can be rented out on a short-term basis. The proposed law would also allow the Executive Office of Housing and Livable Communities to issue guidance or regulations to administer the proposed law.",
+          "page": 18,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q7-yes",
+          "text": "A YES VOTE would allow single-family homes to be built on lots of 5,000 square feet or more in residential areas, subject to reasonable local regulation of certain aspects of those homes.",
+          "page": 18,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        {
+          "id": "q7-no",
+          "text": "A NO VOTE would make no change to the law relative to building single-family homes.",
+          "page": 18,
+          "locator": "NO statement",
+          "status": "verified"
+        },
+        {
+          "id": "q7-fiscal",
+          "text": "If the proposed law enables the growth of housing in communities, it could provide positive new growth revenues to municipalities. However, it is difficult to project the potential scale of new growth tied to the proposed law. The proposed law thus has no discernible material fiscal consequences for state and municipal government finances.",
+          "page": 18,
+          "locator": "Fiscal statement",
+          "status": "verified"
+        },
+        {
+          "id": "q7-c1",
+          "text": "allow single-family homes to be built in a residentially zoned area as long as the land on which it is to be constructed is at least 5,000 square feet",
+          "page": 18,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q7-c2",
+          "text": "has at least 50 feet of land bordering the street, road, or public way that it faces, and has access to public sewer and water services",
+          "page": 18,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q7-c3",
+          "text": "allow cities and towns to reasonably regulate certain aspects of those single-family homes, including their height, distance from neighboring buildings, open space, parking requirements, and whether they can be rented out on a short-term basis",
+          "page": 18,
+          "locator": "AG summary",
+          "status": "verified"
+        }
+      ],
+      "sourceUrl": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-Information-for-voters/2026-ballot-question7.htm"
+    },
+    {
+      "id": "ballot-2026-q8",
+      "number": "8",
+      "title": "End retail adult-use marijuana",
+      "officialTitle": "Prohibit Retail Sale of Adult Recreational Use Marijuana",
+      "kind": "initiative",
+      "summary": {
+        "id": "q8-summary",
+        "text": "The proposed law would change the type and amount of marijuana that may legally be possessed in Massachusetts by repealing the laws that legalize, regulate, and tax the retail sale of adult recreational use marijuana in Massachusetts. The proposed law would also permit persons 21 years of age and older to possess 1 ounce or less of marijuana including no more than 5 grams in the form of concentrate, and to gift or transfer to another person 21 years of age and older 1 ounce or less of marijuana including no more than 5 grams in the form of concentrate. The proposed law would also impose a civil penalty of $100 and forfeiture of the marijuana for the possession of marijuana between the weight of 1 and 2 ounces. For persons 21 years of age and younger, the proposed law would make the possession of 2 ounces or less of marijuana a civil infraction subject to a $100 fine, forfeiture of the marijuana, completion of a drug awareness program and community service, and notification to their parents or legal guardian of the offense and penalties. The proposed law would allow currently licensed adult recreational marijuana businesses to apply on an expedited basis to become a licensed medical marijuana dispensary and to sell their remaining inventory of adult recreational marijuana to medical marijuana dispensaries. The proposed law would retain the Cannabis Control Commission but modify its authority so it would regulate only the medical marijuana market. The proposed law states that, if any of its parts were declared invalid, the other parts would stay in effect. The proposed law would take effect on January 1, 2028.",
+        "page": 20,
+        "locator": "AG summary",
+        "status": "verified"
+      },
+      "outcomes": {
+        "yes": {
+          "id": "q8-yes",
+          "text": "A YES VOTE would prohibit the legalization, regulation, and taxation of the retail sale of adult recreational use marijuana, and change the penalties for possession of marijuana.",
+          "page": 20,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        "no": {
+          "id": "q8-no",
+          "text": "A NO VOTE would make no change to the law relative to marijuana.",
+          "page": 20,
+          "locator": "NO statement",
+          "status": "verified"
+        }
+      },
+      "fiscal": {
+        "id": "q8-fiscal",
+        "text": "By repealing the laws that legalize and tax the retail sale of adult recreational use marijuana, the proposed law would reduce the amount that state and municipal governments receive from the taxation of those sales. In fiscal year 2025, taxation of the retail sale of adult recreational use marijuana raised approximately $280 million in state revenue and $50 million in local revenue. The state budget, which is supported by tax revenue, funds local aid for schools and municipal budgets.",
+        "page": 20,
+        "locator": "Fiscal statement",
+        "status": "verified"
+      },
+      "appliesToEveryone": false,
+      "overview": [
+        {
+          "text": "Retail sale of adult-use marijuana would end, and the Cannabis Control Commission would regulate only the medical market.",
+          "quoteId": "q8-c3"
+        }
+      ],
+      "rules": [
+        {
+          "fact": "buys_cannabis",
+          "direction": "restricts",
+          "why": [
+            {
+              "text": "The laws that legalize, regulate, and tax retail sale of adult-use marijuana would be repealed.",
+              "quoteId": "q8-c1"
+            },
+            {
+              "text": "Adults 21 and older could still possess one ounce or less, including up to 5 grams of concentrate.",
+              "quoteId": "q8-c2"
+            }
+          ]
+        }
+      ],
+      "askFacts": [
+        "buys_cannabis"
+      ],
+      "topics": [
+        "cannabis_policy"
+      ],
+      "quotes": [
+        {
+          "id": "q8-summary",
+          "text": "The proposed law would change the type and amount of marijuana that may legally be possessed in Massachusetts by repealing the laws that legalize, regulate, and tax the retail sale of adult recreational use marijuana in Massachusetts. The proposed law would also permit persons 21 years of age and older to possess 1 ounce or less of marijuana including no more than 5 grams in the form of concentrate, and to gift or transfer to another person 21 years of age and older 1 ounce or less of marijuana including no more than 5 grams in the form of concentrate. The proposed law would also impose a civil penalty of $100 and forfeiture of the marijuana for the possession of marijuana between the weight of 1 and 2 ounces. For persons 21 years of age and younger, the proposed law would make the possession of 2 ounces or less of marijuana a civil infraction subject to a $100 fine, forfeiture of the marijuana, completion of a drug awareness program and community service, and notification to their parents or legal guardian of the offense and penalties. The proposed law would allow currently licensed adult recreational marijuana businesses to apply on an expedited basis to become a licensed medical marijuana dispensary and to sell their remaining inventory of adult recreational marijuana to medical marijuana dispensaries. The proposed law would retain the Cannabis Control Commission but modify its authority so it would regulate only the medical marijuana market. The proposed law states that, if any of its parts were declared invalid, the other parts would stay in effect. The proposed law would take effect on January 1, 2028.",
+          "page": 20,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q8-yes",
+          "text": "A YES VOTE would prohibit the legalization, regulation, and taxation of the retail sale of adult recreational use marijuana, and change the penalties for possession of marijuana.",
+          "page": 20,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        {
+          "id": "q8-no",
+          "text": "A NO VOTE would make no change to the law relative to marijuana.",
+          "page": 20,
+          "locator": "NO statement",
+          "status": "verified"
+        },
+        {
+          "id": "q8-fiscal",
+          "text": "By repealing the laws that legalize and tax the retail sale of adult recreational use marijuana, the proposed law would reduce the amount that state and municipal governments receive from the taxation of those sales. In fiscal year 2025, taxation of the retail sale of adult recreational use marijuana raised approximately $280 million in state revenue and $50 million in local revenue. The state budget, which is supported by tax revenue, funds local aid for schools and municipal budgets.",
+          "page": 20,
+          "locator": "Fiscal statement",
+          "status": "verified"
+        },
+        {
+          "id": "q8-c1",
+          "text": "repealing the laws that legalize, regulate, and tax the retail sale of adult recreational use marijuana in Massachusetts",
+          "page": 20,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q8-c2",
+          "text": "permit persons 21 years of age and older to possess 1 ounce or less of marijuana including no more than 5 grams in the form of concentrate",
+          "page": 20,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q8-c3",
+          "text": "retain the Cannabis Control Commission but modify its authority so it would regulate only the medical marijuana market",
+          "page": 20,
+          "locator": "AG summary",
+          "status": "verified"
+        }
+      ],
+      "sourceUrl": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-Information-for-voters/2026-ballot-question8.htm"
+    },
+    {
+      "id": "ballot-2026-q9",
+      "number": "9",
+      "title": "Keep the 2024 firearms law",
+      "officialTitle": "Firearms Regulation",
+      "kind": "referendum",
+      "summary": {
+        "id": "q9-summary",
+        "text": "This law makes a number of changes to Massachusetts laws governing firearms. The law adds school administrators and licensed healthcare providers as parties permitted to ask a court to issue an Extreme Risk Protection Order - requiring an individual to surrender or relinquish their firearm licenses, permits, and firearms - if an individual is a present danger to self or others. The law also provides that, when issuing an Harassment Prevention Order, a court may also order the surrender of firearms licenses, permits, and firearms. The law imposes penalties for possessing, creating, and transferring untraceable \"ghost gun\" firearms and requires all firearms except antiques and relics, including unfinished frames and receivers that can be readily made into a finished product, to have serial numbers. The law includes privately-made guns like 3D-printed guns within the provisions governing untraceable \"ghost gun\" firearms. The law changes firearms licensing requirements to: (1) allow local licensing authorities to request prior license and permit information from the state, as well as access petitions for involuntary mental health commitments denied by a court in addition to prior involuntary commitments, as a part of their review of applications for licenses to carry firearms, firearm ID cards, and licenses to sell firearms; (2) require an individual to be 21 years of age to own semiautomatic rifles or shotguns; (3) add the possibility of incarceration of up to six months for a second offense of failing to report a firearm loss or theft; and (4) enable 12-15 year olds to apply for a self-defense spray permit with parental permission, and 15 to 18 year olds to apply independently. The law allows local firearm licensing authorities to transfer the responsibility to inspect firearm dealers to the State Police. The law requires local licensing authorities to attend statewide training regarding those inspections. It requires dealers to confiscate expired or suspended licenses and report them to the state and to local licensing authorities. The law changes the definition of \"machine gun\" to include bump stocks, trigger cranks, Glock switches and auto sears among the devices whose possession and use are subject to penalties. It expands the definition of \"silencer\" to include the parts used to construct a silencer. The law clarifies how to determine whether a firearm is an assault-style weapon and the circumstances under which a person may continue to possess assault-style weapons and large capacity feeding devices they already own. The law requires the state Firearm Control Advisory Board and the state Secretary of Public Safety and Security to review and update the rosters of prohibited assault-style firearms, approved firearms, and approved firearms sold for target shooting. The law clarifies requirements relating to the carry and transport of firearms in motor vehicles and ATVs. It prohibits the carrying of firearms in government buildings, polling locations, and schools, with certain exceptions. The law expands data compilation and reporting requirements to and from the state, and creates a publicly-accessible dashboard of anonymized aggregate firearm data, along with a commission to study that data. The law requires the State Police to provide training and a test for new applicants for licenses to carry or Firearm ID cards. The law establishes two special legislative commissions - one to examine funding for violence prevention services, and one to study emerging firearms technology. The law criminalizes discharging a firearm and striking a building in use.",
+        "page": 22,
+        "locator": "AG summary",
+        "status": "verified"
+      },
+      "outcomes": {
+        "yes": {
+          "id": "q9-yes",
+          "text": "A YES VOTE would keep in place the law, which increases the regulation of firearms, including ghost guns, machine guns, and assault-style weapons.",
+          "page": 23,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        "no": {
+          "id": "q9-no",
+          "text": "A NO VOTE would repeal this law.",
+          "page": 23,
+          "locator": "NO statement",
+          "status": "verified"
+        }
+      },
+      "fiscal": {
+        "id": "q9-fiscal",
+        "text": "Since the passage of this safety law in 2024, the Commonwealth has made significant investments to implement the law including training employees, promulgating new gun licensure processes, and developing IT infrastructure. Repealing the law would require the Commonwealth to expend resources in suspending or re-directing those investments.",
+        "page": 23,
+        "locator": "Fiscal statement",
+        "status": "verified"
+      },
+      "appliesToEveryone": false,
+      "overview": [
+        {
+          "text": "This is a referendum on a law already in effect: a YES vote keeps it and a NO vote repeals it.",
+          "quoteId": "q9-no"
+        }
+      ],
+      "rules": [
+        {
+          "fact": "owns_firearm",
+          "direction": "rule_change",
+          "why": [
+            {
+              "text": "A YES vote keeps the 2024 firearms law in place; a NO vote repeals it.",
+              "quoteId": "q9-yes"
+            },
+            {
+              "text": "The law requires serial numbers on all firearms except antiques and relics.",
+              "quoteId": "q9-c1"
+            }
+          ]
+        }
+      ],
+      "askFacts": [
+        "owns_firearm"
+      ],
+      "topics": [
+        "gun_policy",
+        "public_safety"
+      ],
+      "quotes": [
+        {
+          "id": "q9-summary",
+          "text": "This law makes a number of changes to Massachusetts laws governing firearms. The law adds school administrators and licensed healthcare providers as parties permitted to ask a court to issue an Extreme Risk Protection Order - requiring an individual to surrender or relinquish their firearm licenses, permits, and firearms - if an individual is a present danger to self or others. The law also provides that, when issuing an Harassment Prevention Order, a court may also order the surrender of firearms licenses, permits, and firearms. The law imposes penalties for possessing, creating, and transferring untraceable \"ghost gun\" firearms and requires all firearms except antiques and relics, including unfinished frames and receivers that can be readily made into a finished product, to have serial numbers. The law includes privately-made guns like 3D-printed guns within the provisions governing untraceable \"ghost gun\" firearms. The law changes firearms licensing requirements to: (1) allow local licensing authorities to request prior license and permit information from the state, as well as access petitions for involuntary mental health commitments denied by a court in addition to prior involuntary commitments, as a part of their review of applications for licenses to carry firearms, firearm ID cards, and licenses to sell firearms; (2) require an individual to be 21 years of age to own semiautomatic rifles or shotguns; (3) add the possibility of incarceration of up to six months for a second offense of failing to report a firearm loss or theft; and (4) enable 12-15 year olds to apply for a self-defense spray permit with parental permission, and 15 to 18 year olds to apply independently. The law allows local firearm licensing authorities to transfer the responsibility to inspect firearm dealers to the State Police. The law requires local licensing authorities to attend statewide training regarding those inspections. It requires dealers to confiscate expired or suspended licenses and report them to the state and to local licensing authorities. The law changes the definition of \"machine gun\" to include bump stocks, trigger cranks, Glock switches and auto sears among the devices whose possession and use are subject to penalties. It expands the definition of \"silencer\" to include the parts used to construct a silencer. The law clarifies how to determine whether a firearm is an assault-style weapon and the circumstances under which a person may continue to possess assault-style weapons and large capacity feeding devices they already own. The law requires the state Firearm Control Advisory Board and the state Secretary of Public Safety and Security to review and update the rosters of prohibited assault-style firearms, approved firearms, and approved firearms sold for target shooting. The law clarifies requirements relating to the carry and transport of firearms in motor vehicles and ATVs. It prohibits the carrying of firearms in government buildings, polling locations, and schools, with certain exceptions. The law expands data compilation and reporting requirements to and from the state, and creates a publicly-accessible dashboard of anonymized aggregate firearm data, along with a commission to study that data. The law requires the State Police to provide training and a test for new applicants for licenses to carry or Firearm ID cards. The law establishes two special legislative commissions - one to examine funding for violence prevention services, and one to study emerging firearms technology. The law criminalizes discharging a firearm and striking a building in use.",
+          "page": 22,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q9-yes",
+          "text": "A YES VOTE would keep in place the law, which increases the regulation of firearms, including ghost guns, machine guns, and assault-style weapons.",
+          "page": 23,
+          "locator": "YES statement",
+          "status": "verified"
+        },
+        {
+          "id": "q9-no",
+          "text": "A NO VOTE would repeal this law.",
+          "page": 23,
+          "locator": "NO statement",
+          "status": "verified"
+        },
+        {
+          "id": "q9-fiscal",
+          "text": "Since the passage of this safety law in 2024, the Commonwealth has made significant investments to implement the law including training employees, promulgating new gun licensure processes, and developing IT infrastructure. Repealing the law would require the Commonwealth to expend resources in suspending or re-directing those investments.",
+          "page": 23,
+          "locator": "Fiscal statement",
+          "status": "verified"
+        },
+        {
+          "id": "q9-c1",
+          "text": "requires all firearms except antiques and relics, including unfinished frames and receivers that can be readily made into a finished product, to have serial numbers",
+          "page": 22,
+          "locator": "AG summary",
+          "status": "verified"
+        },
+        {
+          "id": "q9-c2",
+          "text": "require an individual to be 21 years of age to own semiautomatic rifles or shotguns",
+          "page": 22,
+          "locator": "AG summary",
+          "status": "verified"
+        }
+      ],
+      "sourceUrl": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-Information-for-voters/2026-ballot-question9.htm"
+    }
+  ]
+}
