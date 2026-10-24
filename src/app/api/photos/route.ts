@@ -55,7 +55,7 @@ export async function POST() {
       continue;
     }
     try {
-      const pick = pickLandscape(await searchPixabay(c, t.query), used);
+      const pick = pickLandscape(await searchPixabay(c, t.query), used, t.tag);
       if (!pick) {
         results.push({ key: t.key, outcome: "no_result" });
         continue;

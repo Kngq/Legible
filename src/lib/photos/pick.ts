@@ -33,6 +33,8 @@ export interface PhotoTarget {
   /** Timeline entry key: `c:<civic id>` or `d:<document id>`. */
   key: string;
   query: string;
+  /** A tag the photo must carry exactly, when a search also returns look-alike places. */
+  tag?: string;
 }
 
 const CIVIC_QUERY: Record<CivicKind, string> = {
@@ -40,8 +42,12 @@ const CIVIC_QUERY: Record<CivicKind, string> = {
   window: "ballot box",
   election: "polling station",
   meeting: "council chamber",
-  bill: "Massachusetts State House",
+  bill: "Massachusetts State House dome",
 };
+
+// Searches for the State House also return City Hall and the Old State House,
+// so bills accept only photos tagged exactly "state house".
+const CIVIC_TAG: Partial<Record<CivicKind, string>> = { bill: "state house" };
 
 const DOC_QUERY: Record<DocType, string> = {
   ballot: "ballot box",
@@ -56,7 +62,7 @@ const DOC_QUERY: Record<DocType, string> = {
 export function photoTargets(civic: CivicItem[], docs: DocumentData[]): PhotoTarget[] {
   return [
     ...docs.map((d) => ({ key: `d:${d.id}`, query: DOC_QUERY[d.docType] })),
-    ...civic.map((i) => ({ key: `c:${i.id}`, query: CIVIC_QUERY[i.kind] })),
+    ...civic.map((i) => ({ key: `c:${i.id}`, query: CIVIC_QUERY[i.kind], tag: CIVIC_TAG[i.kind] })),
   ];
 }
 
@@ -84,11 +90,12 @@ function isNeutral(h: PixabayHit): boolean {
 }
 
 /**
- * The first landscape, neutral hit in Pixabay's order, preferring one no other
- * item uses yet. Falls back to a reused photo before giving up.
+ * The first landscape, neutral hit in Pixabay's order (carrying `tag` exactly,
+ * when given), preferring one no other item uses yet. Falls back to a reused
+ * photo before giving up.
  */
-export function pickLandscape(hits: PixabayHit[], used: ReadonlySet<number>): PixabayHit | null {
-  const ok = hits.filter((h) => h.largeImageURL && isLandscape(h) && isNeutral(h));
+export function pickLandscape(hits: PixabayHit[], used: ReadonlySet<number>, tag?: string): PixabayHit | null {
+  const ok = hits.filter((h) => h.largeImageURL && isLandscape(h) && isNeutral(h) && (!tag || tagList(h.tags).includes(tag)));
   return ok.find((h) => !used.has(h.id)) ?? ok[0] ?? null;
 }
 

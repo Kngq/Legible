@@ -51,6 +51,12 @@ describe("pickLandscape", () => {
     expect(pickLandscape(hits, new Set([1, 2]))?.id).toBe(1);
   });
 
+  it("keeps only exact tag matches when a tag is required", () => {
+    const hits = [hit({ id: 1, tags: "old state house, boston" }), hit({ id: 2, tags: "boston, city hall" }), hit({ id: 3, tags: "boston, State House, dome" })];
+    expect(pickLandscape(hits, new Set(), "state house")?.id).toBe(3);
+    expect(pickLandscape(hits.slice(0, 2), new Set(), "state house")).toBeNull();
+  });
+
   it("returns null when nothing fits", () => {
     expect(pickLandscape([], new Set())).toBeNull();
     expect(pickLandscape([hit({ imageWidth: 1000, imageHeight: 1000 })], new Set())).toBeNull();
