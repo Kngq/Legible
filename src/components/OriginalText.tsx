@@ -113,3 +113,33 @@ function BillReader({ file }: { file: string }) {
     </>
   );
 }
+
+/**
+ * One line for a feed card: where the official original is and that it is
+ * saved and fingerprinted, or that no original exists yet. Opens the detail.
+ */
+export function OriginalLine({ original, onOpen }: { original?: CivicOriginal | { kind: "booklet"; label: string; hash?: string }; onOpen: () => void }) {
+  if (!original) return null;
+  const none = original.kind === "none";
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className={`mt-3 flex min-h-11 w-full items-center gap-2 rounded-md border border-border px-3 text-left text-small ${FOCUS}`}
+    >
+      <span aria-hidden="true" className={`flex size-5 shrink-0 items-center justify-center rounded-full ${none ? "border border-border" : "bg-positive text-positive-foreground"}`}>
+        {!none && <Glyph name="check" size={12} />}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="font-semibold">Official text: </span>
+        <span className="text-muted-foreground">
+          {original.label}
+          {original.hash ? ", fingerprinted" : ""}
+        </span>
+      </span>
+      <span aria-hidden="true" className="-rotate-90 text-muted-foreground">
+        <Glyph name="chevron" size={14} />
+      </span>
+    </button>
+  );
+}

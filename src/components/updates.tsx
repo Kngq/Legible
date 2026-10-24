@@ -15,6 +15,7 @@ import { friendlyWhen, KIND_LABEL, whyLine } from "@/lib/engine/update-copy";
 import { AvatarRing } from "./AvatarRing";
 import { DocTile } from "./covers";
 import { Glyph } from "./icons";
+import { OriginalLine } from "./OriginalText";
 import { EntryPhoto } from "./photos";
 import { viewForPart, type SheetView } from "./ProfileSheet";
 import { FOCUS, Tag } from "./ui";
@@ -216,6 +217,15 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
             ))}
           </ul>
         </div>
+      )}
+
+      {e.kind === "civic" ? (
+        <OriginalLine original={e.card.item.original} onOpen={() => onOpenItem(e.card.item.id)} />
+      ) : (
+        <OriginalLine
+          original={{ kind: "booklet", label: e.item.doc.source.name.split(",")[0], hash: e.item.doc.source.hash }}
+          onOpen={() => onOpenDoc(e.item.doc.id)}
+        />
       )}
 
       <div className="mt-4 flex flex-wrap items-center gap-2">{actions}</div>

@@ -517,6 +517,18 @@ Checkpoints: `npm run data:build` for shipped documents, `verifyMeasures` on the
 
 UI: a quote badge on every citation; "How do we know this?" on each card opening a chain view with sentence, quote, page, and source as four clickable rows; a TrustPanel per document showing verified out of total, reviewer and date, source hash, and link.
 
+**Original text for every feed item.** An item appears only with its saved original, or with a plain statement that none exists yet. Every Home and Explore card has an "Official text" line (`OriginalLine`) that opens the item; the detail page shows the original in full.
+
+| Item | Original | Where it comes from | Fingerprint |
+|---|---|---|---|
+| Ballot question | The full law (`Measure.fullText`: label and booklet page range, checked against each page's "Full Text" heading), plus the summary, YES/NO, and fiscal quotes | The official booklet PDF, served at `/official/IFV_2026_English.pdf`, opened at the page; page text loaded on demand | `source.hash` of the PDF, `pagesHash` of the page text, `savedOn` |
+| Election date | The booklet sentence that sets it, verbatim | `CivicItem.original`, kind `booklet`, with the booklet page | the booklet PDF's hash |
+| Bill | Full bill text, official description, and every action | `npm run data:bills` saves the Legislature API's record to `data/official/bills/`; the build publishes a reader copy and takes the latest action from the official history | SHA-256 of the saved snapshot, fetch date |
+| Meeting | The posted agenda | A PDF saved as `data/official/agendas/<id>.pdf` | SHA-256 of the PDF |
+| Meeting without an agenda | none: "No agenda is posted for this meeting yet" | — | — |
+
+The civic build fails if any item has no original record.
+
 ## Chat dock
 
 Three ways in, one bottom sheet (`AskSheet.tsx`, mounted once by `AskProvider` in `LegibleApp`), which leaves the page visible above it and is titled with its scope ("Ask about Question 7" and the short title):
