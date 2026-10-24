@@ -152,7 +152,7 @@ export function OriginalLine({ original, onOpen }: { original?: CivicOriginal | 
         <span className="font-semibold">Official text: </span>
         <span className="text-muted-foreground">
           {original.label}
-          {original.hash ? ", fingerprinted" : ""}
+          {original.kind === "booklet" ? ", found word for word" : original.hash ? ", saved copy" : ""}
         </span>
       </span>
       <span aria-hidden="true" className="-rotate-90 text-muted-foreground">

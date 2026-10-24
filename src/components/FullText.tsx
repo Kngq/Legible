@@ -32,16 +32,23 @@ export function FullTextLink({ measure }: { measure: Measure }) {
   );
 }
 
-/** "Fingerprint 0d809a43…339b09, saved Oct 24, 2026": lets anyone check this copy matches the official file. */
+/**
+ * "Saved Oct 24, 2026 · ID 0d809a43…339b09": when the copy was saved, and a short
+ * ID (its SHA-256) that changes if a single character of the file changes, so
+ * anyone can check this copy matches the official file.
+ */
 export function Fingerprint({ source }: { source: Pick<DocumentData["source"], "hash" | "savedOn"> }) {
   if (!source.hash) return null;
   const saved = source.savedOn ? new Date(`${source.savedOn}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : null;
   return (
     <p className="text-small text-muted-foreground">
-      <span title={`SHA-256 ${source.hash}`} className="font-mono">
-        Fingerprint {source.hash.slice(0, 8)}…{source.hash.slice(-6)}
+      {saved ? `Saved ${saved} · ` : ""}
+      <span
+        title={`File ID (SHA-256): ${source.hash}. It changes if a single character of the file changes, so you can check this copy matches the official one.`}
+        className="font-mono"
+      >
+        ID {source.hash.slice(0, 8)}…{source.hash.slice(-6)}
       </span>
-      {saved ? `, saved ${saved}` : ""}
     </p>
   );
 }
