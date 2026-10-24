@@ -2,6 +2,7 @@
 // it is shown to this person. Dates are Boston time. Pure TypeScript.
 import { FACT_DEFS, TOPIC_DEFS } from "@/lib/vocab";
 import type { CivicCard, CivicKind } from "./civic";
+import { appliesIf } from "./timeline";
 
 const TZ = "America/New_York";
 
@@ -48,5 +49,6 @@ export function whyLine(c: CivicCard): string | null {
     const t = c.item.topics.find(Boolean);
     return t ? `You follow ${TOPIC_DEFS[t].label.toLowerCase()}.` : null;
   }
+  if (c.open.length) return `${appliesIf(c.open)}. You haven't said yet.`;
   return null;
 }

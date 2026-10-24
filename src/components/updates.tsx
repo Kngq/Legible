@@ -183,7 +183,7 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
     <li className="rounded-lg bg-surface p-5 shadow-card">
       <div className="flex items-start justify-between gap-3">
         <p className="text-small font-semibold uppercase tracking-wider text-muted-foreground">{kind}</p>
-        {e.touches ? <Tag pop="accent">May affect you</Tag> : e.relevance >= 0.6 ? <Tag pop="info">You follow this</Tag> : null}
+        {e.touches ? <Tag pop="accent">May affect you</Tag> : e.level === "list" ? <Tag pop="info">You follow this</Tag> : e.level === "maybe" ? <Tag>Might apply</Tag> : null}
       </div>
       <div className="mt-2 flex items-start gap-3">
         {thumb.photo && <PhotoThumb photo={thumb.photo} onError={thumb.onError} />}

@@ -1,26 +1,22 @@
 "use client";
 
 // Home after onboarding, kept short: a welcome, "What matters to you?" first,
-// then only the updates that match the person's answers or subjects. Everything
-// else lives on Explore. Order comes from buildTimeline. Runs in the browser.
+// then For you: what matches the person's answers or subjects, what might apply
+// if they answered a question, then the most pressing things for everyone.
+// Everything else lives on Explore. Order comes from buildTimeline, and which
+// areas Home asks about comes from the facts upcoming items depend on, so
+// nothing here is tied to a fixed set of onboarding questions.
 import type { CivicCard } from "@/lib/engine/civic";
 import type { Feed } from "@/lib/engine/feed";
 import { personalization } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
-import { buildTimeline, forYouGroups } from "@/lib/engine/timeline";
-import type { LifeAreaId } from "@/lib/vocab";
+import { areasThatMatter, buildTimeline, forYouGroups } from "@/lib/engine/timeline";
+import { FACT_DEFS } from "@/lib/vocab";
 import { Glyph, Part } from "./icons";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { FOCUS } from "./ui";
 import { H2, PRIMARY, SECONDARY, TopBar, UpdateCard } from "./updates";
-
-/** The three profile categories Home asks about. Other areas live in the profile. */
-const CATEGORIES: { id: LifeAreaId; title: string; why: string; add: string; art: string }[] = [
-  { id: "home", title: "Your home", why: "Find out about changes that could affect where you live.", add: "Add housing details", art: "key" },
-  { id: "work", title: "Your work", why: "See decisions that could affect your job or local businesses.", add: "Add work details", art: "storefront" },
-  { id: "voting", title: "Elections", why: "Stay informed about elections and voting in your area.", add: "Add voting details", art: "ballot" },
-];
 
 export function Home({
   feed,
@@ -47,7 +43,8 @@ export function Home({
   const town = townName(profile.townId);
   const meter = personalization(profile);
   const done = new Set(meter.items.flatMap((i) => (i.kind === "area" && i.done ? [i.id] : [])));
-  const { personal, everyone } = forYouGroups(buildTimeline(feed.items, civic, today));
+  const { personal, maybe, everyone } = forYouGroups(buildTimeline(feed.items, civic, today));
+  const areas = areasThatMatter(buildTimeline(feed.items, civic, today, { includeOthers: true }));
   const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure };
 
   return (
@@ -73,22 +70,24 @@ export function Home({
           </button>
         )}
         <ul className="mt-4 grid gap-3 sm:grid-cols-3">
-          {CATEGORIES.map((c) => {
-            const isDone = done.has(c.id);
+          {areas.map(({ area, count }) => {
+            const isDone = done.has(area.id);
             return (
-              <li key={c.id}>
+              <li key={area.id}>
                 <button
                   type="button"
-                  onClick={() => onOpenProfile({ kind: "area", id: c.id })}
+                  onClick={() => onOpenProfile({ kind: "area", id: area.id })}
                   className={`flex h-full w-full flex-col rounded-lg border bg-surface p-4 text-left transition-colors duration-(--duration) ease-legible hover:bg-surface-muted/60 ${FOCUS} ${
                     isDone ? "border-border" : "border-accent/30"
                   }`}
                 >
                   <span aria-hidden="true" className={`flex size-11 items-center justify-center rounded-full ${isDone ? "bg-surface-muted" : "bg-accent-soft"}`}>
-                    <Part name={c.art} size={24} />
+                    <Part name={FACT_DEFS[area.facts[0]].avatarPart} size={24} />
                   </span>
-                  <span className="mt-3 block text-body font-bold">{c.title}</span>
-                  <span className="mt-1 block flex-1 text-small text-muted-foreground">{c.why}</span>
+                  <span className="mt-3 block text-body font-bold">{area.heading}</span>
+                  <span className="mt-1 block flex-1 text-small text-muted-foreground">
+                    {area.why} {count === 1 ? "1 upcoming update depends on it." : `${count} upcoming updates depend on it.`}
+                  </span>
                   {isDone ? (
                     <span className="mt-3 flex items-center justify-between gap-2 text-small font-semibold">
                       <span className="inline-flex items-center gap-1.5">
@@ -97,7 +96,7 @@ export function Home({
                       <span className="underline underline-offset-4">Edit</span>
                     </span>
                   ) : (
-                    <span className="mt-3 inline-flex min-h-10 items-center justify-center rounded-full bg-primary px-4 text-small font-semibold text-primary-foreground">{c.add}</span>
+                    <span className="mt-3 inline-flex min-h-10 items-center justify-center rounded-full bg-primary px-4 text-small font-semibold text-primary-foreground">Add details</span>
                   )}
                 </button>
               </li>
@@ -129,10 +128,23 @@ export function Home({
           </p>
         )}
 
+        {/* Depends on something the person hasn't answered: one tap on the card's details settles it. */}
+        {maybe.length > 0 && (
+          <>
+            <p className={`${personal.length > 0 ? "mt-8" : "mt-5"} text-body font-bold`}>Might apply to you</p>
+            <p className="text-small text-muted-foreground">These depend on something you haven&apos;t told us yet. Each card says what.</p>
+            <ul className="mt-4 space-y-4">
+              {maybe.map((e) => (
+                <UpdateCard key={e.key} entry={e} {...cardProps} />
+              ))}
+            </ul>
+          </>
+        )}
+
         {/* Never empty: the most pressing things that apply to everyone come next. */}
         {everyone.length > 0 && (
           <>
-            <p className={`${personal.length > 0 ? "mt-8" : "mt-5"} text-body font-bold`}>For everyone</p>
+            <p className={`${personal.length + maybe.length > 0 ? "mt-8" : "mt-5"} text-body font-bold`}>For everyone</p>
             <p className="text-small text-muted-foreground">These apply to every voter or resident, not only you. Soonest first.</p>
             <ul className="mt-4 space-y-4">
               {everyone.map((e) => (

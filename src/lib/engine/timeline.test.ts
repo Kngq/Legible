@@ -5,7 +5,8 @@ import { findBannedWords } from "@/lib/vocab";
 import { civicFeed, type CivicItem } from "./civic";
 import { buildFeed } from "./feed";
 import { answerFact, emptyProfile, type Profile } from "./profile";
-import { buildTimeline, EVERYONE_SHOWN, forYouGroups, relevanceScore, urgencyScore, WEIGHTS } from "./timeline";
+import { LIFE_AREAS } from "@/lib/vocab";
+import { areasThatMatter, buildTimeline, entryFacts, EVERYONE_SHOWN, forYouGroups, MAYBE_SHOWN, relevanceScore, urgencyScore, WEIGHTS } from "./timeline";
 import type { DocumentData } from "./types";
 
 const t0 = "2026-10-24T14:00:00.000Z";
@@ -35,14 +36,32 @@ describe("buildTimeline", () => {
 
   it("with equal relevance, sooner ranks first", () => {
     const t = timelineFor(emptyProfile(t0)).filter((e) => !e.touches && e.days !== undefined);
-    const days = t.map((e) => e.days!);
-    expect(days).toEqual([...days].sort((a, b) => a - b));
+    for (const r of new Set(t.map((e) => e.relevance))) {
+      const days = t.filter((e) => e.relevance === r).map((e) => e.days!);
+      expect(days).toEqual([...days].sort((a, b) => a - b));
+    }
   });
 
-  it("empty profile: no 0-of-9 count, and nothing that only matches someone else", () => {
+  it("empty profile: no 0-of-9 count, and an item tied to an unanswered fact only ever might apply", () => {
     const t = timelineFor(emptyProfile(t0));
     for (const e of t) expect(e.forYou).not.toMatch(/\b0 of\b/);
-    expect(t.some((e) => e.kind === "civic" && e.card.item.id === "ma-2026-registration-deadline")).toBe(false);
+    const reg = t.find((e) => e.kind === "civic" && e.card.item.id === "ma-2026-registration-deadline")!;
+    expect(reg.level).toBe("maybe");
+    expect(reg.touches).toBe(false);
+    expect(reg.forYou).toMatch(/^Applies if you are not registered at your address\.$/);
+  });
+
+  it("Election Day stays for everyone when the ballot only might apply", () => {
+    const election = timelineFor(emptyProfile(t0)).find((e) => e.kind === "civic" && e.card.item.kind === "election")!;
+    expect(election.level).toBe("everyone");
+    const renter = timelineFor(withFacts({ rents: true })).find((e) => e.kind === "civic" && e.card.item.kind === "election")!;
+    expect(renter.level).toBe("touches");
+  });
+
+  it("an answer settles it: matching makes it touch, the opposite answer drops it", () => {
+    const find = (p: Profile) => timelineFor(p).find((e) => e.kind === "civic" && e.card.item.id === "ma-2026-registration-deadline");
+    expect(find(withFacts({ registered_here: false }))?.level).toBe("touches");
+    expect(find(withFacts({ registered_here: true }))).toBeUndefined();
   });
 
   it("BC student who is not registered: the registration deadline is today and names why", () => {
@@ -91,24 +110,57 @@ describe("buildTimeline", () => {
 
 describe("forYouGroups", () => {
   it("is never empty for someone who skipped the questions", () => {
-    const { personal, everyone } = forYouGroups(timelineFor(emptyProfile(t0)));
+    const { personal, maybe, everyone } = forYouGroups(timelineFor(emptyProfile(t0)));
     expect(personal).toHaveLength(0);
-    expect(everyone.length).toBeGreaterThan(0);
+    expect(maybe.length + everyone.length).toBeGreaterThan(0);
+    expect(maybe.length).toBeLessThanOrEqual(MAYBE_SHOWN);
     expect(everyone.length).toBeLessThanOrEqual(EVERYONE_SHOWN);
   });
 
-  it("puts what touches the person first, then everyone items, with no overlap", () => {
-    const t = timelineFor(withFacts({ registered_here: false }, "cambridge"));
-    const { personal, everyone } = forYouGroups(t);
-    expect(personal.some((e) => e.key === "c:ma-2026-registration-deadline")).toBe(true);
-    expect(personal.every((e) => e.touches || e.relevance >= 0.6)).toBe(true);
-    expect(everyone.every((e) => !e.touches && e.relevance < 0.6)).toBe(true);
-    expect(everyone.some((e) => personal.includes(e))).toBe(false);
+  it("groups by level with no overlap, keeping the timeline's order", () => {
+    for (const p of [emptyProfile(t0), withFacts({ registered_here: false }, "cambridge"), withFacts({ rents: true, drives: true }, "cambridge")]) {
+      const t = timelineFor(p);
+      const { personal, maybe, everyone } = forYouGroups(t);
+      expect(personal.every((e) => e.level === "touches" || e.level === "list")).toBe(true);
+      expect(maybe.every((e) => e.level === "maybe")).toBe(true);
+      expect(everyone.every((e) => e.level === "everyone")).toBe(true);
+      for (const g of [personal, maybe, everyone]) expect(g.map((e) => e.key)).toEqual(t.filter((e) => g.includes(e)).map((e) => e.key));
+    }
   });
 
-  it("keeps the timeline's order within each group", () => {
-    const t = timelineFor(emptyProfile(t0));
-    const { everyone } = forYouGroups(t);
-    expect(everyone.map((e) => e.key)).toEqual(t.filter((e) => everyone.includes(e)).map((e) => e.key));
+  it("answering moves an item from might apply to personal", () => {
+    const key = "c:ma-2026-registration-deadline";
+    expect(forYouGroups(timelineFor(emptyProfile(t0))).maybe.map((e) => e.key)).toContain(key);
+    expect(forYouGroups(timelineFor(withFacts({ registered_here: false }))).personal.map((e) => e.key)).toContain(key);
+  });
+});
+
+describe("areasThatMatter", () => {
+  const everything = (p: Profile) => buildTimeline(buildFeed(docs, p, today).items, civicFeed(civic, p, today), today, { includeOthers: true });
+
+  it("ranks areas by how many upcoming entries depend on their facts, and skips unused areas", () => {
+    const t = everything({ ...emptyProfile(t0), townId: "cambridge" });
+    const areas = areasThatMatter(t, LIFE_AREAS.length);
+    const count = (facts: readonly string[]) => t.filter((e) => facts.some((f) => entryFacts(e).has(f as never))).length;
+    for (const { area, count: n } of areas) expect(n).toBe(count(area.facts));
+    expect(areas.map((a) => a.count)).toEqual([...areas.map((a) => a.count)].sort((a, b) => b - a));
+    for (const area of LIFE_AREAS) if (count(area.facts) === 0) expect(areas.some((a) => a.area.id === area.id)).toBe(false);
+  });
+
+  it("follows the data: an item on a new fact lifts that fact's area", () => {
+    const base = { ...emptyProfile(t0), townId: "cambridge" };
+    const before = areasThatMatter(everything(base), LIFE_AREAS.length);
+    const transit = LIFE_AREAS.find((a) => a.facts.includes("rides_transit"))!;
+    const extra = Array.from({ length: 20 }, (_, i) => ({
+      ...civic[0],
+      id: `test-transit-${i}`,
+      touches: [{ fact: "rides_transit" as const, when: true }],
+    }));
+    const after = areasThatMatter(
+      buildTimeline(buildFeed(docs, base, today).items, civicFeed([...civic, ...extra], base, today), today, { includeOthers: true }),
+      1,
+    );
+    expect(after[0].area.id).toBe(transit.id);
+    expect(after[0].count).toBeGreaterThan(before.find((a) => a.area.id === transit.id)?.count ?? 0);
   });
 });

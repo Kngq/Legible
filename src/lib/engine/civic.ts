@@ -2,7 +2,7 @@
 // to documents. Lighter than a document (no measures), but every item names an
 // official source and says how it was checked. Pure TypeScript; runs in the browser.
 import type { FactId, TopicId } from "@/lib/vocab";
-import { factValues, topicIds, type Profile } from "./profile";
+import { factValues, isFactSettled, topicIds, type Profile } from "./profile";
 import type { Quote, Relevance } from "./types";
 
 export type CivicKind = "deadline" | "window" | "election" | "meeting" | "bill";
@@ -79,6 +79,8 @@ export interface CivicCard {
   relevance: Relevance;
   onYourList: boolean;
   because: { fact: FactId; value: boolean }[];
+  /** Touch facts the person has not answered: the item applies if one of these holds. */
+  open: { fact: FactId; when: boolean }[];
   timing: CivicTiming;
   /** Whole days from today to `at` (upcoming) or to `until` (open window). */
   days?: number;
@@ -112,9 +114,10 @@ export function civicInFeed(item: CivicItem, townId?: string): boolean {
 export function civicCard(item: CivicItem, profile: Profile, today: string): CivicCard {
   const facts = factValues(profile);
   const because = item.touches.filter((t) => facts[t.fact] === t.when).map((t) => ({ fact: t.fact, value: t.when }));
+  const open = because.length ? [] : item.touches.filter((t) => facts[t.fact] === undefined && !isFactSettled(profile, t.fact));
   const followed = new Set(topicIds(profile));
   const relevance: Relevance = because.length ? "touches" : item.everyone ? "everyone" : "probably_not";
-  return { item, relevance, onYourList: item.topics.some((t) => followed.has(t)), because, ...timing(item, today) };
+  return { item, relevance, onYourList: item.topics.some((t) => followed.has(t)), because, open, ...timing(item, today) };
 }
 
 const RANK: Record<CivicTiming, number> = { today: 0, open: 1, upcoming: 2, ongoing: 3, past: 4 };
