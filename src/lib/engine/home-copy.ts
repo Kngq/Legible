@@ -6,6 +6,7 @@
 // for anything not yet law.
 import { FACT_DEFS, LIFE_AREAS, TOPIC_DEFS, type FactId, type TopicId } from "@/lib/vocab";
 import type { CivicCard } from "./civic";
+import type { Measure } from "./types";
 import { decideByRelative, shortDate } from "./decide-by";
 import { REGISTRATION_LOOKUP_URL } from "./next-steps";
 import type { Profile } from "./profile";
@@ -58,8 +59,8 @@ const HEADLINES: Record<string, string> = {
   "ma-2026-registration-deadline": "Last chance to register for the November 3 election",
   "ma-2026-mail-ballot-deadline": "Vote by mail: applications are due October 27",
   "ma-2026-election-day": "Get ready for the November 3 election",
-  "ma-194-s2836": "Massachusetts is considering changes to housing rules",
-  "ma-194-s2581": "A proposed statewide policy on student phones in school",
+  "ma-194-s2836": "Cities and towns could no longer ban duplexes and small apartment buildings",
+  "ma-194-s2581": "A proposed ban on student phone use during the school day",
   "ma-194-h4699": "A proposed study of apartment buildings with one stairway",
   "ma-194-h1482": "A proposed fund for in-law and backyard apartments",
 };
@@ -78,7 +79,8 @@ const EXPLAIN: Record<string, (c: CivicCard) => string> = {
     `Registration ${c.timing === "today" ? "closes today" : "closes October 24"}. If you're eligible to vote in Massachusetts and haven't registered at your current address, you may need to act.`,
   "ma-2026-election-day": () => "Explore what's on your ballot, understand the questions, and find what you need before Election Day.",
   // Bills: what is proposed, without committee history (that stays on the detail page).
-  "ma-194-s2836": () => "A proposed bill would limit local rules that block duplexes and small apartment buildings where public water and sewer exist.",
+  // The headline names one provision; this says the bill does more.
+  "ma-194-s2836": () => "One part of a wider zoning bill, covering buildings of up to 5 homes where public water and sewer exist. It would also change rules on minimum lot sizes, parking, and housing near transit.",
   "ma-194-h1482": () => "Massachusetts is considering a state trust fund for in-law and backyard apartments.",
   "ma-194-h4699": () => "Massachusetts is considering a study of residential buildings served by a single stairway.",
   "ma-194-s2581": () => "Massachusetts is considering having every public school or district set a policy on student phones during the school day.",
@@ -106,8 +108,37 @@ const AREA: Partial<Record<TopicId, string>> = {
 };
 
 /**
+ * Ballot question headlines for Home, in plain words. The data's title and the
+ * official title stay on the question's page; this only names the decision.
+ */
+const QUESTION_HEADLINES: Record<string, string> = {
+  "ballot-2026-q7": "Could single-family homes be built on residential lots of 5,000 sq ft or more?",
+};
+
+export function questionHeadline(m: { id: string; title: string }): string {
+  return QUESTION_HEADLINES[m.id] ?? m.title;
+}
+
+/**
+ * Where a headline already says what the overview says, the line under it uses
+ * another of the measure's own verified sentences, named by its quote.
+ */
+const QUESTION_WHAT_QUOTE: Record<string, string> = {
+  "ballot-2026-q7": "q7-c2",
+};
+
+export function questionWhat(m: Pick<Measure, "id" | "overview" | "rules">): string {
+  const q = QUESTION_WHAT_QUOTE[m.id];
+  const own = q ? m.rules.flatMap((r) => r.why).find((w) => w.quoteId === q) : undefined;
+  return own?.text ?? m.overview[0]?.text ?? "";
+}
+
+/** A bill's broad stage for cards. The detail page keeps the precise status ("In conference committee"). */
+export const BILL_STATUS = "Proposed · Not law yet";
+
+/**
  * The card's compact header: a quiet metadata line and a neutral status chip.
- * Bills: "Housing · H.1482" and "Proposal under review", so nothing reads as law.
+ * Bills: "Housing · H.1482" and "Proposed · Not law yet", so nothing reads as law.
  * Dated items: "Deadline · October 27" and "In 3 days" / "Today".
  * Open windows: "Voting · October 17–30" and "6 days left", counted to the close.
  */
@@ -115,7 +146,7 @@ export function cardHeader(c: CivicCard): { meta: string; status?: string } {
   const i = c.item;
   if (i.kind === "bill") {
     const area = i.topics.map((t) => AREA[t]).find(Boolean) ?? "Proposed legislation";
-    return { meta: [area, billNumber(i.title)].filter(Boolean).join(" · "), status: "Proposal under review" };
+    return { meta: [area, billNumber(i.title)].filter(Boolean).join(" · "), status: BILL_STATUS };
   }
   if (!i.at) return { meta: CATEGORY[i.kind] };
   if (c.timing === "open" && i.until) return { meta: `${CATEGORY[i.kind]} · ${windowRange(i.at, i.until)}`, status: left(c.days) };
@@ -151,6 +182,17 @@ export function dateLine(e: TimelineEntry, today: string): string {
  */
 export type RelevanceKind = "direct" | "potential" | "interest" | "open";
 
+/**
+ * The label before a relevance sentence. A supported match says why it matters;
+ * an indirect one only says why it is shown; open questions carry no label.
+ */
+export const RELEVANCE_LABEL: Record<RelevanceKind, string> = {
+  direct: "Why this matters to you",
+  potential: "Why you're seeing this",
+  interest: "On your list",
+  open: "",
+};
+
 export interface Relevance {
   kind: RelevanceKind;
   /** The one sentence on the card. */
@@ -159,9 +201,9 @@ export interface Relevance {
   basis: string[];
 }
 
-/** What a topic is about, in everyday words, for "could affect …". */
+/** What a topic is about, in everyday words, for "this proposal concerns …". */
 const TOPIC_EFFECT: Partial<Record<TopicId, string>> = {
-  housing_costs: "housing options in your community over time",
+  housing_costs: "housing options in your community",
   schools: "your child's school day",
   local_control: "what your city or town can decide",
   public_safety: "building safety rules",
@@ -172,6 +214,23 @@ const TOPIC_EFFECT: Partial<Record<TopicId, string>> = {
 };
 
 const phrase = (fact: FactId, value: boolean) => (value ? FACT_DEFS[fact].because.yes : FACT_DEFS[fact].because.no);
+/** "You rent", from "you rent". */
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+/** Short, spoken questions for a missing answer. Anything else falls back to the fact's own question. */
+const ASK: Record<string, string> = {
+  "rents:true": "Rent your home?",
+  "owns:true": "Own a home?",
+  "kids_in_schools:true": "Have children in public school?",
+  "registered_here:false": "Not registered at your current address?",
+};
+
+/** "Own a home?", or "Rent or own your home?" when either answer would decide it. */
+export function askFor(open: { fact: FactId; when: boolean }[]): string {
+  const keys = [...new Set(open.map((o) => `${o.fact}:${o.when}`))];
+  if (keys.length === 2 && keys.includes("rents:true") && keys.includes("owns:true")) return "Rent or own your home?";
+  return keys.map((k) => ASK[k] ?? FACT_DEFS[k.split(":")[0] as FactId].question).join(" ");
+}
 const NOUN: Record<CivicCard["item"]["kind"], string> = { deadline: "deadline", window: "voting period", election: "election", meeting: "meeting", bill: "proposal" };
 
 export function civicRelevance(c: CivicCard): Relevance | null {
@@ -186,24 +245,29 @@ export function civicRelevance(c: CivicCard): Relevance | null {
       const effect = topic ? TOPIC_EFFECT[topic] : "your situation";
       return {
         kind: "potential",
-        text: `You mentioned that ${said}. This proposal could influence ${effect}.`,
+        text: `${cap(said)}, and this proposal concerns ${effect}.`,
         basis: [...basis, `This proposal concerns ${topic ? TOPIC_DEFS[topic].label.toLowerCase() : "that"}. It is not law, and any effect on you would be indirect.`],
       };
     }
     const voting = b.fact === "registered_here" || b.fact === "votes_in_primaries";
     return {
       kind: "direct",
-      text: `You mentioned that ${said.replace(/^you are not registered at your address$/, "you aren't registered at your current address")}. This ${NOUN[i.kind]} is for people in that situation${voting ? ", if you're eligible to vote" : ""}.`,
+      text: `${cap(said.replace(/^you are not registered at your address$/, "you aren't registered at your current address"))}, and this ${NOUN[i.kind]} is for people in that situation${voting ? ", if you're eligible to vote" : ""}.`,
       basis: [...basis, `This ${NOUN[i.kind]} is about people in that situation.`],
     };
   }
   if (c.onYourList) {
     const t = i.topics.find(Boolean);
     const label = t ? TOPIC_DEFS[t].label.toLowerCase() : "this subject";
-    return { kind: "interest", text: `You follow ${label}. This ${NOUN[i.kind]} is on that subject.`, basis: [`You follow ${label}.`, "It matches your interests; nothing says it changes your situation."] };
+    return { kind: "interest", text: `You follow ${label}, and this ${NOUN[i.kind]} is on that subject.`, basis: [`You follow ${label}.`, "It matches your interests; nothing says it changes your situation."] };
   }
   if (c.open.length) {
-    return { kind: "open", text: `May be relevant if ${appliesIf(c.open).replace(/^Applies if /, "")}.`, basis: ["It depends on something you haven't told Legible yet."] };
+    const may = i.kind === "bill" ? "may interest you" : "may apply to you";
+    return {
+      kind: "open",
+      text: `${askFor(c.open)} This ${NOUN[i.kind]} ${may}.`,
+      basis: [`It depends on whether ${appliesIf(c.open).replace(/^Applies if /, "")}, which you haven't told Legible yet.`],
+    };
   }
   return null;
 }

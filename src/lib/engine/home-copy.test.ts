@@ -4,7 +4,7 @@ import civicData from "@/data/civic-ma.json";
 import { asksHowToVote, findBannedWords } from "@/lib/vocab";
 import { civicCard, civicFeed, type CivicItem } from "./civic";
 import { buildFeed } from "./feed";
-import { actionsFor, billNumber, cardHeader, civicRelevance, dateLine, explanation, headline, homeSections, isUrgent, keyDate, profileBasis, relevanceOf, windowRange } from "./home-copy";
+import { actionsFor, askFor, billNumber, cardHeader, civicRelevance, dateLine, explanation, headline, homeSections, isUrgent, keyDate, profileBasis, questionHeadline, questionWhat, relevanceOf, RELEVANCE_LABEL, windowRange } from "./home-copy";
 import { answerFact, emptyProfile, setTopic, type Profile } from "./profile";
 import { buildTimeline } from "./timeline";
 import type { DocumentData } from "./types";
@@ -28,11 +28,11 @@ const sections = (p: Profile) => {
 describe("headline and explanation", () => {
   it("reads like a sentence, keeps the bill number in the date line, and never calls a bill law", () => {
     const c = card("ma-194-s2836");
-    expect(headline(c)).toBe("Massachusetts is considering changes to housing rules");
+    expect(headline(c)).toBe("Cities and towns could no longer ban duplexes and small apartment buildings");
     expect(billNumber(c.item.title)).toBe("S.2836");
     const e = buildTimeline([], civicFeed(items, withFacts({ rents: true }), today), today).find((x) => x.key === "c:ma-194-s2836")!;
     expect(dateLine(e, today)).toBe("S.2836 · Under consideration");
-    expect(cardHeader(c)).toEqual({ meta: "Housing · S.2836", status: "Proposal under review" });
+    expect(cardHeader(c)).toEqual({ meta: "Housing · S.2836", status: "Proposed · Not law yet" });
   });
 
   it("keeps committee history off the card", () => {
@@ -61,14 +61,14 @@ describe("relevance", () => {
   it("explains a deadline directly, from the one answer that matters, with the eligibility caveat", () => {
     const r = civicRelevance(card("ma-2026-registration-deadline", withFacts({ registered_here: false, rents: true, state_employee: true })))!;
     expect(r.kind).toBe("direct");
-    expect(r.text).toBe("You mentioned that you aren't registered at your current address. This deadline is for people in that situation, if you're eligible to vote.");
+    expect(r.text).toBe("You aren't registered at your current address, and this deadline is for people in that situation, if you're eligible to vote.");
     expect(r.text).not.toMatch(/\byou rent\b|work for the state/);
   });
 
   it("explains a bill as a potential, indirect connection", () => {
     const r = civicRelevance(card("ma-194-s2836", withFacts({ rents: true })))!;
     expect(r.kind).toBe("potential");
-    expect(r.text).toBe("You mentioned that you rent. This proposal could influence housing options in your community over time.");
+    expect(r.text).toBe("You rent, and this proposal concerns housing options in your community.");
     expect(r.basis.join(" ")).toMatch(/not law/);
   });
 
@@ -84,7 +84,47 @@ describe("relevance", () => {
   it("never assumes a renter does not own: owning stays an open question", () => {
     const r = civicRelevance(card("ma-194-h1482", withFacts({ rents: true })));
     expect(r?.kind).toBe("open");
-    expect(r?.text).toBe("May be relevant if you own your home.");
+    expect(r?.text).toBe("Own a home? This proposal may interest you.");
+    expect(r?.basis.join(" ")).toMatch(/haven't told Legible/);
+  });
+});
+
+describe("plain-language copy", () => {
+  it("asks about a missing answer in plain words, joining rent and own", () => {
+    expect(askFor([{ fact: "owns", when: true }])).toBe("Own a home?");
+    expect(askFor([{ fact: "kids_in_schools", when: true }])).toBe("Have children in public school?");
+    expect(askFor([{ fact: "rents", when: true }, { fact: "owns", when: true }])).toBe("Rent or own your home?");
+    expect(askFor([{ fact: "drives", when: true }])).toBe("Do you drive in town?");
+  });
+
+  it("names a ballot question without changing its data titles", () => {
+    expect(questionHeadline({ id: "ballot-2026-q7", title: "Single-family homes on 5,000 sq ft lots" })).toBe(
+      "Could single-family homes be built on residential lots of 5,000 sq ft or more?",
+    );
+    expect(questionHeadline({ id: "ballot-2026-q1", title: "Public records" })).toBe("Public records");
+    const q7 = (ballot as unknown as DocumentData).measures.find((m) => m.id === "ballot-2026-q7")!;
+    expect(q7.title).toBe("Single-family homes on 5,000 sq ft lots");
+    expect(q7.officialTitle).toBe("Single Family Homes");
+    // The line under the headline is one of the measure's own verified sentences.
+    const line = questionWhat(q7);
+    expect(line).toBe("The lot would also need 50 feet of street frontage and public sewer and water.");
+    expect(q7.rules.flatMap((r) => r.why).find((w) => w.text === line)?.quoteId).toBe("q7-c2");
+  });
+
+  it("says why it matters only for a supported match", () => {
+    expect(RELEVANCE_LABEL.direct).toBe("Why this matters to you");
+    expect(RELEVANCE_LABEL.potential).toBe("Why you're seeing this");
+    expect(RELEVANCE_LABEL.open).toBe("");
+  });
+
+  it("uses no banned words in headlines, explanations, or labels", () => {
+    const strings = [
+      ...items.map((i) => headline(card(i.id))),
+      ...items.map((i) => explanation(card(i.id))),
+      questionHeadline({ id: "ballot-2026-q7", title: "" }),
+      ...Object.values(RELEVANCE_LABEL),
+    ];
+    for (const t of strings) expect(findBannedWords(t)).toEqual([]);
   });
 });
 

@@ -7,7 +7,7 @@
 // verified items (keyDate and days); the order comes from homeSections. Plum
 // appears only on the selected date's relevance line, and only for a match.
 import { useState } from "react";
-import { actionsFor, cardHeader, civicRelevance, headline, isUrgent, type Action } from "@/lib/engine/home-copy";
+import { actionsFor, cardHeader, civicRelevance, headline, isUrgent, RELEVANCE_LABEL, type Action } from "@/lib/engine/home-copy";
 import type { TimelineEntry } from "@/lib/engine/timeline";
 import { Spark } from "./BriefCard";
 import { Glyph } from "./icons";
@@ -133,11 +133,11 @@ function DatePanel({ entry: e, onOpenItem, onOpenDoc, onOpenProfile }: { entry: 
         {relevance ? (
           <p className="mt-0.5 text-small text-muted-foreground">
             {relevance.kind === "interest" ? (
-              <span className="mr-1 font-semibold text-foreground">On your list.</span>
+              <span className="mr-1 font-semibold text-foreground">{RELEVANCE_LABEL.interest}:</span>
             ) : relevance.kind !== "open" ? (
               <span className="mr-1 inline-flex items-center gap-1 font-semibold text-accent">
                 <Spark />
-                Relevant to you.
+                {RELEVANCE_LABEL[relevance.kind]}:
               </span>
             ) : null}
             {relevance.text}

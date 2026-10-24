@@ -6,14 +6,14 @@
 //   matching data supports it (a direct or potential match); a followed subject
 //   gets a quieter lilac note; an open question or no match stays plain text.
 // - DecisionRow: every other decision as a compact row in a hairline list. The
-//   whole row opens the detail page; "Add details", "Why", and the official
-//   source keep their own clicks.
+//   whole row opens the detail page (a quiet "Explore →" says so); "Add
+//   details", "Details", and the official source keep their own clicks.
 // Every word of relevance comes from relevanceOf (or the ballot card's own
 // match); nothing here adds a fact. On a mouse, the Legible magnifying glass
 // follows the cursor over a decision, and a click on empty space opens it.
 import { useState, type ReactNode } from "react";
 import { docWhat, type TimelineEntry } from "@/lib/engine/timeline";
-import { actionsFor, cardHeader, explanation, headline, relevanceOf, dateLine, type Action, type Relevance, type RelevanceKind } from "@/lib/engine/home-copy";
+import { actionsFor, cardHeader, explanation, headline, questionHeadline, questionWhat, relevanceOf, dateLine, RELEVANCE_LABEL, type Action, type Relevance, type RelevanceKind } from "@/lib/engine/home-copy";
 import { DOC_TYPE_LABEL, shortDate } from "@/lib/engine/decide-by";
 import type { FeedItem } from "@/lib/engine/feed";
 import type { Card } from "@/lib/engine/types";
@@ -34,12 +34,13 @@ const KIND_EXPLAINED: Record<RelevanceKind, string> = {
   open: "Depends on something you haven't told Legible yet.",
 };
 
-/** The relevance label, by how the item connects to the person. */
-const KIND_LABEL: Record<RelevanceKind, string> = {
-  direct: "Relevant to you",
-  potential: "Relevant to you",
-  interest: "On your list",
-  open: "Might apply",
+/** "Add home details": names the part of the profile the missing answer lives in. */
+const AREA_DETAILS: Record<LifeAreaId, string> = {
+  home: "home",
+  household: "household",
+  work: "work",
+  getting_around: "travel",
+  voting: "voting",
 };
 
 /** Supported by the matching data: the only relevance that gets the plum accent. */
@@ -150,16 +151,17 @@ function fromBallotCard(c: Card, ballot: FeedItem, onOpenMeasure: (docId: string
   const m = c.measure;
   const open = () => onOpenMeasure(ballot.doc.id, m.id);
   const touches = c.relevance === "touches";
-  const because = questionBecause(c);
+  // "Because you rent" -> "You rent".
+  const because = questionBecause(c)?.replace(/^Because you/, "You");
   const d = ballot.doc.decideBy;
   return {
     key: m.id,
     part: m.topics.map((t) => TOPIC_PART[t]).find(Boolean) ?? "ballot",
-    meta: `Ballot question ${m.number}`,
+    meta: `Ballot question ${m.number} · ${m.officialTitle}`,
     status: d ? `Voters decide ${shortDate(d.date)}` : undefined,
     dated: true,
-    title: m.title,
-    what: m.overview[0]?.text ?? "",
+    title: questionHeadline(m),
+    what: questionWhat(m),
     relevance: because
       ? {
           kind: touches ? "direct" : "interest",
@@ -215,8 +217,8 @@ function ActionLink({ a, main, go }: { a: Action; main: boolean; go: (a: Action)
 
 function AddDetails({ area, onOpenProfile }: { area?: LifeAreaId; onOpenProfile: (v: SheetView) => void }) {
   return (
-    <button type="button" onClick={() => onOpenProfile(area ? { kind: "area", id: area } : { kind: "list" })} className={ADD}>
-      Add details
+    <button type="button" onClick={() => onOpenProfile(area ? { kind: "area", id: area } : { kind: "list" })} className={`whitespace-nowrap ${ADD}`}>
+      Add {area ? `${AREA_DETAILS[area]} ` : ""}details <span aria-hidden="true">→</span>
     </button>
   );
 }
@@ -230,7 +232,7 @@ function WhyToggle({ open, onToggle, compact = false }: { open: boolean; onToggl
       aria-expanded={open}
       className={`relative z-10 inline-flex items-center gap-1 text-small font-semibold text-accent interactive hover:text-primary-hover ${compact ? "min-h-6 align-middle" : "min-h-9"} ${FOCUS}`}
     >
-      {compact ? "Why" : "Why you're seeing this"}
+      {compact ? "Details" : "Why you're seeing this"}
       <span aria-hidden="true" className={`transition-transform duration-(--dur-base) ease-legible ${open ? "rotate-180" : ""}`}>
         <Glyph name="chevron" size={13} />
       </span>
@@ -271,7 +273,7 @@ function FeaturedNote({ d, onOpenProfile }: { d: Decision; onOpenProfile: (v: Sh
   if (r.kind === "open") {
     return (
       <p className="mt-5 text-small text-muted-foreground">
-        <span className="font-semibold text-foreground">{KIND_LABEL.open}.</span> {r.text} <AddDetails area={d.openArea} onOpenProfile={onOpenProfile} />
+        {r.text} <AddDetails area={d.openArea} onOpenProfile={onOpenProfile} />
       </p>
     );
   }
@@ -281,7 +283,7 @@ function FeaturedNote({ d, onOpenProfile }: { d: Decision; onOpenProfile: (v: Sh
       <div className="flex items-center justify-between gap-3">
         <p className={`inline-flex items-center gap-1.5 text-small font-semibold ${strong ? "text-accent" : "text-foreground"}`}>
           {strong && <Spark />}
-          {KIND_LABEL[r.kind]}
+          {RELEVANCE_LABEL[r.kind]}
         </p>
         <WhyToggle open={why} onToggle={() => setWhy(!why)} compact />
       </div>
@@ -297,12 +299,13 @@ export function FeaturedDecision({ d, onOpenProfile }: { d: Decision; onOpenProf
   return (
     <article {...cta.handlers} className={`relative -mx-1 rounded-lg bg-surface px-5 pb-6 pt-6 shadow-card sm:mx-0 sm:px-8 sm:pt-7 ${cta.cursorClass}`}>
       {cta.mark}
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
         <p className="flex min-w-0 items-center gap-2.5 text-small font-semibold text-muted-foreground">
           <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground shadow-[inset_0_0_0_1.5px_var(--foreground)]">
             <Part name={d.part} size={18} strokeWidth={1.8} />
           </span>
-          <span className="truncate">{d.meta}</span>
+          {/* Wraps rather than truncates: the official title is never cut off. */}
+          <span>{d.meta}</span>
         </p>
         {d.status && (
           <span className="inline-flex shrink-0 items-center gap-1 text-small font-medium text-muted-foreground">
@@ -332,19 +335,19 @@ export function FeaturedDecision({ d, onOpenProfile }: { d: Decision; onOpenProf
 
 /* ------------------------------------------------------------------ rows */
 
-/** One line of relevance for a row: label and sentence, or "Might apply" with Add details. */
+/** One line of relevance for a row: label and sentence, or an open question with Add details. */
 function RowRelevance({ d, why, onWhy, onOpenProfile }: { d: Decision; why: boolean; onWhy: () => void; onOpenProfile: (v: SheetView) => void }) {
   const r = d.relevance;
   if (!r) return <p className="mt-1 line-clamp-1 text-small text-muted-foreground">{d.what}</p>;
   if (r.kind === "open")
     return (
       <p className="mt-1 text-small text-muted-foreground">
-        {KIND_LABEL.open}. {r.text} <AddDetails area={d.openArea} onOpenProfile={onOpenProfile} />
+        {r.text} <AddDetails area={d.openArea} onOpenProfile={onOpenProfile} />
       </p>
     );
   return (
     <p className="mt-1 text-small text-muted-foreground">
-      <span className={`font-semibold ${relevant(r) ? "text-accent" : "text-foreground"}`}>{KIND_LABEL[r.kind]}.</span> {r.text}{" "}
+      <span className={`font-semibold ${relevant(r) ? "text-accent" : "text-foreground"}`}>{RELEVANCE_LABEL[r.kind]}:</span> {r.text}{" "}
       <span className="whitespace-nowrap">
         <WhyToggle open={why} onToggle={onWhy} compact />
       </span>
@@ -372,7 +375,7 @@ export function DecisionRow({ d, onOpenProfile }: { d: Decision; onOpenProfile: 
   const source = d.secondary && "href" in d.secondary.to ? d.secondary : undefined;
 
   return (
-    <li {...cta.handlers} className="relative -mx-3 grid grid-cols-[2.25rem_1fr] gap-x-3.5 rounded-md px-3 py-4 interactive hover:bg-surface sm:grid-cols-[2.5rem_1fr]">
+    <li {...cta.handlers} className="group/row relative -mx-3 grid grid-cols-[2.25rem_1fr] gap-x-3.5 rounded-md px-3 py-4 interactive hover:bg-surface sm:grid-cols-[2.5rem_1fr]">
       {cta.mark}
       <span
         aria-hidden="true"
@@ -393,12 +396,23 @@ export function DecisionRow({ d, onOpenProfile }: { d: Decision; onOpenProfile: 
         <h3 className="mt-0.5 text-[1.0625rem] font-semibold leading-snug sm:text-lg">{title}</h3>
         <RowRelevance d={d} why={why} onWhy={() => setWhy(!why)} onOpenProfile={onOpenProfile} />
         {d.relevance && <WhyBox open={why} relevance={d.relevance} onOpenProfile={onOpenProfile} />}
-        {source && (
-          <a href={(source.to as { href: string }).href} target="_blank" rel="noreferrer" className={`relative z-10 ${LINK} min-h-9`}>
-            {source.label}
-            <Glyph name="external" size={12} />
-            <span className="sr-only">(opens the official site)</span>
-          </a>
+        {(source || !external) && (
+          <div className="flex flex-wrap items-center gap-x-5">
+            {/* A visual cue only: the headline is the row's link, and its overlay takes this click. */}
+            {!external && (
+              <span aria-hidden="true" className="inline-flex min-h-9 items-center gap-1 text-small font-semibold text-muted-foreground interactive group-hover/row:text-foreground">
+                Explore
+                <span className="transition-transform duration-(--dur-fast) ease-legible group-hover/row:translate-x-[3px]">→</span>
+              </span>
+            )}
+            {source && (
+              <a href={(source.to as { href: string }).href} target="_blank" rel="noreferrer" className={`relative z-10 ${LINK} min-h-9`}>
+                {source.label}
+                <Glyph name="external" size={12} />
+                <span className="sr-only">(opens the official site)</span>
+              </a>
+            )}
+          </div>
         )}
       </div>
     </li>
