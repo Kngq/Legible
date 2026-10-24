@@ -99,3 +99,11 @@ Inspired by a reading app's Discover, article, queue, and author screens; not co
 
 ## Oct 24: renamed Nine to Legible
 The app is now **Legible**. Brand text, the page title, code names (`LegibleApp`, `useLegible`, `ease-legible`), the spec folder (`.kiro/specs/legible/`), and the package name changed. The word "nine" is kept where it counts ballot questions. Saved profiles move from `nine.profile.v1` to `legible.profile.v1` on first load. Entries above this one keep the old name as history. Not changed here: the Vercel project, the GitHub repo, and the local folder name.
+
+## Oct 24: feed photos from Pixabay
+Revisits "Covers instead of photos" above for update cards on Home and Explore only. Measures keep their covers.
+1. **Fetch photos** on Home calls `POST /api/photos`. It takes no body and works over the whole catalog (every town), so the server never learns which town a person sees. Items that already have a photo are skipped.
+2. **Neutral searches.** Each item gets a fixed query by kind (`src/lib/photos/pick.ts`): ballot box, polling station, council chamber, Massachusetts State House. Never the item's title or town, so a stock photo can't pass for a real local scene. Results tagged with protests, campaigns, flags, or party names are skipped. The first landscape result at least 1280 px wide is picked, preferring one no other item uses.
+3. **Our copy, our URL.** The server downloads the image, uploads it to the Supabase bucket as `pixabay/<id>.<ext>` (no item or town in the path), and saves our public URL, alt text from the tags, contributor, Pixabay page URL, and `fetched_at` in `item_photos`. Every photo shows "Photo: <contributor> on Pixabay" linking to its page.
+4. **Caching.** Search responses are cached 24 hours, in memory and in `photo_search_cache`, as Pixabay's terms require. A 429 stops the run and reports when to try again; no-result items keep the plain card.
+5. **No broken images.** A card shows a photo only when a row exists and the file loads; on error the image is removed. Images load straight from the bucket (`unoptimized`), not through a Legible route.

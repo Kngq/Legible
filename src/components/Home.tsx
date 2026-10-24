@@ -10,6 +10,7 @@ import type { Profile } from "@/lib/engine/profile";
 import { buildTimeline } from "@/lib/engine/timeline";
 import type { LifeAreaId } from "@/lib/vocab";
 import { Glyph, Part } from "./icons";
+import { FetchPhotosButton } from "./photos";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { FOCUS } from "./ui";
@@ -126,6 +127,7 @@ export function Home({
         ) : (
           <p className="mt-1 text-small text-muted-foreground">As you add details above, updates that may affect you will show up here.</p>
         )}
+        <FetchPhotosButton />
         <button type="button" onClick={onExplore} className={`mt-5 ${SECONDARY}`}>
           Explore everything happening near you
           <span aria-hidden="true" className="-rotate-90">

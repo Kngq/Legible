@@ -180,6 +180,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [ ] 19.2 Wire the local how-to-vote check and the offline notice
     - _Requirements: 22.4, 22.6_
 
+- [x] 20. Feed photos: "Fetch photos" fills update cards from Pixabay into Supabase Storage with credits (docs/DECISIONS.md, "Oct 24: feed photos from Pixabay")
 
 - [ ] 12. Acceptance and demo
   - [ ] 12.1 Run lint, lint:words, tests, and build; fix failures

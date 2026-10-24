@@ -15,6 +15,7 @@ import { friendlyWhen, KIND_LABEL, whyLine } from "@/lib/engine/update-copy";
 import { AvatarRing } from "./AvatarRing";
 import { DocTile } from "./covers";
 import { Glyph } from "./icons";
+import { EntryPhoto } from "./photos";
 import { viewForPart, type SheetView } from "./ProfileSheet";
 import { FOCUS, Tag } from "./ui";
 
@@ -178,6 +179,7 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
 
   return (
     <li className="rounded-lg bg-surface p-5 shadow-card">
+      <EntryPhoto entryKey={e.key} />
       <div className="flex items-start justify-between gap-3">
         <p className="text-small font-semibold uppercase tracking-wider text-muted-foreground">{kind}</p>
         {e.touches ? <Tag pop="accent">May affect you</Tag> : e.relevance >= 0.6 ? <Tag pop="info">You follow this</Tag> : null}

@@ -23,6 +23,7 @@ npm run lint:words # banned-word check over app strings and data
 ## Secrets
 
 - `ANTHROPIC_API_KEY` is server-only. Never prefix it with `NEXT_PUBLIC_`. Add it locally in `.env.local` and on Vercel with `vercel env add`.
+- `PIXABAY_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`, and `SUPABASE_PHOTO_BUCKET` are server-only too; only `src/lib/photos/server.ts` reads them. The tables come from `supabase/migrations/20261024_item_photos.sql`.
 - `.env.example` holds names only. Never commit real values.
 
 ## Platform limits to respect

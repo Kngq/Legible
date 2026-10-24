@@ -8,6 +8,9 @@ inclusion: always
 src/app/                  App Router pages and route handlers
 src/app/api/analyze/      POST: page text of an uploaded document -> draft measures
 src/app/api/ask/          POST: question about one measure's official text -> cited answer
+src/app/api/photos/       GET: saved feed photos; POST: fill missing ones from Pixabay into Supabase Storage
+src/lib/photos/           Feed photo picking (pure, tested) and the server-only Pixabay and Supabase calls
+supabase/migrations/      SQL for the item_photos and photo_search_cache tables
 src/components/           UI: cards, avatar, pictograms, source view, panels
 src/lib/engine/           Pure personalization: profile + document -> sorted cards
 src/lib/verify/           Pure quote verification against page text
