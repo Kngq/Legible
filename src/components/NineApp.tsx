@@ -2,7 +2,7 @@
 
 // Client shell: first run (Hello, town), then the feed or one document, with the
 // profile sheet on top. The profile never leaves this component tree.
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import ballot from "@/data/ballot-2026.json";
 import { buildFeed } from "@/lib/engine/feed";
@@ -14,21 +14,62 @@ import { MeasureView } from "./MeasureView";
 import { ProfileSheet, type SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { useNine } from "./useNine";
+import { WrappedPlayer } from "./wrapped/WrappedPlayer";
 
 // Every document the feed can show. Bundled ballot only until the catalog
 // (task 17.2) is fetched whole; buildFeed filters by state and town locally.
 const DOCS: DocumentData[] = [ballot as unknown as DocumentData];
 
-type View = { kind: "feed" } | { kind: "doc"; docId: string } | { kind: "measure"; docId: string; measureId: string; from: "feed" | "doc" };
+// `focusFirst` is set only when Ballot Wrapped's "See your full ballot" opens the document.
+type View = { kind: "feed" } | { kind: "doc"; docId: string; focusFirst?: boolean } | { kind: "measure"; docId: string; measureId: string; from: "feed" | "doc" };
 
 const viewKey = (v: View) => (v.kind === "feed" ? "feed" : v.kind === "doc" ? `doc:${v.docId}` : `m:${v.measureId}`);
 
 export function NineApp() {
-  const { loaded, today, profile, setProfile, preferences, setPreferences, canStore, forget } = useNine();
+  const { loaded, today, profile, setProfile, preferences, setPreferences, canStore, forget, demo } = useNine();
   const [sheet, setSheet] = useState<SheetView | null>(null);
   // Where the person is: the feed, one document, or one measure read like an article.
   const [view, setView] = useState<View>({ kind: "feed" });
   const scrolls = useRef<Record<string, number>>({});
+  // Ballot Wrapped: `key` increments on every open so the player always starts at the Intro.
+  const [wrapped, setWrapped] = useState({ open: false, key: 0 });
+  const wrappedButtonRef = useRef<HTMLButtonElement>(null);
+  const wrappedScrollY = useRef(0);
+  // Where the person asked to go on close; read once the page is no longer inert.
+  const wrappedCloseTo = useRef<"home" | "ballot" | null>(null);
+  const openWrapped = useCallback(() => {
+    wrappedScrollY.current = window.scrollY;
+    setWrapped((w) => ({ open: true, key: w.key + 1 }));
+  }, []);
+  const closeWrapped = useCallback((to: "home" | "ballot") => {
+    wrappedCloseTo.current = to;
+    if (to === "ballot") {
+      // Back from the document returns to where the feed was before Wrapped opened.
+      scrolls.current.feed = wrappedScrollY.current;
+      setView({ kind: "doc", docId: "ballot-2026", focusFirst: true });
+    }
+    setWrapped((w) => ({ ...w, open: false }));
+  }, []);
+  // Background lock: <html> overflow hidden while open, restored to its previous value on
+  // close or unmount. After close commits (page no longer inert), restore scroll and focus.
+  useEffect(() => {
+    const html = document.documentElement;
+    if (wrapped.open) {
+      const previous = html.style.overflow;
+      html.style.overflow = "hidden";
+      return () => {
+        html.style.overflow = previous;
+      };
+    }
+    const to = wrappedCloseTo.current;
+    wrappedCloseTo.current = null;
+    if (to === "home") {
+      window.scrollTo({ top: wrappedScrollY.current });
+      wrappedButtonRef.current?.focus({ preventScroll: true });
+    } else if (to === "ballot") {
+      window.scrollTo({ top: 0 });
+    }
+  }, [wrapped.open]);
   // Session-only flags: never stored, never counted by the meter.
   const [nudgeDismissed, setNudgeDismissed] = useState(false);
   const [savedBeyondTown, setSavedBeyondTown] = useState(false);
@@ -85,6 +126,7 @@ export function NineApp() {
         today={today}
         profile={profile}
         town={town}
+        focusFirst={view.focusFirst}
         onBack={() => go({ kind: "feed" }, true)}
         onOpenMeasure={(measureId) => go({ kind: "measure", docId: docItem.doc.id, measureId, from: "doc" })}
       />
@@ -107,13 +149,18 @@ export function NineApp() {
         }}
         nudgeDismissed={nudgeDismissed}
         onDismissNudge={() => setNudgeDismissed(true)}
+        demo={demo}
+        onOpenWrapped={openWrapped}
+        wrappedButtonRef={wrappedButtonRef}
       />
     );
   }
 
   return (
     <>
-      {page}
+      {/* Inert while Wrapped is open, so focus and assistive technology stay in the dialog. */}
+      <div inert={wrapped.open}>{page}</div>
+      {wrapped.open && <WrappedPlayer key={wrapped.key} profile={profile} onClose={closeWrapped} />}
       {sheet && (
         <ProfileSheet
           key={JSON.stringify(sheet)}

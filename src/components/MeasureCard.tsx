@@ -6,7 +6,8 @@ import { useState } from "react";
 import { draftMessage, DRAFT_QUESTIONS, localReach, nextSteps, wordCount } from "@/lib/engine/next-steps";
 import { answerFact, canAskInCard, clearFact, declineFact, skipFact, type Profile } from "@/lib/engine/profile";
 import type { Card, Measure, Quote, WhySentence } from "@/lib/engine/types";
-import { DIRECTION_DEFS, FACT_DEFS, SENSITIVE_FACTS, TOPIC_DEFS, type FactId } from "@/lib/vocab";
+import { chipText } from "@/lib/engine/wrapped-slides";
+import { DIRECTION_DEFS, FACT_DEFS, SENSITIVE_FACTS, type FactId } from "@/lib/vocab";
 import { DirectionMark, Glyph } from "./icons";
 import { areaOf, type SheetView } from "./ProfileSheet";
 import { Button, FOCUS, Tag } from "./ui";
@@ -85,7 +86,7 @@ export function MeasureCard({
                 aria-expanded={editing === b.id}
                 className={`min-h-9 rounded-md border border-border px-3 py-1.5 text-left text-small font-semibold hover:bg-surface-muted ${FOCUS}`}
               >
-                Because {b.value ? FACT_DEFS[b.id].because.yes : FACT_DEFS[b.id].because.no}
+                {chipText(b)}
               </button>
             ) : (
               <button
@@ -94,7 +95,7 @@ export function MeasureCard({
                 onClick={() => onOpenProfile({ kind: "topics" })}
                 className={`inline-flex min-h-9 items-center rounded-md bg-surface-muted px-3 py-1.5 text-left text-small font-semibold hover:bg-border ${FOCUS}`}
               >
-                You follow {TOPIC_DEFS[b.id].label.toLowerCase()}
+                {chipText(b)}
               </button>
             ),
           )}
@@ -197,9 +198,28 @@ function quoteById(m: Measure, id: string): Quote | undefined {
   return m.quotes.find((q) => q.id === id);
 }
 
-export function Sentences({ sentences, measure }: { sentences: WhySentence[]; measure: Measure }) {
+export function Sentences({
+  sentences,
+  measure,
+  onShownChange,
+  sourceClassName,
+}: {
+  sentences: WhySentence[];
+  measure: Measure;
+  /** Fires when the quote view opened from a source link is shown (true) or hidden (false). */
+  onShownChange?: (open: boolean) => void;
+  /** Extra classes for the source link, e.g. a larger touch target. */
+  sourceClassName?: string;
+}) {
   const [shown, setShown] = useState<string | null>(null);
   const q = shown ? quoteById(measure, shown) : undefined;
+  const toggle = (id: string) => {
+    const next = shown === id ? null : id;
+    setShown(next);
+    const wasOpen = Boolean(shown && quoteById(measure, shown));
+    const isOpen = Boolean(next && quoteById(measure, next));
+    if (wasOpen !== isOpen) onShownChange?.(isOpen);
+  };
   return (
     <div className="mt-2 space-y-2">
       {sentences.map((s) => (
@@ -207,12 +227,12 @@ export function Sentences({ sentences, measure }: { sentences: WhySentence[]; me
           {s.text}{" "}
           <button
             type="button"
-            onClick={() => setShown(shown === s.quoteId ? null : s.quoteId)}
+            onClick={() => toggle(s.quoteId)}
             aria-expanded={shown === s.quoteId}
             aria-label="Show the official text this sentence comes from"
             className={`inline-flex translate-y-0.5 items-center gap-1 rounded-sm px-1.5 py-0.5 text-small font-semibold transition-colors duration-(--duration) ease-nine ${FOCUS} ${
               shown === s.quoteId ? "bg-accent-soft" : "bg-surface-muted hover:bg-accent-soft"
-            }`}
+            }${sourceClassName ? ` ${sourceClassName}` : ""}`}
           >
             <Glyph name="quote" size={14} />
             {quoteById(measure, s.quoteId)?.page ? `p. ${quoteById(measure, s.quoteId)!.page}` : "source"}

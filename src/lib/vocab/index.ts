@@ -359,3 +359,4 @@ export function matchTopics(typed: string): TopicId[] {
   }
   return out;
 }
+export * from "./wrapped";

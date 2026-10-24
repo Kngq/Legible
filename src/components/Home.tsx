@@ -2,8 +2,10 @@
 
 // Home: a feed of decisions near the person, state and town. Each item is one
 // document; opening it shows the DocumentView. All filtering runs in the browser.
-import { useState } from "react";
+import { useState, type RefObject } from "react";
 import { avatarParts } from "@/lib/engine/avatar";
+import { wrappedEntry } from "@/lib/engine/wrapped";
+import { WRAPPED_STRINGS } from "@/lib/vocab/wrapped";
 import { decidedLine, decideByLine, decideByRelative, DOC_TYPE_LABEL, measureNoun } from "@/lib/engine/decide-by";
 import type { Feed, FeedItem } from "@/lib/engine/feed";
 import { nextItem, personalization, type ChecklistItem } from "@/lib/engine/personalization";
@@ -38,6 +40,9 @@ export function Home({
   nudgeDismissed,
   onDismissNudge,
   onUpload,
+  onOpenWrapped,
+  wrappedButtonRef,
+  demo = false,
 }: {
   feed: Feed;
   today: string;
@@ -51,6 +56,12 @@ export function Home({
   onDismissNudge: () => void;
   /** Opens the upload panel. Absent until the panel exists (task 9.4). */
   onUpload?: () => void;
+  /** Opens the Ballot Wrapped player. */
+  onOpenWrapped?: () => void;
+  /** Lets NineApp return focus to the Wrapped button when the player closes. */
+  wrappedButtonRef?: RefObject<HTMLButtonElement | null>;
+  /** Demo_Mode: shows the "Demo profile" tag. */
+  demo?: boolean;
 }) {
   const [scope, setScope] = useState<Scope>("all");
   const town = townName(profile.townId);
@@ -82,6 +93,11 @@ export function Home({
           onPart={(p) => onOpenProfile(viewForPart(p))}
         />
         <p className="mt-2 text-title">{town ?? "Massachusetts"}</p>
+        {demo && (
+          <span className="mt-1">
+            <Tag pop="attention">{WRAPPED_STRINGS.demoTag}</Tag>
+          </span>
+        )}
         <p className="text-body text-muted-foreground">What is being decided near you</p>
         <div className="mt-3 flex items-center gap-2">
           <button
@@ -126,6 +142,27 @@ export function Home({
             {label}
           </button>
         ))}
+      </div>
+      {/* Ballot Wrapped entry: re-chosen on every render, so following or
+          unfollowing a topic swaps it without a reload. */}
+      <div className="mt-6 flex justify-center">
+        {wrappedEntry(profile) === "button" ? (
+          // Native button (same look as the primary Button) so it can take the ref
+          // NineApp uses to return focus when the player closes.
+          <button
+            ref={wrappedButtonRef}
+            type="button"
+            onClick={onOpenWrapped}
+            className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-8 text-body font-semibold text-primary-foreground shadow-card transition-transform duration-(--duration) ease-nine hover:-translate-y-0.5 sm:w-auto ${FOCUS}`}
+          >
+            <Sparkle />
+            {WRAPPED_STRINGS.openButton}
+          </button>
+        ) : (
+          <Button variant="text" onClick={() => onOpenProfile({ kind: "topics" })}>
+            {WRAPPED_STRINGS.unlockPrompt}
+          </Button>
+        )}
       </div>
 
       {touching.length > 0 && (
@@ -371,5 +408,14 @@ function Nudge({ item, onOpen, onDismiss }: { item: ChecklistItem; onOpen: () =>
         <Glyph name="close" size={18} />
       </button>
     </div>
+  );
+}
+/** A small four-point sparkle for the Wrapped button. Decorative, current colour. */
+function Sparkle() {
+  return (
+    <svg viewBox="0 0 24 24" width={18} height={18} fill="currentColor" aria-hidden="true">
+      <path d="M12 2.5c.5 4.6 2.9 7 7.5 7.5-4.6.5-7 2.9-7.5 7.5-.5-4.6-2.9-7-7.5-7.5 4.6-.5 7-2.9 7.5-7.5Z" />
+      <path d="M19 15.5c.2 1.8 1.2 2.8 3 3-1.8.2-2.8 1.2-3 3-.2-1.8-1.2-2.8-3-3 1.8-.2 2.8-1.2 3-3Z" />
+    </svg>
   );
 }

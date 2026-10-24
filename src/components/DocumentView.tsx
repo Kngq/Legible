@@ -2,6 +2,7 @@
 
 // One document, opened from the feed: its measures as cards, sorted for this person.
 // Touches you, On your list, Applies to everyone, then Probably not you.
+import { useEffect, useRef } from "react";
 import { DOC_TYPE_LABEL, longDate, measureNoun, verb } from "@/lib/engine/decide-by";
 import { daysBetween, type FeedItem } from "@/lib/engine/feed";
 import { localReach } from "@/lib/engine/next-steps";
@@ -18,6 +19,7 @@ export function DocumentView({
   town,
   onBack,
   onOpenMeasure,
+  focusFirst,
 }: {
   item: FeedItem;
   today: string;
@@ -25,7 +27,20 @@ export function DocumentView({
   town?: string;
   onBack: () => void;
   onOpenMeasure: (measureId: string) => void;
+  /** On mount, open "Probably not you" and focus the first decision row (Ballot Wrapped exit). */
+  focusFirst?: boolean;
 }) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const quietRef = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    if (!focusFirst) return;
+    if (quietRef.current) quietRef.current.open = true;
+    // preventScroll keeps the page at the top; the caller already scrolled there.
+    rootRef.current?.querySelector<HTMLButtonElement>("[data-decision-row]")?.focus({ preventScroll: true });
+    // Mount only: re-running on later renders would steal focus.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const { doc, cards, touches, total } = item;
   const noun = measureNoun(doc.docType, total);
   const localCards = doc.place.kind === "state" ? cards.filter((c) => localReach(c.measure.id)) : [];
@@ -42,7 +57,7 @@ export function DocumentView({
   const card = (c: Card) => <DecisionRow key={c.measure.id} card={c} profile={profile} ballot={doc.docType === "ballot"} onOpen={() => onOpenMeasure(c.measure.id)} />;
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 pb-16 sm:px-6">
+    <div ref={rootRef} className="mx-auto w-full max-w-3xl px-4 pb-16 sm:px-6">
       <nav className="sticky top-0 z-20 -mx-4 flex h-14 items-center gap-2 bg-background/95 px-2 backdrop-blur sm:-mx-6 sm:px-4">
         <button
           type="button"
@@ -125,7 +140,7 @@ export function DocumentView({
       )}
 
       {quiet.length > 0 && (
-        <details className="group mt-10">
+        <details ref={quietRef} className="group mt-10">
           <summary className={`flex min-h-12 cursor-pointer list-none items-center justify-between rounded-lg bg-surface px-5 shadow-card ${FOCUS}`}>
             <span className="text-body font-semibold">
               Probably not you <span className="text-muted-foreground">{quiet.length}</span>
@@ -226,7 +241,7 @@ function DecisionRow({ card, profile, ballot, onOpen }: { card: Card; profile: P
   const asks = card.pendingQuestions.some((f) => canAskInCard(profile, f));
   return (
     <li>
-      <button type="button" onClick={onOpen} className={`flex w-full gap-4 rounded-md py-4 text-left hover:bg-surface-muted/60 ${FOCUS}`}>
+      <button type="button" data-decision-row onClick={onOpen} className={`flex w-full gap-4 rounded-md py-4 text-left hover:bg-surface-muted/60 ${FOCUS}`}>
         <Cover measure={m} label={`${ballot ? "Q" : "#"}${m.number}`} size={22} className="size-16 shrink-0 rounded-md [&>span]:left-2 [&>span]:top-1 [&>span]:text-body [&>span]:font-semibold" />
         <span className="min-w-0 flex-1 space-y-1">
           <span className="block text-body font-semibold">{m.title}</span>
