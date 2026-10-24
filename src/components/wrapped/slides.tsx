@@ -16,9 +16,16 @@ import css from "./wrapped.module.css";
 
 export type SlideAction = { kind: "measure"; href: string } | { kind: "profile" } | { kind: "topics" } | { kind: "save" } | { kind: "explore" };
 
+/** The default share image, drawn on the device by the player for the closing slide. */
+export interface SharePicture {
+  url?: string;
+  alt: string;
+}
+
 interface Props {
   motion: StoryMotion;
   onAction: (a: SlideAction) => void;
+  share: SharePicture;
 }
 
 /** Stagger index for the rise animation. */
@@ -86,8 +93,12 @@ function Opening({ s }: { s: Extract<SlideModel, { id: "opening" }> }) {
           </div>
         </div>
       </div>
+      {/* Touch screens see "Tap to begin"; a mouse and keyboard see the keys. */}
       <p className={`${css.breathe} mt-6 flex items-center gap-2 text-small font-semibold`} aria-hidden="true">
-        {s.hint} <span className="text-base">→</span>
+        <span className="[@media(pointer:fine)]:hidden">
+          {s.hint} <span className="text-base">→</span>
+        </span>
+        <span className="hidden [@media(pointer:fine)]:inline">{S.openingHintKeys}</span>
       </p>
     </section>
   );
@@ -281,7 +292,7 @@ function Radar({ s, motion, onAction }: { s: Extract<SlideModel, { id: "radar" }
                     <Part name={t.part} size={p.size === 0 ? 24 : 20} strokeWidth={1.5} />
                   </span>
                   <span className={`mt-1 rounded-md px-1.5 font-display leading-[1.05] text-balance ${LABEL_SIZE[p.size]} ${examples ? "bg-background text-muted-foreground" : "bg-info-soft"}`}>{t.label}</span>
-                  {t.count && <span className="mt-0.5 text-[0.75rem] font-semibold text-muted-foreground">{t.count}</span>}
+                  {t.count && <span className="mt-0.5 text-small font-semibold text-muted-foreground">{t.count}</span>}
                 </span>
               </li>
             );
@@ -289,8 +300,21 @@ function Radar({ s, motion, onAction }: { s: Extract<SlideModel, { id: "radar" }
         </ul>
       </div>
       {hidden > 0 && <p className="text-center text-small font-semibold text-muted-foreground">{S.radarMore(hidden)}</p>}
+      {/* Followed subjects with no ballot question: said plainly, as an aside, never the slide's ending. */}
+      {s.also && (
+        <div className={`${css.rise} mt-2`} style={at(7)}>
+          <p className="text-small text-muted-foreground">{s.also.label}</p>
+          <p className="mt-1 flex flex-wrap gap-1.5">
+            {s.also.topics.map((t) => (
+              <span key={t} className="rounded-sm bg-surface px-2 py-0.5 text-small font-semibold text-foreground shadow-hairline">
+                {t}
+              </span>
+            ))}
+          </p>
+        </div>
+      )}
       {s.note && (
-        <p className={`${css.rise} mt-2 font-display text-[1.0625rem] italic text-muted-foreground`} style={at(8)}>
+        <p className={`${css.rise} mt-3 font-display text-[1.0625rem] italic`} style={at(8)}>
           {s.note}
         </p>
       )}
@@ -338,7 +362,7 @@ function Closer({ s, onAction }: { s: Extract<SlideModel, { id: "closer" }>; onA
             {d.sentences.map((x, i) => (
               <p key={x.quoteId + i} className={`${css.rise} border-l-2 border-border pl-3`} style={at(4 + i)}>
                 <span className="block text-body leading-snug">{x.text}</span>
-                <span className="mt-1 block text-[0.75rem] font-semibold text-muted-foreground">{x.source}</span>
+                <span className="mt-1 block text-small font-semibold text-muted-foreground">{x.source}</span>
               </p>
             ))}
             {d.noSummary && <p className="text-body text-muted-foreground">{d.noSummary}</p>}
@@ -359,35 +383,27 @@ function Closer({ s, onAction }: { s: Extract<SlideModel, { id: "closer" }>; onA
 
 /* 6. Your shareable moment ----------------------------------------------- */
 
-function Postcard({ card }: { card: Extract<SlideModel, { id: "closing" }>["card"] }) {
-  return (
-    <div className="relative mx-auto w-full max-w-[300px]">
-      <div aria-hidden="true" className={`${css.drift} absolute inset-0 rounded-lg bg-surface-muted shadow-card`} style={{ transform: "rotate(4deg)", ["--r" as string]: "4deg" }} />
-      <div className="relative -rotate-2 rounded-lg bg-surface p-5 shadow-card [@media(max-height:640px)]:p-4">
-        <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          Legible · {card.year}
-        </p>
-        <p className="mt-3 font-display text-[1.875rem] leading-[0.98] tracking-[-0.02em] [@media(max-height:640px)]:mt-1 [@media(max-height:640px)]:text-[1.5rem]">{card.title}</p>
-        <span aria-hidden="true" className="mt-3 block h-[3px] w-10 rounded-full bg-primary" />
-        <p className="mt-3 text-small font-semibold">{card.place}</p>
-        <p className="mt-2 text-small">{card.questions}</p>
-        {card.topics && <p className="text-small">{card.topics}</p>}
-        <p className="mt-3 font-display text-[1.125rem] italic">{card.line}</p>
-      </div>
-    </div>
-  );
-}
-
-function Closing({ s, onAction }: { s: Extract<SlideModel, { id: "closing" }>; onAction: Props["onAction"] }) {
+function Closing({ s, share, onAction }: { s: Extract<SlideModel, { id: "closing" }>; share: SharePicture; onAction: Props["onAction"] }) {
   return (
     <section className={`${PAGE} bg-positive-soft ${css.grain}`}>
       <h2 className={`${css.rise} ${HEADING}`} style={at(0)}>
         {s.heading}
       </h2>
-      <div className={`${css.rise} my-auto py-4 [@media(max-height:640px)]:py-2`} style={at(2)}>
-        <Postcard card={s.card} />
+      {/* The default share image itself, so what is shown is what would be saved. */}
+      <div className={`${css.rise} relative my-3 flex min-h-0 flex-1 items-center justify-center`} style={at(2)}>
+        <div className="relative aspect-[9/16] h-full max-h-[460px]">
+          <span aria-hidden="true" className={`${css.drift} absolute inset-0 rounded-md bg-surface-muted shadow-card`} style={{ transform: "rotate(5deg)", ["--r" as string]: "5deg" }} />
+          <div className="absolute inset-0 -rotate-2 overflow-hidden rounded-md bg-info-soft shadow-card">
+            {/* A blob URL of the drawn image: next/image cannot optimise it. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {share.url ? <img src={share.url} alt={share.alt} className="h-full w-full object-cover" /> : <span className="sr-only">{share.alt}</span>}
+          </div>
+        </div>
       </div>
-      <div className={`${css.rise} flex flex-wrap items-center gap-x-4 gap-y-1`} style={at(4)}>
+      <p className={`${css.rise} max-w-[24em] text-small text-muted-foreground`} style={at(3)}>
+        {s.note}
+      </p>
+      <div className={`${css.rise} mt-3 flex flex-wrap items-center gap-x-4 gap-y-1`} style={at(4)}>
         <button
           type="button"
           onClick={() => onAction({ kind: "save" })}
@@ -404,7 +420,7 @@ function Closing({ s, onAction }: { s: Extract<SlideModel, { id: "closing" }>; o
 }
 
 /** One slide, by id. */
-export function Slide({ s, motion, onAction }: { s: SlideModel } & Props): ReactNode {
+export function Slide({ s, motion, onAction, share }: { s: SlideModel } & Props): ReactNode {
   switch (s.id) {
     case "opening":
       return <Opening s={s} />;
@@ -417,6 +433,6 @@ export function Slide({ s, motion, onAction }: { s: SlideModel } & Props): React
     case "closer":
       return <Closer s={s} onAction={onAction} />;
     case "closing":
-      return <Closing s={s} onAction={onAction} />;
+      return <Closing s={s} share={share} onAction={onAction} />;
   }
 }

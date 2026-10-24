@@ -56,9 +56,22 @@ export type SlideModel =
   | { id: "opening"; heading: string; line: string; hint: string; texts: string[] }
   | { id: "world"; heading: string; place: string; placeKnown: boolean; questionCount: number; countLabel: string; statewide?: string; dateLabel?: string; line: string; texts: string[] }
   | { id: "connects"; mode: "personal" | "general"; heading: string; intro: string; items: ConnectItem[]; action?: string; texts: string[] }
-  | { id: "radar"; mode: "followed" | "examples"; heading: string; intro: string; topics: RadarTopic[]; total: number; note?: string; action?: string; texts: string[] }
+  | {
+      id: "radar";
+      mode: "followed" | "examples";
+      heading: string;
+      intro: string;
+      /** The constellation: followed topics with a ballot question (or, when none has one, every followed topic, without counts). Examples in examples mode. */
+      topics: RadarTopic[];
+      total: number;
+      /** Followed topics with no ballot question, shown as a quiet aside, never as the slide's conclusion. */
+      also?: { label: string; topics: string[] };
+      note?: string;
+      action?: string;
+      texts: string[];
+    }
   | { id: "closer"; heading: string; decision?: CloserDecision; texts: string[] }
-  | { id: "closing"; heading: string; card: ClosingCard; save: string; explore: string; texts: string[] };
+  | { id: "closing"; heading: string; note: string; save: string; explore: string; texts: string[] };
 
 export interface CloserDecision {
   measureId: string;
@@ -71,15 +84,6 @@ export interface CloserDecision {
   noSummary?: string;
   action: string;
   href: string;
-}
-
-export interface ClosingCard {
-  title: string; // "My ballot, wrapped"
-  year: string;
-  place: string;
-  questions: string; // "9 ballot questions"
-  topics?: string; // "2 topics on my radar", only when topics are followed
-  line: string;
 }
 
 export interface Town {
@@ -202,7 +206,6 @@ export function buildStory(doc: DocumentData, summary: WrappedSummary, profile: 
   const { place, known } = placeLabel(profile.townId, towns);
   const total = summary.measureTotal;
   const date = doc.decideBy ? decidedLabel(doc.decideBy.date) : undefined;
-  const year = (doc.decideBy?.date ?? doc.date ?? "").slice(0, 4);
 
   const opening: SlideModel = { id: "opening", heading: S.openingHeading, line: S.openingLine, hint: S.openingHint, texts: [S.openingHeading, S.openingLine, S.openingHint] };
 
@@ -244,16 +247,23 @@ export function buildStory(doc: DocumentData, summary: WrappedSummary, profile: 
   const followed = topicIds(profile);
   let radar: SlideModel;
   if (followed.length > 0) {
-    const shown = summary.topicRank.slice(0, RADAR_MAX).map((id) => radarTopic(doc, id, true));
+    // Topics with a ballot question make the constellation; the rest are an aside.
+    const onBallot = summary.topicRank.filter((id) => topicMeasureCount(doc, id) > 0);
+    const offBallot = summary.topicRank.filter((id) => topicMeasureCount(doc, id) === 0);
+    const none = onBallot.length === 0;
+    const shown = (none ? offBallot : onBallot).slice(0, RADAR_MAX).map((id) => radarTopic(doc, id, !none));
+    const also = !none && offBallot.length > 0 ? { label: S.radarAlso, topics: offBallot.map((id) => TOPIC_DEFS[id].label) } : undefined;
+    const intro = none ? S.radarNoneOnBallot : S.radarIntro;
     radar = {
       id: "radar",
       mode: "followed",
       heading: S.radarHeading,
-      intro: S.radarIntro,
+      intro,
       topics: shown,
-      total: summary.topicRank.length,
+      total: none ? offBallot.length : onBallot.length,
+      ...(also ? { also } : {}),
       note: S.radarNote,
-      texts: [S.radarHeading, S.radarIntro, ...shown.flatMap((t) => [t.label, t.count]), S.radarNote],
+      texts: [S.radarHeading, intro, ...shown.flatMap((t) => (t.count ? [t.label, t.count] : [t.label])), ...(also ? [also.label, ...also.topics] : []), S.radarNote],
     };
   } else {
     const shown = exampleTopics(doc).map((id) => radarTopic(doc, id, false));
@@ -282,21 +292,15 @@ export function buildStory(doc: DocumentData, summary: WrappedSummary, profile: 
     ],
   };
 
-  const card: ClosingCard = {
-    title: S.cardTitle,
-    year,
-    place,
-    questions: S.cardQuestions(total),
-    ...(followed.length > 0 ? { topics: S.cardTopics(followed.length) } : {}),
-    line: S.closingLine,
-  };
+  // The closing slide shows the default share image itself (drawn by the player), so
+  // it never shows the town, topics, name, or facts unless the person adds them there.
   const closing: SlideModel = {
     id: "closing",
     heading: S.closingHeading,
-    card,
+    note: S.closingNote,
     save: S.save,
     explore: S.explore,
-    texts: [S.closingHeading, card.title, card.year, card.place, card.questions, ...(card.topics ? [card.topics] : []), card.line, S.save, S.explore].filter(Boolean),
+    texts: [S.closingHeading, S.closingNote, S.save, S.explore],
   };
 
   return [opening, world, connects, radar, closer, closing];

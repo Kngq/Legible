@@ -60,9 +60,10 @@ Out of scope for this build: what the person has explored or read (category C be
 1. THE SYSTEM SHALL keep categories A and B apart: "What connects to you" SHALL use life facts only, and its reasons SHALL be fact chips ("Because you rent"); "On your radar" SHALL use followed topics only.
 2. THE SYSTEM SHALL NOT present a topic as something the person agrees with, and SHALL NOT name the person with a label derived from topics or facts (no "civic personality", no "Housing Advocate").
 3. IF no measure may affect the person THEN THE SYSTEM SHALL title slide 3 "Decisions worth knowing about", show three questions in ballot order, and say that they are in ballot order, not chosen for the person.
-4. IF the person follows no topics THEN THE SYSTEM SHALL title slide 4 "There's a lot to explore.", show subjects from this ballot labelled as examples, and offer to choose topics after the story.
-5. THE SYSTEM SHALL use the plum accent only for what relates to the person and is supported by the data (a known town, a decision that may affect them); apricot only for the decision date; and neither terracotta nor any colour for a topic, a side, a direction, YES, or NO.
-6. THE SYSTEM SHALL NOT use or imply category C: no "you read", "you explored", "your year", or totals of activity.
+4. THE SYSTEM SHALL place only followed topics that have a ballot question in the "On your radar" constellation; followed topics without one SHALL appear in a quiet aside ("Also on your radar, without a question on this ballot"), never as the slide's last line. IF no followed topic has a ballot question THEN THE SYSTEM SHALL say so once in the intro and show the topics without counts.
+5. IF the person follows no topics THEN THE SYSTEM SHALL title slide 4 "There's a lot to explore.", show subjects from this ballot labelled as examples, and offer to choose topics after the story.
+6. THE SYSTEM SHALL use the plum accent only for what relates to the person and is supported by the data (a known town, a decision that may affect them); apricot only for the decision date; and neither terracotta nor any colour for a topic, a side, a direction, YES, or NO.
+7. THE SYSTEM SHALL NOT use or imply category C: no "you read", "you explored", "your year", or totals of activity.
 
 ### Requirement W4: Privacy
 
@@ -85,7 +86,9 @@ Out of scope for this build: what the person has explored or read (category C be
 3. THE SYSTEM SHALL leave the town out by default and include it as "Town, MA" only after the person switches "Show my town" on (offered only when the town is known).
 4. THE SYSTEM SHALL leave followed topics out by default, include them only after the person switches "Add topics I follow" on, and then preselect only topics that are not sensitive (gun policy, cannabis policy, criminal justice stay unchecked until picked).
 5. THE SYSTEM SHALL NEVER include life facts, the person's name, decisions that may affect the person, voting plans, party, or any inferred belief in the share image.
-6. WHEN the person chooses "Save image" THE SYSTEM SHALL save the PNG through a download on the device. IF drawing fails or takes longer than 4 seconds THEN THE SYSTEM SHALL say so in place and keep the story open.
+6. THE SYSTEM SHALL show the default share image itself, drawn by the same code that saves it, on the closing slide, so the person sees what they would share; the closing slide SHALL NOT show the town, topics, name, or life facts.
+7. THE SYSTEM SHALL compose the share image as a balanced poster: the title with the Legible rule, the question count beside a ballot sketch of numbered boxes, the decision date, any opted-in topics as pills, and, resting on the bottom margin, the closing line and an invitation to read the questions on Legible.
+8. WHEN the person chooses "Save image" THE SYSTEM SHALL save the PNG through a download on the device. IF drawing fails or takes longer than 4 seconds THEN THE SYSTEM SHALL say so in place and keep the story open.
 
 ### Requirement W6: Story navigation
 
@@ -110,7 +113,7 @@ Out of scope for this build: what the person has explored or read (category C be
 2. WHEN the story closes THE SYSTEM SHALL return focus to the control that opened it, when that control is still on the page.
 3. THE SYSTEM SHALL support ArrowRight and ArrowLeft for next and back (except inside a form control) and Escape to close (closing the share preview first when it is open).
 4. THE SYSTEM SHALL announce "Slide N of 6. <heading>" in a polite live region on every change.
-5. THE SYSTEM SHALL give every control an accessible label, keep tap targets at least 44 px, and keep text at WCAG AA contrast in light and dark themes.
+5. THE SYSTEM SHALL give every control an accessible label, describe the navigation keys to assistive technology, show "Tap to begin" on touch screens and "Press → or click to begin" with a mouse, keep captions at 13 px or larger, keep tap targets at least 44 px, and keep text at WCAG AA contrast in light and dark themes.
 6. WHILE the person prefers reduced motion THE SYSTEM SHALL change slides, show counts, and place the topic constellation instantly, with no floating or drifting.
 
 ### Requirement W8: Empty and partial states

@@ -44,6 +44,13 @@ Development only behind `WRAPPED_ENABLED` until the visual design is approved. B
   - [x] 4.4 Production build checked: no invite, `#/wrapped` and `?demo=true` ignored
   - [ ] 4.5 Save image tested end to end on a real phone (download and the Files or Photos hand-off); the preview and drawing were checked in the browser, the download click was not
 
+- [x] 6. Design iteration 2 (approved scope)
+  - [x] 6.1 Closing slide shows the default share image itself; no town, topics, name, or facts
+  - [x] 6.2 Share image as a balanced poster: count beside a nine-box ballot sketch, apricot date mark, topic pills when opted in, closing line and invitation footer on the bottom margin
+  - [x] 6.3 On your radar: only topics with a ballot question in the constellation; the rest in a quiet aside before the closing note
+  - [x] 6.4 Captions at 13 px; "Press → or click to begin" with a mouse; navigation keys described to screen readers
+  - [x] 6.5 Checked at 320, 375, 390, and desktop; tests, lint, lint:words, TypeScript, and production build pass
+
 - [ ] 5. Later (needs approval or other work first)
   - [ ] 5.1 Turn `WRAPPED_ENABLED` on in production after sign-off
   - [ ] 5.2 Category C ("decisions you explored") once real exploration tracking lands (`.kiro/specs/legible/tasks.md` 23.7)

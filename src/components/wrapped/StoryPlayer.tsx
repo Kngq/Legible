@@ -14,15 +14,16 @@ import towns from "@/data/towns.json";
 import type { DocumentData } from "@/lib/engine/types";
 import type { Profile } from "@/lib/engine/profile";
 import { computeWrapped } from "@/lib/engine/wrapped";
-import { buildStory, placeLabel, SLIDE_COUNT } from "@/lib/engine/wrapped-slides";
+import { buildStory, SLIDE_COUNT } from "@/lib/engine/wrapped-slides";
 import { initialStory, keyAction, segmentFill, STORY_IGNORE_SELECTOR, storyReducer, swipeAction, tapAction, trapFocusIndex } from "@/lib/engine/wrapped-playback";
 import { storyMotion } from "@/lib/engine/wrapped-layout";
-import type { ShareBase } from "@/lib/engine/wrapped-share-layout";
+import { defaultShareChoices, shareItems, storyShareBase, withTimeout, type ShareBase } from "@/lib/engine/wrapped-share-layout";
 import { announcement, WRAPPED_STRINGS as S } from "@/lib/vocab/wrapped";
 import { hideChatDock } from "@/lib/ui/chat-dock";
 import { Glyph } from "../icons";
 import { FOCUS } from "../ui";
 import { SharePreview } from "./SharePreview";
+import { renderShareImage } from "./share-image";
 import { Slide, type SlideAction } from "./slides";
 import css from "./wrapped.module.css";
 
@@ -41,18 +42,27 @@ export type StoryExit = { kind: "close" } | { kind: "measure"; href: string } | 
 export function StoryPlayer({ doc, profile, demo, onExit }: { doc: DocumentData; profile: Profile; demo: boolean; onExit: (e: StoryExit) => void }) {
   const summary = useMemo(() => computeWrapped(doc, profile), [doc, profile]);
   const slides = useMemo(() => buildStory(doc, summary, profile, TOWNS), [doc, summary, profile]);
-  const shareBase = useMemo<ShareBase>(() => {
-    const { place, known } = placeLabel(profile.townId, TOWNS);
-    const world = slides[1];
-    const closing = slides[5];
-    return {
-      year: closing.id === "closing" ? closing.card.year : "",
-      ...(known ? { place } : {}),
-      questionCount: summary.measureTotal,
-      ...(world.id === "world" && world.dateLabel ? { dateLabel: world.dateLabel } : {}),
-      followed: summary.topicRank,
+  const shareBase = useMemo<ShareBase>(() => storyShareBase(doc, summary, profile, TOWNS), [doc, summary, profile]);
+  // The closing slide shows the default share image, drawn by the same code that saves it.
+  const defaultItems = useMemo(() => shareItems(shareBase, defaultShareChoices(shareBase)), [shareBase]);
+  const [shareUrl, setShareUrl] = useState<string | undefined>();
+  useEffect(() => {
+    let alive = true;
+    let url: string | undefined;
+    withTimeout(renderShareImage(defaultItems), 4000).then(
+      (blob) => {
+        if (!alive) return;
+        url = URL.createObjectURL(blob);
+        setShareUrl(url);
+      },
+      () => undefined,
+    );
+    return () => {
+      alive = false;
+      if (url) URL.revokeObjectURL(url);
     };
-  }, [profile.townId, slides, summary]);
+  }, [defaultItems]);
+  const share = { url: shareUrl, alt: `${S.closingImageAlt} ${defaultItems.map((i) => i.text).join(". ")}` };
 
   const [state, dispatch] = useReducer(reduceStory, initialStory);
   const [sharing, setSharing] = useState(false);
@@ -139,6 +149,7 @@ export function StoryPlayer({ doc, profile, demo, onExit }: { doc: DocumentData;
         role="dialog"
         aria-modal="true"
         aria-label={S.dialogLabel}
+        aria-describedby="story-help"
         tabIndex={-1}
         className={`relative flex h-dvh w-full flex-col overflow-hidden bg-background text-foreground outline-none sm:aspect-[9/16] sm:h-[min(880px,calc(100dvh-48px))] sm:w-auto sm:rounded-xl sm:shadow-card ${css.safe}`}
       >
@@ -164,7 +175,7 @@ export function StoryPlayer({ doc, profile, demo, onExit }: { doc: DocumentData;
 
         <div className="relative min-h-0 flex-1 touch-pan-y select-none" onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={() => (press.current = null)}>
           <div key={state.index} className={`h-full ${reduce ? "" : enter}`}>
-            <Slide s={slide} motion={motion} onAction={onAction} />
+            <Slide s={slide} motion={motion} onAction={onAction} share={share} />
           </div>
         </div>
 
@@ -185,6 +196,9 @@ export function StoryPlayer({ doc, profile, demo, onExit }: { doc: DocumentData;
           </button>
         </div>
 
+        <p id="story-help" className="sr-only">
+          {S.navHelp}
+        </p>
         <p className="sr-only" aria-live="polite">
           {announcement(state.index, SLIDE_COUNT, slide.heading)}
         </p>

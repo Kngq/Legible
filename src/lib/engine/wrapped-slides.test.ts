@@ -90,9 +90,6 @@ describe("buildStory", () => {
         }
         const connects = slide(s, "connects");
         if (connects.mode === "personal") expect(connects.intro).toContain(`${sum.touchCount} of 9`);
-        const card = slide(s, "closing").card;
-        expect(card.questions).toBe("9 ballot questions");
-        if (card.topics) expect(card.topics.startsWith(`${Object.keys(p.topics).length} `)).toBe(true);
         // Slide 2's only numbers: the question count, and the day in the date.
         const nums = (t: string) => [...t.matchAll(/\d+/g)].map((m) => Number(m[0]));
         for (const t of world.texts) for (const n of nums(t)) expect(t === world.dateLabel ? n === 3 : n === 9, t).toBe(true);
@@ -193,6 +190,40 @@ describe("decisionStatus", () => {
   });
 });
 
+describe("On your radar", () => {
+  it("puts only subjects with a ballot question in the constellation, the rest in the aside", () => {
+    fc.assert(
+      fc.property(arbProfile, (p) => {
+        const r = slide(story(p), "radar");
+        if (r.mode !== "followed") return;
+        const count = (id: string) => BALLOT_2026.measures.filter((m) => m.topics.includes(id as never)).length;
+        const followed = Object.keys(p.topics);
+        const on = followed.filter((id) => count(id) > 0);
+        if (on.length > 0) {
+          for (const t of r.topics) expect(count(t.id)).toBeGreaterThan(0);
+          const off = followed.filter((id) => count(id) === 0).map((id) => TOPIC_DEFS[id as keyof typeof TOPIC_DEFS].label);
+          expect(new Set(r.also?.topics ?? [])).toEqual(new Set(off));
+          expect(r.total).toBe(on.length);
+        } else {
+          // None on the ballot: said once in the intro; no counts; nothing claims a question.
+          expect(r.intro).toBe(WRAPPED_STRINGS.radarNoneOnBallot);
+          for (const t of r.topics) expect(t.count).toBe("");
+          expect(r.also).toBeUndefined();
+        }
+        for (const t of r.texts) expect(t).not.toMatch(/Not on this ballot/);
+        expect(r.texts.at(-1)).toBe(WRAPPED_STRINGS.radarNote);
+      }),
+      { numRuns: RUNS },
+    );
+  });
+
+  it("a person who follows only roads and transit is told plainly, without counts", () => {
+    const r = slide(story(setTopic(emptyProfile(), "roads_transit", true)), "radar");
+    expect(r).toMatchObject({ mode: "followed", intro: "The subjects you chose to follow. None of them has a question on this ballot." });
+    expect(r.topics.map((t) => [t.label, t.count])).toEqual([["Roads and transit", ""]]);
+  });
+});
+
 describe("profiles", () => {
   it("empty profile: Massachusetts, ballot order, examples, first question", () => {
     const s = story(emptyProfile());
@@ -211,8 +242,12 @@ describe("profiles", () => {
     const d = slide(s, "closer").decision!;
     expect(d).toMatchObject({ number: "Question 1", basis: "First on the ballot", basisPersonal: false });
     expect(d.sentences.length).toBeGreaterThan(0);
-    const card = slide(s, "closing").card;
-    expect(card).toEqual({ title: "My ballot, wrapped", year: "2026", place: "Massachusetts", questions: "9 ballot questions", line: "Curiosity suits you." });
+    expect(slide(s, "closing").texts).toEqual([
+      "A little more informed about your corner of the world.",
+      "This is the image you can save. Your town and topics stay off unless you add them.",
+      "Save my story",
+      "Explore decisions",
+    ]);
   });
 
   it("town only: shows the town, claims nothing local", () => {
@@ -220,7 +255,7 @@ describe("profiles", () => {
     const s = story(p);
     expect(slide(s, "world")).toMatchObject({ place: "Cambridge, MA", placeKnown: true });
     expect(slide(s, "connects").mode).toBe("general");
-    expect(slide(s, "closing").card.place).toBe("Cambridge, MA");
+    expect(slide(s, "closing").texts.join(" ")).not.toContain("Cambridge");
     for (const x of s) for (const t of x.texts) expect(t).not.toMatch(/in Cambridge|Cambridge (voters|residents)/);
   });
 
@@ -259,11 +294,11 @@ describe("profiles", () => {
     const s = story(demoPersona("2026-10-24T00:00:00.000Z"));
     expect(slide(s, "world").place).toBe("Cambridge, MA");
     expect(slide(s, "connects").items.map((i) => i.number)).toEqual(["Question 7"]);
-    expect(slide(s, "radar").topics.map((t) => [t.label, t.count])).toEqual([
-      ["Housing costs", "1 question"],
-      ["Roads and transit", "Not on this ballot"],
-    ]);
-    expect(slide(s, "closing").card.topics).toBe("2 topics on my radar");
+    const r = slide(s, "radar");
+    expect(r.topics.map((t) => [t.label, t.count])).toEqual([["Housing costs", "1 question"]]);
+    expect(r.also).toEqual({ label: "Also on your radar, without a question on this ballot", topics: ["Roads and transit"] });
+    // The slide ends on the note, not on the subject that is off the ballot.
+    expect(r.texts.at(-1)).toBe("Following a subject says nothing about where you stand.");
     expect(TOPIC_DEFS.roads_transit.label).toBe("Roads and transit");
   });
 

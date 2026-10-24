@@ -8,8 +8,7 @@ import { SENSITIVE_TOPICS } from "@/lib/vocab/wrapped";
 import { topicIds } from "./profile";
 import { computeWrapped } from "./wrapped";
 import { arbProfile, BALLOT_2026 } from "./wrapped.arbitraries";
-import { defaultShareChoices, layoutShareImage, SHARE_H, SHARE_PAD, SHARE_W, shareItems, withTimeout, type Measure, type ShareBase, type ShareChoices } from "./wrapped-share-layout";
-import { placeLabel } from "./wrapped-slides";
+import { defaultShareChoices, layoutShareImage, SHARE_H, SHARE_PAD, SHARE_W, shareItems, storyShareBase, turnedBounds, withTimeout, type Box, type Measure, type ShareBase, type ShareChoices } from "./wrapped-share-layout";
 
 const RUNS = 100;
 const TOWNS = towns as { id: string; name: string }[];
@@ -17,10 +16,7 @@ const BECAUSE_TEXTS = FACT_IDS.flatMap((id) => [FACT_DEFS[id].because.yes, FACT_
 const BALLOT_TITLES = BALLOT_2026.measures.map((m) => m.title);
 
 /** The share base the story builds for a profile. */
-function baseFor(p: Parameters<typeof computeWrapped>[1]): ShareBase {
-  const { place, known } = placeLabel(p.townId, TOWNS);
-  return { year: "2026", ...(known ? { place } : {}), questionCount: 9, dateLabel: "Decided Tuesday, November 3", followed: computeWrapped(BALLOT_2026, p).topicRank };
-}
+const baseFor = (p: Parameters<typeof computeWrapped>[1]): ShareBase => storyShareBase(BALLOT_2026, computeWrapped(BALLOT_2026, p), p, TOWNS);
 
 const arbChoices = (base: ShareBase): fc.Arbitrary<ShareChoices> =>
   fc.record({ includePlace: fc.boolean(), includeTopics: fc.boolean(), picked: fc.subarray(base.followed) });
@@ -48,7 +44,7 @@ describe("share content", () => {
         // By default the image holds no topic at all.
         const items = shareItems(base, c);
         expect(items.some((i) => i.kind === "topic" || i.kind === "topicsHeading")).toBe(false);
-        expect(items.map((i) => i.kind)).toEqual(["brand", "title", "count", "countLabel", "date", "line"]);
+        expect(items.map((i) => i.kind)).toEqual(["brand", "title", "count", "countLabel", "date", "line", "footer"]);
         if (base.place) for (const { text } of items) expect(text).not.toContain(base.place);
       }),
       { numRuns: RUNS },
@@ -77,7 +73,7 @@ describe("share content", () => {
         }
         if (!choices.includePlace) expect(items.some((i) => i.kind === "place")).toBe(false);
         // Digits: only the year, the question count, and the date.
-        const digits = items.filter((i) => !["brand", "count", "date"].includes(i.kind)).map((i) => i.text);
+        const digits = items.filter((i) => !["brand", "count", "date", "footer"].includes(i.kind)).map((i) => i.text);
         for (const t of digits) expect(t).not.toMatch(/\d/);
       }),
       { numRuns: RUNS },
@@ -111,38 +107,58 @@ describe("share content", () => {
     expect(shareItems(base, picked).filter((i) => i.kind === "topic").map((i) => i.text)).toEqual(["Housing costs", "Gun policy"]);
   });
 
-  it("the layout draws every item in full, in order, inside the canvas, without overlap", () => {
+  it("the layout draws every item in full, inside the margins, with nothing overlapping", () => {
     const arbItems = fc
       .record({
         place: fc.option(fc.constantFrom("Manchester-by-the-Sea, MA", ...TOWNS.map((t) => `${t.name}, MA`)), { nil: undefined }),
         topics: fc.subarray([...TOPIC_IDS]),
+        count: fc.constantFrom(1, 9, 12),
       })
-      .map(({ place, topics }) => {
-        const base: ShareBase = { year: "2026", ...(place ? { place } : {}), questionCount: 9, dateLabel: "Decided Tuesday, November 3", followed: topics };
+      .map(({ place, topics, count }) => {
+        const base: ShareBase = { year: "2026", ...(place ? { place } : {}), questionCount: count, dateLabel: "Decided Tuesday, November 3", followed: topics };
         return shareItems(base, { includePlace: true, includeTopics: true, picked: topics });
       });
+    const overlaps = (a: Box, b: Box) => a.x < b.x + b.w - 0.5 && b.x < a.x + a.w - 0.5 && a.y < b.y + b.h - 0.5 && b.y < a.y + a.h - 0.5;
     fc.assert(
       fc.property(arbItems, arbMeasurer, (items, measure) => {
-        const { lines } = layoutShareImage(items, measure);
-        const maxWidth = SHARE_W - 2 * SHARE_PAD;
-        let prevBottom = -Infinity;
-        let prevItem = -1;
-        for (const line of lines) {
-          expect(line.x).toBeGreaterThanOrEqual(SHARE_PAD);
-          expect(measure(line.text, line.font)).toBeLessThanOrEqual(maxWidth);
-          expect(line.y).toBeGreaterThanOrEqual(SHARE_PAD);
-          expect(line.y + line.lineHeightPx).toBeLessThanOrEqual(SHARE_H - SHARE_PAD + 1e-6);
-          expect(line.y).toBeGreaterThanOrEqual(prevBottom - 1e-6);
-          expect(line.item).toBeGreaterThanOrEqual(prevItem);
-          prevBottom = line.y + line.lineHeightPx;
-          prevItem = line.item;
+        const L = layoutShareImage(items, measure);
+        expect(L.fits).toBe(true);
+        const inside = (b: Box) => {
+          expect(b.x).toBeGreaterThanOrEqual(SHARE_PAD - 0.5);
+          expect(b.y).toBeGreaterThanOrEqual(SHARE_PAD - 0.5);
+          expect(b.x + b.w).toBeLessThanOrEqual(SHARE_W - SHARE_PAD + 0.5);
+          expect(b.y + b.h).toBeLessThanOrEqual(SHARE_H - SHARE_PAD + 0.5);
+        };
+        const lineBoxes = L.lines.map((l) => ({ x: l.x, y: l.y, w: l.w, h: l.lineHeightPx, item: l.item }));
+        const ballot = turnedBounds(L.ballot);
+        [...lineBoxes, ...L.chips, ballot].forEach(inside);
+        // No two lines touch; no line runs into the ballot; chips never overlap, and only hold their own text.
+        for (let i = 0; i < lineBoxes.length; i++) {
+          expect(overlaps(lineBoxes[i], ballot)).toBe(false);
+          for (let j = i + 1; j < lineBoxes.length; j++) expect(overlaps(lineBoxes[i], lineBoxes[j])).toBe(false);
+          for (const c of L.chips) if (c.item !== lineBoxes[i].item) expect(overlaps(lineBoxes[i], c)).toBe(false);
+        }
+        for (let i = 0; i < L.chips.length; i++) {
+          expect(overlaps(L.chips[i], ballot)).toBe(false);
+          for (let j = i + 1; j < L.chips.length; j++) expect(overlaps(L.chips[i], L.chips[j])).toBe(false);
         }
         // The preview lists `items`; the image draws exactly those items and nothing else.
-        items.forEach((it, i) => expect(noSpace(lines.filter((l) => l.item === i).map((l) => l.text).join(""))).toBe(noSpace(it.text)));
-        expect(new Set(lines.map((l) => l.item)).size).toBe(items.length);
+        items.forEach((it, i) => expect(noSpace(L.lines.filter((l) => l.item === i).map((l) => l.text).join(""))).toBe(noSpace(it.text)));
+        expect(new Set(L.lines.map((l) => l.item)).size).toBe(items.length);
+        expect(L.chips.map((c) => items[c.item].kind).every((k) => k === "topic")).toBe(true);
       }),
       { numRuns: RUNS },
     );
+  });
+
+  it("the default image leaves no large empty band", () => {
+    const base: ShareBase = { year: "2026", questionCount: 9, dateLabel: "Decided Tuesday, November 3", followed: [] };
+    const measure: Measure = (t, f) => t.length * f.sizePx * 0.5;
+    const L = layoutShareImage(shareItems(base, defaultShareChoices(base)), measure);
+    const marks = [...L.lines.map((l) => [l.y, l.y + l.lineHeightPx]), [turnedBounds(L.ballot).y, turnedBounds(L.ballot).y + turnedBounds(L.ballot).h]].sort((a, b) => a[0] - b[0]);
+    let gap = 0;
+    for (let i = 1; i < marks.length; i++) gap = Math.max(gap, marks[i][0] - Math.max(...marks.slice(0, i).map((m) => m[1])));
+    expect(gap).toBeLessThan(SHARE_H * 0.2);
   });
 
   it("follows the person's topic order", () => {
