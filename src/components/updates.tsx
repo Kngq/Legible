@@ -13,6 +13,7 @@ import { docWhat, type TimelineEntry } from "@/lib/engine/timeline";
 import type { Provenance } from "@/lib/engine/types";
 import { friendlyWhen, KIND_LABEL, whyLine } from "@/lib/engine/update-copy";
 import { AvatarRing } from "./AvatarRing";
+import { useCursorCta } from "./CursorCta";
 import { DocTile } from "./covers";
 import { Glyph } from "./icons";
 import { OriginalLine } from "./OriginalText";
@@ -136,6 +137,8 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
   let why: string | null;
   let actions: ReactNode;
   const ballot = e.kind === "doc" ? e.item : e.ballot;
+  const open = e.kind === "civic" ? () => onOpenItem(e.card.item.id) : () => onOpenDoc(e.item.doc.id);
+  const cta = useCursorCta(open);
 
   if (e.kind === "civic") {
     const c = e.card;
@@ -178,7 +181,8 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
   const touching = ballot ? ballot.cards.filter((c) => c.relevance === "touches") : [];
 
   return (
-    <li className="rounded-lg bg-surface p-5 shadow-card">
+    <li {...cta.handlers} className={`relative rounded-lg bg-surface p-5 shadow-card ${cta.cursorClass}`}>
+      {cta.pill}
       <div className="flex items-start justify-between gap-3">
         <p className="text-small font-semibold uppercase tracking-wider text-muted-foreground">{kind}</p>
         {e.touches ? <Tag pop="accent">May affect you</Tag> : e.level === "list" ? <Tag pop="info">You follow this</Tag> : e.level === "maybe" ? <Tag>Might apply</Tag> : null}
@@ -227,7 +231,16 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
         />
       )}
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">{actions}</div>
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        {actions}
+        {/* No hovering mouse, no pill: the same "Read more" as a plain button. */}
+        <button type="button" onClick={open} className={`[@media(hover:hover)_and_(pointer:fine)]:hidden ${SECONDARY}`}>
+          Read more
+          <span aria-hidden="true" className="-rotate-90">
+            <Glyph name="chevron" size={14} />
+          </span>
+        </button>
+      </div>
     </li>
   );
 }
