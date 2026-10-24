@@ -259,9 +259,9 @@ Pattern borrowed from Duolingo: one question per screen, a back arrow top left, 
 
 The figure is the Legible avatar (line-drawn, see Avatar). It gains one part per yes (a key for renting, a bus for transit). It never shows red or blue and never reflects a sensitive fact.
 
-**No account, no sign-in.** Duolingo's "Create profile" exists to sync progress to a server. Legible's promise is that the profile never leaves the browser, so its counterpart is "Keep on this device." There is no name, email, or password step anywhere. If cross-device use is wanted after the event, the candidate is an export code the person copies to another browser, not an account.
+**No account, no sign-in.** Duolingo's "Create profile" exists to sync progress to a server. Legible's promise is that the profile never leaves the browser, so its counterpart is "Keep on this device." There is no email or password step anywhere, and no account. The optional profile name below is not an account. If cross-device use is wanted after the event, the candidate is an export code the person copies to another browser, not an account.
 
-**No name.** A name adds nothing to sorting, and a name stored next to "owns a firearm" turns a shared or screenshotted device into an identifying record. Greetings use the town instead: "Here is what Somerville is deciding."
+**Optional name, local only.** A person may enter a first name or nickname for their local profile (profile sheet), used only for the greeting. It adds nothing to sorting. Like every other profile field it stays in browser storage and is never sent anywhere, including Supabase. Onboarding never asks for it. A name stored next to "owns a firearm" makes a shared or screenshotted device more identifying, so it stays optional and "Clear my information" removes it with the rest. Without a name, greetings use the town: "Here is what Somerville is deciding."
 
 Onboarding belongs to the platform, not to any one document. Every screen is the same for every person, whatever is in their feed (a state ballot, a Town Meeting warrant, a school budget). No screen names a measure, a question number, or a document.
 
@@ -358,6 +358,7 @@ Everything Legible gathers, where it comes from, where it lives, and what it is 
 
 | Field | Gathered by | Stored | Used for |
 |---|---|---|---|
+| `name` | optional, typed in the profile sheet (first name or nickname, up to 40 characters) | profile | the greeting only; never sorting, never sent, including to Supabase |
 | `townId` | onboarding screen 1 (ZIP or town name, resolved locally; the ZIP is not kept), or feed header | profile | filtering the catalog in the browser; town context on cards later |
 | `facts[id].value` | onboarding, a card, open questions, or an edit | profile | firing rules: "Touches you," direction, why sentences |
 | `facts[id].source`, `.at` | set automatically with each answer | profile | explaining where an answer came from; tests for ask-once rules |
@@ -372,7 +373,7 @@ Everything Legible gathers, where it comes from, where it lives, and what it is 
 | `session.dismissedOpenQuestions` | dismissing an open question on the feed | memory, storage only if remember is on | not nagging |
 | `session.activePersonaId` | persona switcher | memory only | restoring the self profile when the persona view closes |
 
-Never gathered: name, email, password, account, phone, age, party, income, address beyond the town, free text about the person, typed topic text, IP address, device fingerprint, analytics events. Reduced-motion comes from the operating system setting at render time and is not stored.
+Never gathered: email, password, account, a name beyond the optional local `name` above, phone, age, party, income, address beyond the town, free text about the person, typed topic text, IP address, device fingerprint, analytics events. Reduced-motion comes from the operating system setting at render time and is not stored.
 
 Derived, never stored: sorted cards, touch counts, avatar parts, because chips. All recomputed by `buildCards` whenever the profile changes.
 
