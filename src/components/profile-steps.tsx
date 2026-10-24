@@ -227,16 +227,27 @@ export function TownStep({
   );
 }
 
-export function TopicsStep({ profile, setProfile }: { profile: Profile; setProfile: (p: Profile, partKey?: string) => void }) {
+export function TopicsStep({
+  profile,
+  setProfile,
+  compact = false,
+}: {
+  profile: Profile;
+  setProfile: (p: Profile, partKey?: string) => void;
+  /** First run: chips only, under the caller's own heading. */
+  compact?: boolean;
+}) {
   const [typed, setTyped] = useState("");
   const suggestions = matchTopics(typed).filter((t) => !profile.topics[t]);
   return (
     <div className="space-y-6">
-      <div className="space-y-3">
-        <h1 className="text-title">Pick any subjects you follow.</h1>
-        <p className="text-body text-muted-foreground">These add an On your list tag. They never change what touches you.</p>
-      </div>
-      <div className="flex flex-wrap gap-2">
+      {!compact && (
+        <div className="space-y-3">
+          <h1 className="text-title">Pick any subjects you follow.</h1>
+          <p className="text-body text-muted-foreground">These add an On your list tag. They never change what touches you.</p>
+        </div>
+      )}
+      <div role="group" aria-label="Subjects" className="flex flex-wrap gap-2">
         {TOPIC_IDS.map((id) => {
           const on = Boolean(profile.topics[id]);
           return (
@@ -245,17 +256,17 @@ export function TopicsStep({ profile, setProfile }: { profile: Profile; setProfi
               type="button"
               aria-pressed={on}
               onClick={() => setProfile(setTopic(profile, id, !on, "chip"), on ? undefined : `topic:${id}`)}
-              className={`inline-flex min-h-12 items-center gap-2 rounded-full border-2 px-4 text-body font-semibold transition-colors duration-(--duration) ease-legible ${FOCUS} ${
-                on ? "border-foreground bg-surface" : "border-transparent bg-surface-muted hover:border-border"
+              className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-body font-semibold transition-colors duration-(--duration) ease-legible ${FOCUS} ${
+                on ? "border-primary bg-accent-soft" : "border-border bg-surface hover:border-muted-foreground"
               }`}
             >
-              <Part name={TOPIC_DEFS[id].avatarPart} size={18} />
+              {compact ? on && <Glyph name="check" size={14} /> : <Part name={TOPIC_DEFS[id].avatarPart} size={18} />}
               {TOPIC_DEFS[id].label}
             </button>
           );
         })}
       </div>
-      <div className="space-y-2">
+      {!compact && <div className="space-y-2">
         <label htmlFor="topic-typed" className="text-small text-muted-foreground">
           Or type a subject. Matching happens in your browser and the text is not kept.
         </label>
@@ -283,7 +294,7 @@ export function TopicsStep({ profile, setProfile }: { profile: Profile; setProfi
             ))}
           </div>
         )}
-      </div>
+      </div>}
     </div>
   );
 }

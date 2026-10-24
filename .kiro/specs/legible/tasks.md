@@ -141,6 +141,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 17.19 Rework Home's For you into one list, dates coming up soon first, then decisions that could affect you (everything else is on Explore); cards read category and date, headline, explanation, why it matters (direct, potential, interest), "Why you're seeing this", and named actions (home-copy.ts, with tests); rename profile areas to Your housing situation, Your household, Your voting information, Your interests
   - [x] 17.20 Compact Home feed cards: header with subject, number, and status chip; short description without committee history; small "Why this may matter to you" box only when supported, grey line when an answer is missing; Explore proposal and Read original bill
     - _Requirements: 20.5, 20.9_
+  - [x] 17.21 Progressive profiling: first run is three optional steps (town, home, subjects) with a light step indicator and "Show my Legible" / "Explore Legible"; name, school, getting around, work, and voting move to the profile sheet; civic item pages invite one missing detail in context (open fact, Add details, Not now as a skip). Remembered profiles skip first run; Skip undoes only that run's picks
   - [ ] 17.6 Add uploaded and sample documents to the feed in memory, tagged by town
     - _Requirements: 20.8_
 

@@ -8,9 +8,9 @@ import { useState } from "react";
 import { checkLabel, type CivicCard } from "@/lib/engine/civic";
 import { CIVIC_KIND_LABEL, civicMeta, dateTime, timingTag } from "@/lib/engine/civic-copy";
 import type { FeedItem } from "@/lib/engine/feed";
-import type { Profile } from "@/lib/engine/profile";
+import { skipFact, type Profile } from "@/lib/engine/profile";
 import type { Card } from "@/lib/engine/types";
-import { FACT_DEFS } from "@/lib/vocab";
+import { FACT_DEFS, type FactId } from "@/lib/vocab";
 import { Cover } from "./covers";
 import { BillExplainer } from "./BillExplainer";
 import { CivicTile } from "./CivicRow";
@@ -21,6 +21,24 @@ import { areaOf, type SheetView } from "./ProfileSheet";
 import { FOCUS, Tag } from "./ui";
 
 const SERIF = "font-[family-name:var(--font-serif)]";
+
+// Progressive profiling: when an unanswered fact would decide whether this item
+// may apply, one quiet line offers to add it. It opens the existing profile area,
+// never asks twice in a row, and "Not now" counts as a skip like a card's ask.
+const INVITE: Partial<Record<FactId, { ask: string; why: string; link: string }>> = {
+  kids_in_schools: {
+    ask: "Have children in public school?",
+    why: "Adding this detail can help us find more relevant school decisions.",
+    link: "Add details",
+  },
+  registered_here: {
+    ask: "Registered to vote at your current address?",
+    why: "Check whether an upcoming registration deadline may apply to you.",
+    link: "Add voting details",
+  },
+};
+const inviteFor = (f: FactId) =>
+  INVITE[f] ?? { ask: FACT_DEFS[f].question, why: "Adding this detail can help show whether this may be relevant to you.", link: "Add details" };
 
 export function CivicView({
   card,
@@ -45,6 +63,8 @@ export function CivicView({
   const e = i.explainer;
   const bill = i.original?.kind === "bill" ? i.original.file?.match(/([HS]\d+)\.json$/)?.[1] : undefined;
   const [shared, setShared] = useState(false);
+  const [inviteDismissed, setInviteDismissed] = useState(false);
+  const inviteFact = inviteDismissed ? undefined : card.open.map((o) => o.fact).find((f) => areaOf(f));
   const kicker = `${i.place.kind === "state" ? "Massachusetts" : i.place.name} · ${CIVIC_KIND_LABEL[i.kind]}`;
 
   const share = async () => {
@@ -156,6 +176,32 @@ export function CivicView({
                 );
               })}
             </div>
+          )}
+
+          {inviteFact && (
+            <aside aria-label="Add a detail" className="mt-5 border-l-2 border-border pl-4">
+              <p className="text-body font-semibold">{inviteFor(inviteFact).ask}</p>
+              <p className="mt-1 text-small text-muted-foreground">{inviteFor(inviteFact).why}</p>
+              <div className="mt-1 flex flex-wrap items-center gap-x-4">
+                <button
+                  type="button"
+                  onClick={() => onOpenProfile({ kind: "area", id: areaOf(inviteFact)! })}
+                  className={`min-h-11 text-small font-semibold text-primary underline-offset-4 hover:underline ${FOCUS}`}
+                >
+                  {inviteFor(inviteFact).link} &rarr;
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setInviteDismissed(true);
+                    setProfile(skipFact(profile, inviteFact, { kind: "item", itemId: i.id }));
+                  }}
+                  className={`min-h-11 text-small font-semibold text-muted-foreground hover:text-foreground ${FOCUS}`}
+                >
+                  Not now
+                </button>
+              </div>
+            </aside>
           )}
         </>
       )}
