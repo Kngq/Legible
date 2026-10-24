@@ -67,7 +67,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 9.1, 9.2, 9.3_
   - [ ] 8.2 Add the `apiFetch` wrapper and the "What left your browser" panel
     - _Requirements: 10.1, 10.2_
-  - [x] 8.3 Add "Remember on this device" with guarded storage and "Forget me"
+  - [x] 8.3 Add "Remember on this device" with guarded storage and "Forget me" (now "Clear my information" in the profile sheet, task 17.12)
     - _Requirements: 10.4, 10.5_
   - [ ] 8.4 Verify offline re-sort and that no request contains profile data
     - _Requirements: 10.1, 10.3_
@@ -131,6 +131,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 17.9 Replace the feed sections (Up next, scope switch, carousels, Coming up, Documents) with one timeline: name, due, what it is, how it reaches you; ballot folded into Election Day
   - [x] 17.10 Rank the timeline by relevance and time together (`score = 0.65 relevance + 0.35 urgency`), with tests
   - [x] 17.11 Move the profile prompts into For you (cards when nothing matches, a dismissible pill row after), drop the upload card from Home, and keep the empty-town notice as one footer line
+  - [x] 17.12 Redesign Home around three questions: welcome, Coming up (top three), What matters to you (home, work, elections with Added/Edit), Happening near you (with local meetings and bills), How Legible works; update cards with plain dates, why, and real actions; "Clear my information" with a confirm step in the profile sheet
     - _Requirements: 20.5, 20.9_
   - [ ] 17.6 Add uploaded and sample documents to the feed in memory, tagged by town
     - _Requirements: 20.8_

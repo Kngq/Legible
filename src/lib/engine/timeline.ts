@@ -20,9 +20,9 @@ import { measureNoun } from "./decide-by";
  */
 export const WEIGHTS = { relevance: 0.65, urgency: 0.35 } as const;
 
-export function relevanceScore(level: "touches" | "list" | "everyone", matches = 1): number {
+export function relevanceScore(level: "touches" | "list" | "everyone" | "other", matches = 1): number {
   if (level === "touches") return Math.min(1.2, 1 + 0.05 * Math.max(0, matches - 1));
-  return level === "list" ? 0.6 : 0.35;
+  return level === "list" ? 0.6 : level === "everyone" ? 0.35 : 0.15;
 }
 
 export function urgencyScore(days?: number): number {
@@ -79,17 +79,19 @@ export function docWhat(item: FeedItem): string {
 
 /**
  * Upcoming documents and civic items that relate to the person (touch them, are on
- * their list, or apply to everyone), most relevant and soonest first. A ballot is
+ * their list, or apply to everyone), most relevant and soonest first. With
+ * `includeOthers`, the remaining local meetings and state bills follow at the
+ * lowest relevance (0.15), so Home can still show what is happening nearby. A ballot is
  * folded into the election on its date instead of appearing twice.
  */
-export function buildTimeline(docs: FeedItem[], civic: CivicCard[], today: string): TimelineEntry[] {
+export function buildTimeline(docs: FeedItem[], civic: CivicCard[], today: string, opts: { includeOthers?: boolean } = {}): TimelineEntry[] {
   type CivicEntry = Extract<TimelineEntry, { kind: "civic" }>;
   const civicEntries: CivicEntry[] = [];
   const elections = new Map<string, number>();
 
   for (const c of civic) {
     if (c.timing === "past") continue;
-    const level = c.relevance === "touches" ? "touches" : c.onYourList ? "list" : c.relevance === "everyone" ? "everyone" : null;
+    const level = c.relevance === "touches" ? "touches" : c.onYourList ? "list" : c.relevance === "everyone" ? "everyone" : opts.includeOthers ? "other" : null;
     if (!level) continue;
     const date = c.item.at ? (c.timing === "open" ? today : c.item.at.slice(0, 10)) : undefined;
     const days = c.item.at ? daysBetween(today, (c.timing === "open" && c.item.until ? c.item.until : c.item.at).slice(0, 10)) : undefined;

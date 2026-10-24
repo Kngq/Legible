@@ -139,7 +139,7 @@ Out of scope for this build: any 3D map; accounts or server-side storage of prof
 2. THE SYSTEM SHALL show a "What left your browser" panel listing each request made in the session and its contents by category, and listing that answers were not sent.
 3. WHEN the device is offline after a document has loaded THE SYSTEM SHALL still recompute and re-sort cards when answers change.
 4. THE SYSTEM SHALL clear the profile on refresh unless the user opts into "Remember on this device," which uses browser storage wrapped in error handling.
-5. THE SYSTEM SHALL provide a one-tap "Forget me" control that clears all stored profile data.
+5. THE SYSTEM SHALL provide a "Clear my information" control in the profile that explains what will be deleted, asks for confirmation, and then clears all profile data from the browser.
 
 ### Requirement 11: Upload and analyze a document
 
@@ -217,11 +217,11 @@ Out of scope for this build: any 3D map; accounts or server-side storage of prof
 3. THE SYSTEM SHALL show each timeline entry with its name, when it is due as a fact ("In 3 days · Tue, Oct 27, 5:00 PM"), one sentence on what it is, and one sentence on how it reaches the person ("For you, because you rent", "Applies to every voter in Massachusetts"). A document SHALL name the measures that touch the person and SHALL NOT show a bare count such as "0 of 9".
 4. THE SYSTEM SHALL show the home screen as one timeline ranked by relevance and time together, most relevant first: anything that touches the person ranks above anything that only applies to everyone, and within a tier sooner ranks first. It SHALL show only items that touch the person, are on their list, or apply to everyone. A ballot SHALL be folded into the election on its date. Decided items SHALL be collapsed by default.
 5. THE SYSTEM SHALL let the person open any entry: a civic item to its detail, a document to its measures, and each touching measure directly from its entry.
-6. THE SYSTEM SHALL show an "Open questions for you" section listing facts that any feed document asks and the profile has not settled, answerable in place, and SHALL re-sort the feed when they change.
+6. THE SYSTEM SHALL ask for profile details on Home under "What matters to you?" with home, work, and elections categories, SHALL show answered categories as added with an edit option instead of asking again, and SHALL re-sort Home when answers change.
 7. IF the catalog has no documents for the user's town THEN THE SYSTEM SHALL say so plainly in one line on Home. Uploading a town document SHALL be offered outside Home, with the upload panel.
 8. THE SYSTEM SHALL list uploaded and sample documents in the same feed, tagged by town and labeled AI draft, kept in the browser only.
 9. THE SYSTEM SHALL show civic items (election deadlines, voting windows, public meetings, state bills) in the same feed, each with its official source and how it was checked: word for word in an official PDF, read on the official page on a stated date, or following a published standing schedule. Meeting cards SHALL NOT list agenda items until a posted agenda is ingested.
-10. THE SYSTEM SHALL title the home screen "Your timeline", SHALL state deadlines as facts, and SHALL NOT phrase it as what the person ought to care about or create urgency.
+10. THE SYSTEM SHALL title the home screen "What's happening in {town}?", SHALL show at most one primary action per update and only for a real destination, SHALL state deadlines as facts, and SHALL NOT phrase it as what the person ought to care about or create urgency.
 
 ### Requirement 23: Content pipeline
 

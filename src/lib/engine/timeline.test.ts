@@ -71,6 +71,17 @@ describe("buildTimeline", () => {
     expect(listedSoon).toBeGreaterThan(everyoneToday);
   });
 
+  it("includeOthers adds the remaining local and state items below what touches the person", () => {
+    const p = withFacts({ rents: true, registered_here: false }, "cambridge");
+    const all = buildTimeline(buildFeed(docs, p, today).items, civicFeed(civic, p, today), today, { includeOthers: true });
+    expect(all.length).toBeGreaterThan(timelineFor(p).length);
+    expect(all.some((e) => e.kind === "civic" && e.card.item.kind === "meeting")).toBe(true);
+    // Anything that touches the person still ranks above every added item.
+    const lastTouching = all.map((e) => e.touches).lastIndexOf(true);
+    const firstOther = all.findIndex((e) => e.relevance === relevanceScore("other"));
+    expect(lastTouching).toBeLessThan(firstOther);
+  });
+
   it("every app-written line passes the word lint", () => {
     for (const p of [emptyProfile(t0), withFacts({ rents: true, registered_here: false, kids_in_schools: true }, "cambridge")]) {
       for (const e of timelineFor(p)) expect(findBannedWords(e.forYou), e.forYou).toEqual([]);

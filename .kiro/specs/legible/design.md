@@ -241,7 +241,7 @@ Pure template in the browser. Inputs are selected measure numbers and one factua
 - **Feed (Home):** header with avatar ring, one nudge, one timeline (name, due, what it is, how it reaches you), open questions, and a collapsed Decided group. **DocumentView:** one document's measures as cards.
 - **ChatDock:** bottom-corner button and panel scoped to the open document or measure, citations on every sentence.
 - **TrustPanel and ChainView:** per-document trust summary, and the sentence-to-source chain opened from "How do we know this?"
-- **Ballot header:** avatar, document title, persona switcher, privacy panel button, "Remember on this device" and "Forget me."
+- **Ballot header:** avatar, document title, persona switcher, privacy panel button, "Remember on this device" and "Clear my information" (in the profile sheet)."
 - **MeasureCard:** number, short title, relevance label, "On your list" label, direction pictogram with the avatar as the figure, why sentences, because chips, inline fact question, YES and NO quotes, quote badges, ask box.
 - **Avatar:** SVG built from layered line-drawn parts keyed by facts and topics. No red or blue.
 - **DirectionLegend:** the five pictograms with one-line meanings.
@@ -287,9 +287,9 @@ Tapping the avatar opens the **profile sheet**: a bottom sheet titled "Your prof
 
 After Save the sheet returns, the ring fills to its new value over 400 ms, the avatar gains its part, and the feed behind re-sorts. "Next: Getting around" appears as a text button so a person on a roll can keep going without returning to the list.
 
-**Profile prompts live in For you.** Below 100%, the open items (the town if missing, then life areas with open questions) appear inside the For you section of Home, each with its area's `why` line and never a document name. When nothing matches yet, they are the content of For you, as bordered cards. Once something matches, they shrink to one dismissible row of pills under the For you entries ("Sharpen For you"); dismissing hides that row for the session and it never returns the same day once dismissed if remember is on.
+**Profile prompts live in "What matters to you?"** On Home, three categories (home, work, elections) ask for details with plain buttons and show "Added" with "Edit" once answered, so nothing is asked twice. The town is asked there only when missing. The rest of the profile opens from a link and from the avatar.
 
-**Remember, asked at the right moment.** The ring only brings people back if the profile survives a refresh, but storage stays opt-in. So the first time a person saves anything beyond the town, the sheet shows one line under the ring: "Keep this on this device? It stays in this browser only. Forget me erases it any time." with "Keep" and "Not now." Not now is not asked again that session.
+**Remember, asked at the right moment.** The ring only brings people back if the profile survives a refresh, but storage stays opt-in. So the first time a person saves anything beyond the town, the sheet shows one line under the ring: "Keep this on this device? It stays in this browser only. Clear my information erases it any time." with "Keep" and "Not now." Not now is not asked again that session.
 
 At 100% the ring closes and the line under it reads "Your profile is filled in." No confetti, no streaks, no badge. Persona views hide the ring.
 
@@ -361,7 +361,7 @@ Everything Legible gathers, where it comes from, where it lives, and what it is 
 | `topics[id].via`, `.at` | onboarding screen 3 or a chip | profile | "On your list"; the typed text is never stored |
 | `topicsConfirmedAt` | Save on the Subjects screen | profile | the personalization meter's topics item |
 | `source` | set by the persona switcher | profile | keeping persona views out of storage |
-| `createdAt`, `updatedAt` | automatic | profile | "Forget me" confirmation, migrations |
+| `createdAt`, `updatedAt` | automatic | profile | "Clear my information" confirmation, migrations |
 | `preferences.remember` | profile sheet, the first time something beyond the town is saved, or header | preferences | whether anything is written to storage at all |
 | `preferences.onboardingDone` | end of onboarding | preferences | skipping onboarding on return visits |
 | `session.openedDocuments` | opening a document or expanding a card | memory, storage only if remember is on | restoring the view; feed ordering tiebreak |
@@ -372,7 +372,7 @@ Never gathered: name, email, password, account, phone, age, party, income, addre
 
 Derived, never stored: sorted cards, touch counts, avatar parts, because chips. All recomputed by `buildCards` whenever the profile changes.
 
-Storage: one `localStorage` key, `legible.profile.v1` (a profile under the pre-rename key `nine.profile.v1` is moved to it once), holding `{ profile, preferences, session }` as JSON, written only when `remember` is on, read through `parseProfile`, which drops unknown ids and rejects other versions. "Forget me" deletes the key and resets the in-memory profile. Storage access is wrapped in try/catch; if it throws, the remember toggle is disabled with a note and the app runs in memory.
+Storage: one `localStorage` key, `legible.profile.v1` (a profile under the pre-rename key `nine.profile.v1` is moved to it once), holding `{ profile, preferences, session }` as JSON, written only when `remember` is on, read through `parseProfile`, which drops unknown ids and rejects other versions. "Clear my information" (profile sheet, after a confirm step) deletes the key and resets the in-memory profile. Storage access is wrapped in try/catch; if it throws, the remember toggle is disabled with a note and the app runs in memory.
 
 ## Home feed and catalog
 
@@ -402,15 +402,18 @@ Source data: `data/legible_ma_seed.json` (the team's Supabase seed) is rebuilt b
 
 Home is one timeline (`buildTimeline` in `src/lib/engine/timeline.ts`). There is no Up next card, no scope switch, and no "N of M touch you" count: people read "0 of 9" as an error.
 
-1. **Header.** Avatar with its completion ring, town name, "What is being decided near you", and "Your profile".
-2. **Nudge.** At most one card, for `nextItem(profile)` (see Onboarding).
-3. **Your timeline,** laid out like a news reader on a white sheet. **For you** always comes first, under the line "These match your answers." Its top entry is a **hero card** (deep purple, serif headline, due line, how it reaches you, who acts at the foot, a large faint pictogram in place of a photo); when nothing matches yet it shows "Nothing matches your answers yet." above the profile prompts as bordered cards (serif title, `why` line, black chevron); once something matches, the prompts become a dismissible "Sharpen For you" pill row under its entries. Then **You follow** ("Subjects you picked in your profile.") and **Everyone in Massachusetts** ("These apply to everyone, whatever your answers."), each a bold sans heading with a "Show all N" pill (three rows shown), in rank order. Rows under Everyone drop the per-row "Applies to every voter" line, since the heading says it. A row is an 80 px thumbnail (the day, or a pictogram for undated bills), a serif headline, a grey date line with "•" separators, and two small lines. Touching ballot questions appear under their entry as rows with their cover art. Every entry carries:
-   - name;
-   - when it is due, as a fact: "Open, closes in 6 days · Fri, Oct 30, 11:59 PM", "Voters decide in 10 days · Nov 3";
-   - one sentence on what it is (the civic item's summary, or "9 statewide questions on your ballot.");
-   - one sentence on how it reaches the person, accent-soft with a "For you" tag when it touches them: "For you, because you are not registered at your address.", "On your list: you follow housing costs.", "Applies to every voter in Massachusetts.";
-   - for a ballot or warrant, the touching measures as links, then "See all 9 questions". A document's line names those measures; with none it reads "None of the questions points to your answers yet. Each applies to everyone in Massachusetts."
-   Only items that touch the person, are on their list, or apply to everyone appear. A ballot is folded into the Election Day entry on the same date. Open windows sit under Today.
+Home answers three questions in order: what is happening near me, how could it affect me, and what can I do. Plain words, one obvious action per card, and a button only where a real destination exists (the item's official link, the ballot page, or the item's detail).
+
+1. **Top bar.** "Legible" and the way into the profile: a "Your profile" pill and the avatar with its ring. There is no Explore tab until an Explore page exists. "Clear my information" lives in the profile sheet, with a confirm step that says what is deleted.
+2. **Welcome.** "What's happening in Cambridge?" (Massachusetts with no town) and "Understand local decisions, see how they could affect you, and find ways to have your say.", then three small tiles: What's coming up, How it could affect you, What you can do.
+3. **Coming up** ("Coming up for you" when any of it matches the person). The top three entries of the ranked timeline as update cards. Subtitle explains the order; with no matches it says that adding details moves anything that may affect them to the top.
+4. **What matters to you?** "Tell us a little about yourself so we can highlight decisions that may affect your life." Three cards: Your home ("Add housing details"), Your work ("Add work details"), Elections ("Add voting details"), each opening its profile step. A filled area shows "Added" and "Edit" instead of asking again. "Add your city or town" appears only without a town; a link opens the rest of the profile (household, getting around, subjects).
+5. **Happening near you.** "Important updates and upcoming dates in your area." The rest of the ranked timeline, four shown, then "Show all N updates". It includes local meetings and state bills that match no answer, at the lowest relevance (`includeOthers`).
+6. **Empty town,** under that, quietly: "More Cambridge updates are coming. We're still adding local decisions. For now, you can explore important updates across Massachusetts." It never says the town has no public decisions.
+7. **Already decided,** collapsed.
+8. **How Legible works,** said once: your details stay in this browser (with "Manage or clear them"), dates and summaries come from official sources linked on each update, and Legible never tells you how to vote.
+
+An **update card** shows: what kind it is ("Deadline", "Voting", "Election", "Public meeting", "Proposed bill · In House Ways and Means"); a "May affect you" or "You follow this" tag when it applies; the title; the date in plain form ("October 27 · 5 PM · In 3 days", "October 17–30", "No vote scheduled yet"); the official summary; "Why you're seeing this: You told us you rent." when an answer matched; for the election with the ballot folded in, "How could this affect you?" listing each matching question with its first cited line and a link to its page; then the actions: "Explore what's on the ballot", the item's first official link ("Apply to vote by mail", "Sign up for public comment", "Read the bill and its history") opening the official site, and "Details and source". Wording helpers live in `src/lib/engine/update-copy.ts`.
 
    **Ranking.** Each entry gets `score = 0.65 × relevance + 0.35 × urgency`, highest first; ties go to the sooner date.
 
@@ -419,16 +422,12 @@ Home is one timeline (`buildTimeline` in `src/lib/engine/timeline.ts`). There is
    | Touches the person (a life fact matches, or a document has touching measures) | 1.0, plus 0.05 per extra match, capped at 1.2 |
    | On their list (a followed subject) | 0.6 |
    | Applies to everyone | 0.35 |
+   | Nothing matched, shown on Home with `includeOthers` (local meetings, state bills) | 0.15 |
 
    Urgency is `1 / (1 + days / 7)` to the day it is due (the closing day for an open window): today 1.0, a week 0.5, a month about 0.19. Undated bills get 0.1. With these weights, anything that touches the person outranks anything that only applies to everyone, even when that item is due today, and a followed subject due within a few days outranks an everyone item due today. The weights live in `WEIGHTS` in `src/lib/engine/timeline.ts`; tests pin these orderings. Everything runs in the browser.
-4. **Open questions** are the profile prompts inside For you (above), opening the same Pick-all screens, generic copy only. Answering re-runs `buildCards` for every loaded document.
-5. **Decided.** Items whose `decideBy.date` has passed, collapsed by default, kept for reference with "Decided May 4".
-
-**Empty town.** When the catalog has nothing for the town, one quiet line at the foot of Home: "Legible has no documents for Somerville yet. State decisions still show here." Upload is not offered on Home; it lives with the upload panel (task 9.4).
-
 **Uploaded documents** join the feed in memory, tagged with the profile's town and labeled AI draft, until the page is closed.
 
-Copy rule: the home heading is "Your timeline." Never "what you ought to care about." Deadlines are stated as facts ("Town Meeting votes May 4"), never as urgency ("Act now").
+Copy rule: the home heading is "What's happening in {town}?" Never "what you ought to care about." Deadlines are stated as facts ("Town Meeting votes May 4"), never as urgency ("Act now").
 
 ## Measure page
 

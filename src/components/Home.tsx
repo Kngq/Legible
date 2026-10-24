@@ -1,30 +1,34 @@
 "use client";
 
-// Home, laid out like a news reader: For you first (its top item as a hero card),
-// then You follow and Everyone in Massachusetts, as rows with a thumbnail, a serif
-// headline, and a date line. Order comes from buildTimeline: relevance, then time.
-// All filtering runs in the browser.
+// Home after onboarding. It answers three questions in order: what is happening
+// near me, how could it affect me, and what can I do. Sections: welcome, coming
+// up (ranked by buildTimeline: relevance, then time), what matters to you
+// (profile categories), happening near you, and how Legible works.
+// Everything runs in the browser; buttons appear only for real destinations.
 import { useState, type ReactNode } from "react";
 import { avatarParts } from "@/lib/engine/avatar";
 import { decidedLine, decideByLine, decideByRelative, DOC_TYPE_LABEL, shortDate } from "@/lib/engine/decide-by";
 import type { CivicCard } from "@/lib/engine/civic";
-import { dateTime, timingTag } from "@/lib/engine/civic-copy";
+import { timingTag } from "@/lib/engine/civic-copy";
 import type { Feed, FeedItem } from "@/lib/engine/feed";
 import { personalization } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
 import { buildTimeline, docWhat, type TimelineEntry } from "@/lib/engine/timeline";
-import type { Card, Provenance } from "@/lib/engine/types";
-import { LIFE_AREAS } from "@/lib/vocab";
+import type { Provenance } from "@/lib/engine/types";
+import { friendlyWhen, KIND_LABEL, whyLine } from "@/lib/engine/update-copy";
+import type { LifeAreaId } from "@/lib/vocab";
 import { AvatarRing } from "./AvatarRing";
-import { Cover, DocTile } from "./covers";
+import { DocTile } from "./covers";
 import { Glyph, Part } from "./icons";
 import { viewForPart, type SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { FOCUS, Tag } from "./ui";
 
-const SERIF = "font-[family-name:var(--font-serif)]";
-const PILL = `inline-flex min-h-9 shrink-0 items-center rounded-full bg-surface-muted px-4 text-small font-semibold hover:bg-border ${FOCUS}`;
-const ROWS_SHOWN = 3;
+const TOP = 3;
+const MORE_SHOWN = 4;
+const H2 = "text-title font-bold tracking-tight";
+const PRIMARY = `inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-small font-semibold text-primary-foreground hover:opacity-90 ${FOCUS}`;
+const SECONDARY = `inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-surface-muted px-5 text-small font-semibold hover:bg-border ${FOCUS}`;
 
 const TRUST: Record<Provenance, { label: string; pop: "positive" | "attention" }> = {
   reviewed: { label: "Reviewed", pop: "positive" },
@@ -32,25 +36,20 @@ const TRUST: Record<Provenance, { label: string; pop: "positive" | "attention" }
   ai_draft: { label: "AI draft", pop: "attention" },
 };
 
-type Tier = "touches" | "list" | "everyone";
-const TIERS: { id: Tier; title: string; sub: string }[] = [
-  { id: "touches", title: "For you", sub: "These match your answers." },
-  { id: "list", title: "You follow", sub: "Subjects you picked in your profile." },
-  { id: "everyone", title: "Everyone in Massachusetts", sub: "These apply to everyone, whatever your answers." },
+/** The three profile categories Home asks about. Other areas live in the profile. */
+const CATEGORIES: { id: LifeAreaId; title: string; why: string; add: string; art: string }[] = [
+  { id: "home", title: "Your home", why: "Find out about changes that could affect where you live.", add: "Add housing details", art: "key" },
+  { id: "work", title: "Your work", why: "See decisions that could affect your job or local businesses.", add: "Add work details", art: "storefront" },
+  { id: "voting", title: "Elections", why: "Stay informed about elections and voting in your area.", add: "Add voting details", art: "ballot" },
 ];
-const tierOf = (e: TimelineEntry): Tier => (e.touches ? "touches" : e.relevance >= 0.6 ? "list" : "everyone");
 
 export function Home({
   feed,
   today,
   profile,
-  remember,
   onOpenDoc,
   onOpenMeasure,
   onOpenProfile,
-  onForget,
-  nudgeDismissed,
-  onDismissNudge,
   civic,
   onOpenItem,
 }: {
@@ -64,100 +63,140 @@ export function Home({
   onOpenDoc: (id: string) => void;
   onOpenMeasure: (docId: string, measureId: string) => void;
   onOpenProfile: (v: SheetView) => void;
+  /** Kept for the call site; clearing now lives in the profile sheet as "Clear my information". */
   onForget: () => void;
   nudgeDismissed: boolean;
   onDismissNudge: () => void;
-  /** Opens the upload panel. Absent until the panel exists (task 9.4). */
+  /** Opens the upload panel. Not offered on Home. */
   onUpload?: () => void;
 }) {
   const town = townName(profile.townId);
+  const place = town ?? "Massachusetts";
   const meter = personalization(profile);
-  const parts = avatarParts(profile);
-  // Profile prompts live inside For you: the town first if missing, then life areas with open questions.
-  const prompts: Prompt[] = [
-    ...(town ? [] : [{ key: "town", title: "Your town", why: "Town meetings, budgets, and local votes depend on this.", view: { kind: "town" } as SheetView }]),
-    ...feed.openAreas.map((id) => {
-      const a = LIFE_AREAS.find((x) => x.id === id)!;
-      return { key: id, title: a.heading, why: a.why, view: { kind: "area", id } as SheetView };
-    }),
-  ];
+  const done = new Set(meter.items.filter((i) => i.kind === "area" && i.done).map((i) => (i.kind === "area" ? i.id : "")));
   const decided = feed.items.filter((i) => i.status === "decided");
-  const timeline = buildTimeline(feed.items, civic, today);
-  const forYou = timeline.filter((e) => tierOf(e) === "touches");
-  const open = (e: TimelineEntry) => (e.kind === "doc" ? onOpenDoc(e.item.doc.id) : onOpenItem(e.card.item.id));
+  const timeline = buildTimeline(feed.items, civic, today, { includeOthers: true });
+  const top = timeline.slice(0, TOP);
+  const more = timeline.slice(TOP);
+  const personal = top.some((e) => e.touches);
+  const noTownDocs = town !== undefined && !feed.items.some((i) => i.scope === "town");
+  const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure };
 
   return (
-    <div className="mx-auto w-full max-w-2xl bg-surface px-5 pb-16 pt-6 sm:my-6 sm:rounded-xl sm:px-8 sm:shadow-card">
-      {/* Header: town, the avatar ring, and the profile pill. */}
-      <header className="flex items-center gap-4">
-        <AvatarRing
-          parts={parts}
-          percent={meter.percent}
-          size={64}
-          onFigure={() => onOpenProfile({ kind: "list" })}
-          onPart={(p) => onOpenProfile(viewForPart(p))}
-        />
-        <div className="min-w-0 flex-1">
-          <p className="text-title font-bold tracking-tight">{town ?? "Massachusetts"}</p>
-          <p className="text-small text-muted-foreground">What is being decided near you</p>
-        </div>
-        <div className="flex flex-col items-end gap-1">
-          <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={PILL}>
+    <div className="mx-auto w-full max-w-2xl px-4 pb-16 sm:px-6">
+      {/* Top bar: name and the way into the profile. Home is the only page here for now. */}
+      <nav aria-label="Main" className="flex h-16 items-center justify-between">
+        <span className="text-body font-bold tracking-tight">Legible</span>
+        <span className="flex items-center gap-2">
+          <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={SECONDARY}>
             Your profile
           </button>
-          {remember && (
-            <button type="button" onClick={onForget} className={`min-h-9 px-2 text-small font-semibold text-muted-foreground hover:text-foreground ${FOCUS}`}>
-              Forget me
-            </button>
-          )}
-        </div>
+          <AvatarRing parts={avatarParts(profile)} percent={meter.percent} size={44} showLabel={false} onFigure={() => onOpenProfile({ kind: "list" })} onPart={(p) => onOpenProfile(viewForPart(p))} />
+        </span>
+      </nav>
+
+      {/* 1. Welcome */}
+      <header className="pt-6">
+        <h1 className="text-display">What&apos;s happening in {place}?</h1>
+        <p className="mt-3 text-body text-muted-foreground">Understand local decisions, see how they could affect you, and find ways to have your say.</p>
+        <ul className="mt-5 grid grid-cols-3 gap-2">
+          {[
+            ["ballot_box", "What’s coming up"],
+            ["key", "How it could affect you"],
+            ["town_hall", "What you can do"],
+          ].map(([art, label]) => (
+            <li key={label} className="flex flex-col items-center gap-1.5 rounded-md bg-surface px-2 py-3 text-center text-small font-semibold leading-tight shadow-card sm:flex-row sm:px-3 sm:text-left">
+              <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-soft">
+                <Part name={art} size={18} />
+              </span>
+              {label}
+            </li>
+          ))}
+        </ul>
       </header>
 
-      <h1 className="sr-only">Your timeline</h1>
+      {/* 2. The most useful updates right now */}
+      {top.length > 0 && (
+        <section aria-labelledby="h-next" className="mt-10">
+          <h2 id="h-next" className={H2}>
+            {personal ? "Coming up for you" : "Coming up"}
+          </h2>
+          <p className="mt-1 text-small text-muted-foreground">
+            {personal
+              ? "Ranked by how much each could affect you, then by date."
+              : "The soonest dates near you. Add a few details below and anything that may affect you moves to the top."}
+          </p>
+          <ul className="mt-4 space-y-4">
+            {top.map((e) => (
+              <UpdateCard key={e.key} entry={e} {...cardProps} />
+            ))}
+          </ul>
+        </section>
+      )}
 
-      {/* For you always comes first: its top item as the hero, or a prompt when nothing matches yet. */}
-      <section aria-labelledby="h-touches" className="mt-8">
-        <h2 id="h-touches" className="text-title font-bold tracking-tight">
-          For you
+      {/* 3. Personalize */}
+      <section aria-labelledby="h-matters" className="mt-12">
+        <h2 id="h-matters" className={H2}>
+          What matters to you?
         </h2>
-        <p className="text-small text-muted-foreground">{TIERS[0].sub}</p>
-        {forYou[0] ? (
-          <>
-            <Hero entry={forYou[0]} today={today} onOpen={() => open(forYou[0])} onOpenMeasure={onOpenMeasure} />
-            <Rows entries={forYou.slice(1)} today={today} open={open} onOpenMeasure={onOpenMeasure} />
-            {!nudgeDismissed && <Sharpen prompts={prompts} compact onOpenProfile={onOpenProfile} onDismiss={onDismissNudge} />}
-          </>
-        ) : (
-          <div className="mt-4 rounded-lg border border-border p-5">
-            <p className={`text-body font-semibold ${SERIF}`}>Nothing matches your answers yet.</p>
-            <p className="mt-1 text-small text-muted-foreground">
-              {prompts.length
-                ? "Answer one of these and what touches you shows up here first. Your answers stay in this browser."
-                : "Nothing in your answers points to what is being decided right now."}
-            </p>
-            <Sharpen prompts={prompts} onOpenProfile={onOpenProfile} />
-          </div>
+        <p className="mt-1 text-small text-muted-foreground">Tell us a little about yourself so we can highlight decisions that may affect your life.</p>
+        {!town && (
+          <button type="button" onClick={() => onOpenProfile({ kind: "town" })} className={`mt-4 ${PRIMARY}`}>
+            Add your city or town
+          </button>
         )}
+        <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+          {CATEGORIES.map((c) => {
+            const isDone = done.has(c.id);
+            return (
+              <li key={c.id}>
+                <button
+                  type="button"
+                  onClick={() => onOpenProfile({ kind: "area", id: c.id })}
+                  className={`flex h-full w-full flex-col rounded-lg border p-4 text-left transition-colors duration-(--duration) ease-legible hover:bg-surface-muted/60 ${FOCUS} ${
+                    isDone ? "border-border bg-surface" : "border-accent/30 bg-surface"
+                  }`}
+                >
+                  <span aria-hidden="true" className={`flex size-11 items-center justify-center rounded-full ${isDone ? "bg-surface-muted" : "bg-accent-soft"}`}>
+                    <Part name={c.art} size={24} />
+                  </span>
+                  <span className="mt-3 block text-body font-bold">{c.title}</span>
+                  <span className="mt-1 block flex-1 text-small text-muted-foreground">{c.why}</span>
+                  {isDone ? (
+                    <span className="mt-3 flex items-center justify-between gap-2 text-small font-semibold">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Glyph name="check" size={14} /> Added
+                      </span>
+                      <span className="underline underline-offset-4">Edit</span>
+                    </span>
+                  ) : (
+                    <span className="mt-3 inline-flex min-h-10 items-center justify-center rounded-full bg-primary px-4 text-small font-semibold text-primary-foreground">{c.add}</span>
+                  )}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={`mt-3 min-h-11 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
+          More about you: household, getting around, and subjects you follow
+        </button>
       </section>
 
-      {TIERS.slice(1).map((t) => {
-        const entries = timeline.filter((e) => tierOf(e) === t.id);
-        return entries.length ? (
-          <Section key={t.id} id={`h-${t.id}`} title={t.title} sub={t.sub} count={entries.length}>
-            {(all) =>
-              (all ? entries : entries.slice(0, ROWS_SHOWN)).map((e) => (
-                <Row key={e.key} entry={e} today={today} onOpen={() => open(e)} onOpenMeasure={onOpenMeasure} />
-              ))
-            }
-          </Section>
-        ) : null;
-      })}
+      {/* 4. Everything else, near you and statewide */}
+      {more.length > 0 && <More entries={more} cardProps={cardProps} />}
+
+      {noTownDocs && (
+        <p className="mt-6 text-small text-muted-foreground">
+          <span className="font-semibold text-foreground">More {town} updates are coming.</span> We&apos;re still adding local decisions. For now, you can explore
+          important updates across Massachusetts.
+        </p>
+      )}
 
       {decided.length > 0 && (
         <details className="group mt-10">
           <summary className={`flex min-h-12 cursor-pointer list-none items-center justify-between rounded-md border border-border px-5 ${FOCUS}`}>
             <span className="text-body font-semibold">
-              Decided <span className="text-muted-foreground">{decided.length}</span>
+              Already decided <span className="text-muted-foreground">{decided.length}</span>
             </span>
             <span className="transition-transform duration-(--duration) ease-legible group-open:rotate-180">
               <Glyph name="chevron" />
@@ -173,201 +212,169 @@ export function Home({
         </details>
       )}
 
-      <footer className="mt-12 space-y-2 text-small text-muted-foreground">
-        {town && !feed.items.some((i) => i.scope === "town") && <p>Legible has no documents for {town} yet. State decisions still show here.</p>}
-        <p>Most relevant to you first, then soonest. Your answers and your town stay in this browser. Legible sorts the official text; it never says how to vote.</p>
-      </footer>
+      {/* 5. Privacy and transparency, said once */}
+      <section aria-labelledby="h-how" className="mt-14 rounded-lg bg-surface-muted p-5">
+        <h2 id="h-how" className="text-body font-bold">
+          How Legible works
+        </h2>
+        <dl className="mt-3 space-y-3 text-small">
+          <div>
+            <dt className="font-semibold">Your details stay with you</dt>
+            <dd className="text-muted-foreground">
+              Your town and answers stay in this browser and are used only to sort this page.{" "}
+              <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={`font-semibold text-foreground underline underline-offset-4 ${FOCUS}`}>
+                Manage or clear them
+              </button>
+            </dd>
+          </div>
+          <div>
+            <dt className="font-semibold">Official sources</dt>
+            <dd className="text-muted-foreground">Dates and summaries come from state and city sources, linked on each update.</dd>
+          </div>
+          <div>
+            <dt className="font-semibold">You decide</dt>
+            <dd className="text-muted-foreground">Legible explains what is being decided and how it could affect you. It never tells you how to vote.</dd>
+          </div>
+        </dl>
+      </section>
     </div>
   );
 }
 
-/** Section heading in bold sans with a "Show all" pill, like a news reader's topic block. */
-/** The rest of For you, below its hero, with the same Show all pill. */
-function Rows({
-  entries,
-  today,
-  open,
-  onOpenMeasure,
-}: {
-  entries: TimelineEntry[];
+type CardProps = {
   today: string;
-  open: (e: TimelineEntry) => void;
+  onOpenItem: (id: string) => void;
+  onOpenDoc: (id: string) => void;
   onOpenMeasure: (docId: string, measureId: string) => void;
-}) {
+};
+
+function More({ entries, cardProps }: { entries: TimelineEntry[]; cardProps: CardProps }) {
   const [all, setAll] = useState(false);
-  if (!entries.length) return null;
   return (
-    <>
-      <ul className="mt-2">
-        {(all ? entries : entries.slice(0, ROWS_SHOWN)).map((e) => (
-          <Row key={e.key} entry={e} today={today} onOpen={() => open(e)} onOpenMeasure={onOpenMeasure} />
+    <section aria-labelledby="h-near" className="mt-12">
+      <h2 id="h-near" className={H2}>
+        Happening near you
+      </h2>
+      <p className="mt-1 text-small text-muted-foreground">Important updates and upcoming dates in your area.</p>
+      <ul className="mt-4 space-y-4">
+        {(all ? entries : entries.slice(0, MORE_SHOWN)).map((e) => (
+          <UpdateCard key={e.key} entry={e} {...cardProps} />
         ))}
       </ul>
-      {entries.length > ROWS_SHOWN && (
-        <button type="button" onClick={() => setAll(!all)} aria-expanded={all} className={`mt-2 ${PILL}`}>
-          {all ? "Show less" : `Show all ${entries.length}`}
+      {entries.length > MORE_SHOWN && (
+        <button type="button" onClick={() => setAll(!all)} aria-expanded={all} className={`mt-4 ${SECONDARY}`}>
+          {all ? "Show fewer" : `Show all ${entries.length} updates`}
         </button>
       )}
-    </>
-  );
-}
-
-function Section({ id, title, sub, count, children }: { id: string; title: string; sub: string; count: number; children: (all: boolean) => ReactNode }) {
-  const [all, setAll] = useState(false);
-  return (
-    <section aria-labelledby={id} className="mt-10">
-      <div className="flex items-center justify-between gap-3">
-        <h2 id={id} className="text-title font-bold tracking-tight">
-          {title}
-        </h2>
-        {count > ROWS_SHOWN && (
-          <button type="button" onClick={() => setAll(!all)} aria-expanded={all} className={PILL}>
-            {all ? "Show less" : `Show all ${count}`}
-          </button>
-        )}
-      </div>
-      <p className="text-small text-muted-foreground">{sub}</p>
-      <ul className="mt-2">{children(all)}</ul>
     </section>
   );
 }
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function ExternalAction({ label, url, primary }: { label: string; url: string; primary: boolean }) {
+  return (
+    <a href={url} target="_blank" rel="noreferrer" className={primary ? PRIMARY : SECONDARY}>
+      {label}
+      <Glyph name="external" size={14} />
+      <span className="sr-only">(opens the official site)</span>
+    </a>
+  );
+}
 
-/** Square thumbnail: the day for dated items, a pictogram for undated bills. */
-function DayTile({ date, size = 80 }: { date?: string; size?: number }) {
-  if (!date) {
-    return (
-      <span aria-hidden="true" className="flex shrink-0 items-center justify-center rounded-md bg-info text-info-foreground" style={{ width: size, height: size }}>
-        <Part name="book" size={Math.round(size * 0.45)} />
-      </span>
+/**
+ * One update: what kind and when, a clear title, a plain explanation, why it is
+ * shown to this person, how it could affect them (ballots), and one obvious action.
+ */
+function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasure }: { entry: TimelineEntry } & CardProps) {
+  let kind: string;
+  let when: string;
+  let title: string;
+  let explain: string;
+  let why: string | null;
+  let actions: ReactNode;
+  const ballot = e.kind === "doc" ? e.item : e.ballot;
+
+  if (e.kind === "civic") {
+    const c = e.card;
+    const i = c.item;
+    kind = i.kind === "bill" && i.status ? `${KIND_LABEL.bill} · ${i.status}` : KIND_LABEL[i.kind];
+    when = i.at ? `${friendlyWhen(c)} · ${timingTag(c)}` : friendlyWhen(c);
+    title = i.title;
+    explain = i.summary;
+    why = whyLine(c);
+    const links = i.actions.filter((a) => a.url);
+    actions = (
+      <>
+        {ballot ? (
+          <button type="button" onClick={() => onOpenDoc(ballot.doc.id)} className={PRIMARY}>
+            Explore what&apos;s on the ballot
+          </button>
+        ) : (
+          links[0] && <ExternalAction label={links[0].label} url={links[0].url!} primary />
+        )}
+        {ballot && links[0] && <ExternalAction label={links[0].label} url={links[0].url!} primary={false} />}
+        <button type="button" onClick={() => onOpenItem(i.id)} className={`min-h-11 px-2 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
+          Details and source
+        </button>
+      </>
+    );
+  } else {
+    const d = e.item.doc.decideBy;
+    kind = `${e.item.scope === "state" ? "Massachusetts" : e.item.doc.place.name} ${DOC_TYPE_LABEL[e.item.doc.docType].toLowerCase()}`;
+    when = d ? `${decideByRelative(d, today)} · ${shortDate(d.date)}` : "";
+    title = e.item.doc.title;
+    explain = docWhat(e.item);
+    why = null;
+    actions = (
+      <button type="button" onClick={() => onOpenDoc(e.item.doc.id)} className={PRIMARY}>
+        See all {e.item.total} {e.item.doc.docType === "ballot" ? "questions" : "items"}
+      </button>
     );
   }
-  const [, m, d] = date.split("-").map(Number);
+
+  const touching = ballot ? ballot.cards.filter((c) => c.relevance === "touches") : [];
+
   return (
-    <span aria-hidden="true" className="flex shrink-0 flex-col items-center justify-center rounded-md bg-surface-muted leading-none" style={{ width: size, height: size }}>
-      <span className="text-small font-semibold uppercase text-muted-foreground">{MONTHS[m - 1]}</span>
-      <span className="mt-1 text-title font-bold">{d}</span>
-    </span>
-  );
-}
+    <li className="rounded-lg bg-surface p-5 shadow-card">
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-small font-semibold uppercase tracking-wider text-muted-foreground">{kind}</p>
+        {e.touches ? <Tag pop="accent">May affect you</Tag> : e.relevance >= 0.6 ? <Tag pop="info">You follow this</Tag> : null}
+      </div>
+      <h3 className="mt-2 text-title">{title}</h3>
+      {when && <p className="mt-1 text-body font-semibold">{when}</p>}
+      <p className="mt-2 text-body text-muted-foreground">{explain}</p>
 
-/** When it is due, as a fact: "Today • Sat, Oct 24, 11:59 PM", "Voters decide in 10 days • Nov 3". */
-function dueLine(e: TimelineEntry, today: string): string {
-  if (e.kind === "doc") {
-    const d = e.item.doc.decideBy;
-    return d ? `${decideByRelative(d, today)} • ${shortDate(d.date)}` : DOC_TYPE_LABEL[e.item.doc.docType];
-  }
-  const c: CivicCard = e.card;
-  const i = c.item;
-  if (!i.at) return [i.status, i.lastAction && `latest action ${i.lastAction.date}`].filter(Boolean).join(" • ");
-  return `${timingTag(c)} • ${dateTime(i.until && c.timing === "open" ? i.until : i.at)}`;
-}
+      {why && (
+        <p className="mt-3 rounded-md bg-accent-soft px-3 py-2 text-small">
+          <span className="font-semibold">Why you&apos;re seeing this: </span>
+          {why}
+        </p>
+      )}
 
-function titleOf(e: TimelineEntry): string {
-  return e.kind === "doc" ? e.item.doc.title : e.card.item.title;
-}
+      {touching.length > 0 && ballot && (
+        <div className="mt-4 rounded-md border border-border p-4">
+          <p className="text-body font-bold">How could this affect you?</p>
+          <p className="text-small text-muted-foreground">Possible effects of questions that match your answers, in plain words. Voters decide.</p>
+          <ul className="mt-2 divide-y divide-border">
+            {touching.map((c) => (
+              <li key={c.measure.id}>
+                <button type="button" onClick={() => onOpenMeasure(ballot.doc.id, c.measure.id)} className={`flex w-full items-start gap-3 py-3 text-left ${FOCUS}`}>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-small font-semibold">
+                      Question {c.measure.number}: {c.measure.title}
+                    </span>
+                    {c.why[0] && <span className="mt-0.5 block text-small text-muted-foreground">{c.why[0].text}</span>}
+                  </span>
+                  <span aria-hidden="true" className="mt-0.5 -rotate-90">
+                    <Glyph name="chevron" size={16} />
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-function bodyOf(e: TimelineEntry): string {
-  return e.kind === "doc" ? (e.item.doc.decideBy?.who ?? e.item.doc.place.name) : e.card.item.body;
-}
-
-const KIND_PART = { deadline: "ballot", window: "ballot_box", election: "ballot_box", meeting: "town_hall", bill: "book" } as const;
-
-/** The most relevant item, large: serif headline on deep purple, who acts at the foot. */
-function Hero({
-  entry: e,
-  today,
-  onOpen,
-  onOpenMeasure,
-}: {
-  entry: TimelineEntry;
-  today: string;
-  onOpen: () => void;
-  onOpenMeasure: (docId: string, measureId: string) => void;
-}) {
-  const part = e.kind === "doc" ? "ballot_box" : KIND_PART[e.card.item.kind];
-  const ballot = e.kind === "doc" ? e.item : e.ballot;
-  return (
-    <section aria-label="Most relevant to you" className="mt-4">
-      <button
-        type="button"
-        onClick={onOpen}
-        className={`relative flex min-h-64 w-full flex-col justify-end overflow-hidden rounded-lg bg-accent p-5 text-left text-accent-foreground transition-transform duration-(--duration) ease-legible hover:-translate-y-0.5 ${FOCUS}`}
-      >
-        <span aria-hidden="true" className="absolute -right-8 -top-8 opacity-15">
-          <Part name={part} size={150} strokeWidth={1.2} />
-        </span>
-        {e.touches && <span className="absolute right-4 top-4 rounded-sm bg-accent-foreground px-2.5 py-1 text-small font-semibold text-foreground">For you</span>}
-        <span className="relative text-small font-semibold opacity-85">{dueLine(e, today)}</span>
-        <span className={`relative mt-2 block text-title font-semibold leading-tight ${SERIF}`}>{titleOf(e)}</span>
-        <span className="relative mt-2 block text-small opacity-90">{e.forYou}</span>
-        <span className="relative mt-4 flex items-center gap-3">
-          <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-md bg-accent-foreground/15">
-            <Part name={part} size={22} />
-          </span>
-          <span className="text-body font-semibold">{bodyOf(e)}</span>
-        </span>
-      </button>
-      {ballot && <MeasureLinks ballot={ballot} onOpenMeasure={onOpenMeasure} />}
-    </section>
-  );
-}
-
-/** The measures of a ballot or warrant that touch the person, as thumbnail rows. */
-function MeasureLinks({ ballot, onOpenMeasure }: { ballot: FeedItem; onOpenMeasure: (docId: string, measureId: string) => void }) {
-  const touching: Card[] = ballot.cards.filter((c) => c.relevance === "touches");
-  if (!touching.length) return null;
-  const isBallot = ballot.doc.docType === "ballot";
-  return (
-    <ul className="mt-2">
-      {touching.map((c) => (
-        <li key={c.measure.id}>
-          <button
-            type="button"
-            onClick={() => onOpenMeasure(ballot.doc.id, c.measure.id)}
-            className={`flex w-full items-center gap-4 rounded-md py-3 text-left hover:bg-surface-muted/60 ${FOCUS}`}
-          >
-            <Cover measure={c.measure} label={`${isBallot ? "Q" : "#"}${c.measure.number}`} size={28} className="size-20 shrink-0 rounded-md" />
-            <span className="min-w-0 flex-1">
-              <span className={`line-clamp-2 block text-body font-semibold leading-snug ${SERIF}`}>{c.measure.title}</span>
-              <span className="mt-1 block text-small text-muted-foreground">
-                {isBallot ? "Question" : "Article"} {c.measure.number} • touches you
-              </span>
-            </span>
-          </button>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-/** One timeline entry: thumbnail, serif headline, date line, and how it reaches the person. */
-function Row({
-  entry: e,
-  today,
-  onOpen,
-  onOpenMeasure,
-}: {
-  entry: TimelineEntry;
-  today: string;
-  onOpen: () => void;
-  onOpenMeasure: (docId: string, measureId: string) => void;
-}) {
-  const ballot = e.kind === "doc" ? e.item : e.ballot;
-  const what = e.kind === "doc" ? docWhat(e.item) : e.card.item.summary;
-  return (
-    <li className="border-b border-border last:border-0">
-      <button type="button" onClick={onOpen} className={`flex w-full gap-4 rounded-md py-4 text-left hover:bg-surface-muted/60 ${FOCUS}`}>
-        <DayTile date={e.date} />
-        <span className="min-w-0 flex-1">
-          <span className={`line-clamp-2 block text-body font-semibold leading-snug ${SERIF}`}>{titleOf(e)}</span>
-          <span className="mt-1 block text-small text-muted-foreground">{dueLine(e, today)}</span>
-          <span className="mt-1.5 line-clamp-2 block text-small">{what}</span>
-          {tierOf(e) !== "everyone" && <span className={`mt-1.5 block text-small ${e.touches ? "font-semibold" : "text-muted-foreground"}`}>{e.forYou}</span>}
-        </span>
-      </button>
-      {ballot && <MeasureLinks ballot={ballot} onOpenMeasure={onOpenMeasure} />}
+      <div className="mt-4 flex flex-wrap items-center gap-2">{actions}</div>
     </li>
   );
 }
@@ -401,62 +408,3 @@ function FeedRow({ item, today, onOpen }: { item: FeedItem; today: string; onOpe
   );
 }
 
-type Prompt = { key: string; title: string; why: string; view: SheetView };
-
-/** Profile prompts inside For you: full cards when nothing matches yet, a pill row once something does. */
-function Sharpen({
-  prompts,
-  compact = false,
-  onOpenProfile,
-  onDismiss,
-}: {
-  prompts: Prompt[];
-  compact?: boolean;
-  onOpenProfile: (v: SheetView) => void;
-  onDismiss?: () => void;
-}) {
-  if (!prompts.length) return null;
-  if (compact) {
-    return (
-      <div className="relative mt-4 rounded-md bg-surface-muted p-4 pr-12">
-        <p className="text-small text-muted-foreground">Sharpen For you. Your answers stay in this browser.</p>
-        {onDismiss && (
-          <button type="button" onClick={onDismiss} aria-label="Dismiss" className={`absolute right-1 top-1 flex size-11 items-center justify-center rounded-md text-muted-foreground hover:bg-border ${FOCUS}`}>
-            <Glyph name="close" size={16} />
-          </button>
-        )}
-        <div className="mt-2 flex flex-wrap gap-2">
-          {prompts.map((p) => (
-            <button key={p.key} type="button" onClick={() => onOpenProfile(p.view)} className={`inline-flex min-h-10 items-center gap-1.5 rounded-full bg-surface px-4 text-small font-semibold hover:bg-border ${FOCUS}`}>
-              {p.title}
-              <span aria-hidden="true" className="-rotate-90">
-                <Glyph name="chevron" size={14} />
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  }
-  return (
-    <ul className="mt-4 space-y-3">
-      {prompts.map((p) => (
-        <li key={p.key}>
-          <button
-            type="button"
-            onClick={() => onOpenProfile(p.view)}
-            className={`flex w-full items-start gap-3 rounded-md border border-border bg-surface p-4 text-left hover:bg-surface-muted/60 ${FOCUS}`}
-          >
-            <span className="min-w-0 flex-1">
-              <span className={`block text-body font-semibold ${SERIF}`}>{p.title}</span>
-              <span className="mt-1 block text-small text-muted-foreground">{p.why}</span>
-            </span>
-            <span aria-hidden="true" className="flex size-7 shrink-0 -rotate-90 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Glyph name="chevron" size={14} />
-            </span>
-          </button>
-        </li>
-      ))}
-    </ul>
-  );
-}

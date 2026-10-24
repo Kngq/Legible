@@ -53,6 +53,14 @@ export function LegibleApp() {
   const [savedBeyondTown, setSavedBeyondTown] = useState(false);
   const [rememberNotNow, setRememberNotNow] = useState(false);
   const closeSheet = useCallback(() => setSheet(null), []);
+  // Clears the profile and preferences from this browser and returns to the start.
+  const clearAll = () => {
+    forget();
+    setSavedBeyondTown(false);
+    setRememberNotNow(false);
+    window.history.replaceState(null, "", routeHash({ kind: "feed" }));
+    window.dispatchEvent(new Event(NAV_EVENT));
+  };
   const feed = useMemo(() => buildFeed(DOCS, profile, today), [profile, today]);
   const civic = useMemo(() => civicFeed(CIVIC, profile, today), [profile, today]);
 
@@ -165,13 +173,7 @@ export function LegibleApp() {
         onOpenMeasure={openMeasure}
         onOpenItem={openItem}
         onOpenProfile={setSheet}
-        onForget={() => {
-          forget();
-          setSavedBeyondTown(false);
-          setRememberNotNow(false);
-          window.history.replaceState(null, "", routeHash({ kind: "feed" }));
-          window.dispatchEvent(new Event(NAV_EVENT));
-        }}
+        onForget={clearAll}
         nudgeDismissed={nudgeDismissed}
         onDismissNudge={() => setNudgeDismissed(true)}
       />
@@ -192,6 +194,10 @@ export function LegibleApp() {
           onKeep={() => setPreferences((p) => ({ ...p, remember: true }))}
           onNotNow={() => setRememberNotNow(true)}
           onSavedBeyondTown={() => setSavedBeyondTown(true)}
+          onClear={() => {
+            closeSheet();
+            clearAll();
+          }}
         />
       )}
     </>

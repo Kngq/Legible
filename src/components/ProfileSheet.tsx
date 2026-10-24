@@ -59,6 +59,7 @@ export function ProfileSheet({
   onKeep,
   onNotNow,
   onSavedBeyondTown,
+  onClear,
 }: {
   profile: Profile;
   setProfile: (p: Profile) => void;
@@ -69,10 +70,13 @@ export function ProfileSheet({
   onKeep: () => void;
   onNotNow: () => void;
   onSavedBeyondTown: () => void;
+  /** Clears the profile and preferences from this browser. Absent hides the button. */
+  onClear?: () => void;
 }) {
   const [view, setView] = useState<SheetView>(initial);
   const [draft, setDraft] = useState<Profile>(profile);
   const [lastSave, setLastSave] = useState<{ from: number; part?: string; at: number } | null>(null);
+  const [confirmClear, setConfirmClear] = useState(false);
   const panel = useRef<HTMLDivElement>(null);
   const m = personalization(profile);
   const next = nextItem(profile);
@@ -124,7 +128,7 @@ export function ProfileSheet({
           {rememberPrompt && (
             <div className="mt-3 w-full animate-fade-in rounded-md bg-surface-muted p-3 text-left">
               <p className="text-small">
-                <span className="font-semibold">Keep this on this device?</span> It stays in this browser only. Forget me erases it any time.
+                <span className="font-semibold">Keep this on this device?</span> It stays in this browser only. Clear my information erases it any time.
               </p>
               <div className="mt-2 flex gap-2">
                 <Button className="min-h-10! px-4" onClick={onKeep}>
@@ -170,6 +174,39 @@ export function ProfileSheet({
             );
           })}
         </ul>
+        {onClear && (
+          <section aria-labelledby="privacy-h" className="mt-6 rounded-lg border border-border p-4">
+            <h3 id="privacy-h" className="text-body font-semibold">
+              Your information
+            </h3>
+            <p className="mt-1 text-small text-muted-foreground">
+              Your town and answers stay in this browser. Legible never sends them to a server.
+            </p>
+            {confirmClear ? (
+              <div role="alertdialog" aria-labelledby="clear-h" aria-describedby="clear-d" className="mt-3 rounded-md bg-surface-muted p-3">
+                <p id="clear-h" className="text-small font-semibold">
+                  Clear your information?
+                </p>
+                <p id="clear-d" className="mt-1 text-small">
+                  This deletes your town, your answers, and the subjects you follow from this browser, and turns off keeping them on this device. You will start
+                  again from the first screen. This cannot be undone.
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button className="min-h-10! px-4" onClick={onClear}>
+                    Clear my information
+                  </Button>
+                  <Button variant="text" className="min-h-10!" onClick={() => setConfirmClear(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button variant="secondary" className="mt-3 min-h-10! px-4" onClick={() => setConfirmClear(true)}>
+                Clear my information
+              </Button>
+            )}
+          </section>
+        )}
       </>
     );
   } else if (view.kind === "area") {

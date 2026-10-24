@@ -214,8 +214,8 @@ export function ForYou({
   return (
     <section className="mt-5 rounded-lg bg-surface p-5 shadow-card" aria-labelledby="foryou-h">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="foryou-h" className="text-small font-semibold uppercase tracking-wider text-muted-foreground">
-          {card.relevance === "touches" ? "For you" : "What changes"}
+        <h2 id="foryou-h" className="text-body font-bold">
+          How could this affect you?
         </h2>
         <div className="flex flex-wrap gap-1.5">
           {card.relevance === "touches" && (
@@ -238,7 +238,9 @@ export function ForYou({
         {DIRECTION_DEFS[card.direction].label}
       </p>
       {card.relevance === "probably_not" && <p className="mt-2 text-body">Nothing in your answers points to this measure directly.</p>}
-      <p className="mt-3 text-small text-muted-foreground">In Legible&apos;s words. Each line opens the official text it comes from.</p>
+      <p className="mt-3 text-small text-muted-foreground">
+        Possible effects in plain words, if it passes or fails. Each line opens the official text it comes from, so you can check it.
+      </p>
 
       <div className={ROW}>
         <p className={LABEL}>If YES passes{referendum ? " · the law stays" : ""}</p>
