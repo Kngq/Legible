@@ -16,7 +16,7 @@ import { AvatarRing } from "./AvatarRing";
 import { DocTile } from "./covers";
 import { Glyph } from "./icons";
 import { OriginalLine } from "./OriginalText";
-import { EntryPhoto } from "./photos";
+import { PhotoHeader } from "./photos";
 import { viewForPart, type SheetView } from "./ProfileSheet";
 import { FOCUS, Tag } from "./ui";
 
@@ -179,57 +179,59 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
   const touching = ballot ? ballot.cards.filter((c) => c.relevance === "touches") : [];
 
   return (
-    <li className="rounded-lg bg-surface p-5 shadow-card">
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-small font-semibold uppercase tracking-wider text-muted-foreground">{kind}</p>
-        {e.touches ? <Tag pop="accent">May affect you</Tag> : e.relevance >= 0.6 ? <Tag pop="info">You follow this</Tag> : null}
-      </div>
-      <h3 className="mt-2 text-title">{title}</h3>
-      {when && <p className="mt-1 text-body font-semibold">{when}</p>}
-      <p className="mt-2 text-body text-muted-foreground">{explain}</p>
-
-      {why && (
-        <p className="mt-3 rounded-md bg-accent-soft px-3 py-2 text-small">
-          <span className="font-semibold">Why you&apos;re seeing this: </span>
-          {why}
-        </p>
-      )}
-
-      {touching.length > 0 && ballot && (
-        <div className="mt-4 rounded-md border border-border p-4">
-          <p className="text-body font-bold">How could this affect you?</p>
-          <p className="text-small text-muted-foreground">Possible effects of questions that match your answers, in plain words. Voters decide.</p>
-          <ul className="mt-2 divide-y divide-border">
-            {touching.map((c) => (
-              <li key={c.measure.id}>
-                <button type="button" onClick={() => onOpenMeasure(ballot.doc.id, c.measure.id)} className={`flex w-full items-start gap-3 py-3 text-left ${FOCUS}`}>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-small font-semibold">
-                      Question {c.measure.number}: {c.measure.title}
-                    </span>
-                    {c.why[0] && <span className="mt-0.5 block text-small text-muted-foreground">{c.why[0].text}</span>}
-                  </span>
-                  <span aria-hidden="true" className="mt-0.5 -rotate-90">
-                    <Glyph name="chevron" size={16} />
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
+    <li className="rounded-lg bg-surface shadow-card">
+      <PhotoHeader entryKey={e.key}>
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-small font-semibold uppercase tracking-wider text-muted-foreground">{kind}</p>
+          {e.touches ? <Tag pop="accent">May affect you</Tag> : e.relevance >= 0.6 ? <Tag pop="info">You follow this</Tag> : null}
         </div>
-      )}
+        <h3 className="mt-2 text-title">{title}</h3>
+        {when && <p className="mt-1 text-body font-semibold">{when}</p>}
+        <p className="mt-2 text-body text-muted-foreground">{explain}</p>
+      </PhotoHeader>
+      <div className="px-5 pb-5">
+        {why && (
+          <p className="mt-3 rounded-md bg-accent-soft px-3 py-2 text-small">
+            <span className="font-semibold">Why you&apos;re seeing this: </span>
+            {why}
+          </p>
+        )}
 
-      {e.kind === "civic" ? (
-        <OriginalLine original={e.card.item.original} onOpen={() => onOpenItem(e.card.item.id)} />
-      ) : (
-        <OriginalLine
-          original={{ kind: "booklet", label: e.item.doc.source.name.split(",")[0], hash: e.item.doc.source.hash }}
-          onOpen={() => onOpenDoc(e.item.doc.id)}
-        />
-      )}
+        {touching.length > 0 && ballot && (
+          <div className="mt-4 rounded-md border border-border p-4">
+            <p className="text-body font-bold">How could this affect you?</p>
+            <p className="text-small text-muted-foreground">Possible effects of questions that match your answers, in plain words. Voters decide.</p>
+            <ul className="mt-2 divide-y divide-border">
+              {touching.map((c) => (
+                <li key={c.measure.id}>
+                  <button type="button" onClick={() => onOpenMeasure(ballot.doc.id, c.measure.id)} className={`flex w-full items-start gap-3 py-3 text-left ${FOCUS}`}>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-small font-semibold">
+                        Question {c.measure.number}: {c.measure.title}
+                      </span>
+                      {c.why[0] && <span className="mt-0.5 block text-small text-muted-foreground">{c.why[0].text}</span>}
+                    </span>
+                    <span aria-hidden="true" className="mt-0.5 -rotate-90">
+                      <Glyph name="chevron" size={16} />
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">{actions}</div>
-      <EntryPhoto entryKey={e.key} />
+        {e.kind === "civic" ? (
+          <OriginalLine original={e.card.item.original} onOpen={() => onOpenItem(e.card.item.id)} />
+        ) : (
+          <OriginalLine
+            original={{ kind: "booklet", label: e.item.doc.source.name.split(",")[0], hash: e.item.doc.source.hash }}
+            onOpen={() => onOpenDoc(e.item.doc.id)}
+          />
+        )}
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">{actions}</div>
+      </div>
     </li>
   );
 }

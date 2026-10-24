@@ -41,33 +41,40 @@ export function PhotosProvider({ children }: { children: ReactNode }) {
   return <PhotosContext.Provider value={value}>{children}</PhotosContext.Provider>;
 }
 
-/** The photo for one timeline entry, floating under the card's text, with its credit. Renders nothing without one. */
-export function EntryPhoto({ entryKey }: { entryKey: string }) {
+/**
+ * A card's header. With a photo, the photo fills the top of the card and the
+ * header sits on a frosted panel over its lower part, with the credit. Without
+ * one, or if the file fails to load, the header renders plain.
+ */
+export function PhotoHeader({ entryKey, children }: { entryKey: string; children: ReactNode }) {
   const photo = useContext(PhotosContext).photos.get(entryKey);
   const [state, setState] = useState<"loading" | "loaded" | "failed">("loading");
-  if (!photo || state === "failed") return null;
+  if (!photo || state === "failed") return <div className="px-5 pt-5">{children}</div>;
   return (
-    <figure className="mt-5">
-      <div className={`relative aspect-video overflow-hidden rounded-lg shadow-card ${state === "loading" ? "animate-pulse bg-surface-muted" : "bg-surface-muted"}`}>
-        <Image
-          src={photo.url}
-          alt={photo.alt}
-          fill
-          unoptimized
-          sizes="(min-width: 672px) 672px, 100vw"
-          className={`object-cover transition-opacity duration-(--duration) ease-legible ${state === "loaded" ? "opacity-100" : "opacity-0"}`}
-          onLoad={() => setState("loaded")}
-          onError={() => setState("failed")}
-        />
+    <div className={`relative isolate overflow-hidden rounded-lg ${state === "loading" ? "animate-pulse bg-surface-muted" : "bg-surface-muted"}`}>
+      <Image
+        src={photo.url}
+        alt={photo.alt}
+        fill
+        unoptimized
+        sizes="(min-width: 672px) 672px, 100vw"
+        className={`-z-10 object-cover transition-opacity duration-(--duration) ease-legible ${state === "loaded" ? "opacity-100" : "opacity-0"}`}
+        onLoad={() => setState("loaded")}
+        onError={() => setState("failed")}
+      />
+      <div aria-hidden="true" className="aspect-[16/10]" />
+      {/* Dark glass over the photo: white text, captions at 85%. Tags keep ink on their tints. */}
+      <div className="bg-black/55 px-5 pt-5 pb-4 text-white backdrop-blur-xl [--color-muted-foreground:rgb(255_255_255/0.85)] [--muted-foreground:rgb(255_255_255/0.85)]">
+        {children}
+        <p className="mt-3 text-small text-white/80">
+          Photo: {photo.contributor} on{" "}
+          <a href={photo.sourceUrl} target="_blank" rel="noreferrer" className={`underline underline-offset-4 ${FOCUS}`}>
+            Pixabay
+            <span className="sr-only"> (opens the photo&apos;s page)</span>
+          </a>
+        </p>
       </div>
-      <figcaption className="pt-2 text-small text-muted-foreground">
-        Photo: {photo.contributor} on{" "}
-        <a href={photo.sourceUrl} target="_blank" rel="noreferrer" className={`underline underline-offset-4 ${FOCUS}`}>
-          Pixabay
-          <span className="sr-only"> (opens the photo&apos;s page)</span>
-        </a>
-      </figcaption>
-    </figure>
+    </div>
   );
 }
 
