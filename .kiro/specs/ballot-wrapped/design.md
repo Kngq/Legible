@@ -12,7 +12,7 @@ What changed from Layla's eight-slide branch (`f20bfe8`), and why:
 | Civic personality per top topic ("The Commuter Champion") | Removed | Assigns an identity from a topic (W3.2) |
 | Topic colours from the full palette (plum on transit) | Neutral surfaces; plum only for supported relevance, apricot only for the date | Notebook colour roles (W3.5) |
 | Hex values copied in `SLIDE_COLOUR_HEX` | CSS tokens; the canvas reads raw palette tokens | One source of colour |
-| Share image always lists town, topics, personality | Preview first; town on by default with a switch; topics opt-in; sensitive topics unchecked | W5 |
+| Share image always lists town, topics, personality | Preview first; town and topics opt-in; sensitive topics unchecked; never the name | W5 |
 | Plum full-width button on home | Quiet editorial module | W10.1 |
 | `NineApp`, `useNine`, "Nine" | `LegibleApp`, `useLegible`, "Legible" | Current shell |
 | Overlay state only | `#/wrapped` hash route | Browser back closes it; opens before first run |
@@ -82,7 +82,7 @@ Motion: slide entry uses the existing `slide-next` and `slide-back` keyframes at
 
 `shareContent({ place?, questionCount, dateLabel, topics })` returns the ordered items; the preview lists exactly these items, and `renderShareImage` draws exactly these items via `layoutShareImage`. The preview shows the PNG itself (an object URL of the same blob that Save downloads). 1080 by 1920; paper `--lilac-100`, ink `--purple-800`, a plum rule (raw palette tokens, so the image looks the same in both themes). Fraunces and Figtree are used when `document.fonts.check` says they are loaded, otherwise the system stacks. Drawing is wrapped in `withTimeout(…, 4000)`.
 
-Switch defaults: town on when known; "Add topics I follow" off; when switched on, every followed topic is checked except `SENSITIVE_TOPICS` (gun_policy, cannabis_policy, criminal_justice).
+Switch defaults: "Show my town" off (offered only when the town is known); "Add topics I follow" off; when switched on, every followed topic is checked except `SENSITIVE_TOPICS` (gun_policy, cannabis_policy, criminal_justice).
 
 ## Navigation and focus
 

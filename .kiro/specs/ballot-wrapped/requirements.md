@@ -81,10 +81,10 @@ Out of scope for this build: what the person has explored or read (category C be
 #### Acceptance Criteria
 
 1. WHEN the person chooses "Save my story" THE SYSTEM SHALL open a share preview showing the exact image that will be saved, drawn by the same code that saves it, and a plain list of what it contains.
-2. THE SYSTEM SHALL include by default only: the Legible name, "My ballot, wrapped", the year, the number of ballot questions, the decision date, a neutral closing line, and the town as "Town, MA" when the town is known.
-3. THE SYSTEM SHALL let the person remove the town with one switch.
+2. THE SYSTEM SHALL include by default only: the Legible name, "My ballot, wrapped", the year, the number of ballot questions, the decision date, and a neutral closing line.
+3. THE SYSTEM SHALL leave the town out by default and include it as "Town, MA" only after the person switches "Show my town" on (offered only when the town is known).
 4. THE SYSTEM SHALL leave followed topics out by default, include them only after the person switches "Add topics I follow" on, and then preselect only topics that are not sensitive (gun policy, cannabis policy, criminal justice stay unchecked until picked).
-5. THE SYSTEM SHALL NEVER include life facts, decisions that may affect the person, voting plans, party, or any inferred belief in the share image.
+5. THE SYSTEM SHALL NEVER include life facts, the person's name, decisions that may affect the person, voting plans, party, or any inferred belief in the share image.
 6. WHEN the person chooses "Save image" THE SYSTEM SHALL save the PNG through a download on the device. IF drawing fails or takes longer than 4 seconds THEN THE SYSTEM SHALL say so in place and keep the story open.
 
 ### Requirement W6: Story navigation

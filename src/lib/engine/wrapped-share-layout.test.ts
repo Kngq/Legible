@@ -36,19 +36,20 @@ const arbMeasurer: fc.Arbitrary<Measure> = fc
 const noSpace = (s: string) => s.replace(/\s+/g, "");
 
 describe("share content", () => {
-  it("defaults: town on when known, topics off, sensitive topics unchecked", () => {
+  it("defaults: town off, topics off, sensitive topics unchecked", () => {
     fc.assert(
       fc.property(arbProfile, (p) => {
         const base = baseFor(p);
         const c = defaultShareChoices(base);
-        expect(c.includePlace).toBe(Boolean(base.place));
+        expect(c.includePlace).toBe(false);
         expect(c.includeTopics).toBe(false);
         for (const t of SENSITIVE_TOPICS) expect(c.picked).not.toContain(t);
         expect(c.picked).toEqual(base.followed.filter((t) => !SENSITIVE_TOPICS.includes(t)));
         // By default the image holds no topic at all.
         const items = shareItems(base, c);
         expect(items.some((i) => i.kind === "topic" || i.kind === "topicsHeading")).toBe(false);
-        expect(items.map((i) => i.kind)).toEqual(["brand", "title", ...(base.place ? ["place"] : []), "count", "countLabel", "date", "line"]);
+        expect(items.map((i) => i.kind)).toEqual(["brand", "title", "count", "countLabel", "date", "line"]);
+        if (base.place) for (const { text } of items) expect(text).not.toContain(base.place);
       }),
       { numRuns: RUNS },
     );
@@ -78,6 +79,25 @@ describe("share content", () => {
         // Digits: only the year, the question count, and the date.
         const digits = items.filter((i) => !["brand", "count", "date"].includes(i.kind)).map((i) => i.text);
         for (const t of digits) expect(t).not.toMatch(/\d/);
+      }),
+      { numRuns: RUNS },
+    );
+  });
+
+  it("the town reaches the image only after the person switches it on", () => {
+    const base: ShareBase = { year: "2026", place: "Cambridge, MA", questionCount: 9, followed: [] };
+    const off = defaultShareChoices(base);
+    expect(shareItems(base, off).some((i) => i.text.includes("Cambridge"))).toBe(false);
+    expect(shareItems(base, { ...off, includePlace: true }).filter((i) => i.kind === "place").map((i) => i.text)).toEqual(["Cambridge, MA"]);
+  });
+
+  it("never holds the person's name, whatever is switched on", () => {
+    fc.assert(
+      fc.property(arbProfile, fc.constantFrom("Rachel", "Layla", "Sam Lee"), (p, name) => {
+        const named = { ...p, name };
+        const base = baseFor(named);
+        expect(JSON.stringify(base)).not.toContain(name);
+        for (const { text } of shareItems(base, { includePlace: true, includeTopics: true, picked: base.followed })) expect(text).not.toContain(name);
       }),
       { numRuns: RUNS },
     );

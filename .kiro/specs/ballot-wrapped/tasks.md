@@ -15,7 +15,7 @@ Development only behind `WRAPPED_ENABLED` until the visual design is approved. B
     - _Requirements: W6, W7.3_
   - [x] 2.4 `countUpValue` kept; `storyMotion`; constellation positions
     - _Requirements: W7.6_
-  - [x] 2.5 Share content and layout: defaults, town switch, topics opt-in, sensitive topics unchecked; `wrapText` and `withTimeout` kept
+  - [x] 2.5 Share content and layout: town and topics opt-in (both off by default), sensitive topics unchecked, never the name; `wrapText` and `withTimeout` kept
     - _Requirements: W5.2-W5.5_
   - [x] 2.6 Vocabulary: strings, sensitive topics, identity and side words; civic personalities and slide colours removed
     - _Requirements: W2.8, W3.2_

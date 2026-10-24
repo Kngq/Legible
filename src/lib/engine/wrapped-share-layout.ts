@@ -14,7 +14,7 @@ export const SHARE_PAD = 112;
 /** Facts about the ballot and the person's own choices; nothing else may reach the image. */
 export interface ShareBase {
   year: string;
-  place?: string; // "Cambridge, MA" when the town is known
+  place?: string; // "Cambridge, MA" when the town is known; drawn only after the person opts in
   questionCount: number;
   dateLabel?: string; // "Decided Tuesday, November 3"
   followed: TopicId[]; // followed topics, in story order
@@ -27,9 +27,9 @@ export interface ShareChoices {
   picked: TopicId[];
 }
 
-/** Town on when known (general context); topics off; sensitive topics unchecked even once topics are on. */
+/** Town off and topics off until the person switches them on; sensitive topics unchecked even once topics are on. */
 export function defaultShareChoices(base: ShareBase): ShareChoices {
-  return { includePlace: Boolean(base.place), includeTopics: false, picked: base.followed.filter((t) => !SENSITIVE_TOPICS.includes(t)) };
+  return { includePlace: false, includeTopics: false, picked: base.followed.filter((t) => !SENSITIVE_TOPICS.includes(t)) };
 }
 
 export type ShareItemKind = "brand" | "title" | "place" | "count" | "countLabel" | "date" | "topicsHeading" | "topic" | "line";
