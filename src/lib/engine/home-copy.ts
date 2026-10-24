@@ -4,10 +4,11 @@
 // TypeScript. The headlines and explanations for specific items are written by
 // the team, checked by tests for the banned words, and say "would" and "could"
 // for anything not yet law.
-import { FACT_DEFS, TOPIC_DEFS, type FactId, type TopicId } from "@/lib/vocab";
+import { FACT_DEFS, LIFE_AREAS, TOPIC_DEFS, type FactId, type TopicId } from "@/lib/vocab";
 import type { CivicCard } from "./civic";
 import { decideByRelative, shortDate } from "./decide-by";
 import { REGISTRATION_LOOKUP_URL } from "./next-steps";
+import type { Profile } from "./profile";
 import { appliesIf, type TimelineEntry } from "./timeline";
 
 const TZ = "America/New_York";
@@ -218,6 +219,33 @@ export function relevanceOf(e: TimelineEntry): Relevance | null {
   return civicRelevance(e.card) ?? ballotRelevance(e);
 }
 
+/* ------------------------------------------------------------------ header */
+
+const AREA_WORD: Record<string, string> = {
+  home: "housing",
+  household: "household",
+  work: "work",
+  getting_around: "how you get around",
+  voting: "voting details",
+};
+
+/**
+ * "Based on your town, housing, and 2 subjects you follow." Names only what the
+ * profile holds; skipped and unanswered areas are left out. Null when it is empty.
+ */
+export function profileBasis(p: Profile): string | null {
+  const parts: string[] = [];
+  if (p.townId) parts.push("your town");
+  for (const a of LIFE_AREAS) if (a.facts.some((f) => p.facts[f])) parts.push(AREA_WORD[a.id] ?? a.heading.toLowerCase());
+  const n = Object.keys(p.topics).length;
+  if (n) parts.push(`${n === 1 ? "one subject" : `${n} subjects`} you follow`);
+  if (!parts.length) return null;
+  // "your town" carries the possessive; the rest read on from it.
+  if (parts[0] !== "your town") parts[0] = `your ${parts[0]}`;
+  const list = parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(", ")}${parts.length > 2 ? "," : ""} and ${parts.at(-1)}`;
+  return `Based on ${list}.`;
+}
+
 /* ------------------------------------------------------------------ actions */
 
 export type Action = { label: string; to: { open: "item" | "doc" } | { href: string } };
@@ -232,7 +260,7 @@ export function actionsFor(e: TimelineEntry): { primary: Action; secondary?: Act
     return { primary: { label: "Check your registration", to: { href: REGISTRATION_LOOKUP_URL } }, secondary: href(0) && { label: "Learn how to register", to: href(0)! } };
   }
   if (i.kind === "election" && e.ballot) return { primary: { label: "Explore your ballot", to: { open: "doc" } }, secondary: href(0) && { label: "Find voting information", to: href(0)! } };
-  if (i.kind === "bill") return { primary: { label: "Explore proposal", to: { open: "item" } }, secondary: href(0) && { label: "Read original bill", to: href(0)! } };
+  if (i.kind === "bill") return { primary: { label: "Understand this decision", to: { open: "item" } }, secondary: href(0) && { label: "Read original bill", to: href(0)! } };
   if (i.kind === "meeting") {
     const comment = i.actions.find((a) => a.url && /comment/i.test(a.label));
     return { primary: { label: "View meeting details", to: { open: "item" } }, secondary: comment && { label: "Learn how to comment", to: { href: comment.url! } } };

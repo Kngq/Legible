@@ -4,7 +4,7 @@ import civicData from "@/data/civic-ma.json";
 import { asksHowToVote, findBannedWords } from "@/lib/vocab";
 import { civicCard, civicFeed, type CivicItem } from "./civic";
 import { buildFeed } from "./feed";
-import { actionsFor, billNumber, cardHeader, civicRelevance, dateLine, explanation, headline, homeSections, relevanceOf } from "./home-copy";
+import { actionsFor, billNumber, cardHeader, civicRelevance, dateLine, explanation, headline, homeSections, profileBasis, relevanceOf } from "./home-copy";
 import { answerFact, emptyProfile, setTopic, type Profile } from "./profile";
 import { buildTimeline } from "./timeline";
 import type { DocumentData } from "./types";
@@ -96,7 +96,7 @@ describe("actions", () => {
     const by = (k: string) => actionsFor(t.find((e) => e.key === k)!);
     expect(by("c:ma-2026-registration-deadline").primary.label).toBe("Check your registration");
     expect(by("c:ma-2026-election-day").primary).toEqual({ label: "Explore your ballot", to: { open: "doc" } });
-    expect(by("c:ma-194-s2836").primary).toEqual({ label: "Explore proposal", to: { open: "item" } });
+    expect(by("c:ma-194-s2836").primary).toEqual({ label: "Understand this decision", to: { open: "item" } });
     expect(by("c:ma-194-s2836").secondary?.label).toBe("Read original bill");
   });
 });
@@ -134,4 +134,14 @@ it("all Home copy passes the word lint and never asks how to vote", () => {
       expect(asksHowToVote(t)).toBe(false);
     }
   }
+});
+
+describe("profileBasis", () => {
+  it("names only what the profile holds", () => {
+    expect(profileBasis(emptyProfile(t0))).toBeNull();
+    expect(profileBasis(withFacts({}, "boston"))).toBe("Based on your town.");
+    expect(profileBasis(withFacts({ rents: true }, "boston"))).toBe("Based on your town and housing.");
+    const p = setTopic(withFacts({ rents: true, drives: false }), "schools", true, "chip");
+    expect(profileBasis(p)).toBe("Based on your housing, how you get around, and one subject you follow.");
+  });
 });
