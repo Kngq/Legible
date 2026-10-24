@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-**Nine**: a Next.js app for the 9 questions on the Nov 3, 2026 Massachusetts ballot. The user enters their town and a few facts about their life; the app re-sorts the questions by which ones touch them, quoting only the Attorney General's official text and never saying how to vote. Built for Hackachusetts (Oct 24, 2026). Scope lives in `.kiro/specs/nine/` (requirements, design, tasks) and `.kiro/steering/`. Read those first; they supersede `docs/spec.md` and the earlier parts of `docs/DECISIONS.md`. Check off tasks in `tasks.md` as they land.
+**Legible**: a Next.js app for the 9 questions on the Nov 3, 2026 Massachusetts ballot. The user enters their town and a few facts about their life; the app re-sorts the questions by which ones touch them, quoting only the Attorney General's official text and never saying how to vote. Built for Hackachusetts (Oct 24, 2026). Scope lives in `.kiro/specs/legible/` (requirements, design, tasks) and `.kiro/steering/`. Read those first; they supersede `docs/spec.md` and the earlier parts of `docs/DECISIONS.md`. Check off tasks in `tasks.md` as they land.
 
 ## Commands
 

@@ -1,4 +1,4 @@
-// Words Nine never uses in its own strings or in generated explanations.
+// Words Legible never uses in its own strings or in generated explanations.
 // Verbatim quotes from official text are exempt. See product.md.
 export const BANNED_WORDS = [
   "should",

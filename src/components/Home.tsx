@@ -135,7 +135,7 @@ export function Home({
             type="button"
             aria-selected={scope === id}
             onClick={() => setScope(id)}
-            className={`min-h-11 truncate rounded-full px-3 text-body font-semibold transition-colors duration-(--duration) ease-nine ${FOCUS} ${
+            className={`min-h-11 truncate rounded-full px-3 text-body font-semibold transition-colors duration-(--duration) ease-legible ${FOCUS} ${
               scope === id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -222,7 +222,7 @@ export function Home({
             <span className="text-body font-semibold">
               Decided <span className="text-muted-foreground">{decided.length}</span>
             </span>
-            <span className="transition-transform duration-(--duration) ease-nine group-open:rotate-180">
+            <span className="transition-transform duration-(--duration) ease-legible group-open:rotate-180">
               <Glyph name="chevron" />
             </span>
           </summary>
@@ -236,7 +236,7 @@ export function Home({
         </details>
       )}
 
-      <p className="mt-12 text-small text-muted-foreground">Your answers and your town stay in this browser. Nine sorts the official text; it never says how to vote.</p>
+      <p className="mt-12 text-small text-muted-foreground">Your answers and your town stay in this browser. Legible sorts the official text; it never says how to vote.</p>
     </div>
   );
 }
@@ -248,7 +248,7 @@ function CivicUpNext({ card, onOpen }: { card: CivicCard; onOpen: () => void }) 
     <button
       type="button"
       onClick={onOpen}
-      className={`mt-4 block w-full rounded-xl bg-accent p-6 text-left text-accent-foreground shadow-card transition-transform duration-(--duration) ease-nine hover:-translate-y-0.5 ${FOCUS}`}
+      className={`mt-4 block w-full rounded-xl bg-accent p-6 text-left text-accent-foreground shadow-card transition-transform duration-(--duration) ease-legible hover:-translate-y-0.5 ${FOCUS}`}
     >
       <span className="flex items-center justify-between gap-3 text-small font-semibold opacity-85">
         <span>
@@ -275,7 +275,7 @@ function UpNext({ item, today, onOpen }: { item: FeedItem; today: string; onOpen
     <button
       type="button"
       onClick={onOpen}
-      className={`mt-4 block w-full rounded-xl bg-accent p-6 text-left text-accent-foreground shadow-card transition-transform duration-(--duration) ease-nine hover:-translate-y-0.5 ${FOCUS}`}
+      className={`mt-4 block w-full rounded-xl bg-accent p-6 text-left text-accent-foreground shadow-card transition-transform duration-(--duration) ease-legible hover:-translate-y-0.5 ${FOCUS}`}
     >
       <span className="flex items-center justify-between gap-3 text-small font-semibold opacity-85">
         <span>
@@ -358,7 +358,7 @@ function Carousel({
               <button
                 type="button"
                 onClick={() => onOpen(item.doc.id, m.id)}
-                className={`flex h-full w-full flex-col overflow-hidden rounded-lg bg-surface text-left shadow-card transition-transform duration-(--duration) ease-nine hover:-translate-y-0.5 ${FOCUS}`}
+                className={`flex h-full w-full flex-col overflow-hidden rounded-lg bg-surface text-left shadow-card transition-transform duration-(--duration) ease-legible hover:-translate-y-0.5 ${FOCUS}`}
               >
                 <Cover measure={m} label={`${ballot ? "Q" : "#"}${m.number}`} size={44} className="h-28 w-full" />
                 <span className="flex flex-1 flex-col gap-1 p-4">
@@ -384,7 +384,7 @@ function EmptyTown({ town, onAddTown, onUpload }: { town?: string; onAddTown: ()
     <div className="mt-4 rounded-lg bg-surface p-5 shadow-card">
       {town ? (
         <>
-          <p className="text-body font-semibold">Nine does not have documents for {town} yet.</p>
+          <p className="text-body font-semibold">Legible does not have documents for {town} yet.</p>
           <p className="mt-1 text-small text-muted-foreground">Town Meeting warrants, budgets, and hearing notices help. State decisions still show here.</p>
           <Button variant="secondary" className="mt-3" onClick={onUpload} disabled={!onUpload} title={onUpload ? undefined : "Upload arrives with the upload panel"}>
             Upload a town document

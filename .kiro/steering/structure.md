@@ -16,7 +16,7 @@ src/data/                 Shipped documents in the Document format (ballot-2026.
 public/demo/              Pre-run analyses for demo fallback
 data/                     Raw sources and extraction scripts (not shipped)
 docs/                     Original spec, decisions log, pitch
-.kiro/specs/nine/         Requirements, design, tasks (source of truth for scope)
+.kiro/specs/legible/         Requirements, design, tasks (source of truth for scope)
 ```
 
 Rules:

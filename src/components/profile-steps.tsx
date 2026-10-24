@@ -109,7 +109,7 @@ export function Option({ selected, onClick, icon, children }: { selected?: boole
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`flex min-h-16 items-center gap-3 rounded-lg border-2 bg-surface px-4 text-left text-body font-semibold shadow-card transition-colors duration-(--duration) ease-nine hover:border-foreground ${FOCUS} ${
+      className={`flex min-h-16 items-center gap-3 rounded-lg border-2 bg-surface px-4 text-left text-body font-semibold shadow-card transition-colors duration-(--duration) ease-legible hover:border-foreground ${FOCUS} ${
         selected ? "border-foreground" : "border-transparent"
       }`}
     >
@@ -232,7 +232,7 @@ export function TopicsStep({ profile, setProfile }: { profile: Profile; setProfi
               type="button"
               aria-pressed={on}
               onClick={() => setProfile(setTopic(profile, id, !on, "chip"), on ? undefined : `topic:${id}`)}
-              className={`inline-flex min-h-12 items-center gap-2 rounded-full border-2 px-4 text-body font-semibold transition-colors duration-(--duration) ease-nine ${FOCUS} ${
+              className={`inline-flex min-h-12 items-center gap-2 rounded-full border-2 px-4 text-body font-semibold transition-colors duration-(--duration) ease-legible ${FOCUS} ${
                 on ? "border-foreground bg-surface" : "border-transparent bg-surface-muted hover:border-border"
               }`}
             >

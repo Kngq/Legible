@@ -45,7 +45,7 @@ export const DIRECTION_DEFS: Record<Direction, DirectionDef> = {
 };
 
 export const LEGEND_SENTENCE =
-  "Nine can only say one of these five things about a measure.";
+  "Legible can only say one of these five things about a measure.";
 
 export const FACT_IDS = [
   "rents",

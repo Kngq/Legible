@@ -1,7 +1,7 @@
 "use client";
 
 // One measure, sorted for one person: what it is, why it reaches them, and a next step.
-// YES and NO are verbatim. Every Nine sentence carries a quote badge.
+// YES and NO are verbatim. Every Legible sentence carries a quote badge.
 import { useState } from "react";
 import { draftMessage, DRAFT_QUESTIONS, localReach, nextSteps, wordCount } from "@/lib/engine/next-steps";
 import { answerFact, canAskInCard, clearFact, declineFact, skipFact, type Profile } from "@/lib/engine/profile";
@@ -210,7 +210,7 @@ export function Sentences({ sentences, measure }: { sentences: WhySentence[]; me
             onClick={() => setShown(shown === s.quoteId ? null : s.quoteId)}
             aria-expanded={shown === s.quoteId}
             aria-label="Show the official text this sentence comes from"
-            className={`inline-flex translate-y-0.5 items-center gap-1 rounded-sm px-1.5 py-0.5 text-small font-semibold transition-colors duration-(--duration) ease-nine ${FOCUS} ${
+            className={`inline-flex translate-y-0.5 items-center gap-1 rounded-sm px-1.5 py-0.5 text-small font-semibold transition-colors duration-(--duration) ease-legible ${FOCUS} ${
               shown === s.quoteId ? "bg-accent-soft" : "bg-surface-muted hover:bg-accent-soft"
             }`}
           >
@@ -372,7 +372,7 @@ export function Draft({ measure }: { measure: Measure }) {
       />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-small text-muted-foreground">
-          {words} of 80 words. Nine never sends it and leaves your answers out.
+          {words} of 80 words. Legible never sends it and leaves your answers out.
         </p>
         <Button
           variant="secondary"

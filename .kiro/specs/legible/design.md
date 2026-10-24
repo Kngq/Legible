@@ -2,7 +2,7 @@
 
 ## Overview
 
-Nine is a mostly client-side Next.js app. Documents are plain JSON in one shared format, listed in a public catalog. A short onboarding builds a life profile in the browser. The home feed fetches the whole catalog and filters it locally to the person's state and town. A pure engine combines any document with the profile and returns sorted cards. A reliability layer traces every sentence to a fingerprinted source. Only two server routes exist, and neither ever receives the profile:
+Legible is a mostly client-side Next.js app. Documents are plain JSON in one shared format, listed in a public catalog. A short onboarding builds a life profile in the browser. The home feed fetches the whole catalog and filters it locally to the person's state and town. A pure engine combines any document with the profile and returns sorted cards. A reliability layer traces every sentence to a fingerprinted source. Only two server routes exist, and neither ever receives the profile:
 
 - `POST /api/analyze` turns the page text of an uploaded PDF into draft measures.
 - `POST /api/ask` answers a question about one measure from its official text.
@@ -249,17 +249,17 @@ Pure template in the browser. Inputs are selected measure numbers and one factua
 - **UploadPanel:** file input, extraction status, size and scanned-PDF errors, progress with cancel, verified-quote counter, flagged list, sample fallback.
 - **PrivacyPanel:** reads the `apiFetch` log and lists what was and was not sent.
 
-Visual system lives in CSS custom properties in `src/app/globals.css`, exposed as Tailwind utilities: grey `background`, white `surface` cards, `surface-muted` pills, black `primary` pill, ink and grey text only. Palette sampled from the chosen reference: `accent` deep purple (touches you, meter, Up next card), `info` lilac (on your list), `attention` terracotta (new, AI draft, flagged), `positive` sand (reviewed, verified), `ai` light purple (chat dock orb), plus `data-in` and `data-out` for budget charts. Each has a `-soft` tint for tags and its own `-foreground`: white on purple, ink on lilac, terracotta, and sand. All pairs meet 4.5:1. Radii `sm` 10 / `md` 14 / `lg` 20 / `xl` 32, one `shadow-card`, one easing curve (`ease-nine`, 400 ms), four type sizes, Figtree. Light and dark themes. Re-sorting animates card positions unless reduced motion is preferred.
+Visual system lives in CSS custom properties in `src/app/globals.css`, exposed as Tailwind utilities: grey `background`, white `surface` cards, `surface-muted` pills, black `primary` pill, ink and grey text only. Palette sampled from the chosen reference: `accent` deep purple (touches you, meter, Up next card), `info` lilac (on your list), `attention` terracotta (new, AI draft, flagged), `positive` sand (reviewed, verified), `ai` light purple (chat dock orb), plus `data-in` and `data-out` for budget charts. Each has a `-soft` tint for tags and its own `-foreground`: white on purple, ink on lilac, terracotta, and sand. All pairs meet 4.5:1. Radii `sm` 10 / `md` 14 / `lg` 20 / `xl` 32, one `shadow-card`, one easing curve (`ease-legible`, 400 ms), four type sizes, Figtree. Light and dark themes. Re-sorting animates card positions unless reduced motion is preferred.
 
 ## Onboarding
 
-Two parts. **First run** is minimal: two screens, one answer, then the feed. **Fill in later** is where the life profile grows, pulled along by a completion ring around the avatar that the person sees every time they open Nine. The bet: people give more when they have already seen the feed and want it sharper, not before they know what the app does.
+Two parts. **First run** is minimal: two screens, one answer, then the feed. **Fill in later** is where the life profile grows, pulled along by a completion ring around the avatar that the person sees every time they open Legible. The bet: people give more when they have already seen the feed and want it sharper, not before they know what the app does.
 
 Pattern borrowed from Duolingo: one question per screen, a back arrow top left, Skip top right, one big button pinned to the bottom that stays grey until the answer is valid, and a friendly figure with a speech bubble. Mobile first at 375 px, one column, tap targets at least 48 px.
 
-The figure is the Nine avatar (line-drawn, see Avatar). It gains one part per yes (a key for renting, a bus for transit). It never shows red or blue and never reflects a sensitive fact.
+The figure is the Legible avatar (line-drawn, see Avatar). It gains one part per yes (a key for renting, a bus for transit). It never shows red or blue and never reflects a sensitive fact.
 
-**No account, no sign-in.** Duolingo's "Create profile" exists to sync progress to a server. Nine's promise is that the profile never leaves the browser, so its counterpart is "Keep on this device." There is no name, email, or password step anywhere. If cross-device use is wanted after the event, the candidate is an export code the person copies to another browser, not an account.
+**No account, no sign-in.** Duolingo's "Create profile" exists to sync progress to a server. Legible's promise is that the profile never leaves the browser, so its counterpart is "Keep on this device." There is no name, email, or password step anywhere. If cross-device use is wanted after the event, the candidate is an export code the person copies to another browser, not an account.
 
 **No name.** A name adds nothing to sorting, and a name stored next to "owns a firearm" turns a shared or screenshotted device into an identifying record. Greetings use the town instead: "Here is what Somerville is deciding."
 
@@ -350,7 +350,7 @@ A ring around the avatar with the percentage under it, shown in the feed header 
 
 ## Information gathered
 
-Everything Nine gathers, where it comes from, where it lives, and what it is for. Nothing in this table is ever sent to a server. The authoritative types are in `src/lib/engine/profile.ts`.
+Everything Legible gathers, where it comes from, where it lives, and what it is for. Nothing in this table is ever sent to a server. The authoritative types are in `src/lib/engine/profile.ts`.
 
 | Field | Gathered by | Stored | Used for |
 |---|---|---|---|
@@ -372,7 +372,7 @@ Never gathered: name, email, password, account, phone, age, party, income, addre
 
 Derived, never stored: sorted cards, touch counts, avatar parts, because chips. All recomputed by `buildCards` whenever the profile changes.
 
-Storage: one `localStorage` key, `nine.profile.v1`, holding `{ profile, preferences, session }` as JSON, written only when `remember` is on, read through `parseProfile`, which drops unknown ids and rejects other versions. "Forget me" deletes the key and resets the in-memory profile. Storage access is wrapped in try/catch; if it throws, the remember toggle is disabled with a note and the app runs in memory.
+Storage: one `localStorage` key, `legible.profile.v1` (a profile under the pre-rename key `nine.profile.v1` is moved to it once), holding `{ profile, preferences, session }` as JSON, written only when `remember` is on, read through `parseProfile`, which drops unknown ids and rejects other versions. "Forget me" deletes the key and resets the in-memory profile. Storage access is wrapped in try/catch; if it throws, the remember toggle is disabled with a note and the app runs in memory.
 
 ## Home feed and catalog
 
@@ -380,7 +380,7 @@ Home is a feed of decisions, not a ballot page. Each item is one document: the s
 
 ### How the feed is fetched, privately
 
-`public/catalog/ma.json` lists every document Nine has, for the whole state. The browser downloads the whole file through `apiFetch` (logged as "catalog, no profile data") and filters it locally: `place.kind === "state"` or `place.townId === profile.townId`. For each kept entry it loads the document JSON and runs `buildCards` locally to get `touches` and `topTouching`. The server never learns the town or any fact. Catalog and documents are static files, cacheable, and work offline after the first load.
+`public/catalog/ma.json` lists every document Legible has, for the whole state. The browser downloads the whole file through `apiFetch` (logged as "catalog, no profile data") and filters it locally: `place.kind === "state"` or `place.townId === profile.townId`. For each kept entry it loads the document JSON and runs `buildCards` locally to get `touches` and `topTouching`. The server never learns the town or any fact. Catalog and documents are static files, cacheable, and work offline after the first load.
 
 ### Civic items
 
@@ -396,7 +396,7 @@ An item touches the person when a profile fact matches one of its `touches` rule
 
 Civic items mix into the feed with documents. Up next considers both: a deadline that touches the person today outranks a document decided next month. Meeting cards never list agenda items until a real posted agenda is ingested.
 
-Source data: `data/legible_ma_seed.json` (the team's Supabase seed) is rebuilt by `npm run data:civic` through `scripts/civic-ma.content.ts`, which replaces news and advocacy sources with official ones, rewrites summaries neutrally, maps the seed's topics and circumstances onto Nine's vocab, and lists every seed item it leaves out with the reason (ballot questions duplicated by the reviewed ballot; bills without an official citation). The build fails if a booklet quote is not found, a source is not an official domain, a banned word appears, or a seed item is unaccounted for.
+Source data: `data/legible_ma_seed.json` (the team's Supabase seed) is rebuilt by `npm run data:civic` through `scripts/civic-ma.content.ts`, which replaces news and advocacy sources with official ones, rewrites summaries neutrally, maps the seed's topics and circumstances onto Legible's vocab, and lists every seed item it leaves out with the reason (ballot questions duplicated by the reviewed ballot; bills without an official citation). The build fails if a booklet quote is not found, a source is not an official domain, a banned word appears, or a seed item is unaccounted for.
 
 ### Layout, top to bottom
 
@@ -416,7 +416,7 @@ Source data: `data/legible_ma_seed.json` (the team's Supabase seed) is rebuilt b
 
 **Order.** Upcoming before decided. Within upcoming: items with touches first, then soonest `decideBy`, then newest date. Items without `decideBy` sort after dated ones.
 
-**Empty town.** When the catalog has nothing for the town: "Nine does not have documents for Somerville yet." with "Upload a town document" (opens the upload panel) and a line naming the kinds that help: warrants, budgets, hearing notices. State items still show.
+**Empty town.** When the catalog has nothing for the town: "Legible does not have documents for Somerville yet." with "Upload a town document" (opens the upload panel) and a line naming the kinds that help: warrants, budgets, hearing notices. State items still show.
 
 **Uploaded documents** join the feed in memory, tagged with the profile's town and labeled AI draft, until the page is closed.
 
@@ -424,11 +424,11 @@ Copy rule: the feed heading is "Where your life meets what is being decided." Ne
 
 ## Measure page
 
-Opened from a measure card. It answers five questions in order: does this touch me, how exactly and when, why believe it, is this based on what I said, what can I do (civic actions only, never a vote). Screens and a clickable prototype are on the design canvas "Nine measure page" (Experience page: one path through the ballot; Screens page: each state in detail).
+Opened from a measure card. It answers five questions in order: does this touch me, how exactly and when, why believe it, is this based on what I said, what can I do (civic actions only, never a vote). Screens and a clickable prototype are on the design canvas "Legible measure page" (Experience page: one path through the ballot; Screens page: each state in detail).
 
-**Two kinds of reliability, shown differently.** *Source*: did the state say this? Every Nine sentence carries its source line and opens its verbatim quote in place. *Fit*: does this apply to me? The page names the answers that triggered it and lets the person change them there. The trust summary counts both: "3 lines, 3 quotes. Each found word for word. Human review pending."
+**Two kinds of reliability, shown differently.** *Source*: did the state say this? Every Legible sentence carries its source line and opens its verbatim quote in place. *Fit*: does this apply to me? The page names the answers that triggered it and lets the person change them there. The trust summary counts both: "3 lines, 3 quotes. Each found word for word. Human review pending."
 
-**Two voices.** Nine's words are Figtree with the caption "In Nine's words." The state's words are the serif face (`--font-serif`) under "Official text, word for word." Nothing else uses the serif.
+**Two voices.** Legible's words are Figtree with the caption "In Legible's words." The state's words are the serif face (`--font-serif`) under "Official text, word for word." Nothing else uses the serif.
 
 ### Layout, top to bottom
 
@@ -438,7 +438,7 @@ Opened from a measure card. It answers five questions in order: does this touch 
 4. **For you card.** Relevance tag (accent fill "Touches you", info-soft "On your list", surface-muted "Applies to everyone" or "Probably not for you"); direction pictogram and label; then rows split by hairlines:
    - **If YES passes** and **If NO passes**: one cited sentence each, always both, same weight. Referendum labels add "· the law stays" and "· the law ends".
    - **When it would reach you**: date chip ("Jan 1 2028", or "In effect now") and one cited sentence.
-   - **Based on what you told Nine**: because chips ("Because you rent"); fact chips edit the answer in place and re-sort, topic chips only explain "On your list".
+   - **Based on what you told Legible**: because chips ("Because you rent"); fact chips edit the answer in place and re-sort, topic chips only explain "On your list".
    - **Inline fact question** when an unanswered fact decides relevance: accent-soft panel, "One answer decides whether this touches you", Yes / No, "Not now", "Prefer not to say". Sensitive facts say why they are asked here.
    - **Trust summary**: positive-soft box with line and quote counts and review state. AI drafts use attention-soft and "AI draft, quotes verified, not human reviewed".
 5. **Next step.** One civic action from `nextSteps` (registration lookup, black pill).
@@ -450,11 +450,11 @@ Opened from a measure card. It answers five questions in order: does this touch 
 
 ### Evidence in place
 
-Under every Nine sentence sits a source line: a check mark, the locator and page ("AG summary, page 12"), and "Show the words". Tapping it opens a surface-muted panel directly below the sentence with the quote in serif, the cited words marked with `accent-soft` and an accent underline, the status tag, and "How do we know this?". The person never leaves the page to check a claim. "How do we know this?" opens ChainView as a bottom sheet: sentence, quote, page (opens SourceView), official file with fingerprint, then two boxes kept apart: "Machine check: passed" and "Human review: pending" or reviewer and date.
+Under every Legible sentence sits a source line: a check mark, the locator and page ("AG summary, page 12"), and "Show the words". Tapping it opens a surface-muted panel directly below the sentence with the quote in serif, the cited words marked with `accent-soft` and an accent underline, the status tag, and "How do we know this?". The person never leaves the page to check a claim. "How do we know this?" opens ChainView as a bottom sheet: sentence, quote, page (opens SourceView), official file with fingerprint, then two boxes kept apart: "Machine check: passed" and "Human review: pending" or reviewer and date.
 
 ### States
 
-Touches you; applies to everyone; probably not for you (still shows what reaches the town); empty profile (overview sentence plus "Add your home" nudge); answer declined (no follow-up, "Nine won't ask again"); AI draft; referendum; offline (official link only). Flagged measures never get a page.
+Touches you; applies to everyone; probably not for you (still shows what reaches the town); empty profile (overview sentence plus "Add your home" nudge); answer declined (no follow-up, "Legible won't ask again"); AI draft; referendum; offline (official link only). Flagged measures never get a page.
 
 ### Content this needs
 
@@ -470,7 +470,7 @@ When a field is missing the row is left out; the page never fills it with genera
 
 Nothing in the browser crawls the web. The team runs an ingest script that turns public documents into catalog entries, with the same model, schema, and quote verification as the analyze route.
 
-**Sources.** `data/sources/ma.json` is a hand-curated list, one row per document: `{ id, townId?, docType, title, url, file?, decideBy, note? }`. URLs point to official PDFs on town, city, school, or state sites (clerk warrants, school committee budgets, planning board hearing notices). Curating the list is a person's job; Nine does not scrape arbitrary sites in this build.
+**Sources.** `data/sources/ma.json` is a hand-curated list, one row per document: `{ id, townId?, docType, title, url, file?, decideBy, note? }`. URLs point to official PDFs on town, city, school, or state sites (clerk warrants, school committee budgets, planning board hearing notices). Curating the list is a person's job; Legible does not scrape arbitrary sites in this build.
 
 Some city sites block scripts (newtonma.gov answers 403 behind Akamai). For those rows a person saves the PDF from a browser to `file` (under `data/sources/files/`), and ingest reads the file instead of downloading. `url` is still kept, because it is the citation shown to users.
 

@@ -2,11 +2,11 @@
 
 ## Introduction
 
-Nine is a place where a Massachusetts resident sees the public decisions being made around them, at town and state level, sorted by where those decisions meet their own life. A person builds a short life profile once: their town, a few everyday facts, and the subjects they follow. From then on the home feed shows every document in the catalog for their state and town, each with how many measures touch them, and the open questions still worth answering. Opening a document shows its measures as cards, with a cited explanation of what changes for this person.
+Legible is a place where a Massachusetts resident sees the public decisions being made around them, at town and state level, sorted by where those decisions meet their own life. A person builds a short life profile once: their town, a few everyday facts, and the subjects they follow. From then on the home feed shows every document in the catalog for their state and town, each with how many measures touch them, and the open questions still worth answering. Opening a document shows its measures as cards, with a cited explanation of what changes for this person.
 
 The 9 questions on the Nov 3, 2026 state ballot are the first document, built from hand-reviewed content in the official Information for Voters booklet. Town documents, such as a town meeting warrant, enter the same catalog either pre-analyzed by the team or uploaded by the person as a text PDF, drafted into measures by AI, with every quote verified word for word.
 
-A reliability layer makes every sentence traceable: sentence to quote, quote to page, page to a fingerprinted source, with a visible trust level. A chat dock answers questions from the official text only, with a citation on every sentence. Nine never recommends a vote, and the profile never leaves the browser.
+A reliability layer makes every sentence traceable: sentence to quote, quote to page, page to a fingerprinted source, with a visible trust level. A chat dock answers questions from the official text only, with a citation on every sentence. Legible never recommends a vote, and the profile never leaves the browser.
 
 Out of scope for this build: any 3D map; accounts or server-side storage of profiles; voting recommendations, scores, or party framing; computed dollar impacts; OCR of scanned PDFs; retrieval over many documents (RAG); languages other than English; sending messages on the user's behalf; a shareable avatar image; notifications or email.
 
@@ -19,7 +19,7 @@ Out of scope for this build: any 3D map; accounts or server-side storage of prof
 - **Direction:** one of expands, restricts, rule_change, who_decides, none.
 - **Verified quote:** a quote whose normalized text appears exactly in the source page text.
 - **Life profile:** the town, answered facts, skipped facts, and topics, stored only in the browser. Never called a political profile.
-- **Catalog:** the public list of documents Nine knows about, each tagged with its place (state, or one town) and trust level.
+- **Catalog:** the public list of documents Legible knows about, each tagged with its place (state, or one town) and trust level.
 - **Feed:** the home screen list of catalog documents for the person's state and town, with locally computed counts.
 - **Trust level:** reviewed, verified, AI draft, or flagged. See Requirement 21.
 
@@ -105,7 +105,7 @@ Out of scope for this build: any 3D map; accounts or server-side storage of prof
 #### Acceptance Criteria
 
 1. THE SYSTEM SHALL describe impact using only the five directions, each with a pictogram.
-2. THE SYSTEM SHALL show a legend stating that Nine can only say one of these five things.
+2. THE SYSTEM SHALL show a legend stating that Legible can only say one of these five things.
 3. THE SYSTEM SHALL fail the build check if any app-authored string or generated explanation contains a banned word.
 
 ### Requirement 8: Highlighter citations

@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nine",
+  title: "Legible",
   description:
     "The 9 Massachusetts ballot questions, sorted by which ones touch you.",
 };

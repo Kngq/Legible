@@ -2,9 +2,9 @@
 inclusion: always
 ---
 
-# Product: Nine
+# Product: Legible
 
-Nine is where a Massachusetts resident sees the public decisions being made around them, at town and state level, sorted by where those decisions meet their life. The 9 questions on the Nov 3, 2026 state ballot are the first document. Town documents, such as a town meeting warrant, enter the same catalog pre-analyzed or uploaded.
+Legible is where a Massachusetts resident sees the public decisions being made around them, at town and state level, sorted by where those decisions meet their life. The 9 questions on the Nov 3, 2026 state ballot are the first document. Town documents, such as a town meeting warrant, enter the same catalog pre-analyzed or uploaded.
 
 A person builds a life profile once: town, a few everyday facts, and the subjects they follow. The home feed then shows every document for their state and town with how many measures touch them. Opening one shows the measures as cards, explains in two sentences what changes for this person, and ties every sentence to the official text. A chat dock answers questions from that text only.
 

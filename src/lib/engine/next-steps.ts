@@ -77,7 +77,7 @@ export function nextSteps(card: Card, profile: Profile): NextStep[] {
   steps.push({
     kind: "ask_legislator",
     label: "Ask your legislator a factual question",
-    detail: "A short draft you can edit and copy. Nine never sends it.",
+    detail: "A short draft you can edit and copy. Legible never sends it.",
   });
   return steps;
 }

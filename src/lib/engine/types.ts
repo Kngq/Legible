@@ -10,7 +10,7 @@ export interface Quote {
   status: QuoteStatus;
 }
 
-/** Every sentence Nine writes about a measure cites one quote. */
+/** Every sentence Legible writes about a measure cites one quote. */
 export interface WhySentence {
   text: string;
   quoteId: string;

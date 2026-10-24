@@ -130,7 +130,7 @@ export function DocumentView({
             <span className="text-body font-semibold">
               Probably not you <span className="text-muted-foreground">{quiet.length}</span>
             </span>
-            <span className="transition-transform duration-(--duration) ease-nine group-open:rotate-180">
+            <span className="transition-transform duration-(--duration) ease-legible group-open:rotate-180">
               <Glyph name="chevron" />
             </span>
           </summary>

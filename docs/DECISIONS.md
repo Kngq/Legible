@@ -1,4 +1,4 @@
-# Nine — decisions log
+# Legible (formerly Nine): decisions log
 
 Project folder created the night before Hackachusetts (Sat Oct 24, 2026, 8 AM–8 PM, civic action track, submission via Kiro).
 
@@ -41,7 +41,7 @@ You tell it your town and a few facts about your life, and it re-sorts the 9 Mas
 - data/official/ — the official PDF and its text extraction
 
 ## Morning of Oct 24: scope reset
-The Kiro spec in `.kiro/specs/nine/` is now the source of truth for scope. It supersedes the scope sections above where they differ.
+The Kiro spec in `.kiro/specs/legible/` is now the source of truth for scope. It supersedes the scope sections above where they differ.
 
 1. **Engine, not just a ballot.** Documents and measures share one format. The 2026 ballot is the first, hand-reviewed document. An uploaded text PDF, such as a town meeting warrant, is analyzed by AI into the same format.
 2. **No 3D map.** Dropped entirely. Town context is a stretch: a sourced number on a card, or a flat map of towns named in an upload.
@@ -56,7 +56,7 @@ The Kiro spec in `.kiro/specs/nine/` is now the source of truth for scope. It su
 ## Oct 24 afternoon: first screens (onboarding, avatar, home)
 Smallest choices made where the spec was silent. Revisit any of them freely.
 
-1. **No DESIGN.md existed.** Visual direction comes from `.kiro/specs/nine/design.md` and the tokens in `globals.css` (the violet, periwinkle, coral, green reference palette). Flat fills only, no glass or blur.
+1. **No DESIGN.md existed.** Visual direction comes from `.kiro/specs/legible/design.md` and the tokens in `globals.css` (the violet, periwinkle, coral, green reference palette). Flat fills only, no glass or blur.
 2. **Town by name, not ZIP.** The ZIP table (task 16.6) is not built, so screen 1 is a type-ahead over `towns.json`, matching neighborhood aliases ("Dorchester is in Boston"). Swap in the ZIP field when 16.6 lands.
 3. **Catalog is bundled.** Home imports `src/data/ballot-2026.json` directly until `public/catalog/ma.json` (task 17) exists.
 4. **Town scope without town documents.** "In {town}" shows an honest empty state for town documents, plus the state questions with a town-level effect. Those sentences live in `LOCAL_REACH` (`src/lib/engine/next-steps.ts`) and each cites an existing quote id; a test checks this.
@@ -96,3 +96,6 @@ Inspired by a reading app's Discover, article, queue, and author screens; not co
 3. **Up next** goes to a civic item when it touches the person and comes no later than the document Up next (`civicUpNext`): today the registration deadline outranks the vote in 10 days for someone not registered.
 4. **Cross-links** (`src/lib/engine/related.ts`): measure ↔ civic item when they share a life fact (ranked first) or a subject. MeasureView gets an optional "Related near you" section only; its props are otherwise unchanged so the legislation-page redesign can drop in.
 5. A pasted link to another town's item still opens (items are public); a pasted link with no profile goes through first run, then lands on the linked screen.
+
+## Oct 24: renamed Nine to Legible
+The app is now **Legible**. Brand text, the page title, code names (`LegibleApp`, `useLegible`, `ease-legible`), the spec folder (`.kiro/specs/legible/`), and the package name changed. The word "nine" is kept where it counts ballot questions. Saved profiles move from `nine.profile.v1` to `legible.profile.v1` on first load. Entries above this one keep the old name as history. Not changed here: the Vercel project, the GitHub repo, and the local folder name.

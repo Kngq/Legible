@@ -228,7 +228,7 @@ export const CIVIC: CivicContent[] = [
 
 /** Seed items left out, with the reason. The build prints these. */
 export const EXCLUDED: Record<string, string> = {
-  "ma-2026-q1": "Ballot question: Nine ships its own reviewed ballot from the official booklet.",
+  "ma-2026-q1": "Ballot question: Legible ships its own reviewed ballot from the official booklet.",
   "ma-2026-q2": "Ballot question: covered by the reviewed ballot.",
   "ma-2026-q3": "Ballot question: covered by the reviewed ballot.",
   "ma-2026-q4": "Ballot question: covered by the reviewed ballot.",

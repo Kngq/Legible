@@ -4,7 +4,7 @@
 // localStorage only when "Remember on this device" is on. Never sent anywhere.
 import { useCallback, useEffect, useState } from "react";
 import { localISODate } from "@/lib/engine/feed";
-import { emptyProfile, parseProfile, PROFILE_STORAGE_KEY, type Preferences, type Profile } from "@/lib/engine/profile";
+import { emptyProfile, LEGACY_PROFILE_STORAGE_KEY, parseProfile, PROFILE_STORAGE_KEY, type Preferences, type Profile } from "@/lib/engine/profile";
 
 interface Stored {
   profile: Profile;
@@ -16,7 +16,15 @@ const DEFAULT_PREFS: Preferences = { remember: false, onboardingDone: false };
 
 function readStored(): Stored | null {
   try {
-    const raw = window.localStorage.getItem(PROFILE_STORAGE_KEY);
+    let raw = window.localStorage.getItem(PROFILE_STORAGE_KEY);
+    if (!raw) {
+      // Move a profile saved under the old app name to the new key.
+      raw = window.localStorage.getItem(LEGACY_PROFILE_STORAGE_KEY);
+      if (raw) {
+        window.localStorage.setItem(PROFILE_STORAGE_KEY, raw);
+        window.localStorage.removeItem(LEGACY_PROFILE_STORAGE_KEY);
+      }
+    }
     if (!raw) return null;
     const parsed = JSON.parse(raw) as { profile?: unknown; preferences?: Partial<Preferences> };
     const profile = parseProfile(parsed.profile);
@@ -38,7 +46,7 @@ function storageWorks(): boolean {
   }
 }
 
-export function useNine() {
+export function useLegible() {
   const [loaded, setLoaded] = useState(false);
   // Fixed timestamp for the prerender; the real one is set on mount.
   const [profile, setProfile] = useState<Profile>(() => emptyProfile(PRERENDER_AT));
@@ -73,6 +81,7 @@ export function useNine() {
   const forget = useCallback(() => {
     try {
       window.localStorage.removeItem(PROFILE_STORAGE_KEY);
+      window.localStorage.removeItem(LEGACY_PROFILE_STORAGE_KEY);
     } catch {}
     setProfile(emptyProfile());
     setPreferences(DEFAULT_PREFS);

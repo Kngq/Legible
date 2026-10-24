@@ -140,7 +140,7 @@
 
   --shadow-card: var(--card-shadow);
 
-  --ease-nine: var(--ease);
+  --ease-legible: var(--ease);
 }
 
 /* Shape: same in both themes. rounded-sm/md/lg/xl/full. */

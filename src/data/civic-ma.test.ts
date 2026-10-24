@@ -26,7 +26,7 @@ describe("civic-ma data", () => {
     for (const i of items.filter((x) => x.body === "Cambridge School Committee")) expect(i.check.kind).toBe("schedule");
   });
 
-  it("uses only Nine's vocabularies and no banned words", () => {
+  it("uses only Legible's vocabularies and no banned words", () => {
     for (const i of items) {
       for (const t of i.topics) expect(TOPIC_IDS).toContain(t);
       for (const r of i.touches) expect(FACT_IDS).toContain(r.fact);

@@ -1,9 +1,11 @@
-// Life profile: everything Nine gathers about one person, and how each answer
+// Life profile: everything Legible gathers about one person, and how each answer
 // was gathered. Pure TypeScript. Lives only in the browser; never sent anywhere.
 import { FACT_IDS, TOPIC_IDS, type FactId, type TopicId } from "@/lib/vocab";
 
 export const PROFILE_VERSION = 1 as const;
-export const PROFILE_STORAGE_KEY = "nine.profile.v1";
+export const PROFILE_STORAGE_KEY = "legible.profile.v1";
+/** Key used before the app was renamed from Nine to Legible. Read once, then moved. */
+export const LEGACY_PROFILE_STORAGE_KEY = "nine.profile.v1";
 
 /** Where an answer was given. Lets the UI explain itself and lets tests check ask-once rules. */
 export type AnswerSource =

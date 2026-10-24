@@ -1,5 +1,5 @@
-import { NineApp } from "@/components/NineApp";
+import { LegibleApp } from "@/components/LegibleApp";
 
 export default function Page() {
-  return <NineApp />;
+  return <LegibleApp />;
 }

@@ -18,7 +18,7 @@ import { Home } from "./Home";
 import { MeasureView } from "./MeasureView";
 import { ProfileSheet, type SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
-import { useNine } from "./useNine";
+import { useLegible } from "./useLegible";
 
 // Every document the feed can show. Bundled ballot only until the catalog
 // (task 17.2) is fetched whole; buildFeed filters by state and town locally.
@@ -28,7 +28,7 @@ const CIVIC: CivicItem[] = civicData as unknown as CivicItem[];
 
 // The hash is the source of truth for which screen shows. In-app taps push a
 // history entry (so browser back works); popstate covers back and forward.
-const NAV_EVENT = "nine:route";
+const NAV_EVENT = "legible:route";
 function subscribeHash(cb: () => void) {
   window.addEventListener("popstate", cb);
   window.addEventListener(NAV_EVENT, cb);
@@ -40,8 +40,8 @@ function subscribeHash(cb: () => void) {
 const hashSnapshot = () => window.location.hash;
 const serverHash = () => "";
 
-export function NineApp() {
-  const { loaded, today, profile, setProfile, preferences, setPreferences, canStore, forget } = useNine();
+export function LegibleApp() {
+  const { loaded, today, profile, setProfile, preferences, setPreferences, canStore, forget } = useLegible();
   const [sheet, setSheet] = useState<SheetView | null>(null);
   // Where the person is, read from the URL hash.
   const hash = useSyncExternalStore(subscribeHash, hashSnapshot, serverHash);
@@ -90,13 +90,13 @@ export function NineApp() {
   }
 
   const go = (next: Route) => {
-    window.history.pushState({ nine: true }, "", routeHash(next));
+    window.history.pushState({ legible: true }, "", routeHash(next));
     window.dispatchEvent(new Event(NAV_EVENT));
   };
   // In-page back: step back through history when this session pushed it; from a
   // pasted link, go up one level instead of leaving the app.
   const back = () => {
-    if ((window.history.state as { nine?: boolean } | null)?.nine) window.history.back();
+    if ((window.history.state as { legible?: boolean } | null)?.legible) window.history.back();
     else {
       restoreNext.current = true;
       window.history.replaceState(null, "", routeHash(parentRoute(route)));

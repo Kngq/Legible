@@ -1,6 +1,6 @@
 "use client";
 
-// The Nine avatar: a line-drawn figure that gains one part per yes and per subject.
+// The Legible avatar: a line-drawn figure that gains one part per yes and per subject.
 // Parts sit in a ring around the figure. Never a sensitive fact.
 // With onFigure and onPart, the figure and each badge are buttons (no nesting).
 import type { AvatarPart } from "@/lib/engine/avatar";

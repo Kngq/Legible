@@ -31,7 +31,7 @@ export function Button({
   return (
     <button
       type="button"
-      className={`inline-flex items-center justify-center gap-2 rounded-md text-body transition-colors duration-(--duration) ease-nine disabled:cursor-not-allowed ${FOCUS} ${v} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-md text-body transition-colors duration-(--duration) ease-legible disabled:cursor-not-allowed ${FOCUS} ${v} ${className}`}
       {...rest}
     />
   );
