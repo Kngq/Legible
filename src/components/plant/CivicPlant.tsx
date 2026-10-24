@@ -125,6 +125,7 @@ export function CivicPlant({
   signal,
   label,
   still = false,
+  tapOnClick = true,
   className,
 }: {
   stage: PlantStage;
@@ -136,6 +137,8 @@ export function CivicPlant({
   label?: string;
   /** No idle sway, blink, lean, or tap: for small illustrations such as the Growth Story. */
   still?: boolean;
+  /** False when a wrapping control triggers the tap through `signal` instead (e.g. a button). */
+  tapOnClick?: boolean;
   className?: string;
 }) {
   const reduce = useReducedMotion() ?? false;
@@ -166,7 +169,10 @@ export function CivicPlant({
     } else if (stage < prev.stage) {
       setGrew(false);
     }
-    if (signal && signal.tap !== prev.tap) setTapReq((n) => n + 1);
+    if (signal && signal.tap !== prev.tap) {
+      setTapReq((n) => n + 1);
+      setCheer((n) => n + 1);
+    }
     if (signal && signal.milestone !== prev.milestone) {
       setMilestone((n) => n + 1);
       setCheer((n) => n + 1);
@@ -218,7 +224,7 @@ export function CivicPlant({
     return () => clearTimeout(t);
   }, [calm, happy, eyes]);
 
-  const onMove = (e: PointerEvent<HTMLDivElement>) => {
+  const onMove = (e: PointerEvent<HTMLSpanElement>) => {
     if (calm || e.pointerType !== "mouse") return;
     const r = e.currentTarget.getBoundingClientRect();
     const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
@@ -232,12 +238,13 @@ export function CivicPlant({
   let newIndex = 0;
 
   return (
-    <div
+    <span
       className={className}
-      style={{ width: size, touchAction: "manipulation" }}
+      // content-box: padding from className widens the hover area without shrinking the plant.
+      style={{ display: "block", width: size, boxSizing: "content-box", touchAction: "manipulation" }}
       onPointerMove={onMove}
       onPointerLeave={() => lean.set(0)}
-      onClick={tap}
+      onClick={tapOnClick ? tap : undefined}
     >
       <svg viewBox="-6 -24 112 144" width={size} height={(size * 144) / 112} {...(label === "" ? { "aria-hidden": true } : { role: "img", "aria-label": label ?? `Your plant: ${STAGES[stage - 1].name.toLowerCase()}` })} style={{ overflow: "visible", display: "block" }}>
         <defs>
@@ -499,7 +506,7 @@ export function CivicPlant({
           )}
         </AnimatePresence>
       </svg>
-    </div>
+    </span>
   );
 }
 

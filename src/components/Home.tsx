@@ -8,7 +8,7 @@
 // decisions never mix. Everything else is on Explore, one link away. Order comes
 // from buildTimeline and homeSections. Runs in the browser.
 import { motion, useReducedMotion } from "motion/react";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import type { CivicCard } from "@/lib/engine/civic";
 import type { Feed } from "@/lib/engine/feed";
 import { homeSections, profileBasis } from "@/lib/engine/home-copy";
@@ -20,9 +20,22 @@ import { FACT_DEFS, LIFE_AREAS } from "@/lib/vocab";
 import { decisionsFor, DecisionRow, FeaturedDecision } from "./BriefCard";
 import { ComingUp } from "./ComingUp";
 import { Glyph } from "./icons";
+import { HomePlant } from "./plant/HomePlant";
+import { useGrowth } from "./plant/useGrowth";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { FOCUS } from "./ui";
+
+// Plant size follows one breakpoint; re-renders only when it flips.
+const WIDE = "(min-width: 640px)";
+function subscribeWide(cb: () => void) {
+  const mq = window.matchMedia(WIDE);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+}
+function useWide() {
+  return useSyncExternalStore(subscribeWide, () => window.matchMedia(WIDE).matches, () => false);
+}
 
 /** The answers that sort the page, as short phrases: "You rent". Life-area facts only. */
 function answeredFacts(p: Profile): string[] {
@@ -84,18 +97,62 @@ export function Home({
   // Interests are "decided" once the person confirms the topics screen or picks any.
   const needsInterests = !profile.topicsConfirmedAt && Object.keys(profile.topics).length === 0;
   const editProfile = () => onOpenProfile({ kind: needsInterests ? "topics" : "list" });
+  const growth = useGrowth();
+  const wide = useWide();
+  // "Your corner of Boston, Rachel." only when it stays short; never an invented place.
+  const place = town ?? "the world";
+  const name = profile.name?.trim();
+  const nameInHeadline = Boolean(name) && `Your corner of ${place}, ${name}.`.length <= 32;
+  const enter = (delay: number, y = 8) =>
+    reduce ? {} : { initial: { opacity: 0, y }, animate: { opacity: 1, y: 0 }, transition: { duration: DURATION.slow, ease: EASE, delay } };
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-28 sm:px-6">
       <header className="pt-6 sm:pt-10">
-        {profile.name && (
-          <p className="font-display text-lg italic text-muted-foreground">
-            {greeting}, {profile.name}.
-          </p>
+        {growth.enabled ? (
+          // The living notebook hero: the person's corner of the map, and their plant.
+          // Phones: headline beside the plant, the line under both. Wider: text left, plant right.
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 sm:gap-x-10">
+            <div className="col-start-1 row-start-1 min-w-0">
+              {name && !nameInHeadline && (
+                <motion.p {...enter(0)} className="font-display text-lg italic text-muted-foreground">
+                  {greeting}, {name}.
+                </motion.p>
+              )}
+              <motion.h1 {...enter(0)} className="mt-1 font-display text-[1.875rem] leading-[1.08] tracking-[-0.02em] text-balance sm:text-headline">
+                Your corner of <span className="font-medium">{place}</span>
+                {nameInHeadline && <>, {name}</>}.
+              </motion.h1>
+            </div>
+            <motion.p {...enter(0.1)} className="col-span-2 row-start-2 mt-3 max-w-md text-body text-muted-foreground sm:col-span-1 sm:col-start-1 sm:-mt-6 sm:self-start">
+              Understand what&rsquo;s happening around you, one decision at a time.
+            </motion.p>
+            <motion.div
+              {...(reduce ? {} : { initial: { opacity: 0, y: -6, scale: 0.96 }, animate: { opacity: 1, y: 0, scale: 1 }, transition: { duration: 0.35, ease: EASE, delay: 0.05 } })}
+              className="col-start-2 row-start-1 flex flex-col items-center sm:row-span-2"
+            >
+              <HomePlant size={wide ? 164 : 96} onOpen={() => onOpenProfile({ kind: "growth" })} />
+              <button
+                type="button"
+                onClick={() => onOpenProfile({ kind: "growth" })}
+                className={`mt-1 inline-flex min-h-9 items-center gap-1 whitespace-nowrap rounded-sm text-small font-semibold text-primary underline-offset-4 hover:underline ${FOCUS}`}
+              >
+                See your journey <span aria-hidden="true">→</span>
+              </button>
+            </motion.div>
+          </div>
+        ) : (
+          <>
+            {profile.name && (
+              <p className="font-display text-lg italic text-muted-foreground">
+                {greeting}, {profile.name}.
+              </p>
+            )}
+            <h1 className="mt-1 font-display text-headline text-balance">
+              Public decisions that may matter to your life in <span className="font-medium">{town ?? "Massachusetts"}</span>.
+            </h1>
+          </>
         )}
-        <h1 className="mt-1 font-display text-headline text-balance">
-          Public decisions that may matter to your life in <span className="font-medium">{town ?? "Massachusetts"}</span>.
-        </h1>
         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-small">
           <button
             type="button"
