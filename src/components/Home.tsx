@@ -287,7 +287,9 @@ function Carousel({
         <span className="text-small text-muted-foreground">{entries.length}</span>
       </div>
       <p className="text-small text-muted-foreground">{sub}</p>
-      <ul className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:px-6 [scrollbar-width:none]">
+      {/* Keyed by its contents: when the decisions change, the row starts again at the
+          first card instead of re-snapping to whichever card was in view. */}
+      <ul key={entries.map((e) => e.card.measure.id).join()} className="-mx-4 mt-3 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:scroll-px-6 sm:px-6 [scrollbar-width:none]">
         {entries.map(({ item, card }) => {
           const m = card.measure;
           const ballot = item.doc.docType === "ballot";
