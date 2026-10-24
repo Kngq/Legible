@@ -97,6 +97,37 @@ export function Home({
   const enter = (delay: number, y = 8) =>
     reduce ? {} : { initial: { opacity: 0, y }, animate: { opacity: 1, y: 0 }, transition: { duration: DURATION.slow, ease: EASE, delay } };
 
+  // Where the page's sorting comes from, in one quiet line. A missing town is never
+  // invented: the line offers to add one instead.
+  const profileLine = (className: string) => (
+    <p className={`flex flex-wrap items-center gap-x-3 text-small text-muted-foreground ${className}`}>
+      {town ? (
+        <span>{[town, housing].filter(Boolean).join(" · ")}</span>
+      ) : (
+        <>
+          {housing && <span>{housing}</span>}
+          <button
+            type="button"
+            onClick={() => onOpenProfile({ kind: "town" })}
+            className={`inline-flex min-h-11 items-center font-semibold text-accent underline decoration-accent/30 underline-offset-4 interactive hover:decoration-accent ${FOCUS}`}
+          >
+            Add your location
+          </button>
+        </>
+      )}
+      <button
+        type="button"
+        onClick={editProfile}
+        className={`group inline-flex min-h-11 items-center gap-1 font-semibold text-accent underline decoration-accent/30 underline-offset-4 interactive hover:decoration-accent ${FOCUS}`}
+      >
+        Edit profile
+        <span aria-hidden="true" className="nudge">
+          &rarr;
+        </span>
+      </button>
+    </p>
+  );
+
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-28 sm:px-6">
       <header className="pt-6 sm:pt-10">
@@ -115,9 +146,11 @@ export function Home({
                 {nameInHeadline && <>, {name}</>}.
               </motion.h1>
             </div>
-            <motion.p {...enter(0.1)} className="col-span-2 row-start-2 mt-3 max-w-md text-body text-muted-foreground sm:col-span-1 sm:col-start-1 sm:-mt-6 sm:self-start">
-              Understand what&rsquo;s happening around you, one decision at a time.
-            </motion.p>
+            {/* The intro and, under it, the profile line share one cell. */}
+            <motion.div {...enter(0.1)} className="col-span-2 row-start-2 mt-3 sm:col-span-1 sm:col-start-1 sm:-mt-6 sm:self-start">
+              <p className="max-w-md text-body text-muted-foreground">Understand what&rsquo;s happening around you, one decision at a time.</p>
+              {profileLine("mt-2")}
+            </motion.div>
             <motion.div
               {...(reduce ? {} : { initial: { opacity: 0, y: -6, scale: 0.96 }, animate: { opacity: 1, y: 0, scale: 1 }, transition: { duration: 0.35, ease: EASE, delay: 0.05 } })}
               className="col-start-2 row-start-1 flex flex-col items-center sm:row-span-2"
@@ -142,36 +175,9 @@ export function Home({
             <h1 className="mt-1 font-display text-headline text-balance">
               Public decisions that may matter to your life in <span className="font-medium">{town ?? "Massachusetts"}</span>.
             </h1>
+            {profileLine("mt-4")}
           </>
         )}
-        {/* Where the sorting comes from, in one quiet line. No town is never invented:
-            the line offers to add one instead. */}
-        <p className="mt-4 flex flex-wrap items-center gap-x-3 text-small text-muted-foreground">
-          {town ? (
-            <span>{[town, housing].filter(Boolean).join(" · ")}</span>
-          ) : (
-            <>
-              {housing && <span>{housing}</span>}
-              <button
-                type="button"
-                onClick={() => onOpenProfile({ kind: "town" })}
-                className={`inline-flex min-h-11 items-center font-semibold text-accent underline decoration-accent/30 underline-offset-4 interactive hover:decoration-accent ${FOCUS}`}
-              >
-                Add your location
-              </button>
-            </>
-          )}
-          <button
-            type="button"
-            onClick={editProfile}
-            className={`group inline-flex min-h-11 items-center gap-1 font-semibold text-accent underline decoration-accent/30 underline-offset-4 interactive hover:decoration-accent ${FOCUS}`}
-          >
-            Edit profile
-            <span aria-hidden="true" className="nudge">
-              &rarr;
-            </span>
-          </button>
-        </p>
       </header>
 
       <ComingUp entries={attention} {...cardProps} onOpenProfile={onOpenProfile} />
