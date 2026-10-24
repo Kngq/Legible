@@ -73,7 +73,9 @@ export function PlantLab() {
         </section>
 
         <div className="space-y-4">
-          <PlantCompanion signal={signal} plantSize={112} />
+          <div className="rounded-lg bg-background p-5 shadow-card">
+            <PlantCompanion signal={signal} plantSize={112} />
+          </div>
           <section aria-label="Sizes" className="rounded-lg bg-surface p-5 shadow-card">
             <h2 className="text-body font-semibold">Sizes</h2>
             <div className="mt-3 flex items-end justify-around">

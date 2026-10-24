@@ -29,62 +29,68 @@ export function PreviewTag() {
 export function PlantCompanion({
   onSeeGrowth,
   signal,
-  plantSize = 128,
+  plantSize = 140,
 }: {
   /** Opens the Growth Story. Absent hides the link. */
   onSeeGrowth?: () => void;
   signal?: { tap: number; milestone: number };
+  /** Width in px; the plant stands about 1.3 times as tall. */
   plantSize?: number;
 }) {
   const g = useGrowth();
   if (!g.enabled) return null;
   const totals = g.history?.totals;
+  // No card: the plant sits on the page background as the profile's centrepiece.
   return (
-    <section aria-labelledby="plant-h" className="flex flex-col items-center rounded-lg bg-surface px-4 pb-4 pt-3 text-center shadow-card">
+    <section aria-labelledby="plant-h" className="-mt-3 flex flex-col items-center text-center">
       <CivicPlant stage={g.stage} size={plantSize} signal={signal} className="cursor-pointer select-none" />
       <h3 id="plant-h" className="mt-1 font-display text-title font-normal">
         Your little plant
       </h3>
       <p className="mt-0.5 text-small text-muted-foreground">Growing with everything you explore.</p>
-      {g.preview && (
-        <p className="mt-1.5">
-          <PreviewTag />
-        </p>
-      )}
-      {totals && (
-        <ul className="mt-3 grid w-full max-w-sm grid-cols-3 gap-2">
-          {(Object.keys(LABEL) as (keyof GrowthTotals)[]).map((k) => (
-            <li key={k} className="flex min-w-0 flex-col items-center">
-              <span className="flex items-center gap-1.5">
-                <svg
-                  viewBox="0 0 24 24"
-                  width={16}
-                  height={16}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.6}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                  className="shrink-0 text-muted-foreground"
-                >
-                  {ICON[k]}
-                </svg>
-                <span className="font-display text-title leading-none">{totals[k]}</span>
-              </span>
-              <span className="mt-1 block text-small leading-tight text-muted-foreground">{LABEL[k][totals[k] === 1 ? 0 : 1]}</span>
-            </li>
-          ))}
-        </ul>
-      )}
       {onSeeGrowth && (
         <button
           type="button"
           onClick={onSeeGrowth}
-          className={`mt-3 inline-flex min-h-10 items-center gap-1 rounded-md px-2 text-small font-semibold text-primary underline-offset-4 hover:underline ${FOCUS}`}
+          className={`mt-1 inline-flex min-h-10 items-center gap-1 rounded-md px-2 text-small font-semibold text-primary underline-offset-4 hover:underline ${FOCUS}`}
         >
           See your growth <span aria-hidden="true">→</span>
         </button>
+      )}
+      {totals && (
+        <ul aria-label="Your totals" className="mt-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-small text-muted-foreground">
+          {(Object.keys(LABEL) as (keyof GrowthTotals)[]).map((k) => (
+            <li key={k} className="inline-flex items-center gap-1">
+              <svg
+                viewBox="0 0 24 24"
+                width={14}
+                height={14}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.6}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className="shrink-0"
+              >
+                {ICON[k]}
+              </svg>
+              <span>
+                <span className="font-semibold text-foreground">{totals[k]}</span> {LABEL[k][totals[k] === 1 ? 0 : 1]}
+              </span>
+            </li>
+          ))}
+          {g.preview && (
+            <li>
+              <PreviewTag />
+            </li>
+          )}
+        </ul>
+      )}
+      {!totals && g.preview && (
+        <p className="mt-1">
+          <PreviewTag />
+        </p>
       )}
     </section>
   );

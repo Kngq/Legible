@@ -11,6 +11,7 @@ import { LIFE_AREAS, TOPIC_DEFS, TOPIC_IDS, type FactId, type LifeAreaId } from 
 import { AvatarRing } from "./AvatarRing";
 import { PlantCompanion } from "./plant/PlantCompanion";
 import { GrowthStory } from "./plant/GrowthStory";
+import { useGrowth } from "./plant/useGrowth";
 import { SavedNote } from "./SavedNote";
 import { Glyph, Part } from "./icons";
 import { AreaStep, FACT_SHORT, TopicsStep, TownStep, townName } from "./profile-steps";
@@ -82,6 +83,7 @@ export function ProfileSheet({
   const [confirmClear, setConfirmClear] = useState(false);
   const panel = useRef<HTMLDivElement>(null);
   const m = personalization(profile);
+  const growth = useGrowth();
   const next = nextItem(profile);
 
   useEffect(() => {
@@ -110,49 +112,66 @@ export function ProfileSheet({
     panel.current?.scrollTo({ top: 0 });
   };
 
+  // Under the completion line in either layout: save feedback, the keep-on-device
+  // prompt, and the next item to fill in.
+  const afterCompletion = (
+    <>
+      {lastSave && <SavedNote key={lastSave.at} />}
+      {rememberPrompt && (
+        <div className="mt-3 w-full animate-fade-in rounded-md bg-surface-muted p-3 text-left">
+          <p className="text-small">
+            <span className="font-semibold">Keep this on this device?</span> It stays in this browser only. Clear my information erases it any time.
+          </p>
+          <div className="mt-2 flex gap-2">
+            <Button className="min-h-10! px-4" onClick={onKeep}>
+              Keep
+            </Button>
+            <Button variant="text" className="min-h-10!" onClick={onNotNow}>
+              Not now
+            </Button>
+          </div>
+        </div>
+      )}
+      {lastSave && next && (
+        <Button variant="text" className="mt-1" onClick={() => open(itemView(next))}>
+          Next: {itemLabel(next)}
+        </Button>
+      )}
+    </>
+  );
+
   let body: ReactNode;
   if (view.kind === "list") {
     body = (
       <>
-        <div className="flex flex-col items-center pt-2 text-center">
-          <AvatarRing
-            key={lastSave?.at ?? 0}
-            parts={[]}
-            percent={m.percent}
-            from={lastSave?.from}
-            size={184}
-          />
-          <p className="mt-2 text-body text-muted-foreground">
-            {m.percent === 100 ? "Your profile is filled in." : `${m.done} of ${m.total} filled in. It all stays in this browser.`}
-          </p>
-          {lastSave && <SavedNote key={lastSave.at} />}
-          {rememberPrompt && (
-            <div className="mt-3 w-full animate-fade-in rounded-md bg-surface-muted p-3 text-left">
-              <p className="text-small">
-                <span className="font-semibold">Keep this on this device?</span> It stays in this browser only. Clear my information erases it any time.
+        {growth.enabled ? (
+          <>
+            {/* The plant is the profile's centrepiece. Profile completion stays a
+                separate, quieter line below it and never moves the plant. */}
+            <PlantCompanion onSeeGrowth={() => open({ kind: "growth" })} />
+            <div className="mt-5 border-t border-border pt-4">
+              <h3 className="text-body font-semibold">Your profile details</h3>
+              <p className="text-small text-muted-foreground">
+                {m.percent === 100 ? "All details added." : `${m.done} of ${m.total} details added.`} It all stays in this browser.
               </p>
-              <div className="mt-2 flex gap-2">
-                <Button className="min-h-10! px-4" onClick={onKeep}>
-                  Keep
-                </Button>
-                <Button variant="text" className="min-h-10!" onClick={onNotNow}>
-                  Not now
-                </Button>
-              </div>
+              {afterCompletion}
             </div>
-          )}
-          {lastSave && next && (
-            <Button variant="text" className="mt-1" onClick={() => open(itemView(next))}>
-              Next: {itemLabel(next)}
-            </Button>
-          )}
-        </div>
-
-        {/* The plant and the way into its Growth Story. Renders nothing until the
-            plant is enabled (development only for now, with labelled preview data). */}
-        <div className="mt-4 empty:hidden">
-          <PlantCompanion onSeeGrowth={() => open({ kind: "growth" })} />
-        </div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center pt-2 text-center">
+            <AvatarRing
+              key={lastSave?.at ?? 0}
+              parts={[]}
+              percent={m.percent}
+              from={lastSave?.from}
+              size={184}
+            />
+            <p className="mt-2 text-body text-muted-foreground">
+              {m.percent === 100 ? "Your profile is filled in." : `${m.done} of ${m.total} filled in. It all stays in this browser.`}
+            </p>
+            {afterCompletion}
+          </div>
+        )}
 
         {/* Name: used for the greeting on Home. Browser-only, like every answer. */}
         <section aria-labelledby="name-h" className="mt-4 rounded-lg bg-surface p-4 shadow-card">
