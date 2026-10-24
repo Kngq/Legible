@@ -1,9 +1,9 @@
 "use client";
 
-// Home after onboarding: a welcome, "What matters to you?" first, then two
-// sections from homeSections: Needs your attention (dates coming up soon) and
-// Decisions that could affect you (from the person's answers and interests).
-// Everything else is on Explore, one button away. Order
+// Home after onboarding: a welcome, "What matters to you?" first, then For you:
+// one list from homeSections, dates coming up soon first, then decisions that
+// could affect the person (from their answers and interests). Everything else
+// is on Explore, one button away. Order
 // comes from buildTimeline, and which areas Home asks about comes from the facts
 // upcoming items depend on, so nothing is tied to fixed onboarding questions.
 import type { CivicCard } from "@/lib/engine/civic";
@@ -51,19 +51,7 @@ export function Home({
   const areas = areasThatMatter(all);
   const topics = topicIds(profile).map((id) => TOPIC_DEFS[id].label);
   const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure, onOpenProfile };
-  const section = (id: string, title: string, sub: string, entries: TimelineEntry[], showTag: boolean) => (
-    <section aria-labelledby={id} className="mt-12">
-      <h2 id={id} className={H2}>
-        {title}
-      </h2>
-      <p className="mt-1 text-small text-muted-foreground">{sub}</p>
-      <ul className="mt-4 space-y-4">
-        {entries.map((e) => (
-          <BriefCard key={e.key} entry={e} showTag={showTag} {...cardProps} />
-        ))}
-      </ul>
-    </section>
-  );
+  const forYou: TimelineEntry[] = [...attention, ...affect];
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-16 sm:px-6">
@@ -127,20 +115,25 @@ export function Home({
         </button>
       </section>
 
-      {attention.length > 0 && section("h-attention", "Needs your attention", "Important dates and decisions coming up soon.", attention, false)}
-
-      {affect.length > 0
-        ? section("h-affect", "Decisions that could affect you", "Based on your profile and interests.", affect, true)
-        : (
-          <section aria-labelledby="h-affect" className="mt-12">
-            <h2 id="h-affect" className={H2}>
-              Decisions that could affect you
-            </h2>
-            <p className="mt-1 text-small text-muted-foreground">
-              Nothing matches your answers yet. Add details above and the decisions that reach your life will show here first.
-            </p>
-          </section>
+      <section aria-labelledby="h-foryou" className="mt-12">
+        <h2 id="h-foryou" className={H2}>
+          For you
+        </h2>
+        {forYou.length > 0 ? (
+          <>
+            <p className="mt-1 text-small text-muted-foreground">Dates coming up soon first, then decisions based on your profile and interests.</p>
+            <ul className="mt-4 space-y-4">
+              {forYou.map((e) => (
+                <BriefCard key={e.key} entry={e} {...cardProps} />
+              ))}
+            </ul>
+          </>
+        ) : (
+          <p className="mt-1 text-small text-muted-foreground">
+            Nothing matches your answers yet. Add details above and the decisions that reach your life will show here first.
+          </p>
         )}
+      </section>
 
       <button type="button" onClick={onExplore} className={`mt-5 ${SECONDARY}`}>
         Explore everything happening near you
