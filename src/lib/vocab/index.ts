@@ -1,5 +1,6 @@
 // Fixed vocabularies. Pure TypeScript: no React, no network.
 export { BANNED_WORDS, BANNED_PATTERN, findBannedWords } from "./banned";
+export { asksHowToVote, VOTE_FIXED_RESPONSE } from "./vote-check";
 
 export const DIRECTIONS = [
   "expands",
