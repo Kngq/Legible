@@ -38,7 +38,7 @@ Out of scope for this build: any 3D map; accounts or server-side storage of prof
 5. THE SYSTEM SHALL ask the same everyday facts in onboarding for every user and every document, and SHALL NOT name any document, measure, or question number on an onboarding screen. Sensitive facts (owns_firearm, buys_cannabis, public_defender_contact) SHALL be asked only inside the card that depends on them.
 6. THE SYSTEM SHALL record skipped facts so that a fact skipped in onboarding is asked at most once more, inside a card, and a fact declined there is not asked again.
 7. THE SYSTEM SHALL let the user reopen and edit the profile from the home feed and from any because chip or avatar badge.
-8. THE SYSTEM SHALL name this a life profile in all copy and SHALL NOT collect name, email, age, party, income, or free text about the person.
+8. THE SYSTEM SHALL name this a life profile in all copy and SHALL NOT collect email, age, party, income, or free text about the person. THE SYSTEM MAY collect an optional first name or nickname that the person types into their profile; it SHALL be stored only in the browser with the rest of the profile, used only for personalized greetings, and SHALL NOT be sent to a server, Supabase, or any third-party service. Onboarding SHALL NOT ask for it (see 4).
 9. THE SYSTEM SHALL show a personalization meter as a ring around the avatar, counting the town, each life area, and the topics step, with all items weighted equally and independent of the documents in the feed. Answers of Yes, No, or Prefer not to say SHALL count as done; facts asked only inside cards and the remember toggle SHALL NOT count.
 
 ### Requirement 2: Reviewed ballot content
