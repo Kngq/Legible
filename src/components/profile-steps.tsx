@@ -179,7 +179,7 @@ export function TownStep({ profile, setProfile }: { profile: Profile; setProfile
         />
         {chosen && (
           <p className="flex items-center gap-2 text-body font-semibold">
-            <span className="flex size-6 items-center justify-center rounded-full bg-positive text-on-strong">
+            <span className="flex size-6 items-center justify-center rounded-full bg-positive text-positive-foreground">
               <Glyph name="check" size={16} />
             </span>
             {chosen.name}, {chosen.county} County

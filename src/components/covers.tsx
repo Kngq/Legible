@@ -7,10 +7,10 @@ import { Part } from "./icons";
 type Fill = "accent" | "info" | "attention" | "positive";
 
 const FILL_CLASS: Record<Fill, string> = {
-  accent: "bg-accent",
-  info: "bg-info",
-  attention: "bg-attention",
-  positive: "bg-positive",
+  accent: "bg-accent text-accent-foreground",
+  info: "bg-info text-info-foreground",
+  attention: "bg-attention text-attention-foreground",
+  positive: "bg-positive text-positive-foreground",
 };
 
 const TOPIC_FILL: Record<TopicId, Fill> = {
@@ -38,7 +38,7 @@ export function coverFill(m: Measure): Fill {
 export function Cover({ measure, label, size = 64, className = "" }: { measure: Measure; label?: string; size?: number; className?: string }) {
   const topic = measure.topics[0];
   return (
-    <div className={`relative overflow-hidden text-on-strong ${FILL_CLASS[coverFill(measure)]} ${className}`} aria-hidden="true">
+    <div className={`relative overflow-hidden ${FILL_CLASS[coverFill(measure)]} ${className}`} aria-hidden="true">
       <svg className="absolute inset-0 h-full w-full opacity-25" preserveAspectRatio="xMidYMid slice" viewBox="0 0 200 120">
         {Array.from({ length: 9 }, (_, r) =>
           Array.from({ length: 16 }, (_, c) => <circle key={`${r}-${c}`} cx={8 + c * 13} cy={8 + r * 13} r={1.3} fill="currentColor" />),

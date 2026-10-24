@@ -152,7 +152,7 @@ export function DocumentView({
 }
 
 function Stat({ tone, label, value, sub, onClick }: { tone: "info" | "attention"; label: string; value: string; sub: string; onClick?: () => void }) {
-  const cls = `rounded-xl p-5 text-on-strong text-left ${tone === "info" ? "bg-info" : "bg-attention"}`;
+  const cls = `rounded-xl p-5 text-left ${tone === "info" ? "bg-info text-info-foreground" : "bg-attention text-attention-foreground"}`;
   const body = (
     <>
       <p className="text-small font-semibold opacity-85">{label}</p>

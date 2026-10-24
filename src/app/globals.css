@@ -3,63 +3,61 @@
 /*
  * Theme tokens. Minimal and friendly: grey page, white cards, black pills, and
  * every word ink or grey. Colour comes from a small palette sampled from the
- * chosen reference: violet, periwinkle, coral, green, and a magenta orb for AI.
- * Strong shades carry white text on large cards; soft tints carry ink text on
- * tags. Product rule: colour never encodes a side, a vote, YES or NO, or a
- * direction (directions use pictograms). No gradients; at most four type sizes.
+ * chosen reference dashboard: deep purple, lilac, sand, terracotta, and cream.
+ * Each fill names its own text colour: white on purple, ink on the light fills
+ * (white on lilac, sand, or terracotta fails contrast). Product rule: colour
+ * never encodes a side, a vote, YES or NO, or a direction (directions use
+ * pictograms). No gradients; at most four type sizes.
  */
 :root {
   /* Palette (raw). Use the semantic tokens below in components. */
-  --violet-50: #f0eaf8;
-  --violet-200: #c3aee0;
-  --violet-400: #9271b3;
-  --violet-600: #72558e;
-  --violet-800: #4c386a;
-  --periwinkle-50: #e8effc;
-  --periwinkle-200: #b1d7f8;
-  --periwinkle-400: #8ca5df;
-  --periwinkle-600: #5f6fbf;
-  --coral-50: #fde8e7;
-  --coral-200: #f6b3b2;
-  --coral-400: #f19492;
-  --coral-600: #bd4544;
-  --green-50: #e2f1ea;
-  --green-600: #3c7e66;
-  --magenta-400: #e866bc;
+  --purple-50: #f3e8f4;
+  --purple-300: #a46fbb;
+  --purple-700: #5b1a74;
+  --lilac-100: #f4eaf5;
+  --lilac-300: #e5cce6;
+  --sand-100: #f8ecd7;
+  --sand-300: #e9be77;
+  --terracotta-100: #f6e1d5;
+  --terracotta-400: #cf8d69;
+  --cream-200: #f5e6d3;
 
   /* Surfaces */
-  --background: #ebebeb; /* page grey */
+  --background: #efefef; /* page grey */
   --foreground: #111111; /* ink */
   --surface: #ffffff; /* cards, panels, segmented track */
-  --surface-muted: #f3f3f3; /* secondary buttons, chips, inputs */
-  --border: #e0e0e0; /* hairline dividers */
-  --muted-foreground: #666666; /* captions, "this month", "net this month" */
+  --surface-muted: #f4f4f4; /* secondary buttons, chips, inputs */
+  --border: #e3e3e3; /* hairline dividers */
+  --muted-foreground: #666666; /* captions */
 
-  /* Semantic colour. Text on a strong fill is white; text on a soft tint is ink. */
-  --accent: var(--violet-600); /* "Touches you", the meter fill, the feature card */
-  --accent-soft: var(--violet-50); /* touches-you tag, highlighted sentence in a quote */
-  --on-strong: #ffffff; /* text on any strong fill: accent, info, attention, positive */
-  --accent-foreground: var(--on-strong);
-  --on-pop: var(--on-strong); /* earlier name, still used by components */
-  --info: var(--periwinkle-600); /* secondary feature card, "On your list" */
-  --info-soft: var(--periwinkle-50);
-  --attention: var(--coral-600); /* "New", AI draft, flagged */
-  --attention-soft: var(--coral-50);
-  --positive: var(--green-600); /* reviewed, found word for word */
-  --positive-soft: var(--green-50);
-  --ai: var(--magenta-400); /* the chat dock orb: marks what the model wrote */
+  /* Semantic colour. Every fill pairs with its own foreground. */
+  --accent: var(--purple-700); /* "Touches you", the meter, the Up next card */
+  --accent-foreground: #ffffff;
+  --accent-soft: var(--purple-50); /* touches-you tag, highlighted sentence in a quote */
+  --info: var(--lilac-300); /* secondary feature card, "On your list" */
+  --info-foreground: var(--foreground);
+  --info-soft: var(--lilac-100);
+  --attention: var(--terracotta-400); /* "New", AI draft, flagged */
+  --attention-foreground: var(--foreground);
+  --attention-soft: var(--terracotta-100);
+  --positive: var(--sand-300); /* reviewed, found word for word */
+  --positive-foreground: var(--foreground);
+  --positive-soft: var(--cream-200);
+  --on-strong: #ffffff; /* text on the accent fill; kept for older call sites */
+  --on-pop: var(--on-strong);
+  --ai: var(--purple-300); /* the chat dock orb: marks what the model wrote */
 
   /* Data marks, for budgets and money charts only */
-  --data-in: var(--green-600);
-  --data-out: var(--coral-600);
+  --data-in: var(--purple-700);
+  --data-out: var(--terracotta-400);
 
-  /* Primary action: black pill, white text (segmented "Month", "Ask Pulse") */
-  --primary: #171719;
+  /* Primary action: black pill, white text */
+  --primary: #111111;
   --primary-foreground: #ffffff;
 
-  --ring: #171719;
+  --ring: var(--purple-700);
 
-  --card-shadow: 0 1px 2px rgb(17 17 17 / 0.04), 0 10px 30px rgb(17 17 17 / 0.08);
+  --card-shadow: 0 1px 2px rgb(17 17 17 / 0.04), 0 10px 30px rgb(17 17 17 / 0.07);
 
   /* Motion: one curve */
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -75,20 +73,20 @@
     --border: #2e2e33;
     --muted-foreground: #a0a0a5;
 
-    --accent: var(--violet-400);
-    --accent-soft: #2c2240;
-    --info: var(--periwinkle-400);
-    --info-soft: #1f2640;
-    --attention: var(--coral-400);
-    --attention-soft: #3d1f1f;
-    --positive: #5fae8e;
-    --positive-soft: #18302a;
-    --on-strong: #111111;
+    /* Light fills keep their colour and their ink text; soft tints darken. */
+    --accent: #7a3496;
+    --accent-soft: #2e1d38;
+    --info-foreground: #111111;
+    --info-soft: #2a2230;
+    --attention-foreground: #111111;
+    --attention-soft: #33231b;
+    --positive-foreground: #111111;
+    --positive-soft: #322a1d;
 
     --primary: #f2f2f2;
     --primary-foreground: #111111;
 
-    --ring: #f2f2f2;
+    --ring: var(--purple-300);
 
     --card-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px rgb(0 0 0 / 0.3);
   }
@@ -107,10 +105,13 @@
   --color-on-strong: var(--on-strong);
   --color-on-pop: var(--on-pop);
   --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-info-soft: var(--info-soft);
   --color-attention: var(--attention);
+  --color-attention-foreground: var(--attention-foreground);
   --color-attention-soft: var(--attention-soft);
   --color-positive: var(--positive);
+  --color-positive-foreground: var(--positive-foreground);
   --color-positive-soft: var(--positive-soft);
   --color-ai: var(--ai);
   --color-data-in: var(--data-in);

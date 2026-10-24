@@ -215,13 +215,13 @@ function UpNext({ item, today, onOpen }: { item: FeedItem; today: string; onOpen
     <button
       type="button"
       onClick={onOpen}
-      className={`mt-4 block w-full rounded-xl bg-accent p-6 text-left text-on-strong shadow-card transition-transform duration-(--duration) ease-nine hover:-translate-y-0.5 ${FOCUS}`}
+      className={`mt-4 block w-full rounded-xl bg-accent p-6 text-left text-accent-foreground shadow-card transition-transform duration-(--duration) ease-nine hover:-translate-y-0.5 ${FOCUS}`}
     >
       <span className="flex items-center justify-between gap-3 text-small font-semibold opacity-85">
         <span>
           Up next · {item.scope === "state" ? "State" : item.doc.place.name} {DOC_TYPE_LABEL[item.doc.docType].toLowerCase()}
         </span>
-        <span className="flex size-9 rotate-180 items-center justify-center rounded-full bg-on-strong/15">
+        <span className="flex size-9 rotate-180 items-center justify-center rounded-full bg-accent-foreground/15">
           <Glyph name="back" size={18} />
         </span>
       </span>
