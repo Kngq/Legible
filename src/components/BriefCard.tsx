@@ -11,8 +11,11 @@
 // On a mouse, the cursor "Read more" pill opens the detail page from empty space.
 import { useState } from "react";
 import { docWhat, type TimelineEntry } from "@/lib/engine/timeline";
-import { actionsFor, cardHeader, dateLine, explanation, headline, keyDate, relevanceOf, type Action, type Relevance, type RelevanceKind } from "@/lib/engine/home-copy";
-import { DOC_TYPE_LABEL } from "@/lib/engine/decide-by";
+import { actionsFor, cardHeader, civicRelevance, dateLine, explanation, headline, keyDate, relevanceOf, type Action, type Relevance, type RelevanceKind } from "@/lib/engine/home-copy";
+import { DOC_TYPE_LABEL, shortDate } from "@/lib/engine/decide-by";
+import type { FeedItem } from "@/lib/engine/feed";
+import type { Card } from "@/lib/engine/types";
+import { questionBecause } from "@/lib/engine/update-copy";
 import type { CivicCard } from "@/lib/engine/civic";
 import { LIFE_AREAS, type LifeAreaId, type TopicId } from "@/lib/vocab";
 import { CivicTile } from "./CivicRow";
@@ -37,6 +40,9 @@ const KIND_LABEL: Record<RelevanceKind, string> = {
   open: "Might apply",
 };
 
+// The chat dock's orb is fixed bottom-right (56px + 16px inset). On phones, action
+// rows keep clear of that strip so a primary button is never under it.
+const CLEAR_ORB = "max-sm:pr-[4.5rem]";
 const BUTTON = `inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full bg-primary px-4 text-small font-semibold text-primary-foreground transition-opacity duration-(--duration) ease-legible hover:opacity-90 ${FOCUS}`;
 const LINK = `inline-flex min-h-11 items-center gap-1 text-small font-semibold text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground hover:decoration-foreground ${FOCUS}`;
 const ROW_ACTION = `inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-surface px-3.5 text-small font-semibold transition-colors duration-(--duration) ease-legible hover:border-foreground sm:min-h-9 ${FOCUS}`;
@@ -208,9 +214,11 @@ function ActionLink({ a, main, go, className }: { a: Action; main: boolean; go: 
 
 /** One date in the "Coming up" panel. Urgency comes only from the verified date. */
 export function DeadlineRow({ entry: e, today, onOpenItem, onOpenDoc, onOpenProfile }: { entry: TimelineEntry; onOpenProfile: (v: SheetView) => void } & CardProps) {
-  const { civic, openDetail, go, openArea, primary, relevance } = useEntry(e, onOpenItem, onOpenDoc);
+  const { civic, openDetail, go, openArea, primary } = useEntry(e, onOpenItem, onOpenDoc);
   const cta = useCursorCta(openDetail);
   if (!civic) return null;
+  // The item's own relevance only: the ballot's questions have their own cards above.
+  const relevance = civicRelevance(civic);
   const head = cardHeader(civic);
   const soon = civic.timing === "today" || (civic.days !== undefined && civic.days <= 3);
 
@@ -242,7 +250,7 @@ export function DeadlineRow({ entry: e, today, onOpenItem, onOpenDoc, onOpenProf
           <p className="mt-0.5 line-clamp-1 text-small text-muted-foreground">{explanation(civic)}</p>
         )}
       </div>
-      <div className="w-full pl-[3.875rem] sm:w-auto sm:shrink-0 sm:pl-0">
+      <div className={`w-full min-[360px]:pl-[3.875rem] sm:w-auto sm:shrink-0 sm:pl-0 ${CLEAR_ORB}`}>
         <ActionLink a={primary} main go={go} className={ROW_ACTION} />
       </div>
       <span className="sr-only">{dateLine(e, today)}</span>
@@ -276,7 +284,7 @@ export function UrgentAlert({ entry: e, onOpenItem, onOpenDoc, onOpenProfile }: 
         </p>
         <RelevanceLine relevance={relevance} openArea={openArea} compact onOpenProfile={onOpenProfile} />
       </div>
-      <div className="w-full sm:w-auto sm:shrink-0">
+      <div className={`w-full sm:w-auto sm:shrink-0 ${CLEAR_ORB}`}>
         <ActionLink a={primary} main go={go} className={BUTTON} />
       </div>
     </div>
@@ -316,7 +324,7 @@ export function BriefCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenProfil
 
       <RelevanceLine relevance={relevance} openArea={openArea} place={civic?.item.place.name} onOpenProfile={onOpenProfile} />
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1">
+      <div className={`mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 ${CLEAR_ORB}`}>
         <ActionLink a={primary} main go={go} />
         {secondary && <ActionLink a={secondary} main={false} go={go} />}
         {noDetail && (
@@ -324,6 +332,68 @@ export function BriefCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenProfil
             Read more
           </button>
         )}
+      </div>
+    </li>
+  );
+}
+
+/**
+ * A ballot question that touches the person, or is on their list, as a decision
+ * card. Why it is here comes from the card's own match (questionBecause) and its
+ * first verified "why" sentence; it opens the question's existing page.
+ */
+export function BallotQuestionCard({
+  card: c,
+  ballot,
+  onOpenMeasure,
+  onOpenProfile,
+}: {
+  card: Card;
+  ballot: FeedItem;
+  onOpenMeasure: (docId: string, measureId: string) => void;
+  onOpenProfile: (v: SheetView) => void;
+}) {
+  const m = c.measure;
+  const open = () => onOpenMeasure(ballot.doc.id, m.id);
+  const cta = useCursorCta(open);
+  const touches = c.relevance === "touches";
+  const because = questionBecause(c);
+  const relevance: Relevance | null = because
+    ? {
+        kind: touches ? "direct" : "interest",
+        text: [`${because}.`, touches ? c.why[0]?.text : null].filter(Boolean).join(" "),
+        basis: [`${because}.`, "Your ballot page lists this question first."],
+      }
+    : null;
+  const d = ballot.doc.decideBy;
+  const part = m.topics.map((t) => TOPIC_PART[t]).find(Boolean) ?? "ballot";
+
+  return (
+    <li {...cta.handlers} className={`${CARD} p-4 sm:p-5 ${cta.cursorClass}`}>
+      {cta.pill}
+      <div className="flex items-center justify-between gap-3">
+        <p className="flex min-w-0 items-center gap-2 text-small font-semibold text-muted-foreground">
+          <span aria-hidden="true" className="flex size-7 shrink-0 items-center justify-center rounded-sm bg-surface-muted text-foreground">
+            <Part name={part} size={17} strokeWidth={1.8} />
+          </span>
+          <span className="truncate">Ballot question {m.number}</span>
+        </p>
+        {d && (
+          <span className="inline-flex shrink-0 items-center gap-1 text-small font-medium text-muted-foreground">
+            <StatusMark dated />
+            Voters decide {shortDate(d.date)}
+          </span>
+        )}
+      </div>
+
+      <h3 className="mt-2.5 text-title">{m.title}</h3>
+      {m.overview[0] && <p className="mt-1.5 line-clamp-2 text-body text-muted-foreground">{m.overview[0].text}</p>}
+
+      <RelevanceLine relevance={relevance} onOpenProfile={onOpenProfile} />
+
+      <div className={`mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 ${CLEAR_ORB}`}>
+        <ActionLink a={{ label: "Understand this decision", to: { open: "item" } }} main go={open} />
+        {m.sourceUrl && <ActionLink a={{ label: "Read official text", to: { href: m.sourceUrl } }} main={false} go={open} />}
       </div>
     </li>
   );

@@ -12,7 +12,7 @@ import type { Feed } from "@/lib/engine/feed";
 import { homeSections, isUrgent, profileBasis } from "@/lib/engine/home-copy";
 import type { Profile } from "@/lib/engine/profile";
 import { buildTimeline } from "@/lib/engine/timeline";
-import { BriefCard, DeadlineRow, UrgentAlert } from "./BriefCard";
+import { BallotQuestionCard, BriefCard, DeadlineRow, UrgentAlert } from "./BriefCard";
 import { Glyph } from "./icons";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
@@ -51,13 +51,20 @@ export function Home({
   const { attention, affect } = homeSections(buildTimeline(feed.items, civic, today), all);
   const urgent = attention.filter(isUrgent);
   const comingUp = attention.filter((e) => !isUrgent(e));
+  // The ballot behind Election Day: its questions that reach this person become
+  // decision cards; the date itself stays in Coming up. A ballot shown as its own
+  // card in the decisions keeps that card instead, so nothing appears twice.
+  const ballotItem = attention.flatMap((e) => (e.kind === "civic" && e.ballot ? [e.ballot] : []))[0];
+  const touching = ballotItem?.cards.filter((c) => c.relevance === "touches") ?? [];
+  const listed = ballotItem?.cards.filter((c) => c.relevance !== "touches" && c.onYourList) ?? [];
+  const decisions = touching.length + affect.length + listed.length;
   const basis = profileBasis(profile);
   const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure, onOpenProfile };
   // Interests are "decided" once the person confirms the topics screen or picks any.
   const needsInterests = !profile.topicsConfirmedAt && Object.keys(profile.topics).length === 0;
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-4 pb-16 sm:px-6">
+    <div className="mx-auto w-full max-w-2xl px-4 pb-28 sm:px-6">
       <TopBar active="home" needsInterests={needsInterests} onHome={() => window.scrollTo({ top: 0 })} onExplore={onExplore} onOpenProfile={onOpenProfile} />
 
       <header className="pt-4 sm:pt-6">
@@ -95,13 +102,17 @@ export function Home({
           <h2 id="h-foryou" className={H2}>
             Decisions for you
           </h2>
-          {affect.length > 0 && <p className="text-small text-muted-foreground">Closest to your life first</p>}
+          {decisions > 0 && <p className="text-small text-muted-foreground">Closest to your life first</p>}
         </div>
-        {affect.length > 0 ? (
+        {decisions > 0 ? (
           <ul className="mt-3 space-y-3">
+            {ballotItem &&
+              touching.map((c) => <BallotQuestionCard key={c.measure.id} card={c} ballot={ballotItem} onOpenMeasure={onOpenMeasure} onOpenProfile={onOpenProfile} />)}
             {affect.map((e) => (
               <BriefCard key={e.key} entry={e} {...cardProps} />
             ))}
+            {ballotItem &&
+              listed.map((c) => <BallotQuestionCard key={c.measure.id} card={c} ballot={ballotItem} onOpenMeasure={onOpenMeasure} onOpenProfile={onOpenProfile} />)}
           </ul>
         ) : (
           <p className="mt-2 text-small text-muted-foreground">
@@ -131,7 +142,7 @@ export function Home({
         </section>
       )}
 
-      <button type="button" onClick={onExplore} className={`mt-8 ${SECONDARY}`}>
+      <button type="button" onClick={onExplore} className={`mt-8 text-left max-sm:mr-[4.5rem] ${SECONDARY}`}>
         Explore everything happening near you
         <span aria-hidden="true" className="-rotate-90">
           <Glyph name="chevron" size={14} />
