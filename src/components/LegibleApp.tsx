@@ -165,6 +165,8 @@ export function LegibleApp() {
         onBack={back}
         onOpenMeasure={openMeasure}
         onOpenProfile={setSheet}
+        profile={profile}
+        setProfile={setProfile}
       />
     );
   } else if (route.kind === "doc" && docItem) {

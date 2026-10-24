@@ -2,15 +2,19 @@
 
 // One civic item (deadline, voting window, meeting, bill) as a page, in the same
 // reader layout as a measure: when and where, what it is, how it was checked,
-// official actions, and the decisions it relates to.
+// official actions, and the decisions it relates to. A bill with a verified
+// explanation shows its four parts (BillExplainer) in place of when and how checked.
 import { useState } from "react";
 import { checkLabel, type CivicCard } from "@/lib/engine/civic";
 import { CIVIC_KIND_LABEL, civicMeta, dateTime, timingTag } from "@/lib/engine/civic-copy";
 import type { FeedItem } from "@/lib/engine/feed";
+import type { Profile } from "@/lib/engine/profile";
 import type { Card } from "@/lib/engine/types";
 import { FACT_DEFS } from "@/lib/vocab";
 import { Cover } from "./covers";
+import { BillExplainer } from "./BillExplainer";
 import { CivicTile } from "./CivicRow";
+import { AskButton } from "./HighlightMenu";
 import { Glyph } from "./icons";
 import { OriginalText } from "./OriginalText";
 import { areaOf, type SheetView } from "./ProfileSheet";
@@ -25,8 +29,12 @@ export function CivicView({
   onBack,
   onOpenMeasure,
   onOpenProfile,
+  profile,
+  setProfile,
 }: {
   card: CivicCard;
+  profile: Profile;
+  setProfile: (p: Profile) => void;
   related: { item: FeedItem; card: Card }[];
   backLabel: string;
   onBack: () => void;
@@ -34,6 +42,8 @@ export function CivicView({
   onOpenProfile: (v: SheetView) => void;
 }) {
   const i = card.item;
+  const e = i.explainer;
+  const bill = i.original?.kind === "bill" ? i.original.file?.match(/([HS]\d+)\.json$/)?.[1] : undefined;
   const [shared, setShared] = useState(false);
   const kicker = `${i.place.kind === "state" ? "Massachusetts" : i.place.name} · ${CIVIC_KIND_LABEL[i.kind]}`;
 
@@ -82,53 +92,71 @@ export function CivicView({
         <hr className="mt-4 border-border" />
       </header>
 
-      {/* When, as a fact */}
-      <section className="mt-5 rounded-xl bg-accent p-6 text-accent-foreground" aria-label="When">
-        <p className="text-small font-semibold opacity-85">{i.body}</p>
-        <p className="mt-2 text-display">{timingTag(card)}</p>
-        {i.at && (
-          <p className="mt-2 text-body opacity-90">
-            {dateTime(i.at)}
-            {i.until ? ` to ${dateTime(i.until)}` : ""}
-          </p>
-        )}
-        {i.location && <p className="text-body opacity-90">{i.location}</p>}
-        {i.lastAction && (
-          <p className="mt-2 text-body opacity-90">
-            Latest action, {i.lastAction.date}: {i.lastAction.text}
-          </p>
-        )}
-      </section>
+      {e ? (
+        <>
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            <Tag pop="attention">Proposed, not law</Tag>
+            {card.onYourList && <Tag>On your list</Tag>}
+          </div>
+          {/* No uncited summary here: part 1 says what the bill proposes, line by line. */}
+          <BillExplainer card={card} explainer={e} profile={profile} update={setProfile} onOpenProfile={onOpenProfile} />
+          {bill && (
+            <div className="mt-3">
+              <AskButton source={{ kind: "bill", id: bill, title: `Bill ${bill}: ${e.source.title}`, url: i.source.url }} variant="pill" label="Ask Kiro about this bill" />
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          {/* When, as a fact */}
+          <section className="mt-5 rounded-xl bg-accent p-6 text-accent-foreground" aria-label="When">
+            <p className="text-small font-semibold opacity-85">{i.body}</p>
+            <p className="mt-2 text-display">{timingTag(card)}</p>
+            {i.at && (
+              <p className="mt-2 text-body opacity-90">
+                {dateTime(i.at)}
+                {i.until ? ` to ${dateTime(i.until)}` : ""}
+              </p>
+            )}
+            {i.location && <p className="text-body opacity-90">{i.location}</p>}
+            {i.lastAction && (
+              <p className="mt-2 text-body opacity-90">
+                Latest action, {i.lastAction.date}: {i.lastAction.text}
+              </p>
+            )}
+          </section>
 
-      <div className="mt-6 flex flex-wrap items-center gap-2">
-        {card.relevance === "touches" && <Tag pop="accent">Touches you</Tag>}
-        {card.onYourList && <Tag>On your list</Tag>}
-        {card.relevance === "everyone" && <Tag>Applies to everyone</Tag>}
-      </div>
+          <div className="mt-6 flex flex-wrap items-center gap-2">
+            {card.relevance === "touches" && <Tag pop="accent">Touches you</Tag>}
+            {card.onYourList && <Tag>On your list</Tag>}
+            {card.relevance === "everyone" && <Tag>Applies to everyone</Tag>}
+          </div>
 
-      <p className={`mt-3 text-body leading-relaxed ${SERIF}`}>{i.summary}</p>
+          <p className={`mt-3 text-body leading-relaxed ${SERIF}`}>{i.summary}</p>
 
-      {card.because.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {card.because.map((b) => {
-            const area = areaOf(b.fact);
-            const label = `Because ${b.value ? FACT_DEFS[b.fact].because.yes : FACT_DEFS[b.fact].because.no}`;
-            return area ? (
-              <button
-                key={b.fact}
-                type="button"
-                onClick={() => onOpenProfile({ kind: "area", id: area })}
-                className={`min-h-9 rounded-md border border-border px-3 py-1.5 text-left text-small font-semibold hover:bg-surface-muted ${FOCUS}`}
-              >
-                {label}
-              </button>
-            ) : (
-              <span key={b.fact} className="inline-flex min-h-9 items-center rounded-md border border-border px-3 text-small font-semibold">
-                {label}
-              </span>
-            );
-          })}
-        </div>
+          {card.because.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {card.because.map((b) => {
+                const area = areaOf(b.fact);
+                const label = `Because ${b.value ? FACT_DEFS[b.fact].because.yes : FACT_DEFS[b.fact].because.no}`;
+                return area ? (
+                  <button
+                    key={b.fact}
+                    type="button"
+                    onClick={() => onOpenProfile({ kind: "area", id: area })}
+                    className={`min-h-9 rounded-md border border-border px-3 py-1.5 text-left text-small font-semibold hover:bg-surface-muted ${FOCUS}`}
+                  >
+                    {label}
+                  </button>
+                ) : (
+                  <span key={b.fact} className="inline-flex min-h-9 items-center rounded-md border border-border px-3 text-small font-semibold">
+                    {label}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+        </>
       )}
 
       {i.actions.length > 0 && (
@@ -155,15 +183,17 @@ export function CivicView({
 
       <OriginalText original={i.original} title={i.title} itemId={i.id} />
 
-      <section className="mt-10" aria-labelledby="checked-h">
-        <h2 id="checked-h" className="text-small font-semibold uppercase tracking-wider text-muted-foreground">
-          How this was checked
-        </h2>
-        <p className="mt-2 flex flex-wrap items-center gap-2 text-body">
-          <Tag pop={i.check.kind === "schedule" ? "attention" : "positive"}>{i.check.kind === "quote" ? "Verified" : i.check.kind === "page" ? "Checked" : "Schedule"}</Tag>
-          {checkLabel(i.check)}
-        </p>
-      </section>
+      {!e && (
+        <section className="mt-10" aria-labelledby="checked-h">
+          <h2 id="checked-h" className="text-small font-semibold uppercase tracking-wider text-muted-foreground">
+            How this was checked
+          </h2>
+          <p className="mt-2 flex flex-wrap items-center gap-2 text-body">
+            <Tag pop={i.check.kind === "schedule" ? "attention" : "positive"}>{i.check.kind === "quote" ? "Verified" : i.check.kind === "page" ? "Checked" : "Schedule"}</Tag>
+            {checkLabel(i.check)}
+          </p>
+        </section>
+      )}
 
       {related.length > 0 && (
         <section className="mt-10" aria-labelledby="rel-h">

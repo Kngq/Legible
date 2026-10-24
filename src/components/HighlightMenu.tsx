@@ -172,8 +172,8 @@ export function HighlightAskProvider({ personalFor, children }: { personalFor: P
   );
 }
 
-/** "Ask Kiro about this question": opens Ask Kiro scoped to one ballot question, no passage. */
-export function AskButton({ source, variant = "link" }: { source: AskSource; variant?: "link" | "pill" }) {
+/** "Ask Kiro about this question": opens Ask Kiro scoped to one ballot question or bill, no passage. */
+export function AskButton({ source, variant = "link", label = "Ask Kiro about this question" }: { source: AskSource; variant?: "link" | "pill"; label?: string }) {
   const personalFor = useContext(PersonalContext);
   return (
     <button
@@ -188,7 +188,7 @@ export function AskButton({ source, variant = "link" }: { source: AskSource; var
       <span aria-hidden="true" className="flex size-6 items-center justify-center rounded-full bg-[#9046FF] text-white">
         <Sparkle />
       </span>
-      Ask Kiro about this question
+      {label}
     </button>
   );
 }

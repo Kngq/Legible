@@ -31,6 +31,7 @@ Next.js 16 differs from older versions. Check `node_modules/next/dist/docs/` bef
 - `src/app/` App Router. `page.tsx` is intentionally blank so far. Planned layout is in `.kiro/steering/structure.md`.
 - `data/questions.json` is machine-extracted from the official booklet by `data/extract_questions.py` (source text in `data/official/`; `IFV_2026_English.pages.json` is the per-page text used to locate quotes). The sec.state.ma.us HTML pages are bot-walled, so the PDF is the source of truth.
 - `scripts/ballot-2026.content.ts` holds the hand-authored short titles, rules, why sentences, and extra quotes. `npm run data:build` locates every quote word for word in the page text and fails if one is missing. Quotes stay `verified` until a person sets `reviewedBy` on the measure, which flips them to `reviewed`.
+- `scripts/bills.content.ts` holds hand-written bill explainers (what it proposes, what would change, who it could affect). `npm run data:civic` checks each against the bill text saved by `npm run data:bills` with `src/lib/explain/verify.ts` and fails on any quote not found word for word.
 - `docs/` original spec, decisions log, teammate pitch.
 - `.kiro/` Kiro steering and spec. Kiro is required by the event, so keep these current.
 

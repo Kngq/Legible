@@ -11,6 +11,7 @@ export const LEGACY_PROFILE_STORAGE_KEY = "nine.profile.v1";
 export type AnswerSource =
   | { kind: "onboarding" }
   | { kind: "card"; documentId: string; measureId: string }
+  | { kind: "item"; itemId: string }   // a bill or other civic item's page
   | { kind: "open_questions" }
   | { kind: "edit" }          // because chip, avatar badge, or profile page
   | { kind: "persona"; personaId: string };

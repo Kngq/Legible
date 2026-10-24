@@ -6,8 +6,10 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import type { CivicItem } from "@/lib/engine/civic";
+import { verifyExplainer } from "@/lib/explain/verify";
 import { findBannedWords } from "@/lib/vocab";
 import { locateQuote, normalize } from "@/lib/verify/normalize";
+import { BILL_EXPLAINERS } from "./bills.content";
 import { CIVIC, EXCLUDED } from "./civic-ma.content";
 
 const OFFICIAL_HOSTS = ["sec.state.ma.us", "malegislature.gov", "www.cambridgema.gov", "www.cpsd.us", "www.mass.gov", "www.VoteInMA.com"];
@@ -39,7 +41,7 @@ interface BillSnapshot {
 }
 
 /** A bill's saved original: read the snapshot from npm run data:bills, publish a reader copy. */
-function billOriginal(c: (typeof CIVIC)[number]): Pick<CivicItem, "original" | "lastAction"> {
+function billOriginal(c: (typeof CIVIC)[number]): Pick<CivicItem, "original" | "lastAction" | "explainer"> {
   const bill = c.source.url.match(/Bills\/\d+\/([HS]\d+)/)?.[1];
   const file = bill && path.join(BILLS_SAVED, `${bill}.json`);
   if (!bill || !file || !fs.existsSync(file)) {
@@ -64,7 +66,18 @@ function billOriginal(c: (typeof CIVIC)[number]): Pick<CivicItem, "original" | "
     JSON.stringify({ bill, title: snap.document.Title?.trim(), pinslip: snap.document.Pinslip ?? null, text, history, fetchedOn: snap.fetchedOn, source: snap.source }) + "\n",
   );
   const words = text.split(/\s+/).length;
+  const hash = crypto.createHash("sha256").update(raw).digest("hex");
+  // A structured explanation, if one is written: every quote found in this saved text, or the build fails.
+  let explainer: CivicItem["explainer"];
+  const draft = BILL_EXPLAINERS[bill];
+  if (draft) {
+    const title = snap.document.Title?.trim() ?? bill;
+    const r = verifyExplainer({ draft, text, history, source: { kind: "bill", id: bill, title, url: c.source.url, file: `/official/bills/${bill}.json`, hash, savedOn: snap.fetchedOn } });
+    for (const e of r.errors) errors.push(`${c.id} explainer: ${e}`);
+    explainer = r.explainer;
+  }
   return {
+    explainer,
     // The official history is the truth for the latest action.
     lastAction: latest ? { date: latest.date, text: `${latest.branch}: ${latest.action}` } : c.lastAction,
     original: {
@@ -72,7 +85,7 @@ function billOriginal(c: (typeof CIVIC)[number]): Pick<CivicItem, "original" | "
       label: `Bill text and history from the Legislature, saved ${snap.fetchedOn}`,
       file: `/official/bills/${bill}.json`,
       url: c.source.url,
-      hash: crypto.createHash("sha256").update(raw).digest("hex"),
+      hash,
       savedOn: snap.fetchedOn,
       note: `${words.toLocaleString("en-US")} words of bill text and ${history.length} official actions.`,
     },
@@ -151,6 +164,9 @@ const items: CivicItem[] = CIVIC.map((c) => {
 const used = new Set(CIVIC.map((c) => c.seedId).filter(Boolean));
 for (const s of seed.civic_items) {
   if (!used.has(s.id) && !EXCLUDED[s.id]) errors.push(`seed item ${s.id} is neither used nor excluded`);
+}
+for (const bill of Object.keys(BILL_EXPLAINERS)) {
+  if (!items.some((i) => i.explainer?.source.id === bill)) errors.push(`explainer for ${bill}: no bill item uses it`);
 }
 const ids = items.map((i) => i.id);
 if (new Set(ids).size !== ids.length) errors.push("duplicate item ids");

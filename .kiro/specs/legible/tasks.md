@@ -161,6 +161,9 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 21.4 Bills: npm run data:bills saves each bill from the Legislature API (full text, pinslip, history) to data/official/bills/ with its fetch date; build-civic fingerprints it, takes lastAction from the official history, warns when status may be stale, and publishes a reader copy; "Read the bill text" on the item page
   - [x] 21.5 Meetings: a posted agenda saved as data/official/agendas/<id>.pdf is fingerprinted and served; until then original is "none" with "No agenda posted yet". Checked Oct 24, 2026: neither Cambridge portal (IQM2 through Jul 2026, Granicus through Jan 2026) has Oct–Dec agendas. The build fails if any item has no original record
   - [x] 21.6 Every Home and Explore card carries an "Official text" line (OriginalLine) to its original; detail pages show it in full (OriginalText, FullText)
+  - [x] 21.7 Bill explainers, pilot S.2836: `src/lib/explain` (ExplainerDraft → verifyExplainer → Explainer) checks every quote word for word against the saved bill text, labels its section, and requires "would/could" wording, banned-word-free lines, and searched "does not mention" sentences; `scripts/bills.content.ts` holds the S.2836 draft; the item page shows What it proposes, What would change, Who it could affect (direct effects apart from possible ones, inline question), and Where it stands (official history verbatim), with "Show the words" and How do we know this? shared with ballot questions (`Citation.tsx`)
+  - [ ] 21.8 Explainers for S.2581, H.4699, and H.1482
+  - [ ] 21.9 Generate explainer drafts from the saved text with a model (`EXPLAINER_DRAFT_SCHEMA`), run them through `verifyExplainer`, drop failed lines, and ship as ai_draft until a person sets `reviewedBy`
 
 - [ ] 18. Reliability layer (A builds data and checks, B builds panels)
   - [ ] 18.1 Add `source.hash` and `pagesHash` to shipped and uploaded documents

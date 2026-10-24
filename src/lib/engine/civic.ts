@@ -1,6 +1,7 @@
 // Civic items: dated deadlines, meetings, and bills that sit in the home feed next
 // to documents. Lighter than a document (no measures), but every item names an
 // official source and says how it was checked. Pure TypeScript; runs in the browser.
+import type { Explainer } from "@/lib/explain/types";
 import type { FactId, TopicId } from "@/lib/vocab";
 import { factValues, isFactSettled, topicIds, type Profile } from "./profile";
 import type { Quote, Relevance } from "./types";
@@ -64,6 +65,8 @@ export interface CivicItem {
   check: CivicCheck;
   /** The saved original. Every item carries one, even if it says none exists yet. */
   original?: CivicOriginal;
+  /** Bills: a structured explanation, every line cited to the saved text and verified by the build. */
+  explainer?: Explainer;
   /** Applies to every resident of its place (an election date), not to a life fact. */
   everyone: boolean;
   topics: TopicId[];
