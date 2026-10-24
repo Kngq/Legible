@@ -72,12 +72,6 @@ export function DocumentView({
         </p>
       </header>
 
-      {ballot && (
-        <div className="mt-4">
-          <AskButton variant="pill" />
-        </div>
-      )}
-
       <Controls
         sort={sort}
         setSort={setSort}
