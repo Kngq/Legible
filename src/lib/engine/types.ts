@@ -49,10 +49,20 @@ export interface Measure {
 
 export type Provenance = "reviewed" | "verified" | "ai_draft";
 
+export type DocType = "ballot" | "warrant" | "budget" | "hearing" | "agenda" | "other";
+
+export interface DecideBy {
+  date: string; // ISO date the decision is made or input closes
+  who: string; // "Voters", "Town Meeting", "City Council", "School Committee"
+  how: "vote" | "meeting" | "comment"; // ballot vote, body votes at a meeting, public comment closes
+}
+
 export interface DocumentData {
   id: string;
   title: string;
-  place: { kind: "state" | "town"; name: string };
+  place: { kind: "state" | "town"; name: string; townId?: string };
+  docType: DocType;
+  decideBy?: DecideBy;
   date?: string;
   source: { name: string; url?: string };
   /** reviewed: a person checked every quote. verified: machine-checked, review pending. ai_draft: from an upload. */

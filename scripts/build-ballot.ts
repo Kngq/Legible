@@ -8,7 +8,7 @@ import path from "node:path";
 import type { DocumentData, Measure, Quote, WhySentence } from "@/lib/engine/types";
 import { findBannedWords } from "@/lib/vocab";
 import { locateQuote, normalize } from "@/lib/verify/normalize";
-import { CONTENT } from "./ballot-2026.content";
+import { CONTENT, DOCUMENT } from "./ballot-2026.content";
 
 interface RawQuestion {
   id: number;
@@ -137,6 +137,8 @@ const doc: DocumentData = {
   id: "ballot-2026",
   title: "Massachusetts State Election Ballot Questions, November 3, 2026",
   place: { kind: "state", name: "Massachusetts" },
+  docType: DOCUMENT.docType,
+  decideBy: DOCUMENT.decideBy,
   date: "2026-11-03",
   source: {
     name: "Information for Voters 2026, Secretary of the Commonwealth. Summaries by the Attorney General; YES and NO statements by the Attorney General and the Secretary jointly.",

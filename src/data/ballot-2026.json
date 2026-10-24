@@ -5,6 +5,12 @@
     "kind": "state",
     "name": "Massachusetts"
   },
+  "docType": "ballot",
+  "decideBy": {
+    "date": "2026-11-03",
+    "who": "Voters",
+    "how": "vote"
+  },
   "date": "2026-11-03",
   "source": {
     "name": "Information for Voters 2026, Secretary of the Commonwealth. Summaries by the Attorney General; YES and NO statements by the Attorney General and the Secretary jointly.",

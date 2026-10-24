@@ -4,7 +4,14 @@
 //
 // Set `reviewedBy` on a measure only after a person has checked every quote
 // against data/official/IFV_2026_English.pdf.
+import type { DecideBy, DocType } from "@/lib/engine/types";
 import type { Direction, FactId, TopicId } from "@/lib/vocab";
+
+/** Document-level fields for the feed: what kind of document, and who decides when. */
+export const DOCUMENT: { docType: DocType; decideBy: DecideBy } = {
+  docType: "ballot",
+  decideBy: { date: "2026-11-03", who: "Voters", how: "vote" },
+};
 
 export interface ExtraQuote {
   id: string; // short id, prefixed with q<N>- by the build script
