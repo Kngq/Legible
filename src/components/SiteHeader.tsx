@@ -14,6 +14,8 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { transition } from "@/lib/motion";
 import { Glyph } from "./icons";
+import { CivicPlant } from "./plant/CivicPlant";
+import { useGrowth } from "./plant/useGrowth";
 import type { SheetView } from "./ProfileSheet";
 import { FOCUS } from "./ui";
 
@@ -127,6 +129,8 @@ export function SiteHeader({
   onExplore?: () => void;
   onOpenProfile?: (v: SheetView) => void;
 }) {
+  // The avatar is the same plant, stage, and motion as the one in Civic Profile.
+  const growth = useGrowth();
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4);
@@ -170,9 +174,17 @@ export function SiteHeader({
             type="button"
             onClick={() => onOpenProfile({ kind: needsInterests ? "topics" : "list" })}
             aria-label={needsInterests ? "Your profile — pick the subjects you follow" : "Your profile"}
-            className={`relative flex size-11 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent interactive press hover:scale-105 ${FOCUS}`}
+            className={`relative flex size-11 shrink-0 items-center justify-center rounded-full ${growth.enabled ? "bg-surface ring-1 ring-border" : "bg-accent-soft text-accent"} interactive press hover:scale-105 ${FOCUS}`}
           >
-            {initial ? <span className="text-body font-bold">{initial}</span> : <Glyph name="person" size={22} />}
+            {growth.enabled ? (
+              <span className="flex size-11 items-end justify-center overflow-hidden rounded-full">
+                <CivicPlant stage={growth.stage} size={34} label="" />
+              </span>
+            ) : initial ? (
+              <span className="text-body font-bold">{initial}</span>
+            ) : (
+              <Glyph name="person" size={22} />
+            )}
             {needsInterests && (
               <span
                 aria-hidden="true"

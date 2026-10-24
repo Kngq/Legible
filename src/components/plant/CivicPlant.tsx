@@ -10,17 +10,12 @@
 // at the milestone. Under reduced motion every change still happens, instantly.
 import { useEffect, useId, useRef, useState, type PointerEvent } from "react";
 import { AnimatePresence, motion, useAnimationControls, useReducedMotion, useSpring, useTransform } from "motion/react";
+import { GROWTH_STAGES, type GrowthStage } from "@/lib/growth";
 import { EASE } from "@/lib/motion";
 
-export type PlantStage = 1 | 2 | 3 | 4 | 5;
-
-export const STAGES: { stage: PlantStage; name: string }[] = [
-  { stage: 1, name: "Seed" },
-  { stage: 2, name: "Sprout" },
-  { stage: 3, name: "Growing" },
-  { stage: 4, name: "Flourishing" },
-  { stage: 5, name: "Blooming" },
-];
+/** The stage type and names come from the shared growth definitions. */
+export type PlantStage = GrowthStage;
+export const STAGES = GROWTH_STAGES;
 
 // Colours sampled from the reference sheet. They live here, not in globals.css:
 // the plant is an illustration, and its greens are not part of the UI palette.
@@ -129,6 +124,7 @@ export function CivicPlant({
   size = 120,
   signal,
   label,
+  still = false,
   className,
 }: {
   stage: PlantStage;
@@ -136,11 +132,15 @@ export function CivicPlant({
   size?: number;
   /** Bump a counter to replay a tap or the milestone from outside (the dev preview). */
   signal?: { tap: number; milestone: number };
-  /** Accessible name. Defaults to the stage name. */
+  /** Accessible name. Defaults to the stage name; "" hides the plant from assistive tech (e.g. inside a labelled button). */
   label?: string;
+  /** No idle sway, blink, lean, or tap: for small illustrations such as the Growth Story. */
+  still?: boolean;
   className?: string;
 }) {
   const reduce = useReducedMotion() ?? false;
+  // Calm: no ambient motion. Growth still animates unless the person prefers reduced motion.
+  const calm = reduce || still;
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const id = (n: string) => `${uid}-${n}`;
   const url = (n: string) => `url(#${id(n)})`;
@@ -182,7 +182,7 @@ export function CivicPlant({
   }, [cheer, settled]);
 
   const squash = () => {
-    if (reduce) return;
+    if (calm) return;
     body.start({
       scaleY: [1, 0.93, 1.035, 1],
       scaleX: [1, 1.045, 0.985, 1],
@@ -190,6 +190,7 @@ export function CivicPlant({
     });
   };
   const tap = () => {
+    if (still) return;
     squash();
     setCheer((n) => n + 1);
   };
@@ -205,7 +206,7 @@ export function CivicPlant({
 
   // Blink every few seconds while the eyes are open.
   useEffect(() => {
-    if (reduce || happy) return;
+    if (calm || happy) return;
     let t: ReturnType<typeof setTimeout>;
     const loop = () => {
       t = setTimeout(() => {
@@ -215,10 +216,10 @@ export function CivicPlant({
     };
     loop();
     return () => clearTimeout(t);
-  }, [reduce, happy, eyes]);
+  }, [calm, happy, eyes]);
 
   const onMove = (e: PointerEvent<HTMLDivElement>) => {
-    if (reduce || e.pointerType !== "mouse") return;
+    if (calm || e.pointerType !== "mouse") return;
     const r = e.currentTarget.getBoundingClientRect();
     const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
     lean.set(Math.max(-1, Math.min(1, dx)) * 6);
@@ -238,7 +239,7 @@ export function CivicPlant({
       onPointerLeave={() => lean.set(0)}
       onClick={tap}
     >
-      <svg viewBox="-6 -24 112 144" width={size} height={(size * 144) / 112} role="img" aria-label={label ?? `Your plant: ${STAGES[stage - 1].name.toLowerCase()}`} style={{ overflow: "visible", display: "block" }}>
+      <svg viewBox="-6 -24 112 144" width={size} height={(size * 144) / 112} {...(label === "" ? { "aria-hidden": true } : { role: "img", "aria-label": label ?? `Your plant: ${STAGES[stage - 1].name.toLowerCase()}` })} style={{ overflow: "visible", display: "block" }}>
         <defs>
           <linearGradient id={id("pot")} x1="0" x2="1" y1="0" y2="0">
             <stop offset="0" stopColor={C.potLight} />
@@ -365,8 +366,8 @@ export function CivicPlant({
                   <Pivot r={130} />
                   <motion.g
                     style={PIVOT_STYLE}
-                    animate={reduce || stage === 1 ? { rotate: 0 } : { rotate: [-1.1, 1.1, -1.1] }}
-                    transition={reduce || stage === 1 ? { duration: 0 } : { duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
+                    animate={calm || stage === 1 ? { rotate: 0 } : { rotate: [-1.1, 1.1, -1.1] }}
+                    transition={calm || stage === 1 ? { duration: 0 } : { duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
                   >
                     <Pivot r={130} />
                     <g transform="translate(-50 -74)">
@@ -390,7 +391,7 @@ export function CivicPlant({
                               pose={pose}
                               fill={url("leaf")}
                               stem={C.stem}
-                              idle={!reduce}
+                              idle={!calm}
                               phase={i}
                               transition={isNew ? unfold(order) : move}
                               reduce={reduce}
@@ -458,8 +459,8 @@ export function CivicPlant({
                 d={SPARKLE}
                 fill={C.sparkle}
                 style={PIVOT_STYLE}
-                animate={reduce ? { opacity: 0.9 } : { opacity: [0.45, 1, 0.45], scale: [0.85, 1, 0.85] }}
-                transition={reduce ? { duration: 0 } : { duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: i * 0.9 }}
+                animate={calm ? { opacity: 0.9 } : { opacity: [0.45, 1, 0.45], scale: [0.85, 1, 0.85] }}
+                transition={calm ? { duration: 0 } : { duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: i * 0.9 }}
               />
             </g>
           ))}

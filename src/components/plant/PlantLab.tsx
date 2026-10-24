@@ -1,23 +1,27 @@
 "use client";
 
 // Dev preview for the plant: switch stages, replay tap, growth, and the
-// milestone, and see the companion card with simulated counts. Simulated numbers
-// exist only here.
+// milestone. The stage lives in the shared preview store (useGrowth), so the
+// header avatar and the profile follow along. Preview data exists only here and
+// in development builds.
 import { useState } from "react";
+import type { GrowthStage } from "@/lib/growth";
 import { Button } from "../ui";
-import { CivicPlant, STAGES, type PlantStage } from "./CivicPlant";
+import { CivicPlant, STAGES } from "./CivicPlant";
+import { GrowthStory } from "./GrowthStory";
 import { PlantCompanion } from "./PlantCompanion";
-import { SIMULATED_COUNTS } from "./simulated";
+import { setPreviewGrowth, useGrowth } from "./useGrowth";
 
 export function PlantLab() {
-  const [stage, setStage] = useState<PlantStage>(2);
+  const { stage } = useGrowth();
+  const setStage = (s: GrowthStage | ((s: GrowthStage) => GrowthStage)) => setPreviewGrowth(typeof s === "function" ? s(stage) : s);
   const [signal, setSignal] = useState({ tap: 0, milestone: 0 });
 
-  const grow = () => setStage((s) => (s === 5 ? 1 : ((s + 1) as PlantStage)));
+  const grow = () => setStage((s) => (s === 5 ? 1 : ((s + 1) as GrowthStage)));
   const replayGrowth = () => {
     if (stage === 1) return setStage(2);
     const target = stage;
-    setStage((target - 1) as PlantStage);
+    setStage((target - 1) as GrowthStage);
     setTimeout(() => setStage(target), 60);
   };
 
@@ -26,7 +30,7 @@ export function PlantLab() {
       <p className="text-small font-semibold uppercase tracking-wide text-muted-foreground">Development preview</p>
       <h1 className="mt-1 font-display text-headline">Your little plant</h1>
       <p className="mt-2 max-w-prose text-body text-muted-foreground">
-        Hover to lean, click to tap. Counts here are simulated and never shown in production.
+        Hover to lean, click to tap. Counts here are preview data and never shown in production.
       </p>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_minmax(0,26rem)]">
@@ -69,7 +73,7 @@ export function PlantLab() {
         </section>
 
         <div className="space-y-4">
-          <PlantCompanion stage={stage} counts={SIMULATED_COUNTS[stage]} simulated signal={signal} />
+          <PlantCompanion signal={signal} plantSize={112} />
           <section aria-label="Sizes" className="rounded-lg bg-surface p-5 shadow-card">
             <h2 className="text-body font-semibold">Sizes</h2>
             <div className="mt-3 flex items-end justify-around">
@@ -96,6 +100,9 @@ export function PlantLab() {
             </li>
           ))}
         </ol>
+      </section>
+      <section aria-label="Growth story" className="mt-6 max-w-lg rounded-lg bg-background p-5 shadow-card">
+        <GrowthStory />
       </section>
     </main>
   );

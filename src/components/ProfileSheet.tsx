@@ -10,13 +10,13 @@ import { answerArea, confirmTopics, declineArea, type Profile } from "@/lib/engi
 import { LIFE_AREAS, TOPIC_DEFS, TOPIC_IDS, type FactId, type LifeAreaId } from "@/lib/vocab";
 import { AvatarRing } from "./AvatarRing";
 import { PlantCompanion } from "./plant/PlantCompanion";
-import { SIMULATED_COUNTS } from "./plant/simulated";
+import { GrowthStory } from "./plant/GrowthStory";
 import { SavedNote } from "./SavedNote";
 import { Glyph, Part } from "./icons";
 import { AreaStep, FACT_SHORT, TopicsStep, TownStep, townName } from "./profile-steps";
 import { Button, FOCUS } from "./ui";
 
-export type SheetView = { kind: "list" } | { kind: "town" } | { kind: "area"; id: LifeAreaId } | { kind: "topics" };
+export type SheetView = { kind: "list" } | { kind: "town" } | { kind: "area"; id: LifeAreaId } | { kind: "topics" } | { kind: "growth" };
 
 const EDIT = { kind: "edit" } as const;
 
@@ -148,13 +148,11 @@ export function ProfileSheet({
           )}
         </div>
 
-        {/* The plant companion. Development only, with simulated counts, until it is
-            connected to real milestones. */}
-        {process.env.NODE_ENV === "development" && (
-          <div className="mt-4">
-            <PlantCompanion stage={3} counts={SIMULATED_COUNTS[3]} simulated />
-          </div>
-        )}
+        {/* The plant and the way into its Growth Story. Renders nothing until the
+            plant is enabled (development only for now, with labelled preview data). */}
+        <div className="mt-4 empty:hidden">
+          <PlantCompanion onSeeGrowth={() => open({ kind: "growth" })} />
+        </div>
 
         {/* Name: used for the greeting on Home. Browser-only, like every answer. */}
         <section aria-labelledby="name-h" className="mt-4 rounded-lg bg-surface p-4 shadow-card">
@@ -298,6 +296,8 @@ export function ProfileSheet({
         </Button>
       </div>
     );
+  } else if (view.kind === "growth") {
+    body = <GrowthStory />;
   } else {
     body = (
       <div className="space-y-6">
