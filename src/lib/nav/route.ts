@@ -5,11 +5,13 @@ export type Route =
   | { kind: "explore" }
   | { kind: "doc"; docId: string }
   | { kind: "measure"; docId: string; measureId: string }
-  | { kind: "item"; itemId: string };
+  | { kind: "item"; itemId: string }
+  | { kind: "wrapped" }; // "Your ballot, wrapped", over For you (development only)
 
 export function parseRoute(hash: string): Route {
   const parts = hash.replace(/^#\/?/, "").split("/").filter(Boolean).map(decodeURIComponent);
   if (parts[0] === "explore") return { kind: "explore" };
+  if (parts[0] === "wrapped") return { kind: "wrapped" };
   if (parts[0] === "doc" && parts[1]) return { kind: "doc", docId: parts[1] };
   if (parts[0] === "measure" && parts[1] && parts[2]) return { kind: "measure", docId: parts[1], measureId: parts[2] };
   if (parts[0] === "item" && parts[1]) return { kind: "item", itemId: parts[1] };
@@ -19,6 +21,7 @@ export function parseRoute(hash: string): Route {
 export function routeHash(r: Route): string {
   const e = encodeURIComponent;
   if (r.kind === "explore") return "#/explore";
+  if (r.kind === "wrapped") return "#/wrapped";
   if (r.kind === "doc") return `#/doc/${e(r.docId)}`;
   if (r.kind === "measure") return `#/measure/${e(r.docId)}/${e(r.measureId)}`;
   if (r.kind === "item") return `#/item/${e(r.itemId)}`;

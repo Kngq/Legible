@@ -20,6 +20,7 @@ export const SLIDE_COUNT = SLIDE_IDS.length;
 /** At most this many decisions on "What connects to you", and examples on "On your radar". */
 const CONNECT_MAX = 3;
 const EXAMPLE_TOPICS_MAX = 6;
+/** The most subjects the constellation can hold; the player shows fewer on short screens and counts the rest. */
 const RADAR_MAX = 8;
 
 export interface DecisionStatus {
@@ -55,7 +56,7 @@ export type SlideModel =
   | { id: "opening"; heading: string; line: string; hint: string; texts: string[] }
   | { id: "world"; heading: string; place: string; placeKnown: boolean; questionCount: number; countLabel: string; statewide?: string; dateLabel?: string; line: string; texts: string[] }
   | { id: "connects"; mode: "personal" | "general"; heading: string; intro: string; items: ConnectItem[]; action?: string; texts: string[] }
-  | { id: "radar"; mode: "followed" | "examples"; heading: string; intro: string; topics: RadarTopic[]; more?: string; note?: string; action?: string; texts: string[] }
+  | { id: "radar"; mode: "followed" | "examples"; heading: string; intro: string; topics: RadarTopic[]; total: number; note?: string; action?: string; texts: string[] }
   | { id: "closer"; heading: string; decision?: CloserDecision; texts: string[] }
   | { id: "closing"; heading: string; card: ClosingCard; save: string; explore: string; texts: string[] };
 
@@ -244,16 +245,15 @@ export function buildStory(doc: DocumentData, summary: WrappedSummary, profile: 
   let radar: SlideModel;
   if (followed.length > 0) {
     const shown = summary.topicRank.slice(0, RADAR_MAX).map((id) => radarTopic(doc, id, true));
-    const more = summary.topicRank.length > RADAR_MAX ? S.radarMore(summary.topicRank.length - RADAR_MAX) : undefined;
     radar = {
       id: "radar",
       mode: "followed",
       heading: S.radarHeading,
       intro: S.radarIntro,
       topics: shown,
-      ...(more ? { more } : {}),
+      total: summary.topicRank.length,
       note: S.radarNote,
-      texts: [S.radarHeading, S.radarIntro, ...shown.flatMap((t) => [t.label, t.count]), ...(more ? [more] : []), S.radarNote],
+      texts: [S.radarHeading, S.radarIntro, ...shown.flatMap((t) => [t.label, t.count]), S.radarNote],
     };
   } else {
     const shown = exampleTopics(doc).map((id) => radarTopic(doc, id, false));
@@ -263,6 +263,7 @@ export function buildStory(doc: DocumentData, summary: WrappedSummary, profile: 
       heading: S.radarExamplesHeading,
       intro: S.radarExamplesIntro,
       topics: shown,
+      total: shown.length,
       action: S.radarExamplesAction,
       texts: [S.radarExamplesHeading, S.radarExamplesIntro, ...shown.map((t) => t.label), S.radarExamplesAction],
     };

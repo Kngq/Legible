@@ -54,8 +54,17 @@ const SLOTS: ConstellationPoint[] = [
 export function constellation(n: number): ConstellationPoint[] {
   const k = Math.max(0, Math.min(n, SLOTS.length));
   if (k === 1) return [{ x: 50, y: 46, size: 0, delay: 0 }];
-  if (k === 2) return [{ x: 36, y: 34, size: 0, delay: 0 }, { x: 64, y: 66, size: 0, delay: 1.2 }];
+  if (k === 2) return [{ x: 36, y: 26, size: 0, delay: 0 }, { x: 64, y: 72, size: 0, delay: 1.2 }];
+  // Few labels spread over the whole field rather than bunching at the top.
+  if (k === 3) return [{ x: 50, y: 16, size: 0, delay: 0 }, { x: 27, y: 54, size: 1, delay: 1.2 }, { x: 72, y: 82, size: 1, delay: 2.1 }];
+  if (k === 4) return [{ x: 50, y: 14, size: 0, delay: 0 }, { x: 26, y: 42, size: 1, delay: 1.2 }, { x: 74, y: 58, size: 1, delay: 2.1 }, { x: 38, y: 86, size: 2, delay: 0.6 }];
   return SLOTS.slice(0, k);
 }
 
 export const CONSTELLATION_MAX = SLOTS.length;
+
+/** How many labels fit a constellation field this many px tall without crowding (about 90 px each). */
+export function constellationCapacity(heightPx: number): number {
+  if (!Number.isFinite(heightPx) || heightPx <= 0) return 2;
+  return Math.max(2, Math.min(CONSTELLATION_MAX, Math.floor(heightPx / 90)));
+}

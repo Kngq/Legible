@@ -100,3 +100,12 @@ describe("gestures and keys", () => {
     );
   });
 });
+
+describe("the story route", () => {
+  it("is #/wrapped and carries nothing else", async () => {
+    const { parseRoute, routeHash } = await import("@/lib/nav/route");
+    expect(parseRoute("#/wrapped")).toEqual({ kind: "wrapped" });
+    expect(routeHash({ kind: "wrapped" })).toBe("#/wrapped");
+    expect(parseRoute("#/wrapped/cambridge")).toEqual({ kind: "wrapped" });
+  });
+});

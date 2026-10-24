@@ -1,0 +1,107 @@
+/*
+ * "Your ballot, wrapped": the few effects Tailwind utilities cannot express.
+ * Colours are Notebook tokens only. One curve (--ease) and the three speeds;
+ * every animation here stops under prefers-reduced-motion.
+ */
+
+/* Items inside a slide rise in one after another (the --stagger token). */
+.rise {
+  animation: rise var(--dur-slow) var(--ease) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger) + 80ms);
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* The big editorial line settles from a slightly larger size. */
+.settle {
+  animation: settle 520ms var(--ease) both;
+  animation-delay: 60ms;
+}
+@keyframes settle {
+  from { opacity: 0; transform: translateY(10px) scale(1.04); letter-spacing: -0.01em; }
+  to { opacity: 1; transform: none; }
+}
+
+/* Paper sheets drift a few pixels, never in step. */
+.drift {
+  animation: drift var(--drift-s, 8s) ease-in-out infinite alternate;
+  animation-delay: var(--drift-d, 0s);
+}
+@keyframes drift {
+  from { transform: translate(0, 0) rotate(var(--r, 0deg)); }
+  to { transform: translate(var(--dx, 3px), var(--dy, -4px)) rotate(calc(var(--r, 0deg) + 0.6deg)); }
+}
+
+/* Topic labels in the constellation float on their own slow cycle. */
+.float {
+  animation: float var(--float-s, 7s) ease-in-out infinite alternate;
+  animation-delay: var(--float-d, 0s);
+}
+@keyframes float {
+  from { transform: translate(-50%, -50%); }
+  to { transform: translate(calc(-50% + 2px), calc(-50% - 4px)); }
+}
+
+/* Hairline arcs draw themselves in once. */
+.draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 900ms var(--ease) forwards;
+  animation-delay: calc(var(--i, 0) * 70ms + 200ms);
+}
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* "Tap to begin": a soft breath, not a blink. */
+.breathe {
+  animation: breathe 2.4s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* The current progress segment fills on arrival. */
+.fill {
+  transform-origin: left center;
+  animation: fill var(--dur-slow) var(--ease) both;
+}
+@keyframes fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Paper grain: a faint dot screen in ink, like the decision covers. */
+.grain {
+  background-image: radial-gradient(color-mix(in srgb, var(--foreground) 9%, transparent) 0.8px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+/* The story frame keeps phone safe areas clear. */
+.safe {
+  padding-top: max(env(safe-area-inset-top), 0px);
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .settle,
+  .drift,
+  .float,
+  .breathe,
+  .fill {
+    animation: none !important;
+  }
+  .float {
+    transform: translate(-50%, -50%);
+  }
+  .draw {
+    animation: none !important;
+    stroke-dashoffset: 0;
+  }
+}

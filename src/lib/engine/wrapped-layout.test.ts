@@ -1,7 +1,7 @@
 // Motion and layout helpers for "Your ballot, wrapped". The count-up property is from Layla's branch (f20bfe8).
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { constellation, CONSTELLATION_MAX, COUNT_UP_MS, countUpValue, storyMotion } from "./wrapped-layout";
+import { constellation, constellationCapacity, CONSTELLATION_MAX, COUNT_UP_MS, countUpValue, storyMotion } from "./wrapped-layout";
 
 describe("countUpValue", () => {
   it("returns whole numbers, never decreases, starts at 0, and lands on the target", () => {
@@ -45,5 +45,16 @@ describe("constellation", () => {
       }
       for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) expect(Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y)).toBeGreaterThan(14);
     }
+  });
+});
+
+describe("constellationCapacity", () => {
+  it("shows fewer labels in a short field, between 2 and 8", () => {
+    expect(constellationCapacity(200)).toBe(2);
+    expect(constellationCapacity(320)).toBe(3);
+    expect(constellationCapacity(480)).toBe(5);
+    expect(constellationCapacity(2000)).toBe(CONSTELLATION_MAX);
+    expect(constellationCapacity(Number.NaN)).toBe(2);
+    for (let h = 0; h < 900; h += 37) expect(constellationCapacity(h)).toBeLessThanOrEqual(constellationCapacity(h + 37));
   });
 });

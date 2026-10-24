@@ -23,6 +23,7 @@ import { useGrowth } from "./plant/useGrowth";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { FOCUS } from "./ui";
+import { WrappedInvite } from "./wrapped/WrappedInvite";
 
 // Plant size follows one breakpoint; re-renders only when it flips.
 const WIDE = "(min-width: 640px)";
@@ -57,6 +58,7 @@ export function Home({
   onOpenItem,
   onOpenProfile,
   onExplore,
+  onOpenWrapped,
 }: {
   feed: Feed;
   /** Deadlines, meetings, and bills for this person's state and town, in feed order. */
@@ -68,6 +70,8 @@ export function Home({
   onOpenItem: (id: string) => void;
   onOpenProfile: (v: SheetView) => void;
   onExplore: () => void;
+  /** Opens "Your ballot, wrapped". Passed only while Wrapped is enabled. */
+  onOpenWrapped?: () => void;
 }) {
   const town = townName(profile.townId);
   // A friendly greeting, stable per name so it doesn't flicker on re-render.
@@ -213,6 +217,8 @@ export function Home({
           </p>
         )}
       </section>
+
+      {onOpenWrapped && <WrappedInvite onOpen={onOpenWrapped} />}
 
       <button
         type="button"

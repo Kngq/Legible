@@ -26,6 +26,9 @@ import { ScreenIn } from "./ScreenIn";
 import { SiteHeader } from "./SiteHeader";
 import { townName } from "./profile-steps";
 import { useLegible } from "./useLegible";
+import { StoryPlayer, type StoryExit } from "./wrapped/StoryPlayer";
+import { WRAPPED_STRINGS } from "@/lib/vocab/wrapped";
+import { WRAPPED_ENABLED } from "@/lib/wrapped/flag";
 
 // Every document the feed can show. Bundled ballot only until the catalog
 // (task 17.2) is fetched whole; buildFeed filters by state and town locally.
@@ -48,11 +51,17 @@ const hashSnapshot = () => window.location.hash;
 const serverHash = () => "";
 
 export function LegibleApp() {
-  const { loaded, today, profile, setProfile, preferences, setPreferences, canStore, forget } = useLegible();
+  const { loaded, today, profile, setProfile, preferences, setPreferences, canStore, forget, demo } = useLegible();
   const [sheet, setSheet] = useState<SheetView | null>(null);
   // Where the person is, read from the URL hash.
   const hash = useSyncExternalStore(subscribeHash, hashSnapshot, serverHash);
   const route = parseRoute(hash);
+  // "Your ballot, wrapped" plays over For you (or over first run, so it never needs
+  // onboarding). Its route shares For you's screen key, so opening and closing it
+  // never remounts or scrolls the page underneath. Development only.
+  const storyOpen = WRAPPED_ENABLED && route.kind === "wrapped";
+  const screenKey = route.kind === "wrapped" ? "#/" : hash || "#/";
+  const storyOpener = useRef<HTMLElement | null>(null);
   const scrolls = useRef<Record<string, number>>({});
   const restoreNext = useRef(false);
   // Session-only flags: never stored, never counted by the meter.
@@ -95,27 +104,66 @@ export function LegibleApp() {
   const sheetOpen = sheet !== null;
   useEffect(() => (sheetOpen ? hideChatDock("narrow") : undefined), [sheetOpen]);
   // A new screen starts at the top; going back restores where the person was.
+  // Opening or closing the story keeps the screen, so it keeps its scroll too.
+  const lastKey = useRef(screenKey);
   useLayoutEffect(() => {
-    const top = restoreNext.current ? (scrolls.current[hash || "#/"] ?? 0) : 0;
+    const same = lastKey.current === screenKey;
+    lastKey.current = screenKey;
+    if (!same) {
+      const top = restoreNext.current ? (scrolls.current[hash || "#/"] ?? 0) : 0;
+      window.scrollTo({ top });
+    }
     restoreNext.current = false;
-    window.scrollTo({ top });
-  }, [hash]);
+  }, [hash, screenKey]);
+  // When the story closes, focus goes back to whatever opened it, if it is still there.
+  useEffect(() => {
+    if (storyOpen) return;
+    const el = storyOpener.current;
+    storyOpener.current = null;
+    if (el?.isConnected) el.focus({ preventScroll: true });
+  }, [storyOpen]);
+
+  const replaceRoute = (h: string) => {
+    window.history.replaceState(null, "", h);
+    window.dispatchEvent(new Event(NAV_EVENT));
+  };
+  const openStory = () => {
+    storyOpener.current = document.activeElement as HTMLElement | null;
+    window.history.pushState({ legible: true }, "", routeHash({ kind: "wrapped" }));
+    window.dispatchEvent(new Event(NAV_EVENT));
+  };
+  // Leaving the story: to a decision or Explore it replaces its own history entry;
+  // closing steps back when this session opened it, or goes to For you from a pasted link.
+  const exitStory = (e: StoryExit) => {
+    if (e.kind === "measure") return replaceRoute(e.href);
+    if (e.kind === "explore") return replaceRoute(routeHash({ kind: "explore" }));
+    if ((window.history.state as { legible?: boolean } | null)?.legible) window.history.back();
+    else replaceRoute(routeHash({ kind: "feed" }));
+    if (e.kind === "profile") setSheet({ kind: "list" });
+    if (e.kind === "topics") setSheet({ kind: "topics" });
+  };
+  const story = storyOpen && <StoryPlayer doc={DOCS[0]} profile={profile} demo={demo} onExit={exitStory} />;
 
   if (!loaded) return <div className="min-h-dvh" aria-busy="true" />;
 
   if (!preferences.onboardingDone) {
     return (
-      <FirstRun
-        profile={profile}
-        setProfile={setProfile}
-        askToKeep={canStore && !preferences.remember}
-        onKeep={() => setPreferences((p) => ({ ...p, remember: true }))}
-        onNotNow={() => setRememberNotNow(true)}
-        onDone={() => {
-          setPreferences((p) => ({ ...p, onboardingDone: true }));
-          window.scrollTo({ top: 0 });
-        }}
-      />
+      <>
+        <div inert={storyOpen} className="contents">
+          <FirstRun
+            profile={profile}
+            setProfile={setProfile}
+            askToKeep={canStore && !preferences.remember}
+            onKeep={() => setPreferences((p) => ({ ...p, remember: true }))}
+            onNotNow={() => setRememberNotNow(true)}
+            onDone={() => {
+              setPreferences((p) => ({ ...p, onboardingDone: true }));
+              window.scrollTo({ top: 0 });
+            }}
+          />
+        </div>
+        {story}
+      </>
     );
   }
 
@@ -211,6 +259,7 @@ export function LegibleApp() {
         onOpenMeasure={openMeasure}
         onOpenItem={openItem}
         onOpenProfile={setSheet}
+        {...(WRAPPED_ENABLED ? { onOpenWrapped: openStory } : {})}
       />
     );
   }
@@ -221,17 +270,22 @@ export function LegibleApp() {
 
   return (
     <HighlightAskProvider personalFor={personalFor}>
-      <div className="sticky top-0 z-30">
-        <SiteHeader
-          active={tab}
-          name={profile.name}
-          needsInterests={!profile.topicsConfirmedAt && Object.keys(profile.topics).length === 0}
-          onHome={toHome}
-          onExplore={toExplore}
-          onOpenProfile={setSheet}
-        />
+      {/* Inert while the story is open, so focus and assistive technology stay in it. */}
+      <div inert={storyOpen} className="contents">
+        <div className="sticky top-0 z-30">
+          <SiteHeader
+            active={tab}
+            name={profile.name}
+            needsInterests={!profile.topicsConfirmedAt && Object.keys(profile.topics).length === 0}
+            onHome={toHome}
+            onExplore={toExplore}
+            onOpenProfile={setSheet}
+          />
+        </div>
+        {demo && <p className="bg-surface-muted px-4 py-2 text-center text-small font-semibold">{WRAPPED_STRINGS.demoStrip}</p>}
+        <ScreenIn key={screenKey}>{page}</ScreenIn>
       </div>
-      <ScreenIn key={hash || "#/"}>{page}</ScreenIn>
+      {story}
       {sheet && (
         <ProfileSheet
           key={JSON.stringify(sheet)}

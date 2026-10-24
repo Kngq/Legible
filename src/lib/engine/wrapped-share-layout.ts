@@ -157,13 +157,22 @@ function layoutAt(items: ShareItem[], measure: Measure, scale: number): ShareLay
   return { lines, rule, bottom: y };
 }
 
-/** Stacks the items from the top; steps every size down by 10% while it overflows, at most 6 times. */
+/**
+ * Stacks the items from the top; steps every size down by 10% while it overflows,
+ * at most 6 times. Then the closing line moves down to rest on the bottom margin,
+ * so the card reads top and bottom like a poster.
+ */
 export function layoutShareImage(items: ShareItem[], measure: Measure): ShareLayout {
   let scale = 1;
   let result = layoutAt(items, measure, scale);
   for (let i = 0; i < MAX_STEPS && result.bottom > SHARE_H - SHARE_PAD; i++) {
     scale *= STEP;
     result = layoutAt(items, measure, scale);
+  }
+  const last = items.length - 1;
+  const room = SHARE_H - SHARE_PAD - result.bottom;
+  if (items[last]?.kind === "line" && room > 0) {
+    result = { ...result, lines: result.lines.map((l) => (l.item === last ? { ...l, y: l.y + room } : l)), bottom: result.bottom + room };
   }
   return result;
 }
