@@ -16,6 +16,7 @@ const pages: string[] = JSON.parse(fs.readFileSync(path.join(root, "data/officia
 const seed: { civic_items: { id: string }[] } = JSON.parse(fs.readFileSync(path.join(root, "data/legible_ma_seed.json"), "utf8"));
 
 const errors: string[] = [];
+const booklet = JSON.parse(fs.readFileSync(path.join(root, "src/data/ballot-2026.json"), "utf8")).source as { file: string; hash: string; savedOn: string };
 const official = (url: string) => {
   try {
     const host = new URL(url).host;
@@ -42,6 +43,16 @@ const items: CivicItem[] = CIVIC.map((c) => {
     return {
       ...rest,
       check: { kind: "quote", quote: { id: `${c.id}-quote`, text: normalize(check.quote.text), page: where?.page, locator: check.quote.locator, status: where ? "verified" : "failed" } },
+      // The original is the booklet itself: the quoted words, the page, and the PDF's fingerprint.
+      original: {
+        kind: "booklet",
+        label: `Information for Voters 2026, page ${where?.page ?? "?"}`,
+        text: normalize(check.quote.text),
+        file: `${booklet.file}#page=${where?.page ?? 1}`,
+        url: c.source.url,
+        hash: booklet.hash,
+        savedOn: booklet.savedOn,
+      },
     };
   }
   return { ...rest, check };

@@ -155,7 +155,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
 - [ ] 21. Original text for every feed item (each item carries its saved, fingerprinted original or it does not appear)
   - [x] 21.1 Ballot: page range and label of each question's full law in the booklet (build checks every page's heading), the official PDF served at /official/, per-question page text loaded on demand, "The full law, word for word" on the measure page and a "Full law" link on ballot cards
   - [ ] 21.2 Fingerprints: SHA-256 of each source file and page text, and the saved date. Ballot done (source.hash, pagesHash, savedOn; shown on the full law and in How do we know this?); civic items come with 21.3–21.5
-  - [ ] 21.3 Election dates: show the verbatim booklet quote and page as the item's official text
+  - [x] 21.3 Election dates: CivicItem.original (kind, label, verbatim text, saved file, official url, hash, savedOn) built from the booklet quote; "Official text" section on the item page (OriginalText)
   - [ ] 21.4 Bills: save bill text and history snapshots from malegislature.gov with fetch date and fingerprint
   - [ ] 21.5 Meetings: save posted agendas when they exist; otherwise state that no agenda is posted
   - [ ] 21.6 Official text section on every Home and Explore item's detail page

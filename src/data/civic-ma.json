@@ -39,6 +39,15 @@
         "locator": "Your 2026 Voting Options",
         "status": "verified"
       }
+    },
+    "original": {
+      "kind": "booklet",
+      "label": "Information for Voters 2026, page 4",
+      "text": "You must be registered to vote by Saturday, October 24, 2026, in order to vote in this election.",
+      "file": "/official/IFV_2026_English.pdf#page=4",
+      "url": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-information-for-voters/guide.htm",
+      "hash": "0d809a430ccef217f3aa3c13350e6a75fda284b24b996a92462331a8be339b09",
+      "savedOn": "2026-10-24"
     }
   },
   {
@@ -77,6 +86,15 @@
         "locator": "Voting by Mail",
         "status": "verified"
       }
+    },
+    "original": {
+      "kind": "booklet",
+      "label": "Information for Voters 2026, page 4",
+      "text": "Your Vote by Mail application will be honored as long as it reaches your local election office by 5 p.m. on Tuesday, October 27, 2026",
+      "file": "/official/IFV_2026_English.pdf#page=4",
+      "url": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-information-for-voters/guide.htm",
+      "hash": "0d809a430ccef217f3aa3c13350e6a75fda284b24b996a92462331a8be339b09",
+      "savedOn": "2026-10-24"
     }
   },
   {
@@ -116,6 +134,15 @@
         "locator": "Voting Early",
         "status": "verified"
       }
+    },
+    "original": {
+      "kind": "booklet",
+      "label": "Information for Voters 2026, page 4",
+      "text": "In-person early voting will begin on Saturday, October 17 and end on Friday, October 30.",
+      "file": "/official/IFV_2026_English.pdf#page=4",
+      "url": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-information-for-voters/guide.htm",
+      "hash": "0d809a430ccef217f3aa3c13350e6a75fda284b24b996a92462331a8be339b09",
+      "savedOn": "2026-10-24"
     }
   },
   {
@@ -155,6 +182,15 @@
         "locator": "Letter to voters",
         "status": "verified"
       }
+    },
+    "original": {
+      "kind": "booklet",
+      "label": "Information for Voters 2026, page 2",
+      "text": "On Election Day, all polling places will be open from 7 a.m. until 8 p.m.",
+      "file": "/official/IFV_2026_English.pdf#page=2",
+      "url": "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-information-for-voters/guide.htm",
+      "hash": "0d809a430ccef217f3aa3c13350e6a75fda284b24b996a92462331a8be339b09",
+      "savedOn": "2026-10-24"
     }
   },
   {

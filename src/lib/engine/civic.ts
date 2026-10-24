@@ -16,6 +16,28 @@ export type CivicCheck =
   /** Date follows the body's published standing schedule; no agenda posted yet. */
   | { kind: "schedule"; checkedOn: string; rule: string };
 
+/**
+ * The item's original, saved: the official words themselves, where they live,
+ * and a fingerprint of the saved file. "none" says plainly that no original
+ * exists yet (an agenda not posted), never pretends one does.
+ */
+export interface CivicOriginal {
+  kind: "booklet" | "bill" | "agenda" | "none";
+  /** "Information for Voters 2026, page 4", "Bill text, as filed". */
+  label: string;
+  /** The official words, verbatim, when they are short enough to show in full. */
+  text?: string;
+  /** A saved copy served by the app (a PDF page or a text file). */
+  file?: string;
+  /** The official page for the original. */
+  url: string;
+  /** SHA-256 of the saved copy, and the day it was saved. */
+  hash?: string;
+  savedOn?: string;
+  /** Shown when there is no original yet, or when the text is long. */
+  note?: string;
+}
+
 export interface CivicAction {
   label: string;
   url?: string;
@@ -40,6 +62,8 @@ export interface CivicItem {
   lastAction?: { date: string; text: string };
   source: { name: string; url: string };
   check: CivicCheck;
+  /** The saved original. Every item carries one, even if it says none exists yet. */
+  original?: CivicOriginal;
   /** Applies to every resident of its place (an election date), not to a life fact. */
   everyone: boolean;
   topics: TopicId[];

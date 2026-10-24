@@ -33,7 +33,7 @@ export function FullTextLink({ measure }: { measure: Measure }) {
 }
 
 /** "Fingerprint 0d809a43…339b09, saved Oct 24, 2026": lets anyone check this copy matches the official file. */
-export function Fingerprint({ source }: { source: DocumentData["source"] }) {
+export function Fingerprint({ source }: { source: Pick<DocumentData["source"], "hash" | "savedOn"> }) {
   if (!source.hash) return null;
   const saved = source.savedOn ? new Date(`${source.savedOn}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : null;
   return (

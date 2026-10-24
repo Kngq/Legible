@@ -12,6 +12,7 @@ import { FACT_DEFS } from "@/lib/vocab";
 import { Cover } from "./covers";
 import { CivicTile } from "./CivicRow";
 import { Glyph } from "./icons";
+import { OriginalText } from "./OriginalText";
 import { areaOf, type SheetView } from "./ProfileSheet";
 import { FOCUS, Tag } from "./ui";
 
@@ -152,6 +153,8 @@ export function CivicView({
         </section>
       )}
 
+      <OriginalText original={i.original} />
+
       <section className="mt-10" aria-labelledby="checked-h">
         <h2 id="checked-h" className="text-small font-semibold uppercase tracking-wider text-muted-foreground">
           How this was checked
@@ -160,14 +163,6 @@ export function CivicView({
           <Tag pop={i.check.kind === "schedule" ? "attention" : "positive"}>{i.check.kind === "quote" ? "Verified" : i.check.kind === "page" ? "Checked" : "Schedule"}</Tag>
           {checkLabel(i.check)}
         </p>
-        {i.check.kind === "quote" && (
-          <figure className="mt-3 rounded-md border border-border p-4">
-            <blockquote className={`text-body ${SERIF}`}>
-              <mark className="bg-accent-soft text-foreground">&ldquo;{i.check.quote.text}&rdquo;</mark>
-            </blockquote>
-            <figcaption className="mt-2 text-small text-muted-foreground">{i.check.quote.locator}</figcaption>
-          </figure>
-        )}
       </section>
 
       {related.length > 0 && (
