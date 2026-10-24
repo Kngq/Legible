@@ -2,8 +2,8 @@
 
 // A full-screen reading view for long official text and full answers: a close
 // button, a big title, and roomy serif paragraphs on a plain page. Escape closes
-// it and focus returns to what opened it. Highlighting in the body opens the ask
-// sheet, scoped by the ask* props.
+// it and focus returns to what opened it. With askSource, highlighting the body
+// offers Ask Kiro about that source.
 import { useEffect, useRef, type ReactNode } from "react";
 import { Glyph } from "./icons";
 import { FOCUS } from "./ui";
@@ -17,9 +17,7 @@ export function Reader({
   onClose,
   children,
   footer,
-  askMeasureId,
-  askLabel,
-  official = false,
+  askSource,
   askIgnore = false,
 }: {
   kicker?: string;
@@ -29,12 +27,8 @@ export function Reader({
   onClose: () => void;
   children: ReactNode;
   footer?: ReactNode;
-  /** Highlights in the body ask about this question. */
-  askMeasureId?: string;
-  /** Scope label for highlights in text outside the ballot ("Bill S2836"). */
-  askLabel?: string;
-  /** The body holds only official words, so a highlight in it may be sent. */
-  official?: boolean;
+  /** The body is official text from this source, so highlighting it offers Ask Kiro. */
+  askSource?: { kind: "ballot" | "bill" | "civic"; id: string; title: string; locator?: string; url?: string };
   /** Highlights here never open the ask sheet (the answer view itself). */
   askIgnore?: boolean;
 }) {
@@ -68,7 +62,15 @@ export function Reader({
           {title}
         </h1>
         {meta && <div className="mt-3 text-small text-muted-foreground">{meta}</div>}
-        <div className="mt-8 space-y-6" data-ask-measure={askMeasureId} data-ask-label={askLabel} data-ask-official={official || undefined}>
+        <div
+          className="mt-8 space-y-6"
+          data-ask-official={askSource ? true : undefined}
+          data-ask-kind={askSource?.kind}
+          data-ask-id={askSource?.id}
+          data-ask-title={askSource?.title}
+          data-ask-locator={askSource?.locator}
+          data-ask-url={askSource?.url}
+        >
           {children}
         </div>
         {footer && <div className="mt-12 border-t border-border pt-6">{footer}</div>}

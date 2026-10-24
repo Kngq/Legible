@@ -13,7 +13,7 @@ import type { Card, Quote } from "@/lib/engine/types";
 import type { CivicCard } from "@/lib/engine/civic";
 import { CivicRow } from "./CivicRow";
 import { Cover, DocTile } from "./covers";
-import { AskButton } from "./AskSheet";
+import { AskButton } from "./HighlightMenu";
 import { ForYou } from "./ForYou";
 import { Cost, Outcomes, WhatItDoes } from "./MeasureParts";
 import { FullText } from "./FullText";
@@ -89,7 +89,7 @@ export function MeasureView({
   };
 
   return (
-    <article data-ask-measure={m.id} className="mx-auto w-full max-w-2xl px-4 pb-20 sm:px-6" aria-labelledby="measure-title">
+    <article data-ask-measure={m.id} data-ask-title={`Question ${m.number}: ${m.title}`} data-ask-url={m.sourceUrl} className="mx-auto w-full max-w-2xl px-4 pb-20 sm:px-6" aria-labelledby="measure-title">
       <nav className="sticky top-0 z-20 -mx-4 flex h-16 items-center justify-between bg-background/95 px-3 backdrop-blur sm:-mx-6 sm:px-5">
         <button
           type="button"
@@ -138,7 +138,7 @@ export function MeasureView({
       <ForYou card={card} doc={doc} profile={profile} update={update} onOpenProfile={onOpenProfile} />
 
       <div className="mt-3">
-        <AskButton measureId={m.id} variant="pill" />
+        <AskButton source={{ kind: "ballot", id: m.id, title: `Question ${m.number}: ${m.title}`, url: m.sourceUrl }} variant="pill" />
       </div>
 
       {registration?.kind === "registration" && (

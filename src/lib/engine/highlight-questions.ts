@@ -20,7 +20,7 @@ export function highlightQuestions(excerpt: string): string[] {
   const section = t.match(/\b(?:SECTION|Section)\s+(\d+[A-Z]?)\b/);
   const quoted = t.match(/[“"]([^”"]{3,40})[”"]/);
   if (quoted) add(`What counts as “${quoted[1]}” here?`);
-  if (/\$\s?\d|fine|fee|tax|appropriat|fund|cost|revenue/i.test(t)) add("Who would pay, and how much?");
+  if (/\$\s?\d|\bfines?\b|\bfees?\b|\btax(es)?\b|appropriat|\bfund(s|ed|ing)?\b|\bcosts?\b|\brevenues?\b/i.test(t)) add("Who would pay, and how much?");
   if (/repeal|strik(e|ing) out|struck|hereby repealed/i.test(t)) add("What would this remove from current law?");
   if (/take effect|effective|January|February|March|April|May|June|July|August|September|October|November|December|\b20\d\d\b/.test(t)) add("When would this start?");
   if (/penalt|felony|imprison|punish/i.test(t)) add("What is the penalty, and for whom?");

@@ -12,7 +12,7 @@ import { canAskInCard, type Profile } from "@/lib/engine/profile";
 import { docWhat } from "@/lib/engine/timeline";
 import { buildGuide, guideTopics, topicLabel, type GuideEntry, type GuideFilter, type GuideSort } from "@/lib/engine/ballot-guide";
 import type { TopicId } from "@/lib/vocab";
-import { AskButton } from "./AskSheet";
+import { AskButton } from "./HighlightMenu";
 import { FullTextLink } from "./FullText";
 import { Cost, Outcomes, PersonalSummary, WhatItDoes } from "./MeasureParts";
 import { Glyph } from "./icons";
@@ -183,7 +183,7 @@ function GuideCard({
   const origin = referendum ? "Referendum on a law already in effect" : m.kind === "initiative" ? "Placed on the ballot by voter petition" : DOC_TYPE_LABEL.ballot;
 
   return (
-    <li data-ask-measure={m.id} className={`rounded-lg bg-surface p-5 shadow-card ${touches ? "ring-2 ring-accent" : ""}`}>
+    <li data-ask-measure={m.id} data-ask-title={`Question ${m.number}: ${m.title}`} data-ask-url={m.sourceUrl} className={`rounded-lg bg-surface p-5 shadow-card ${touches ? "ring-2 ring-accent" : ""}`}>
       <div className="relative -m-2 flex items-start gap-4 rounded-md p-2 hover:bg-surface-muted/60">
         <span aria-hidden="true" className="flex size-14 shrink-0 flex-col items-center justify-center rounded-md bg-accent-soft leading-none">
           <span className="text-small font-bold uppercase text-muted-foreground">{ballot ? "Q" : "#"}</span>
@@ -210,7 +210,7 @@ function GuideCard({
       <PersonalSummary card={c} asks={asks} local={local?.text} town={town} />
 
       <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1">
-        <AskButton measureId={m.id} />
+        <AskButton source={{ kind: "ballot", id: m.id, title: `Question ${m.number}: ${m.title}`, url: m.sourceUrl }} />
         <FullTextLink measure={m} />
       </div>
     </li>

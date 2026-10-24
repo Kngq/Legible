@@ -17,6 +17,10 @@ describe("highlightQuestions", () => {
     expect(highlightQuestions("the term “proof of residence” shall mean one of the following")[0]).toBe("What counts as “proof of residence” here?");
   });
 
+  it("matches whole words only: feet is not a fee", () => {
+    expect(highlightQuestions("single-family homes on lots of 5,000 square feet or more")).not.toContain("Who would pay, and how much?");
+  });
+
   it("gives different questions for different highlights", () => {
     const a = highlightQuestions("Section 40 of chapter 69 is hereby repealed.");
     const b = highlightQuestions("allow cities and towns to reasonably regulate parking");

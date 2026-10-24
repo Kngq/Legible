@@ -13,7 +13,7 @@ import { FOCUS } from "./ui";
 
 const SERIF = "font-[family-name:var(--font-serif)]";
 
-export function OriginalText({ original, title }: { original?: CivicOriginal; title?: string }) {
+export function OriginalText({ original, title, itemId }: { original?: CivicOriginal; title?: string; itemId?: string }) {
   if (!original) return null;
   return (
     <section className="mt-8 rounded-lg bg-surface p-5 shadow-card" aria-labelledby="original-h">
@@ -23,7 +23,14 @@ export function OriginalText({ original, title }: { original?: CivicOriginal; ti
       <p className="mt-1 text-small text-muted-foreground">{original.label}</p>
       <Fingerprint source={original} />
       {original.text && (
-        <blockquote data-ask-official data-ask-label={title} className={`mt-3 rounded-md bg-surface-muted p-4 text-body leading-relaxed ${SERIF}`}>
+        <blockquote
+          data-ask-official={original.kind === "booklet" ? true : undefined}
+          data-ask-kind="civic"
+          data-ask-id={itemId}
+          data-ask-title={title}
+          data-ask-locator={original.label}
+          data-ask-url={original.url}
+          className={`mt-3 rounded-md bg-surface-muted p-4 text-body leading-relaxed ${SERIF}`}>
           <mark className="bg-accent-soft text-foreground">{original.text}</mark>
         </blockquote>
       )}
@@ -101,8 +108,7 @@ function BillReader({ file, original }: { file: string; original: CivicOriginal 
             </>
           }
           onClose={() => setOpen(false)}
-          askLabel={`Bill ${copy.bill}`}
-          official
+          askSource={{ kind: "bill", id: copy.bill, title: `Bill ${copy.bill}${copy.title ? `: ${copy.title.trim()}` : ""}`, locator: "Bill text", url: original.url }}
           footer={
             <section aria-labelledby="bill-history-h">
               <h2 id="bill-history-h" className="text-body font-bold">

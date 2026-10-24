@@ -118,8 +118,7 @@ export function FullText({ measure, source }: { measure: Measure; source?: Docum
             </>
           }
           onClose={() => setOpen(false)}
-          askMeasureId={measure.id}
-          official
+          askSource={{ kind: "ballot", id: measure.id, title: `Question ${measure.number}: ${measure.title}`, locator: f.label, url: measure.sourceUrl }}
           footer={
             <a href={`${f.pdf}#page=${f.pages[0]}`} target="_blank" rel="noreferrer" className={`inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 text-small font-semibold text-primary-foreground ${FOCUS}`}>
               See the original layout in the PDF
@@ -128,7 +127,7 @@ export function FullText({ measure, source }: { measure: Measure; source?: Docum
           }
         >
           {pages.map((p) => (
-            <section key={p.page} aria-label={`Page ${p.page}`} className="space-y-5">
+            <section key={p.page} aria-label={`Page ${p.page}`} data-ask-page={p.page} className="space-y-5">
               <p className="text-small font-semibold uppercase tracking-wider text-muted-foreground">Page {p.page}</p>
               {reflow(p.text).map((para, k) => (
                 <p key={k} className={READ}>

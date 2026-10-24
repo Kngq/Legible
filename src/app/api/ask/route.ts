@@ -2,13 +2,17 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import ballot2026 from "@/data/ballot-2026.json";
 import type { DocumentData, Quote } from "@/lib/engine/types";
-import { asksHowToVote, BANNED_WORDS, findBannedWords, VOTE_FIXED_RESPONSE } from "@/lib/vocab";
+import type { AskSource } from "@/lib/ask/context";
+import { ground, type Grounding } from "@/lib/ask/ground";
+import { checkAnswer, RESPONSE_SCHEMA, sanitizeHistory, sanitizePersonal, systemPrompt, type Sentence } from "@/lib/ask/prompt";
+import { asksHowToVote, VOTE_FIXED_RESPONSE } from "@/lib/vocab";
 
 /**
  * Ask route (see .kiro/specs/legible/design.md, "Ask route" and "Chat dock").
  *
- * Only public document text, a measure id, and the question ever reach here.
- * No life profile data is accepted or read. The model answers from the given
+ * Only public document text, a source and measure id, the highlighted words, the
+ * question, and earlier turns reach here. Profile data never does, except fact
+ * phrases the person switched on ("you rent"), checked against Legible's own list. The model answers from the given
  * quotes only; every sentence is citation- and banned-word-checked before it
  * is returned, so a failure on either axis replaces the whole answer.
  */
@@ -18,60 +22,29 @@ const FIXED_NO_ANSWER = "The official text does not answer this.";
 const DOCUMENT = ballot2026 as unknown as DocumentData;
 
 const MAX_QUESTION_LENGTH = 300;
+const MAX_PASSAGE_LENGTH = 1200;
+const NOT_OFFICIAL = "Kiro can only explain the official wording, and that highlight isn't in the official text it has for this document. Try highlighting the official words.";
 
 interface AskRequestBody {
   documentId?: string;
   measureId?: string;
   question?: string;
+  /** Highlight-to-ask context: the document, the highlighted words, and how to answer. */
+  source?: unknown;
+  passage?: unknown;
+  mode?: unknown;
+  /** Earlier turns about the same document, for follow-up questions. */
+  history?: unknown;
+  /** Fact phrases the person chose to share ("you rent"); checked against Legible's own list. */
+  personal?: unknown;
 }
 
-interface ModelSentence {
-  text: string;
-  quoteId: string;
+/** Every measure's summary and outcome quotes, for questions about the whole ballot. */
+function quotesInScope(): Quote[] {
+  return DOCUMENT.measures.flatMap((m) => [m.summary, m.outcomes.yes, m.outcomes.no, m.outcomes.effect].filter((x): x is Quote => Boolean(x)));
 }
 
-interface ModelResponse {
-  answered: boolean;
-  sentences: ModelSentence[];
-}
-
-function quotesInScope(measureId?: string): Quote[] {
-  if (!measureId) {
-    // No single measure selected: ground answers in every measure's summary
-    // and outcome quotes, which keeps the prompt small but still citable.
-    return DOCUMENT.measures.flatMap((m) => {
-      const q = [m.summary, m.outcomes.yes, m.outcomes.no, m.outcomes.effect].filter(
-        (x): x is Quote => Boolean(x),
-      );
-      return q;
-    });
-  }
-  const measure = DOCUMENT.measures.find((m) => m.id === measureId);
-  return measure ? measure.quotes : [];
-}
-
-const RESPONSE_SCHEMA = {
-  type: "object",
-  properties: {
-    answered: { type: "boolean" },
-    sentences: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          text: { type: "string" },
-          quoteId: { type: "string" },
-        },
-        required: ["text", "quoteId"],
-        additionalProperties: false,
-      },
-    },
-  },
-  required: ["answered", "sentences"],
-  additionalProperties: false,
-};
-
-function parseModelJson(raw: string): ModelResponse | null {
+function parseModelJson(raw: string): { answered: boolean; sentences: Sentence[] } | null {
   try {
     const parsed = JSON.parse(raw);
     if (
@@ -81,13 +54,10 @@ function parseModelJson(raw: string): ModelResponse | null {
       Array.isArray(parsed.sentences) &&
       parsed.sentences.every(
         (s: unknown) =>
-          typeof s === "object" &&
-          s !== null &&
-          typeof (s as ModelSentence).text === "string" &&
-          typeof (s as ModelSentence).quoteId === "string",
+          typeof s === "object" && s !== null && typeof (s as Sentence).text === "string" && typeof (s as Sentence).quoteId === "string" && typeof (s as Sentence).part === "string",
       )
     ) {
-      return parsed as ModelResponse;
+      return parsed;
     }
   } catch {
     // fall through
@@ -107,56 +77,53 @@ export async function POST(request: Request) {
   if (!question || question.length > MAX_QUESTION_LENGTH) {
     return NextResponse.json({ error: "Question is missing or too long." }, { status: 400 });
   }
+  const mode = body.mode === "explain" ? "explain" : "ask";
+  const passage = typeof body.passage === "string" && body.passage.length <= MAX_PASSAGE_LENGTH ? body.passage : undefined;
+  const personal = sanitizePersonal(body.personal);
+  const history = sanitizeHistory(body.history);
+  const source = parseSource(body.source) ?? (body.measureId ? { kind: "ballot" as const, id: body.measureId, title: body.measureId } : undefined);
+  const sent = { documentId: DOCUMENT.id, measureId: source?.kind === "ballot" ? source.id : null, question, passage: Boolean(passage), personal };
 
   // Defense in depth: the browser already checks this before sending.
   if (asksHowToVote(question)) {
-    return NextResponse.json({
-      fixed: true,
-      message: VOTE_FIXED_RESPONSE,
-      sent: { documentId: DOCUMENT.id, measureId: body.measureId ?? null, question },
-    });
+    return NextResponse.json({ fixed: true, message: VOTE_FIXED_RESPONSE, sent });
   }
 
-  const quotes = quotesInScope(body.measureId);
-  if (quotes.length === 0) {
-    return NextResponse.json({
-      fixed: true,
-      message: FIXED_NO_ANSWER,
-      sent: { documentId: DOCUMENT.id, measureId: body.measureId ?? null, question },
-    });
+  // What Kiro may answer from: a grounded source, or every measure's summary and outcomes.
+  let g: Grounding | null;
+  if (source) {
+    g = ground(source, passage);
+    if (g && passage && !g.passageFound) {
+      return NextResponse.json({ fixed: true, message: NOT_OFFICIAL, sent });
+    }
+  } else {
+    const quotes = quotesInScope();
+    g = quotes.length ? { status: "the set of 9 statewide ballot questions on the November 3, 2026 ballot", title: "The 2026 Massachusetts ballot", quotes, passageFound: true } : null;
   }
+  if (!g) return NextResponse.json({ fixed: true, message: FIXED_NO_ANSWER, sent });
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: "Chat is not configured on this server." }, { status: 503 });
+    return NextResponse.json({ error: "not_configured", message: "Chat is not configured on this server." }, { status: 503 });
   }
 
   const anthropic = new Anthropic({ apiKey });
-
-  const quoteList = quotes
-    .map((q) => `- id: ${q.id}\n  locator: ${q.locator}${q.page ? ` (page ${q.page})` : ""}\n  text: "${q.text}"`)
-    .join("\n");
-
-  // The banned list comes from vocab so this prompt holds no banned literals of its own.
-  const system = `You are the assistant inside Legible, an app that explains the 9 Massachusetts ballot questions on the Nov 3, 2026 state ballot using only the Attorney General's official text.
-
-Rules, non-negotiable:
-- Answer only using the quotes listed below. Never use outside knowledge about these measures, current events, or predictions.
-- Every sentence you write must cite exactly one quote id from the list.
-- Never tell anyone how to vote or which side to take. Never use these words in your own sentences: ${BANNED_WORDS.join(", ")}.
-- Keep the answer to at most 4 short sentences.
-- If none of the quotes actually answer the question, set "answered" to false and return an empty sentence list — do not guess.
-
-Quotes:
-${quoteList}`;
+  const system = systemPrompt(g, { mode, passage, personal });
+  const messages = [
+    ...history.flatMap((t) => [
+      { role: "user" as const, content: t.question },
+      { role: "assistant" as const, content: t.answer },
+    ]),
+    { role: "user" as const, content: question },
+  ];
 
   let raw: string;
   try {
     const message = await anthropic.messages.create({
       model: "claude-sonnet-5",
-      max_tokens: 700,
+      max_tokens: 900,
       system,
-      messages: [{ role: "user", content: question }],
+      messages,
       output_config: { format: { type: "json_schema", schema: RESPONSE_SCHEMA } },
     });
     const block = message.content.find((c) => c.type === "text");
@@ -165,29 +132,21 @@ ${quoteList}`;
     return NextResponse.json({ error: "The model request failed." }, { status: 502 });
   }
 
-  const parsed = parseModelJson(raw);
-  const knownQuoteIds = new Set(quotes.map((q) => q.id));
-  const quoteById = new Map(quotes.map((q) => [q.id, q]));
+  const sentences = checkAnswer(parseModelJson(raw), g.quotes, { mode, personal });
+  if (!sentences) return NextResponse.json({ fixed: true, message: FIXED_NO_ANSWER, sent });
 
-  const verified =
-    parsed &&
-    parsed.answered &&
-    parsed.sentences.length > 0 &&
-    parsed.sentences.every(
-      (s) => knownQuoteIds.has(s.quoteId) && findBannedWords(s.text).length === 0,
-    );
+  const quoteById = new Map(g.quotes.map((q) => [q.id, q]));
+  return NextResponse.json({
+    fixed: false,
+    sentences: sentences.map((s) => ({ ...s, quote: quoteById.get(s.quoteId)! })),
+    source: { title: g.title, url: g.url },
+    sent,
+  });
+}
 
-  const sent = { documentId: DOCUMENT.id, measureId: body.measureId ?? null, question };
-
-  if (!verified) {
-    return NextResponse.json({ fixed: true, message: FIXED_NO_ANSWER, sent });
-  }
-
-  const sentences = parsed!.sentences.map((s) => ({
-    text: s.text,
-    quoteId: s.quoteId,
-    quote: quoteById.get(s.quoteId)!,
-  }));
-
-  return NextResponse.json({ fixed: false, sentences, sent });
+function parseSource(x: unknown): AskSource | undefined {
+  if (!x || typeof x !== "object") return undefined;
+  const s = x as Record<string, unknown>;
+  if (!["ballot", "bill", "civic"].includes(String(s.kind)) || typeof s.id !== "string" || s.id.length > 64) return undefined;
+  return { kind: s.kind as AskSource["kind"], id: s.id, title: typeof s.title === "string" ? s.title.slice(0, 160) : s.id };
 }

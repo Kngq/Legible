@@ -7,6 +7,8 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, use
 import ballot from "@/data/ballot-2026.json";
 import civicData from "@/data/civic-ma.json";
 import { civicCard, civicFeed, type CivicItem } from "@/lib/engine/civic";
+import type { AskSource } from "@/lib/ask/context";
+import { FACT_DEFS } from "@/lib/vocab";
 import { buildFeed } from "@/lib/engine/feed";
 import { relatedCivic, relatedMeasures } from "@/lib/engine/related";
 import type { DocumentData } from "@/lib/engine/types";
@@ -14,7 +16,7 @@ import { parentRoute, parseRoute, routeHash, type Route } from "@/lib/nav/route"
 import { CivicView } from "./CivicView";
 import { DocumentView } from "./DocumentView";
 import { FirstRun } from "./FirstRun";
-import { AskProvider } from "./AskSheet";
+import { HighlightAskProvider } from "./HighlightMenu";
 import { Explore } from "./Explore";
 import { Home } from "./Home";
 import { MeasureView } from "./MeasureView";
@@ -64,6 +66,16 @@ export function LegibleApp() {
   };
   const feed = useMemo(() => buildFeed(DOCS, profile, today), [profile, today]);
   const civic = useMemo(() => civicFeed(CIVIC, profile, today), [profile, today]);
+  // For Ask Kiro: only the answers that matched this item ("you rent"), and only
+  // sent if the person switches sharing on in the chat.
+  const personalFor = (source?: AskSource): string[] => {
+    if (!source) return [];
+    const because =
+      source.kind === "ballot"
+        ? feed.items.flatMap((i) => i.cards).find((c) => c.measure.id === source.id)?.because.flatMap((b) => (b.kind === "fact" ? [{ fact: b.id, value: b.value }] : []))
+        : civic.find((c) => (source.kind === "civic" ? c.item.id === source.id : c.item.original?.file === `/official/bills/${source.id}.json`))?.because;
+    return (because ?? []).map((b) => (b.value ? FACT_DEFS[b.fact].because.yes : FACT_DEFS[b.fact].because.no));
+  };
 
   // Remember each screen's scroll as the person scrolls it.
   useEffect(() => {
@@ -196,7 +208,7 @@ export function LegibleApp() {
   }
 
   return (
-    <AskProvider doc={DOCS[0]} scopeMeasureId={route.kind === "measure" ? route.measureId : undefined}>
+    <HighlightAskProvider personalFor={personalFor}>
       {page}
       {sheet && (
         <ProfileSheet
@@ -215,6 +227,6 @@ export function LegibleApp() {
           }}
         />
       )}
-    </AskProvider>
+    </HighlightAskProvider>
   );
 }
