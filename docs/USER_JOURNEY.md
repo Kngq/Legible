@@ -42,9 +42,9 @@ Nothing they entered has left the browser.
 
 The page is personal from the first line: **"Your corner of Cambridge."** and a quiet note on what the sorting is based on.
 
-- **Your ballot**: the main content. All 9 questions on the November 3 ballot, ranked for this person: questions their answers touch come first, then questions on a subject they follow (a question that is both comes first, then the one more answers match). The first is featured, the rest are compact rows, each saying why it is there ("Why this matters to you: You rent."). The other questions follow as a short list in ballot order with where each stands ("Applies to every voter", "May apply to you · Applies if you own a firearm."). Nothing is pinned: with no profile, all 9 show in ballot order. A link opens the ballot guide to compare them side by side.
 - **Coming up**: a time ribbon from today to Election Day. Pins mark deadlines (last day to register, Vote by Mail applications), a band marks the early voting window, and Election Day closes it. The most urgent date is selected, with its one action shown below ("In 3 days", stated as a fact, never as pressure). On a phone the ribbon becomes swipeable date cards.
-- **Also near you**: other decisions that relate to the person (meetings, the election), as compact rows. Proposed bills live on Explore in their own **Proposed legislation** section; Home only says how many relate to the person's answers, with a link.
+- **Decisions for you**: the first decision is featured, the rest are compact rows, ranked by how they connect to the person and how soon they are decided (`0.65 × relevance + 0.35 × urgency`). Ballot questions an answer touches come first. Each card shows the subject, number, and status; a short description; and a small **Why this may matter to you** box only when the person's answers support it. When an answer is missing, a grey line says so instead of guessing.
+- **Your ballot, wrapped**: after the decisions, a small invite ("A different way to explore your ballot") opens a six-slide story about the person's ballot.
 - **Why you're seeing this** opens on any card and names the exact answers that put it there ("Because you rent").
 - Every card carries an **Official text** line linking to its saved original.
 
@@ -79,7 +79,7 @@ Opening a question from For you lands at the top of its page, which continues th
 - **4. How do we know?** how the lines were checked; on demand, the source, page, and **The full law, word for word** (the official PDF at the exact page, or "Read it here")
 - **5. Ask Kiro** neutral starter questions and **Ask about your situation**; the person's answers go only if they switch sharing on in the chat
 - **Show the words** under any sentence opens the official quote it rests on, in place; **How do we know this?** walks the chain from the sentence to the quote, the page, and the fingerprinted (SHA-256) booklet file
-- at the end, **Next** (the next question for this person) and **All your ballot questions** (back to the ballot on For you)
+- at the end, **Next** (the next question for this person) and **Back to For you**
 
 Answers already in the Civic Profile are reused and never asked again. If an answer would sharpen the page, it asks for that one detail in context, with **Not now** to skip.
 
@@ -212,6 +212,5 @@ Changing an answer re-sorts the feed instantly, in the browser, with no network 
 
 ### In development
 
-- Your ballot, wrapped (`WRAPPED_ENABLED`)
 - Growth Story and changing plant stages (`GROWTH_TRACKING_ENABLED`); the plant itself shows in production as a fixed companion; real growth tracking still to be agreed (task 23.7)
 - Planned, not built: document upload with AI analysis, persona switcher, "What left your browser" panel, draft a message to a legislator

@@ -22,7 +22,7 @@ Kept from the branch: `computeWrapped` and its topic ranking, `topicMeasureCount
 ## Architecture
 
 ```
-src/lib/wrapped/flag.ts            WRAPPED_ENABLED (development only)
+src/lib/wrapped/flag.ts            WRAPPED_ENABLED (on everywhere)
 src/lib/engine/wrapped.ts          computeWrapped(doc, profile): one buildCards call -> summary
 src/lib/engine/wrapped-slides.ts   buildStory(doc, summary, profile, towns) -> 6 SlideModels
 src/lib/engine/wrapped-playback.ts storyReducer, tapAction, swipeAction, keyAction, trapFocusIndex

@@ -65,8 +65,6 @@ export function LegibleApp() {
   const storyOpener = useRef<HTMLElement | null>(null);
   const scrolls = useRef<Record<string, number>>({});
   const restoreNext = useRef(false);
-  // Set when a question page sends the person back to the ballot section of For you.
-  const toBallotNext = useRef(false);
   // Session-only flags: never stored, never counted by the meter.
   const [savedBeyondTown, setSavedBeyondTown] = useState(false);
   const [rememberNotNow, setRememberNotNow] = useState(false);
@@ -115,10 +113,8 @@ export function LegibleApp() {
     if (!same) {
       const top = restoreNext.current ? (scrolls.current[hash || "#/"] ?? 0) : 0;
       window.scrollTo({ top });
-      if (toBallotNext.current) document.getElementById("ballot")?.scrollIntoView({ block: "start" });
     }
     restoreNext.current = false;
-    toBallotNext.current = false;
   }, [hash, screenKey]);
   // When the story closes, focus goes back to whatever opened it, if it is still there.
   useEffect(() => {
@@ -188,11 +184,6 @@ export function LegibleApp() {
   };
   const openMeasure = (docId: string, measureId: string) => go({ kind: "measure", docId, measureId });
   const openItem = (itemId: string) => go({ kind: "item", itemId });
-  // From a question page back to the ballot on For you, scrolled to it.
-  const toBallot = () => {
-    toBallotNext.current = true;
-    go({ kind: "feed" });
-  };
 
   const town = townName(profile.townId);
   const docItem = route.kind === "doc" || route.kind === "measure" ? feed.items.find((i) => i.doc.id === route.docId) : undefined;
@@ -215,7 +206,7 @@ export function LegibleApp() {
         town={town}
         backLabel="Back"
         onBack={back}
-        onAllQuestions={toBallot}
+        onForYou={() => go({ kind: "feed" })}
         onOpenMeasure={(measureId) => openMeasure(docItem.doc.id, measureId)}
         onOpenProfile={setSheet}
         related={relatedCivic(card.measure, civic)}

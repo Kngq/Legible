@@ -1,4 +1,3 @@
-// "Your ballot, wrapped" is development only until its visual design is approved
-// (.kiro/specs/ballot-wrapped, W11). Production keeps For you, the routes, and
-// storage exactly as before: no invite, no #/wrapped, no ?demo=true.
-export const WRAPPED_ENABLED = process.env.NODE_ENV === "development";
+// "Your ballot, wrapped" is on everywhere: the For you invite, #/wrapped, and
+// ?demo=true. Turned on for production on Oct 24, 2026 (ballot-wrapped task 5.1).
+export const WRAPPED_ENABLED = true;

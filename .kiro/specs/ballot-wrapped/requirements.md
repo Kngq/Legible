@@ -8,7 +8,7 @@ It is an invitation to explore, not a recap of behaviour. It never says how to v
 
 The idea and the pure logic come from Layla's branch (`origin/layla_branch`, commit `f20bfe8`, an eight-slide "Ballot, Wrapped"). This spec replaces that design: six slides, the Notebook colour roles, no civic personality, opt-in sharing, and the current Legible shell.
 
-This feature is development only until its visual design is approved (`WRAPPED_ENABLED`, Requirement W11).
+This feature is on in production since Oct 24, 2026 (`WRAPPED_ENABLED`, Requirement W11).
 
 Out of scope for this build: what the person has explored or read (category C below); comparisons with other people; achievements, streaks, or scores; auto-advancing slides; uploading or hosting the share image; social network integrations; town documents other than the bundled ballot.
 
@@ -153,7 +153,7 @@ Out of scope for this build: what the person has explored or read (category C be
 
 #### Acceptance Criteria
 
-1. THE SYSTEM SHALL enable Wrapped, its entry point, `#/wrapped`, and demo mode only when `NODE_ENV` is `development` (`WRAPPED_ENABLED`). Production SHALL behave exactly as before.
+1. THE SYSTEM SHALL enable Wrapped, its entry point, `#/wrapped`, and demo mode through one flag (`WRAPPED_ENABLED`). It was development only until Oct 24, 2026 and is now on in production.
 
 ### Requirement W12: Testing and acceptance
 

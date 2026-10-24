@@ -63,7 +63,7 @@ export function MeasureView({
   town,
   backLabel,
   onBack,
-  onAllQuestions,
+  onForYou,
   onOpenMeasure,
   onOpenProfile,
   related,
@@ -83,8 +83,8 @@ export function MeasureView({
   town?: string;
   backLabel: string;
   onBack: () => void;
-  /** Back to the ballot questions on For you. */
-  onAllQuestions: () => void;
+  /** Back to For you. */
+  onForYou: () => void;
   onOpenMeasure: (measureId: string) => void;
   onOpenProfile: (v: SheetView) => void;
 }) {
@@ -297,7 +297,7 @@ export function MeasureView({
         </section>
       )}
 
-      {/* The way on: the next question for this person, or back to all of them. */}
+      {/* The way on: the next question for this person, or back to For you. */}
       <nav aria-label="More ballot questions" className="mt-12 border-t border-border pt-5">
         {next && (
           <button
@@ -318,8 +318,8 @@ export function MeasureView({
             </span>
           </button>
         )}
-        <button type="button" onClick={onAllQuestions} className={`mt-3 ${TOGGLE}`}>
-          <Glyph name="back" size={16} /> All your ballot questions
+        <button type="button" onClick={onForYou} className={`mt-3 ${TOGGLE}`}>
+          <Glyph name="back" size={16} /> Back to For you
         </button>
       </nav>
 

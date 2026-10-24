@@ -220,17 +220,16 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [ ] 24.4 Device check before the election: install on an iPhone (Safari) and an Android phone (Chrome); check the icon, the standalone window, the status bar in light and dark, the home indicator gap, keyboard over Ask Kiro, and landscape
   - [ ] 24.5 Capacitor wrapper: waits for approval (see the Capacitor audit)
 
-- [ ] 25. Your ballot, wrapped (development only: `WRAPPED_ENABLED` in `src/lib/wrapped/flag.ts`; spec in `.kiro/specs/ballot-wrapped/`, rebuilt from Layla's `f20bfe8`)
+- [x] 25. Your ballot, wrapped (on in production: `WRAPPED_ENABLED` in `src/lib/wrapped/flag.ts`; spec in `.kiro/specs/ballot-wrapped/`, rebuilt from Layla's `f20bfe8`)
   - [x] 25.1 Six-slide story, share preview, For you invite, `#/wrapped`, `?demo=true`; tasks tracked in `.kiro/specs/ballot-wrapped/tasks.md`
   - [x] 25.2 Design approved after the second iteration (closing slide shows the real share image; town and topics opt-in)
-  - [ ] 25.3 Turn `WRAPPED_ENABLED` on in production (not approved yet)
+  - [x] 25.3 Turn `WRAPPED_ENABLED` on in production (Oct 24, 2026; the For you invite after Decisions for you)
 
 - [x] 26. Ballot questions first (personal impact as the main journey)
   - [x] 26.1 `ballotPicks` and `ballotReason` (`src/lib/engine/ballot-picks.ts`, tested): every ballot question ranked from buildCards with two tie-breaks, one shared reason per question, `nextPick`; no question pinned
-  - [x] 26.2 For you: "Your ballot" as the main section (`BallotForYou`), featured and rows for put-forward questions, compact rows for the others, a link to the ballot guide; Coming up after it; "Also near you" without bills
-  - [x] 26.3 Explore: proposed bills in their own "Proposed legislation" section
-  - [x] 26.4 Measure page reordered: summary, 1 How could this affect you? (reason, Direct impact, Possible indirect impact, What's uncertain), 2 What would change?, 3 What happens if YES or NO wins?, 4 How do we know? (on demand), 5 Ask Kiro; Next and All your ballot questions at the end
-  - [x] 26.5 `PAGE_LINES.indirect` and `PAGE_LINES.uncertain`, cited to the fiscal statements with marked words, checked by the PAGE_LINES tests; `impactFor`
+  - [x] 26.2 For you as "Your ballot" first, and Explore with a separate bills section: built, then reverted on Oct 24, 2026; For you and Explore keep their earlier layout
+  - [x] 26.3 Measure page reordered: summary, 1 How could this affect you? (reason, Direct impact, Possible indirect impact, What's uncertain), 2 What would change?, 3 What happens if YES or NO wins?, 4 How do we know? (on demand), 5 Ask Kiro; Next and Back to For you at the end
+  - [x] 26.4 `PAGE_LINES.indirect` and `PAGE_LINES.uncertain`, cited to the fiscal statements with marked words, checked by the PAGE_LINES tests; `impactFor`
 
 - [ ] 12. Acceptance and demo
   - [ ] 12.1 Run lint, lint:words, tests, and build; fix failures

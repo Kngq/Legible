@@ -1,6 +1,6 @@
 # Implementation Plan: Your Ballot, Wrapped
 
-Development only behind `WRAPPED_ENABLED` until the visual design is approved. Built on branch `feature/ballot-wrapped` from main; Layla's `f20bfe8` is the source of the reused logic and tests.
+On in production since Oct 24, 2026 (`WRAPPED_ENABLED`). Built on branch `feature/ballot-wrapped` from main; Layla's `f20bfe8` is the source of the reused logic and tests.
 
 - [x] 1. Spec
   - [x] 1.1 Requirements, design, and tasks for the six-slide story
@@ -52,7 +52,7 @@ Development only behind `WRAPPED_ENABLED` until the visual design is approved. B
   - [x] 6.5 Checked at 320, 375, 390, and desktop; tests, lint, lint:words, TypeScript, and production build pass
 
 - [ ] 5. Later (needs approval or other work first)
-  - [ ] 5.1 Turn `WRAPPED_ENABLED` on in production after sign-off
+  - [x] 5.1 Turn `WRAPPED_ENABLED` on in production (Oct 24, 2026)
   - [ ] 5.2 Category C ("decisions you explored") once real exploration tracking lands (`.kiro/specs/legible/tasks.md` 23.7)
   - [ ] 5.3 Web Share with the image on phones that support files, as an alternative to download
   - [ ] 5.4 Town documents in the story once the catalog has them

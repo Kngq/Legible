@@ -144,22 +144,21 @@ Differences from the plan: no ZIP code lookup (1.1); three steps instead of town
 
 ## F5 For you (home)
 
-**Status:** Production. **Code:** `src/components/Home.tsx`, `BallotForYou.tsx`, `BriefCard.tsx`, `OriginalText.tsx`, `CursorCta.tsx`. **Tests:** `home-copy.test.ts`, `ballot-picks.test.ts`, `timeline.test.ts`. **Traces to:** 20.3 to 20.6, 20.10.
+**Status:** Production. **Code:** `src/components/Home.tsx`, `BriefCard.tsx`, `OriginalText.tsx`, `CursorCta.tsx`, `wrapped/WrappedInvite.tsx`. **Tests:** `home-copy.test.ts`, `timeline.test.ts`. **Traces to:** 20.3 to 20.6, 20.10.
 
-**User Story:** As a resident, I want my home page to lead with my ballot, sorted for me, and then what is coming up, so that I know what to read first.
+**User Story:** As a resident, I want my home page to show what is coming up and the decisions closest to my life, so that I know what to read first.
 
 #### Acceptance Criteria
 
 1. THE SYSTEM SHALL title the page "Your corner of {town}." ("the world" without a town), adding the person's name only when the line stays at most 32 characters, with "Understand what's happening around you, one decision at a time." and the plant (F14).
 2. THE SYSTEM SHALL show a profile line: the town (or an "Add your location" button), the housing label when known, and "Edit profile →". It SHALL never invent a town.
-3. THE SYSTEM SHALL show, in order: **Your ballot**, **Coming up** (F6), **Also near you**, the Wrapped invite (development only, F13), and "Explore everything happening near you".
-4. **Your ballot** SHALL show "{N} questions · Voters decide {date}" and either "{k} of {N} connect to your Civic Profile, closest to your life first." or "Nothing in your Civic Profile points to a question yet, so here are all {N} in ballot order." It SHALL show the first put-forward question as the featured decision, the other put-forward questions as rows, then "The other {n} questions" as compact rows with their reason, then "Compare all {N} side by side in the ballot guide".
-5. The featured decision SHALL be the one raised surface on the page: meta "Ballot question {n} · {official title}", "Voters decide {date}", the headline, a short "what", the relevance note when supported, "See how it could affect you", and "Read official text".
+3. THE SYSTEM SHALL show, in order: **Coming up** (F6), **Decisions for you**, the Wrapped invite (F13), and "Explore everything happening near you".
+4. **Decisions for you** SHALL list, in order: ballot questions an answer touches (when Election Day is among Coming up's dates), then the other decisions that relate to the person ranked by kind of connection (direct, potential, interest, open) and then by score, then ballot questions on the person's list. The first SHALL be the featured decision and the rest compact rows, with "Closest to your life first". IF nothing relates THEN THE SYSTEM SHALL say "Nothing matches your answers yet." with "Add details to your profile".
+5. The featured decision SHALL be the one raised surface on the page: meta, status, the headline, a short "what", the relevance note when supported, a primary action, and a secondary link.
 6. Each row SHALL stretch its headline over the row and show "{label}: {reason}" with a compact "Details" toggle that names the exact answers behind it, one line on the kind of connection ("Directly related to your situation.", "A possible connection, not a certain effect.", "Matches a subject you follow; nothing says it changes your situation.", "Depends on something you haven't told Legible yet."), and "Update your profile".
 7. THE SYSTEM SHALL use the plum accent for a relevance note only when the person's answers support it, and lilac for "On your list".
-8. **Also near you** SHALL show other decisions that relate to the person (meetings, the election), not bills and not the ballot. It SHALL say how many proposed bills relate to the person's answers, with a link to Explore, and SHALL be left out when empty.
-9. Every card SHALL carry an "Official text" line naming its saved original ("found word for word" or "saved copy").
-10. On a mouse device THE SYSTEM SHALL show a decorative "Read more" capsule that follows the pointer over a card. It SHALL be hidden from assistive technology, off on touch screens, and reduced to a fade under reduced motion.
+8. Every card SHALL carry an "Official text" line naming its saved original ("found word for word" or "saved copy").
+9. On a mouse device THE SYSTEM SHALL show a decorative "Read more" capsule that follows the pointer over a card. It SHALL be hidden from assistive technology, off on touch screens, and reduced to a fade under reduced motion.
 
 ## F6 Coming up
 
@@ -184,11 +183,10 @@ Differences from the plan: no ZIP code lookup (1.1); three steps instead of town
 #### Acceptance Criteria
 
 1. THE SYSTEM SHALL show "Explore" with "Deadlines, meetings, and proposals in {town} and across Massachusetts. Updates that may affect you come first, then the soonest."
-2. THE SYSTEM SHALL list updates that are not bills, 8 at first, with "Show all {n} updates" / "Show fewer". Each card SHALL show its kind, a tag ("May affect you", "You follow this", "Might apply"), title, when, explanation, "Why you're seeing this", the "Official text" line, and actions.
-3. THE SYSTEM SHALL list bills under "Proposed legislation {count}", saying "Bills the Legislature is considering. None of them is law. Ones that relate to your answers come first."
-4. IF a town is set and no town documents exist THEN THE SYSTEM SHALL say "More {town} updates are coming." in one short note.
-5. THE SYSTEM SHALL show decided items collapsed under "Already decided {n}".
-6. THE SYSTEM SHALL end with "How Legible works": "Your details stay with you" (with "Manage or clear them"), "Official sources", and "You decide" ("It never tells you how to vote.").
+2. THE SYSTEM SHALL list updates, bills included, 8 at first, with "Show all {n} updates" / "Show fewer". Each card SHALL show its kind, a tag ("May affect you", "You follow this", "Might apply"), title, when, explanation, "Why you're seeing this", the "Official text" line, and actions.
+3. IF a town is set and no town documents exist THEN THE SYSTEM SHALL say "More {town} updates are coming." in one short note.
+4. THE SYSTEM SHALL show decided items collapsed under "Already decided {n}".
+5. THE SYSTEM SHALL end with "How Legible works": "Your details stay with you" (with "Manage or clear them"), "Official sources", and "You decide" ("It never tells you how to vote.").
 
 ## F8 Ballot guide
 
@@ -226,7 +224,7 @@ Differences from the plan: no ZIP code lookup (1.1); three steps instead of town
 8. **The full law** SHALL offer "Open the official PDF at page N" and "Read it here", which loads the page text into a full-screen reader on demand, and SHALL show the saved date and a shortened SHA-256 file ID with an explanation. IF the text fails to load THEN THE SYSTEM SHALL say so and point to the PDF.
 9. **5 Ask Kiro** SHALL show the question's three starter questions and "Ask about your situation", and SHALL say the person's answers are seen only if they switch on sharing in the chat.
 10. THE SYSTEM SHALL offer "Ask your legislator a factual question": a template draft of at most 80 words with a live word count, "Legible never sends it and leaves your answers out.", and Copy. It SHALL never send the draft.
-11. THE SYSTEM SHALL show "Related near you" when there are related items, then "Next · Question {n} · {reason}" (the next question in For you's order) and "All your ballot questions".
+11. THE SYSTEM SHALL show "Related near you" when there are related items, then "Next · Question {n} · {reason}" (the next question in the ballot's order for this person) and "Back to For you".
 12. **Show the words:** under every Legible sentence THE SYSTEM SHALL show "{locator}, page N" with "Show the words", which opens the quote in place, the cited words marked, a "Found word for word" or "Reviewed" tag, and "How do we know this?".
 13. **How do we know this?** SHALL open a sheet with four links ("Legible's sentence", "The quote it cites", "Where it appears", "The official file" with its fingerprint), then "Machine check" and "Human review" kept apart.
 14. WHEN the profile changes on this page THE SYSTEM SHALL animate the change with a view transition, skipped under reduced motion.
@@ -298,7 +296,7 @@ Differences from the plan: no ZIP code lookup (1.1); three steps instead of town
 
 ## F13 Your ballot, wrapped
 
-**Status:** Development only (`WRAPPED_ENABLED`, `src/lib/wrapped/flag.ts`). **Full spec:** `.kiro/specs/ballot-wrapped/`. **Code:** `src/components/wrapped/`, `src/lib/engine/wrapped*.ts`, `src/lib/vocab/wrapped.ts`, `src/lib/engine/demo.ts`.
+**Status:** Production (`WRAPPED_ENABLED` is on, `src/lib/wrapped/flag.ts`). **Full spec:** `.kiro/specs/ballot-wrapped/`. **Code:** `src/components/wrapped/`, `src/lib/engine/wrapped*.ts`, `src/lib/vocab/wrapped.ts`, `src/lib/engine/demo.ts`.
 
 **User Story:** As a resident, I want a short, playful story about my ballot told through my own profile, ending with an image I choose to save.
 
@@ -309,7 +307,7 @@ Differences from the plan: no ZIP code lookup (1.1); three steps instead of town
 3. THE SYSTEM SHALL draw a 1080 × 1920 share image on the device with the town and topics off by default, sensitive topics unchecked even after topics are switched on, and never the name or life facts. IF drawing fails or takes over 4 seconds THEN it SHALL say so in place.
 4. THE SYSTEM SHALL open from the For you invite or `#/wrapped`, as a modal dialog with focus trapped, Ask Kiro hidden, "Slide N of 6. {heading}" announced, and focus returned on close.
 5. WHEN loaded with `?demo=true` THE SYSTEM SHALL use a fixed, labelled example profile (a Cambridge renter who rides transit) and SHALL NOT touch storage.
-6. In production THE SYSTEM SHALL show no invite and SHALL treat `#/wrapped` and `?demo=true` as not present.
+6. THE SYSTEM SHALL show the invite on For you after Decisions for you, in development and production alike.
 
 ## F14 Plant companion and Growth Story
 
@@ -398,6 +396,5 @@ Found while writing this spec. Each is a small fix or a decision.
 | "What left your browser" panel | Requirement 10.2 | 8.x |
 | ZIP code to town | Requirement 1.1 | — |
 | Real growth tracking in production | F14 | 23.7, 23.8 |
-| Wrapped in production | F13 | 25.3 |
 | YES and NO flip, a town document example, town statistics | Requirements 17 to 19 (stretch) | 13 to 15 |
 | Capacitor wrapper | design.md, "Toward Capacitor" | 24.5 |

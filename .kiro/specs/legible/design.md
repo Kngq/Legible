@@ -386,7 +386,7 @@ Storage: one `localStorage` key, `legible.profile.v1` (a profile under the pre-r
 
 ## Home feed and catalog
 
-**For you leads with the ballot (task 26).** The upcoming ballot is For you's main content, under the header: all its questions, ranked by `ballotPicks` (`src/lib/engine/ballot-picks.ts`). Questions an answer touches come first, then questions on a followed subject; ties go to a question that is both, then to more matching answers, then ballot order. Nothing is pinned: with no profile, nothing is put forward and all questions show in ballot order. The first put-forward question is the featured decision; the rest are rows; the others follow as compact rows with where each stands. Then Coming up, then "Also near you" (other decisions, without bills). Proposed bills sit on Explore in a "Proposed legislation" section; For you only counts the ones an answer or a followed subject connects to.
+**Ballot pages share one ranking (task 26).** `ballotPicks` and `ballotReason` (`src/lib/engine/ballot-picks.ts`) rank the ballot's questions for the person (answers that touch first, then followed subjects; nothing pinned) and give each one reason. The question page opens with that reason and uses the ranking for "Next". For you keeps its own layout (Coming up, then Decisions for you).
 
 Home is a feed of decisions, not a ballot page. Each item is one document: the state ballot, a Town Meeting warrant, a school budget, a zoning hearing. The 2026 ballot is one item among them. Opening an item shows its measures as cards (the document view: Touches you, On your list, Applies to everyone).
 
@@ -412,7 +412,7 @@ Source data: `data/legible_ma_seed.json` (the team's Supabase seed) is rebuilt b
 
 ### Layout, top to bottom
 
-The page leads with personal impact (task 26). Opened from For you, it lands at the top and opens with the same reason For you gave, so it reads as the recommendation continued. `ballotReason` (`src/lib/engine/ballot-picks.ts`) gives both screens the same words.
+The page leads with personal impact (task 26). Opened from For you, it lands at the top and opens with the reason the question relates to the person, in the words For you uses ("Why this matters to you: You rent."). `ballotReason` (`src/lib/engine/ballot-picks.ts`) gives both screens the same words.
 
 1. **Nav.** Back (48 px circle), share, open the official page.
 2. **Header.** Kicker ("Massachusetts ballot · Question 4"), title in the editorial face, meta line ("AG summary · Voters decide Nov 3 · 2 min read"), and the short summary: the first overview line with its source line.
@@ -428,7 +428,7 @@ The page leads with personal impact (task 26). Opened from For you, it lands at 
 7. **4 How do we know?** One line on how lines were checked and the review state; "Show sources and checks" reveals the source, the page, what happens on a failed match, and the full law, word for word.
 8. **5 Ask Kiro.** The measure's neutral starter questions, "Ask about your situation" (sharing offered, off until switched on), and a privacy line.
 9. **Ask your legislator**, then **Related near you**.
-10. **The way on.** "Next · Question N" (the next question in For you's order, `nextPick`) and "All your ballot questions" (For you, scrolled to the ballot).
+10. **The way on.** "Next · Question N" (the next question in `ballotPicks` order, `nextPick`) and "Back to For you".
 
 ### Evidence in place
 
