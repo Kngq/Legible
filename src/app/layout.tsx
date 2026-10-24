@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Figtree, Geist_Mono, Raleway, Source_Serif_4 } from "next/font/google";
+import { Figtree, Fraunces, Geist_Mono, Raleway, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { ChatDockGate } from "@/components/ChatDockGate";
 
@@ -12,6 +12,14 @@ const figtree = Figtree({
 const raleway = Raleway({
   variable: "--font-raleway",
   subsets: ["latin"],
+});
+
+// Editorial headlines: the featured decision, page titles, detail headings.
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  axes: ["opsz"],
+  style: ["normal", "italic"],
 });
 
 // Reading face for official text in the measure reader.
@@ -35,7 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${figtree.variable} ${raleway.variable} ${serif.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${figtree.variable} ${fraunces.variable} ${raleway.variable} ${serif.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}

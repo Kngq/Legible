@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 /*
- * Theme tokens. Minimal and friendly: grey page, white cards, black pills, and
- * every word ink or grey. Colour comes from a small palette sampled from the
- * chosen reference dashboard: deep purple, lilac, sand, terracotta, and cream.
- * Each fill names its own text colour: white on purple, ink on the light fills
- * (white on lilac, sand, or terracotta fails contrast). Product rule: colour
- * never encodes a side, a vote, YES or NO, or a direction (directions use
- * pictograms). No gradients; at most four type sizes.
+ * Theme tokens. Direction "Notebook": a personal civic notebook. Plum-tinted
+ * white page, plum-black ink, Fraunces for editorial headlines, Figtree for the
+ * interface, Source Serif for official words. Plum is the one accent and marks
+ * only what relates to the person; apricot marks time. Each fill names its own
+ * text colour: white on plum, ink on the light fills. Product rule: colour never
+ * encodes a side, a vote, YES or NO, or a direction (directions use pictograms).
+ * No gradients.
  */
 :root {
   /* Palette (raw). Use the semantic tokens below in components. */
@@ -21,25 +21,29 @@
   --terracotta-100: #f6e1d5;
   --terracotta-400: #cf8d69;
   --cream-200: #f5e6d3;
+  --apricot-100: #fbead8;
+  --apricot-400: #d9893f;
+  --apricot-700: #8a4f18; /* apricot as text: labels like "Today" on the apricot tint */
 
-  /* Surfaces */
-  --background: #efefef; /* page grey */
-  --foreground: #111111; /* ink */
-  --surface: #ffffff; /* cards, panels, segmented track */
-  --surface-muted: #f4f4f4; /* secondary buttons, chips, inputs */
-  --border: #e3e3e3; /* hairline dividers */
-  --muted-foreground: #666666; /* captions */
+  /* Surfaces. Neutrals lean toward the plum accent. */
+  --background: #f8f5f6; /* page */
+  --foreground: #241a26; /* ink */
+  --surface: #ffffff; /* the featured decision, panels, the reader's source pane */
+  --surface-muted: #f1ecf0; /* secondary buttons, chips, inputs, row hover */
+  --border: #e7dee6; /* hairline dividers */
+  --muted-foreground: #6c6170; /* captions */
 
   /* Semantic colour. Every fill pairs with its own foreground. */
   --accent: var(--purple-700); /* "Touches you", the meter, the Up next card */
   --accent-foreground: #ffffff;
-  --accent-soft: var(--purple-50); /* touches-you tag, highlighted sentence in a quote */
+  --accent-soft: #f1e6f3; /* the relevance note, highlighted words in a quote */
   --info: var(--lilac-300); /* secondary feature card, "On your list" */
   --info-foreground: var(--foreground);
   --info-soft: var(--lilac-100);
-  --attention: var(--terracotta-400); /* "New", AI draft, flagged */
+  --attention: var(--apricot-400); /* time: dates, deadlines; also "New", AI draft, flagged */
   --attention-foreground: var(--foreground);
-  --attention-soft: var(--terracotta-100);
+  --attention-soft: var(--apricot-100);
+  --attention-strong: var(--apricot-700); /* apricot text on the soft tint */
   --positive: var(--sand-300); /* reviewed, found word for word */
   --positive-foreground: var(--foreground);
   --positive-soft: var(--cream-200);
@@ -51,44 +55,55 @@
   --data-in: var(--purple-700);
   --data-out: var(--terracotta-400);
 
-  /* Primary action: black pill, white text */
-  --primary: #111111;
+  /* Primary action: plum, white text */
+  --primary: var(--purple-700);
   --primary-foreground: #ffffff;
+  --primary-hover: #4a135f;
 
   --ring: var(--purple-700);
 
-  --card-shadow: 0 1px 2px rgb(17 17 17 / 0.04), 0 10px 30px rgb(17 17 17 / 0.07);
+  /* One raised shadow, for the one element that needs to stand apart. */
+  --card-shadow: 0 1px 0 rgb(36 26 38 / 0.04), 0 18px 40px -24px rgb(91 26 116 / 0.25);
+  /* A hairline in place of a shadow, for panels and outlined buttons. */
+  --hairline: 0 0 0 1px var(--border);
 
-  /* Motion: one curve */
-  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --duration: 400ms;
+  /* Motion. Mirrored for Motion in src/lib/motion.ts. */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1); /* enter, hover, expand */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1); /* exits, collapses */
+  --dur-fast: 150ms; /* hover, focus, press */
+  --dur-base: 220ms; /* expand, collapse, small swaps */
+  --dur-slow: 320ms; /* screen and sheet transitions */
+  --stagger: 50ms;
+  --duration: var(--dur-slow); /* older call sites */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0f0f11;
-    --foreground: #f2f2f2;
-    --surface: #1a1a1d;
-    --surface-muted: #252529;
-    --border: #2e2e33;
-    --muted-foreground: #a0a0a5;
+    --background: #141016;
+    --foreground: #f3eef4;
+    --surface: #1e1921;
+    --surface-muted: #29222c;
+    --border: #352d38;
+    --muted-foreground: #aca1b0;
 
     /* Light fills keep their colour and their ink text; soft tints darken. */
     --accent: #7a3496;
-    --accent-soft: #2e1d38;
+    --accent-soft: #2f1f38;
     --info-foreground: #111111;
     --info-soft: #2a2230;
     --attention-foreground: #111111;
-    --attention-soft: #33231b;
+    --attention-soft: #35261a;
+    --attention-strong: #f0b77c;
     --positive-foreground: #111111;
     --positive-soft: #322a1d;
 
-    --primary: #f2f2f2;
-    --primary-foreground: #111111;
+    --primary: #8a3fa8;
+    --primary-foreground: #ffffff;
+    --primary-hover: #9b4fba;
 
     --ring: var(--purple-300);
 
-    --card-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px rgb(0 0 0 / 0.3);
+    --card-shadow: 0 0 0 1px var(--border), 0 18px 40px -24px rgb(0 0 0 / 0.6);
   }
 }
 
@@ -110,6 +125,7 @@
   --color-attention: var(--attention);
   --color-attention-foreground: var(--attention-foreground);
   --color-attention-soft: var(--attention-soft);
+  --color-attention-strong: var(--attention-strong);
   --color-positive: var(--positive);
   --color-positive-foreground: var(--positive-foreground);
   --color-positive-soft: var(--positive-soft);
@@ -118,18 +134,27 @@
   --color-data-out: var(--data-out);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
   --color-ring: var(--ring);
 
   --font-sans: var(--font-figtree);
-  --font-display: var(--font-figtree);
+  /* Editorial headlines only: the featured decision, page titles, detail headings. */
+  --font-display: var(--font-fraunces), "Iowan Old Style", Georgia, serif;
+  /* Official words (quotes, bill text, the booklet) keep Source Serif through
+     the --font-serif variable set in layout.tsx. */
   --font-wordmark: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
 
-  /* The four type sizes. Display is bold and tight, like the reference hero. */
+  /* Type scale. Four interface sizes plus one editorial headline size, set in
+     Fraunces at weight 400 for the featured decision and page titles. */
   --text-display: clamp(2.5rem, 6vw + 1rem, 4.5rem);
   --text-display--line-height: 1.02;
   --text-display--letter-spacing: -0.03em;
   --text-display--font-weight: 700;
+  --text-headline: clamp(1.875rem, 3.6vw + 0.75rem, 2.75rem);
+  --text-headline--line-height: 1.1;
+  --text-headline--letter-spacing: -0.02em;
+  --text-headline--font-weight: 400;
   --text-title: 1.5rem;
   --text-title--line-height: 1.2;
   --text-title--letter-spacing: -0.01em;
@@ -140,16 +165,24 @@
   --text-small--line-height: 1.4;
 
   --shadow-card: var(--card-shadow);
+  --shadow-hairline: var(--hairline);
 
   --ease-legible: var(--ease);
+  --ease-legible-in-out: var(--ease-in-out);
+
+  /* Spacing roles, on Tailwind's 4px grid: mt-section, gap-block, space-y-stack. */
+  --spacing-stack: 0.75rem; /* 12px: lines within one item */
+  --spacing-block: 1.5rem; /* 24px: items within a section */
+  --spacing-section: 2.75rem; /* 44px: between sections */
 }
 
-/* Shape: same in both themes. rounded-sm/md/lg/xl/full. */
+/* Shape: same in both themes. Smaller than before so corners stop reading as
+   "card"; full rounding is for avatars, dots, and the chat orb. */
 @theme {
-  --radius-sm: 10px; /* chips, badges */
-  --radius-md: 14px; /* buttons, inputs */
-  --radius-lg: 20px; /* cards */
-  --radius-xl: 32px; /* hero panels, the onboarding sheet */
+  --radius-sm: 6px; /* chips, badges, date marks */
+  --radius-md: 10px; /* buttons, inputs, notes, row hover */
+  --radius-lg: 14px; /* the featured decision, panels */
+  --radius-xl: 20px; /* sheets, the onboarding panel */
 }
 
 body {
@@ -160,7 +193,32 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --duration: 0ms;
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+    --stagger: 0ms;
+  }
+}
+
+/*
+ * Interaction feedback, CSS only. `interactive` gives any control the fast
+ * colour, shadow, and transform transition; `press` adds a small settle on
+ * click; `nudge` moves a trailing arrow on hover of its `group`.
+ */
+@utility interactive {
+  transition-property: color, background-color, border-color, text-decoration-color, box-shadow, opacity, transform;
+  transition-duration: var(--dur-fast);
+  transition-timing-function: var(--ease);
+}
+@utility press {
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+@utility nudge {
+  transition: transform var(--dur-fast) var(--ease);
+  :where(.group):hover & {
+    transform: translateX(3px);
   }
 }
 

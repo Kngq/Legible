@@ -24,14 +24,14 @@ export function Button({
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "text" }) {
   const v = {
-    primary: "bg-primary text-primary-foreground disabled:bg-surface-muted disabled:text-muted-foreground min-h-12 px-6 font-semibold",
-    secondary: "bg-surface-muted text-foreground hover:bg-border min-h-12 px-5 font-semibold",
-    text: "text-foreground underline-offset-4 hover:underline min-h-12 px-3 font-semibold",
+    primary: "bg-primary text-primary-foreground hover:bg-primary-hover disabled:bg-surface-muted disabled:text-muted-foreground min-h-12 px-6 font-semibold press",
+    secondary: "bg-surface text-foreground shadow-hairline hover:shadow-[0_0_0_1px_var(--muted-foreground)] min-h-12 px-5 font-semibold press",
+    text: "text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground min-h-12 px-3 font-semibold",
   }[variant];
   return (
     <button
       type="button"
-      className={`inline-flex items-center justify-center gap-2 rounded-md text-body transition-colors duration-(--duration) ease-legible disabled:cursor-not-allowed ${FOCUS} ${v} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-md text-body interactive disabled:cursor-not-allowed ${FOCUS} ${v} ${className}`}
       {...rest}
     />
   );
