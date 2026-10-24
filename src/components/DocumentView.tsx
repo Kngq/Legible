@@ -14,7 +14,7 @@ import { buildGuide, guideTopics, topicLabel, type GuideEntry, type GuideFilter,
 import type { TopicId } from "@/lib/vocab";
 import { AskButton } from "./AskSheet";
 import { FullTextLink } from "./FullText";
-import { Cost, OpenDetails, Outcomes, PersonalSummary, WhatItDoes } from "./MeasureParts";
+import { Cost, Outcomes, PersonalSummary, WhatItDoes } from "./MeasureParts";
 import { Glyph } from "./icons";
 import { FOCUS, Tag } from "./ui";
 import { SECONDARY } from "./updates";
@@ -210,7 +210,6 @@ function GuideCard({
       <PersonalSummary card={c} asks={asks} local={local?.text} town={town} />
 
       <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1">
-        <OpenDetails onOpen={onOpen} asks={asks} />
         <AskButton measureId={m.id} />
         <FullTextLink measure={m} />
       </div>

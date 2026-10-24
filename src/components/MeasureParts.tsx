@@ -9,7 +9,7 @@ import { firstSentence } from "@/lib/engine/ballot-guide";
 import { pageLines } from "@/lib/engine/measure-page";
 import type { Card, Measure } from "@/lib/engine/types";
 import { DIRECTION_DEFS, FACT_DEFS } from "@/lib/vocab";
-import { DirectionMark, Glyph } from "./icons";
+import { DirectionMark } from "./icons";
 import { FOCUS } from "./ui";
 
 const SERIF = "font-[family-name:var(--font-serif)]";
@@ -122,18 +122,6 @@ export function Cost({ measure: m, detailed = false }: { measure: Measure; detai
         {detailed && m.fiscal.page ? `, page ${m.fiscal.page}, word for word` : ""}
       </p>
     </section>
-  );
-}
-
-/** The card's way into the page, named for what it opens. */
-export function OpenDetails({ onOpen, asks }: { onOpen: () => void; asks: boolean }) {
-  return (
-    <button type="button" onClick={onOpen} className={`inline-flex min-h-11 items-center gap-1.5 rounded-full bg-primary px-4 text-small font-semibold text-primary-foreground ${FOCUS}`}>
-      {asks ? "Answer one question and see all 4 parts in full" : "See all 4 parts in full"}
-      <span aria-hidden="true" className="-rotate-90">
-        <Glyph name="chevron" size={14} />
-      </span>
-    </button>
   );
 }
 
