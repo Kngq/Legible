@@ -1,18 +1,20 @@
 "use client";
 
-// One document, opened from the feed. Same card language as Home's UpdateCard:
-// what is being decided and when, then "How could this affect you?" first, then
-// what reaches the town, what applies to everyone, and the rest folded away.
-import type { ReactNode } from "react";
+// One document, opened from the feed, as a guide: the header in Home's card
+// language, then every question ranked for this person (or in ballot order),
+// filterable, each with a plain line, both outcomes, the official cost line, and
+// how it reaches them. No polls and no arguments for a side.
+import { useState } from "react";
 import { DOC_TYPE_LABEL, decideByRelative, shortDate } from "@/lib/engine/decide-by";
 import type { FeedItem } from "@/lib/engine/feed";
 import { localReach } from "@/lib/engine/next-steps";
 import { canAskInCard, type Profile } from "@/lib/engine/profile";
 import { docWhat } from "@/lib/engine/timeline";
-import type { Card } from "@/lib/engine/types";
-import { Glyph } from "./icons";
+import { buildGuide, guideTopics, topicLabel, type GuideEntry, type GuideFilter, type GuideSort } from "@/lib/engine/ballot-guide";
+import { DIRECTION_DEFS, type TopicId } from "@/lib/vocab";
+import { DirectionMark, Glyph } from "./icons";
 import { FOCUS, Tag } from "./ui";
-import { H2, SECONDARY } from "./updates";
+import { SECONDARY } from "./updates";
 
 export function DocumentView({
   item,
@@ -31,36 +33,15 @@ export function DocumentView({
 }) {
   const { doc, cards } = item;
   const ballot = doc.docType === "ballot";
-  const label = (c: Card) => `${ballot ? "Question" : "Item"} ${c.measure.number}: ${c.measure.title}`;
   const d = doc.decideBy;
   const kind = `${item.scope === "state" ? "Massachusetts" : doc.place.name} ${DOC_TYPE_LABEL[doc.docType].toLowerCase()}`;
 
-  const touching = cards.filter((c) => c.relevance === "touches");
-  const local = item.scope === "state" ? cards.filter((c) => c.relevance !== "touches" && localReach(c.measure.id)) : [];
-  const shown = new Set([...touching, ...local].map((c) => c.measure.id));
-  const everyone = cards.filter((c) => !shown.has(c.measure.id) && (c.relevance === "everyone" || c.onYourList));
-  const quiet = cards.filter((c) => !shown.has(c.measure.id) && c.relevance === "probably_not" && !c.onYourList);
-  const asks = (c: Card) => c.relevance !== "touches" && c.pendingQuestions.some((f) => canAskInCard(profile, f));
-
-  const row = (c: Card, line: string | undefined) => (
-    <li key={c.measure.id}>
-      <button type="button" onClick={() => onOpenMeasure(c.measure.id)} className={`flex w-full items-start gap-3 py-3 text-left ${FOCUS}`}>
-        <span className="min-w-0 flex-1">
-          <span className="block text-small font-semibold">{label(c)}</span>
-          {line && <span className="mt-0.5 block text-small text-muted-foreground">{line}</span>}
-          {(c.onYourList || asks(c)) && (
-            <span className="mt-1.5 flex flex-wrap items-center gap-2">
-              {c.onYourList && <Tag pop="info">You follow this</Tag>}
-              {asks(c) && <span className="text-small text-muted-foreground">One quick question tells you if this reaches you</span>}
-            </span>
-          )}
-        </span>
-        <span aria-hidden="true" className="mt-0.5 -rotate-90">
-          <Glyph name="chevron" size={16} />
-        </span>
-      </button>
-    </li>
-  );
+  const [sort, setSort] = useState<GuideSort>("relevance");
+  const [filter, setFilter] = useState<GuideFilter>({ kind: "all" });
+  const entries = buildGuide(cards, sort, filter);
+  const touching = cards.filter((c) => c.relevance === "touches").length;
+  const following = cards.filter((c) => c.onYourList).length;
+  const topics = guideTopics(cards);
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-16 sm:px-6">
@@ -83,55 +64,27 @@ export function DocumentView({
           </p>
         )}
         <p className="mt-2 text-body text-muted-foreground">
-          {docWhat(item)} {ballot && "Every voter in the state sees the same questions. Here they are sorted by your answers."}
+          {docWhat(item)}{" "}
+          {ballot && (touching > 0 ? `${touching} may affect you, based on your answers. They come first.` : "Every voter sees the same questions. Answer a few profile questions and the ones that may affect you come first.")}
         </p>
       </header>
 
-      <section aria-labelledby="h-touches" className="mt-8 rounded-lg bg-surface p-5 shadow-card">
-        <div className="flex items-start justify-between gap-3">
-          <h2 id="h-touches" className={H2}>
-            How could this affect you?
-          </h2>
-          {touching.length > 0 && <Tag pop="accent">{touching.length} may affect you</Tag>}
-        </div>
-        {touching.length > 0 ? (
-          <>
-            <p className="mt-1 text-small text-muted-foreground">Possible effects of questions that match your answers, in plain words. Voters decide.</p>
-            <ul className="mt-2 divide-y divide-border">{touching.map((c) => row(c, c.why[0]?.text))}</ul>
-          </>
-        ) : (
-          <p className="mt-1 text-small text-muted-foreground">Nothing in your answers points at a specific question yet. Open any question to answer the one thing that sorts it.</p>
-        )}
-      </section>
+      <Controls
+        sort={sort}
+        setSort={setSort}
+        filter={filter}
+        setFilter={setFilter}
+        touching={touching}
+        following={following}
+        topics={topics}
+      />
 
-      {local.length > 0 && (
-        <Group id="town" title={`Could reach ${town ?? "your town"}`} note="Decided statewide, with an effect on cities and towns.">
-          {local.map((c) => row(c, localReach(c.measure.id, town)!.text))}
-        </Group>
-      )}
-
-      {everyone.length > 0 && (
-        <Group id="everyone" title="Applies to everyone" note="These change rules for every resident.">
-          {everyone.map((c) => row(c, c.why[0]?.text))}
-        </Group>
-      )}
-
-      {quiet.length > 0 && (
-        <details className="group mt-4 rounded-lg bg-surface shadow-card">
-          <summary className={`flex min-h-14 cursor-pointer list-none items-center justify-between rounded-lg px-5 ${FOCUS}`}>
-            <span className="text-body font-bold">
-              Probably not you <span className="font-normal text-muted-foreground">{quiet.length}</span>
-            </span>
-            <span className="transition-transform duration-(--duration) ease-legible group-open:rotate-180">
-              <Glyph name="chevron" />
-            </span>
-          </summary>
-          <div className="px-5 pb-3">
-            <p className="text-small text-muted-foreground">Nothing in your answers points at these. They are still on the ballot.</p>
-            <ul className="mt-1 divide-y divide-border">{quiet.map((c) => row(c, c.why[0]?.text))}</ul>
-          </div>
-        </details>
-      )}
+      <ol className="mt-4 space-y-4" aria-label={`${ballot ? "Questions" : "Items"}, ${sort === "relevance" ? "most relevant to you first" : "in ballot order"}`}>
+        {entries.map((e) => (
+          <GuideCard key={e.card.measure.id} entry={e} ballot={ballot} sortedByYou={sort === "relevance"} town={town} profile={profile} onOpen={() => onOpenMeasure(e.card.measure.id)} />
+        ))}
+      </ol>
+      {entries.length === 0 && <p className="mt-6 text-small text-muted-foreground">Nothing matches this filter. Try All.</p>}
 
       {doc.source.url && (
         <p className="mt-8 flex flex-wrap items-center gap-3 text-small text-muted-foreground">
@@ -146,14 +99,158 @@ export function DocumentView({
   );
 }
 
-function Group({ id, title, note, children }: { id: string; title: string; note: string; children: ReactNode }) {
+const CHIP = `inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-4 text-small font-semibold transition-colors duration-(--duration) ease-legible ${FOCUS}`;
+
+function Controls({
+  sort,
+  setSort,
+  filter,
+  setFilter,
+  touching,
+  following,
+  topics,
+}: {
+  sort: GuideSort;
+  setSort: (s: GuideSort) => void;
+  filter: GuideFilter;
+  setFilter: (f: GuideFilter) => void;
+  touching: number;
+  following: number;
+  topics: TopicId[];
+}) {
+  const same = (f: GuideFilter) => f.kind === filter.kind && (f.kind !== "topic" || (filter.kind === "topic" && f.id === filter.id));
+  const chip = (f: GuideFilter, label: string) => (
+    <button key={f.kind === "topic" ? f.id : f.kind} type="button" aria-pressed={same(f)} onClick={() => setFilter(f)} className={`${CHIP} ${same(f) ? "bg-primary text-primary-foreground" : "bg-surface text-foreground shadow-card hover:bg-surface-muted"}`}>
+      {label}
+    </button>
+  );
   return (
-    <section aria-labelledby={`h-${id}`} className="mt-4 rounded-lg bg-surface p-5 shadow-card">
-      <h2 id={`h-${id}`} className="text-body font-bold">
-        {title}
-      </h2>
-      <p className="text-small text-muted-foreground">{note}</p>
-      <ul className="mt-2 divide-y divide-border">{children}</ul>
-    </section>
+    <div className="mt-6 space-y-3">
+      <div role="radiogroup" aria-label="Sort" className="inline-flex rounded-full bg-surface p-1 shadow-card">
+        {(
+          [
+            ["relevance", "Most relevant to you"],
+            ["ballot", "Ballot order"],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            role="radio"
+            aria-checked={sort === id}
+            onClick={() => setSort(id)}
+            className={`${CHIP} min-h-9 ${sort === id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <div aria-label="Filter" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 [scrollbar-width:none]">
+        {chip({ kind: "all" }, "All")}
+        {touching > 0 && chip({ kind: "touches" }, `May affect you · ${touching}`)}
+        {following > 0 && chip({ kind: "follow" }, `You follow · ${following}`)}
+        {topics.map((t) => chip({ kind: "topic", id: t }, topicLabel(t)))}
+      </div>
+    </div>
+  );
+}
+
+/** One question as a guide card: what it does, both outcomes, the cost, and how it reaches you. */
+function GuideCard({
+  entry: e,
+  ballot,
+  sortedByYou,
+  town,
+  profile,
+  onOpen,
+}: {
+  entry: GuideEntry;
+  ballot: boolean;
+  sortedByYou: boolean;
+  town?: string;
+  profile: Profile;
+  onOpen: () => void;
+}) {
+  const c = e.card;
+  const m = c.measure;
+  const touches = c.relevance === "touches";
+  const referendum = m.kind === "referendum";
+  const local = localReach(m.id, town);
+  const asks = !touches && c.pendingQuestions.some((f) => canAskInCard(profile, f));
+  const origin = referendum ? "Referendum on a law already in effect" : m.kind === "initiative" ? "Placed on the ballot by voter petition" : DOC_TYPE_LABEL.ballot;
+
+  return (
+    <li className={`rounded-lg bg-surface p-5 shadow-card ${touches ? "ring-2 ring-accent" : ""}`}>
+      <div className="flex items-start gap-4">
+        <span aria-hidden="true" className="flex size-14 shrink-0 flex-col items-center justify-center rounded-md bg-accent-soft leading-none">
+          <span className="text-small font-bold uppercase text-muted-foreground">{ballot ? "Q" : "#"}</span>
+          <span className="text-title font-bold">{m.number}</span>
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            {touches && <Tag pop="accent">{sortedByYou ? `#${e.rank} for you · ` : ""}May affect you</Tag>}
+            {c.onYourList && <Tag pop="info">You follow this</Tag>}
+          </div>
+          <h3 className="mt-1 font-[family-name:var(--font-serif)] text-title font-semibold leading-tight">{m.title}</h3>
+          <p className="mt-1 text-small text-muted-foreground">{origin}</p>
+        </div>
+      </div>
+
+      {e.plain && <p className="mt-4 text-body">{e.plain.text}</p>}
+
+      <p className="mt-3 flex items-center gap-2 text-small font-semibold">
+        <DirectionMark direction={c.direction} size={24} />
+        {DIRECTION_DEFS[c.direction].label}
+      </p>
+
+      <p className="mt-4 text-small text-muted-foreground">What YES and NO do, in the official words:</p>
+      <div className="mt-2 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-md border border-border p-4">
+          <p className="flex items-center gap-2 text-small font-bold uppercase tracking-wider">
+            <span aria-hidden="true" className="size-2 rounded-full bg-accent" />
+            If YES wins{referendum ? " · law stays" : ""}
+          </p>
+          {e.passes && <p className="mt-1.5 font-[family-name:var(--font-serif)] text-body">{e.passes.text}</p>}
+        </div>
+        <div className="rounded-md border border-border p-4">
+          <p className="flex items-center gap-2 text-small font-bold uppercase tracking-wider">
+            <span aria-hidden="true" className="size-2 rounded-full bg-muted-foreground" />
+            If NO wins{referendum ? " · law ends" : ""}
+          </p>
+          {e.fails && <p className="mt-1.5 font-[family-name:var(--font-serif)] text-body">{e.fails.text}</p>}
+        </div>
+      </div>
+
+      {e.cost && (
+        <p className="mt-3 text-small">
+          <span className="mr-2 font-bold uppercase tracking-wider text-muted-foreground">Cost</span>
+          {e.cost} <span className="text-muted-foreground">(official fiscal statement)</span>
+        </p>
+      )}
+
+      <div className={`mt-4 rounded-md p-4 ${touches ? "bg-accent-soft" : "bg-surface-muted"}`}>
+        <p className="text-small font-bold uppercase tracking-wider">{e.ifYou ?? (c.relevance === "probably_not" ? "Probably not you" : "If you live in Massachusetts")}</p>
+        {touches ? (
+          c.why.map((s) => (
+            <p key={s.text} className="mt-1.5 text-body">
+              {s.text}
+            </p>
+          ))
+        ) : (
+          <p className="mt-1.5 text-body">
+            {c.relevance === "probably_not" ? "Nothing in your answers points to this question." : "It applies to everyone; nothing in your answers points to it directly."}
+            {asks && " One quick question on its page tells you if it reaches you."}
+          </p>
+        )}
+        {local && <p className="mt-2 text-small text-muted-foreground">In {town ?? "your city or town"}: {local.text}</p>}
+      </div>
+
+      <button type="button" onClick={onOpen} className={`mt-4 inline-flex min-h-11 items-center gap-1.5 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
+        {asks ? "Answer one question and read more" : "Read more and check the official text"}
+        <span aria-hidden="true" className="-rotate-90">
+          <Glyph name="chevron" size={14} />
+        </span>
+      </button>
+    </li>
   );
 }

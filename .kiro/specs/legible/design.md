@@ -238,7 +238,7 @@ Pure template in the browser. Inputs are selected measure numbers and one factua
 
 - **Onboarding:** first run is hello and ZIP only. **ProfileSheet:** the avatar ring, the seven-item checklist, and one screen per life area and subjects, opened from the avatar.
 - **TownPicker:** type-ahead over a bundled list of 351 municipalities with aliases.
-- **Feed (Home):** header with avatar ring, one nudge, one timeline (name, due, what it is, how it reaches you), open questions, and a collapsed Decided group. **DocumentView:** one document's measures as cards.
+- **Feed (Home):** header with avatar ring, one nudge, one timeline (name, due, what it is, how it reaches you), open questions, and a collapsed Decided group. **DocumentView:** a guide to one document: every question ranked for the person (or in ballot order), filter chips (All, May affect you, You follow, each topic), and per question a plain cited line, the direction pictogram, the official YES and NO statements side by side, the first sentence of the official fiscal statement as Cost, and an "If you rent"-style box with the matching why lines (or a plain note when nothing matches) plus the town effect. No polls and no arguments for a side (`src/lib/engine/ballot-guide.ts`).
 - **ChatDock:** bottom-corner button and panel scoped to the open document or measure, citations on every sentence.
 - **TrustPanel and ChainView:** per-document trust summary, and the sentence-to-source chain opened from "How do we know this?"
 - **Ballot header:** avatar, document title, persona switcher, privacy panel button, "Remember on this device" and "Clear my information" (in the profile sheet)."
