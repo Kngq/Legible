@@ -203,5 +203,121 @@
     ],
     "versionNotes": [],
     "author": "model"
+  },
+  "support": {
+    "model": "claude-opus-5",
+    "checkedOn": "2026-10-24",
+    "judgments": [
+      {
+        "key": "proposes.0",
+        "verdict": "backed",
+        "reason": "The passage states a special commission would study and define conditions for legalizing single-stair multi-family buildings up to six stories in Massachusetts."
+      },
+      {
+        "key": "proposes.1",
+        "verdict": "backed",
+        "reason": "The passage says the commission shall produce a building code amendment including measures mitigating health and safety impacts unique to such buildings."
+      },
+      {
+        "key": "changes.0.0",
+        "verdict": "backed",
+        "reason": "This restates the passage's charge to study and define conditions for legalization."
+      },
+      {
+        "key": "changes.0.1",
+        "verdict": "backed",
+        "reason": "The passage requires production of a building code amendment, matching the claim."
+      },
+      {
+        "key": "changes.0.2",
+        "verdict": "backed",
+        "reason": "The passage states the study shall build on the named report on mid-rise single-stair housing in Massachusetts."
+      },
+      {
+        "key": "changes.0.3",
+        "verdict": "backed",
+        "reason": "The passage names a technical safety study comparing single-stair to two-staircase buildings and a timeline for implementing the drafted amendment."
+      },
+      {
+        "key": "changes.1.0",
+        "verdict": "backed",
+        "reason": "Smoke alarms, sprinkler systems, fire-resistant materials, and emergency exit strategies are all listed in the passage."
+      },
+      {
+        "key": "changes.1.1",
+        "verdict": "backed",
+        "reason": "The passage includes any safety measures pertinent to 527 CMR 1.00, and the fire-prevention context matches the claim's description."
+      },
+      {
+        "key": "changes.2.0",
+        "verdict": "backed",
+        "reason": "The passage names the housing secretary or designee as chair plus 2 House and 2 Senate members."
+      },
+      {
+        "key": "changes.2.1",
+        "verdict": "backed",
+        "reason": "The passage lists seats for the Fire Chiefs Association, a practicing fire engineer from NFPA, architects, and the Board of Building Regulations and Standards."
+      },
+      {
+        "key": "changes.2.2",
+        "verdict": "backed",
+        "reason": "The passage lists the planning association, home builders, NAIOP, a municipal building official in a Class 1 Fire Department community, and Abundant Housing Massachusetts."
+      },
+      {
+        "key": "changes.3.0",
+        "verdict": "backed",
+        "reason": "The passage requires filing the study with both clerks and the joint committee on housing."
+      },
+      {
+        "key": "affects.0",
+        "verdict": "partly",
+        "reason": "The passage lists planners, home builders, and a building official, but architects and fire officials do not appear in this passage."
+      },
+      {
+        "key": "affects.1",
+        "verdict": "backed",
+        "reason": "The passage describes an amendment allowing single-stair multi-family buildings up to six stories, and the claim properly conditions it on adoption."
+      },
+      {
+        "key": "affects.2",
+        "verdict": "backed",
+        "reason": "The passage provides a seat for a building official employed by a municipality with a Class 1 Fire Department."
+      },
+      {
+        "key": "personal.0.0",
+        "verdict": "backed",
+        "reason": "The described amendment matches the passage and the housing-availability consequence is hedged with no new specific fact."
+      },
+      {
+        "key": "personal.0.notStated",
+        "verdict": "backed",
+        "reason": "Tenants, leases, and evictions each correspond to a searched word that does not appear."
+      },
+      {
+        "key": "personal.1.0",
+        "verdict": "backed",
+        "reason": "The drafting duty matches the passage and the effect on multi-family lots is a hedged consequence adding no new fact."
+      },
+      {
+        "key": "personal.1.notStated",
+        "verdict": "partly",
+        "reason": "Zoning and property taxes were searched, but \"existing houses\" has no corresponding searched word."
+      },
+      {
+        "key": "personal.2.0",
+        "verdict": "backed",
+        "reason": "The passage names the secretary or designee as chair, and the staffing remark is a generic hedged consequence."
+      },
+      {
+        "key": "personal.2.notStated",
+        "verdict": "partly",
+        "reason": "Pay corresponds to the searched terms compensation and salary, but hours and staffing have no searched word."
+      },
+      {
+        "key": "takesEffect.0",
+        "verdict": "backed",
+        "reason": "The passage sets the July 31, 2026 deadline for filing the study."
+      }
+    ]
   }
 }

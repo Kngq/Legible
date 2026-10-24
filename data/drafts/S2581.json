@@ -274,5 +274,161 @@
       }
     ],
     "author": "model"
+  },
+  "support": {
+    "model": "claude-opus-5",
+    "checkedOn": "2026-10-24",
+    "judgments": [
+      {
+        "key": "proposes.0",
+        "verdict": "backed",
+        "reason": "The passage states each public school or district shall adopt a policy prohibiting student use of personal electronic devices during the school day."
+      },
+      {
+        "key": "proposes.1",
+        "verdict": "backed",
+        "reason": "The passage says the department shall provide guidance, recommendations and a model policy to assist schools and districts."
+      },
+      {
+        "key": "changes.0.0",
+        "verdict": "backed",
+        "reason": "The passage bars use and possession on the student's person during the school day, expressly including recess, lunch and time between classes."
+      },
+      {
+        "key": "changes.0.1",
+        "verdict": "backed",
+        "reason": "The definition quoted covers portable devices capable of voice, text or other data communication."
+      },
+      {
+        "key": "changes.0.2",
+        "verdict": "backed",
+        "reason": "The passage excludes school-issued or sanctioned devices used for a legitimate educational purpose."
+      },
+      {
+        "key": "changes.0.3",
+        "verdict": "backed",
+        "reason": "The passage preserves district authority to set restrictions on school grounds beyond the school day."
+      },
+      {
+        "key": "changes.1.0",
+        "verdict": "backed",
+        "reason": "The passage names use in accordance with an IEP or a section 504 plan as an allowed circumstance."
+      },
+      {
+        "key": "changes.1.1",
+        "verdict": "backed",
+        "reason": "The passage allows possession or use when a healthcare provider states in writing it is necessary to treat a health condition."
+      },
+      {
+        "key": "changes.1.2",
+        "verdict": "backed",
+        "reason": "The passage covers time off school grounds traveling to or from early college, dual enrollment or vocational learning sites."
+      },
+      {
+        "key": "changes.2.0",
+        "verdict": "backed",
+        "reason": "The passage requires at least one method for parents and guardians to contact students, including policies for urgent emergency situations."
+      },
+      {
+        "key": "changes.2.1",
+        "verdict": "backed",
+        "reason": "The passage states discipline for noncompliance shall not include expulsion or suspension."
+      },
+      {
+        "key": "changes.3.0",
+        "verdict": "backed",
+        "reason": "The passage requires the department to solicit public input and hold at least one public hearing before finalizing."
+      },
+      {
+        "key": "changes.3.1",
+        "verdict": "backed",
+        "reason": "The passage requires the local governing body to solicit public input prior to approval."
+      },
+      {
+        "key": "changes.3.2",
+        "verdict": "backed",
+        "reason": "The passage states the department's model policy takes effect if no local policy is approved by September 1, until a local policy is approved."
+      },
+      {
+        "key": "changes.3.3",
+        "verdict": "backed",
+        "reason": "The passage requires annual notice to students and parents/guardians by September 1 and website posting."
+      },
+      {
+        "key": "changes.4.0",
+        "verdict": "partly",
+        "reason": "The content on secure storage and removing physical access matches, but the passage does not state that this is a required element of the model policy."
+      },
+      {
+        "key": "changes.4.1",
+        "verdict": "backed",
+        "reason": "The passage requires annual filing of the policy with the department by September 1."
+      },
+      {
+        "key": "affects.0",
+        "verdict": "partly",
+        "reason": "The passage states schools or districts must adopt a policy but says nothing here about approving and posting it."
+      },
+      {
+        "key": "affects.1",
+        "verdict": "backed",
+        "reason": "The passage prohibits student use and on-person possession of personal electronic devices during the school day."
+      },
+      {
+        "key": "affects.2",
+        "verdict": "backed",
+        "reason": "The passage requires at least one method for parents and guardians to contact students during the school day."
+      },
+      {
+        "key": "personal.0.0",
+        "verdict": "backed",
+        "reason": "The passage bars use and possession of personal electronic devices during the school day including recess and lunch."
+      },
+      {
+        "key": "personal.0.1",
+        "verdict": "backed",
+        "reason": "The passage requires a contact method for parents and guardians, including emergency/urgent situations."
+      },
+      {
+        "key": "personal.1.0",
+        "verdict": "backed",
+        "reason": "The passage requires the local governing body to solicit public input before approval, and the closing inference about public commenting adds no new specific fact."
+      },
+      {
+        "key": "personal.1.notStated",
+        "verdict": "backed",
+        "reason": "Private schools, homeschooling and college campuses each correspond to searched terms that do not appear."
+      },
+      {
+        "key": "takesEffect.0",
+        "verdict": "backed",
+        "reason": "The passage requires adoption before the start of the 2026-2027 school year."
+      },
+      {
+        "key": "takesEffect.1",
+        "verdict": "backed",
+        "reason": "The passage gives the department 180 days from the effective date to provide guidance and a model policy."
+      },
+      {
+        "key": "takesEffect.2",
+        "verdict": "backed",
+        "reason": "The passage requires a report to the ways and means committees and the joint committee on education by December 31, 2027 on implementation."
+      },
+      {
+        "key": "versionNotes.0",
+        "verdict": "unbacked",
+        "reason": "The entry records a committee recommendation and referral to House Steering, not House passage of a different version."
+      },
+      {
+        "key": "versionNotes.1",
+        "verdict": "backed",
+        "reason": "The entry records the Senate non-concurring in the House amendment."
+      },
+      {
+        "key": "versionNotes.2",
+        "verdict": "partly",
+        "reason": "The entry records only a Senate appointment of conference committee members, not that representatives were also named."
+      }
+    ]
   }
 }

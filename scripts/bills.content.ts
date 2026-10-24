@@ -140,7 +140,7 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
         heading: "Approvals",
         lines: [
           {
-            text: "A plan to split a lot into smaller residential lots that meets the bill's criteria would be approved without a public hearing.",
+            text: "A plan to split a lot that meets the bill's by-right subdivision criteria would be approved without a public hearing.",
             quote: "subdivision",
           },
           {
@@ -152,7 +152,7 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
             quote: "environmental",
           },
           {
-            text: "Local board of health rules on septic systems could not be stricter than the state code for housing.",
+            text: "Rules on septic systems could not be stricter than the state environmental code for housing.",
             quote: "septic",
           },
         ],
@@ -161,7 +161,7 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
         heading: "Affordable housing",
         lines: [
           {
-            text: "Projects of 10 or more homes built under the near-transit rule would have to set aside at least 15 percent for households at or below 80 percent of the area median income, or 10 percent at or below 50 percent.",
+            text: "Projects of 10 or more homes allowed under Section 9 would have to set aside at least 15 percent for households at or below 80 percent of the area median income, or 10 percent at or below 50 percent.",
             quote: "transit-affordable",
           },
           {
@@ -182,15 +182,15 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
 
     affects: [
       {
-        text: "Cities and towns would have to change zoning that does not comply. Near transit, rules still out of line on January 1, 2028 would stop applying.",
+        text: "Cities and towns would have to update their zoning: local rules that did not comply with Section 9 by January 1, 2028 would stop applying.",
         quote: "transit-deadline",
       },
       {
-        text: "Owners of residential lots could build a duplex or small apartment building without a special permit, subject to reasonable local rules.",
+        text: "Owners of residential lots with public water and sewer could build a duplex or a building of up to 5 homes without a special permit.",
         quote: "up-to-5",
       },
       {
-        text: "Households with lower incomes could qualify for set-aside homes in larger projects near transit.",
+        text: "Households with lower incomes could qualify for set-aside homes in projects of 10 or more homes allowed under Section 9.",
         quote: "transit-affordable",
       },
     ],
@@ -230,7 +230,7 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
             quote: "transit-density",
           },
         ],
-        notStated: { text: "The bill text does not mention transit service, fares, or schedules.", terms: ["fare", "schedule", "service frequency", "MBTA"] },
+        notStated: { text: "The bill text does not mention transit fares, schedules, or the MBTA.", terms: ["fare", "schedule", "MBTA"] },
       },
       {
         fact: "drives",
@@ -249,12 +249,12 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
     takesEffect: [
       {
         label: "1 year after the effective date",
-        line: { text: "If it became law, the rules on duplexes, small apartment buildings, lot size, and parking would start one year after the law's effective date.", quote: "starts" },
+        line: { text: "If it became law, Section 4 of the bill would start one year after the law's effective date.", quote: "starts" },
       },
       {
         label: "Jan 1, 2028",
         line: {
-          text: "If it became law, zoning near transit that did not comply by this date would stop applying.",
+          text: "If it became law, local rules that did not comply with Section 9 by this date would stop applying.",
           quote: "transit-deadline",
           mark: "by January 1, 2028, any noncompliant existing regulation shall become null and void",
         },
@@ -292,7 +292,7 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
         id: "health",
         text: "a healthcare provider provides in writing that the possession or use of a personal electronic device is necessary to treat a health condition of a student",
       },
-      { id: "travel", text: "for time spent off school grounds travelling to or from other learning opportunities" },
+      { id: "travel", text: "for time spent off school grounds travelling to or from other learning opportunities, including, but not limited to, early college, dual enrolment or vocational learning sites" },
       {
         id: "grades",
         text: "A school or district policy may include variations that align with the developmental level of students and the structure of the school day in each grade level and school; provided, however, that nothing shall allow student use and actual possession of a personal electronic device, unless clearly authorized under subsection (b).",
@@ -320,13 +320,13 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
       },
       {
         id: "report",
-        text: "Not later than December 31, 2027, the department of elementary and secondary education shall report to the senate and house committees on ways and means and the joint committee on education",
+        text: "Not later than December 31, 2027, the department of elementary and secondary education shall report to the senate and house committees on ways and means and the joint committee on education on the implementation of the personal electronic device use policies in schools",
       },
     ],
 
     proposes: [
       {
-        text: "Every public school or district would have to adopt a policy barring students from using or carrying personal phones and similar devices during the school day, including lunch, recess, and time between classes.",
+        text: "Students could not use or carry personal phones and similar devices during the school day, including lunch, recess, and time between classes.",
         quote: "all-day",
       },
       {
@@ -390,7 +390,7 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
             quote: "model",
           },
           {
-            text: "Every September, each school would have to tell students and families about the policy and post it online.",
+            text: "By September 1 each year, each school would have to tell students and families about the policy and post it online.",
             quote: "notify",
           },
         ],
@@ -399,11 +399,11 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
 
     affects: [
       {
-        text: "Students in Massachusetts public schools would be covered by a policy barring personal devices during the school day.",
+        text: "Every public school or district would have to adopt a policy barring student use of personal devices.",
         quote: "policy",
       },
       {
-        text: "Students with an IEP, a 504 plan, or a written medical need could be allowed to use a device.",
+        text: "Students with an IEP or a 504 plan could be allowed to use a device.",
         quote: "iep",
       },
       {
@@ -419,7 +419,7 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
         effect: "direct",
         lines: [
           {
-            text: "Your child could not use or carry a personal phone during the school day, including at lunch and recess, unless an exception applied.",
+            text: "Your child could not use or carry a personal phone during the school day, including at lunch and recess.",
             quote: "all-day",
           },
           {
@@ -447,8 +447,8 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
 
     versionNotes: [
       {
-        text: "These lines describe the Senate's version. The House passed a different version.",
-        action: "For the text of House amendments, see H5366",
+        text: "These lines describe the Senate's version. The House passed the bill on April 8, 2026, by a vote of 129 to 25.",
+        action: "Passed to be engrossed - 129 YEAS to 25 NAYS",
       },
       {
         text: "A conference committee from both chambers is working out the differences.",
@@ -588,7 +588,7 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
 
     proposes: [
       {
-        text: "A state trust fund would help property owners with incomes up to 110 percent of the area median build an accessory dwelling unit, like an in-law or backyard apartment.",
+        text: "A state trust fund would help property owners with incomes up to 110 percent of median income build an accessory dwelling unit.",
         quote: "fund",
       },
       {
@@ -619,11 +619,11 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
         heading: "How it would run",
         lines: [
           {
-            text: "The state housing office would run it, directly or through one or more state housing agencies.",
+            text: "The state housing office would run it, directly or through contracts with one or more administering agencies.",
             quote: "admin",
           },
           {
-            text: "Those agencies could contract with nonprofit organizations to offer the help.",
+            text: "Those agencies could subcontract with nonprofit organizations set up under chapter 180 to offer the help.",
             quote: "nonprofits",
           },
           {
@@ -652,8 +652,12 @@ export const BILL_EXPLAINERS: Record<string, ExplainerDraft> = {
         effect: "direct",
         lines: [
           {
-            text: "If your income is at or below 110 percent of the area median, you could qualify for a grant or loan to build an accessory unit on your property.",
+            text: "If your income is at or below 110 percent of the area median, you could count as an eligible participant.",
             quote: "eligible",
+          },
+          {
+            text: "Eligible participants could get grants, loans, or other financial help to build an accessory dwelling unit.",
+            quote: "forms",
           },
         ],
       },

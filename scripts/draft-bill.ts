@@ -1,17 +1,23 @@
 // Ask a model to draft a bill explanation from the bill saved by
-// `npm run data:bills`, then check it with verifyExplainer in prune mode and
-// write it to data/drafts/<bill>.json. Sends only public text: the bill, its
-// official history, and the fixed fact list.
+// `npm run data:bills`, check that every quote is real (verifyExplainer, prune
+// mode), then have a separate model call judge whether each claim follows from
+// its evidence (support.ts). Writes data/drafts/<bill>.json with the draft and
+// the judgments. Sends only public text: the bill, its official history, and
+// the fixed fact list.
 //
-//   npm run data:draft -- S2836 [H4699 ...]
+//   npm run data:draft -- S2836 [H4699 ...]          draft, then check support
+//   npm run data:draft -- --check S2836 [...]        re-check a saved draft
+//   npm run data:draft -- --hand S2836 [...]         check a hand-written explainer
+//                                                    (report only, data/reviews/)
 //
 // build-civic uses a draft only for a bill with no hand-written explainer in
-// scripts/bills.content.ts (or with --prefer-drafts, to preview), and ships it
-// as an AI draft until a person reviews it.
+// scripts/bills.content.ts (or with --prefer-drafts, to preview), drops every
+// claim not judged supported, and ships the rest as an AI draft.
 import fs from "node:fs";
 import path from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
 import { DRAFT_SYSTEM, draftPrompt } from "@/lib/explain/prompt";
+import { applySupport, claimsOf, SUPPORT_SCHEMA, SUPPORT_SYSTEM, supportPrompt, type Judgment, type SupportRecord } from "@/lib/explain/support";
 import type { ExplainerDraft, HistoryEntry } from "@/lib/explain/types";
 import { allLines, EXPLAINER_DRAFT_SCHEMA, verifyExplainer } from "@/lib/explain/verify";
 import { BILL_EXPLAINERS } from "./bills.content";
@@ -20,6 +26,7 @@ const MODEL = "claude-opus-5";
 const root = path.resolve(__dirname, "..");
 const SAVED = path.join(root, "data/official/bills");
 const DRAFTS = path.join(root, "data/drafts");
+const REVIEWS = path.join(root, "data/reviews");
 
 interface Snapshot {
   fetchedOn: string;
@@ -34,6 +41,8 @@ export interface SavedDraft {
   /** The bill snapshot the draft was written from. */
   fetchedOn: string;
   draft: ExplainerDraft;
+  /** The support check; the build ships nothing from a draft without one. */
+  support?: SupportRecord;
 }
 
 function readBill(bill: string) {
@@ -48,56 +57,108 @@ function readBill(bill: string) {
   return { snap, text, history, title: snap.document.Title?.trim() ?? bill };
 }
 
-async function draftOne(client: Anthropic, bill: string, today: string): Promise<void> {
-  const { snap, text, history, title } = readBill(bill);
-  // Show the format with a reviewed draft for a different bill.
-  const exampleBill = Object.keys(BILL_EXPLAINERS).find((b) => b !== bill);
-  const example = exampleBill ? { bill: exampleBill, draft: BILL_EXPLAINERS[exampleBill] } : undefined;
-
+/** One structured-output call: the parsed JSON, the model that answered, and token counts. */
+async function callJson<T>(client: Anthropic, bill: string, system: string, prompt: string, schema: object): Promise<{ value: T; model: string; usage: string }> {
   const stream = client.beta.messages.stream({
     model: MODEL,
     max_tokens: 64000,
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default",
     thinking: { type: "adaptive" },
-    output_config: { effort: "high", format: { type: "json_schema", schema: EXPLAINER_DRAFT_SCHEMA as unknown as Record<string, unknown> } },
-    system: DRAFT_SYSTEM,
-    messages: [{ role: "user", content: draftPrompt({ bill, title, pinslip: snap.document.Pinslip, text, history, today, example }) }],
+    output_config: { effort: "high", format: { type: "json_schema", schema: schema as Record<string, unknown> } },
+    system,
+    messages: [{ role: "user", content: prompt }],
   });
   const message = await stream.finalMessage();
   if (message.stop_reason === "refusal") throw new Error(`${bill}: the model declined (${message.stop_details?.category ?? "no category"})`);
-  if (message.stop_reason === "max_tokens") throw new Error(`${bill}: the draft was cut off at max_tokens`);
+  if (message.stop_reason === "max_tokens") throw new Error(`${bill}: the response was cut off at max_tokens`);
   const block = message.content.find((b) => b.type === "text");
   if (!block || block.type !== "text") throw new Error(`${bill}: no text in the response`);
-  const draft: ExplainerDraft = { ...(JSON.parse(block.text) as Omit<ExplainerDraft, "author">), author: "model" };
+  return { value: JSON.parse(block.text) as T, model: message.model, usage: `${message.usage.input_tokens} in / ${message.usage.output_tokens} out tokens` };
+}
 
-  const saved: SavedDraft = { bill, model: message.model, generatedOn: today, fetchedOn: snap.fetchedOn, draft };
-  fs.mkdirSync(DRAFTS, { recursive: true });
-  fs.writeFileSync(path.join(DRAFTS, `${bill}.json`), JSON.stringify(saved, null, 2) + "\n");
+async function checkSupport(client: Anthropic, bill: string, draft: ExplainerDraft, history: HistoryEntry[], today: string): Promise<SupportRecord> {
+  const claims = claimsOf(draft, history);
+  const r = await callJson<{ judgments: Judgment[] }>(client, bill, SUPPORT_SYSTEM, supportPrompt(bill, claims), SUPPORT_SCHEMA);
+  const keys = new Set(claims.map((c) => c.key));
+  const judgments = r.value.judgments.filter((j) => keys.has(j.key));
+  console.log(`  support check: ${r.model}, ${r.usage}`);
+  return { model: r.model, checkedOn: today, judgments };
+}
 
-  // The same check the build runs, reported here so a person sees what would ship.
+function reportSupport(draft: ExplainerDraft, history: HistoryEntry[], support: SupportRecord) {
+  const claims = claimsOf(draft, history);
+  const by = new Map(support.judgments.map((j) => [j.key, j]));
+  const count = (v: string) => support.judgments.filter((j) => j.verdict === v).length;
+  console.log(`  claims judged: ${support.judgments.length} of ${claims.length} (backed ${count("backed")}, partly ${count("partly")}, unbacked ${count("unbacked")})`);
+  for (const c of claims) {
+    const j = by.get(c.key);
+    if (j?.verdict === "backed") continue;
+    console.log(`  ${j ? j.verdict.toUpperCase() : "NOT JUDGED"} ${c.key}: "${c.claim}"`);
+    if (j) console.log(`      ${j.reason}`);
+  }
+}
+
+async function draftOne(client: Anthropic, bill: string, today: string, mode: "draft" | "check" | "hand"): Promise<void> {
+  const { snap, text, history, title } = readBill(bill);
+  const file = path.join(DRAFTS, `${bill}.json`);
+  console.log(`\n${bill} (${mode})`);
+
+  if (mode === "hand") {
+    const hand = BILL_EXPLAINERS[bill];
+    if (!hand) throw new Error(`${bill}: no hand-written explainer in scripts/bills.content.ts`);
+    const support = await checkSupport(client, bill, hand, history, today);
+    reportSupport(hand, history, support);
+    fs.mkdirSync(REVIEWS, { recursive: true });
+    fs.writeFileSync(path.join(REVIEWS, `${bill}.support.json`), JSON.stringify({ bill, fetchedOn: snap.fetchedOn, ...support }, null, 2) + "\n");
+    console.log(`  wrote data/reviews/${bill}.support.json (a second opinion for the person reviewing; changes nothing)`);
+    return;
+  }
+
+  let saved: SavedDraft;
+  if (mode === "check") {
+    if (!fs.existsSync(file)) throw new Error(`${bill}: no saved draft; run npm run data:draft -- ${bill}`);
+    saved = JSON.parse(fs.readFileSync(file, "utf8")) as SavedDraft;
+  } else {
+    // Show the format with a hand-written draft for a different bill.
+    const exampleBill = Object.keys(BILL_EXPLAINERS).find((b) => b !== bill);
+    const example = exampleBill ? { bill: exampleBill, draft: BILL_EXPLAINERS[exampleBill] } : undefined;
+    const r = await callJson<Omit<ExplainerDraft, "author">>(client, bill, DRAFT_SYSTEM, draftPrompt({ bill, title, pinslip: snap.document.Pinslip, text, history, today, example }), EXPLAINER_DRAFT_SCHEMA);
+    console.log(`  draft: ${r.model}, ${r.usage}`);
+    saved = { bill, model: r.model, generatedOn: today, fetchedOn: snap.fetchedOn, draft: { ...r.value, author: "model" } };
+  }
+
+  // 1. Quotes real, wording rules held: the same check the build runs.
   const source = { kind: "bill" as const, id: bill, title, url: `https://malegislature.gov/Bills/194/${bill}`, file: `/official/bills/${bill}.json`, hash: "", savedOn: snap.fetchedOn };
-  const r = verifyExplainer({ draft, text, history, source, mode: "prune" });
-  const written = draft.proposes.length + draft.changes.reduce((n, g) => n + g.lines.length, 0) + draft.affects.length + draft.personal.reduce((n, p) => n + p.lines.length, 0) + draft.takesEffect.length;
-  const found = r.explainer.quotes.length;
-  console.log(`\n${bill}: ${message.model}, ${message.usage.input_tokens} in / ${message.usage.output_tokens} out tokens`);
-  console.log(`  quotes found word for word: ${found} of ${draft.quotes.length}`);
-  console.log(`  lines kept: ${allLines(r.explainer).length} of ${written}; version notes kept: ${r.explainer.versionNotes.length} of ${draft.versionNotes?.length ?? 0}`);
-  for (const d of r.dropped) console.log(`  dropped: ${d}`);
-  for (const e of r.errors) console.log(`  BLOCKS SHIPPING: ${e}`);
+  const machine = verifyExplainer({ draft: saved.draft, text, history, source, mode: "prune" });
+  console.log(`  quotes found word for word: ${machine.explainer.quotes.length} of ${saved.draft.quotes.length}`);
+  for (const d of machine.dropped) console.log(`  machine check dropped: ${d}`);
+
+  // 2. Each claim follows from its evidence.
+  saved.support = await checkSupport(client, bill, saved.draft, history, today);
+  reportSupport(saved.draft, history, saved.support);
+  fs.mkdirSync(DRAFTS, { recursive: true });
+  fs.writeFileSync(file, JSON.stringify(saved, null, 2) + "\n");
+
+  // What the build would ship: support-trimmed, then machine-checked.
+  const shipped = verifyExplainer({ draft: applySupport(saved.draft, saved.support.judgments).draft, text, history, source, mode: "prune" });
+  if (shipped.errors.length) console.log(`  WOULD NOT SHIP: ${shipped.errors.join("; ")}`);
+  else console.log(`  would ship as an AI draft: ${allLines(shipped.explainer).length} lines, ${shipped.explainer.versionNotes.length} version notes`);
   console.log(`  wrote data/drafts/${bill}.json`);
 }
 
 async function main() {
   // The key lives in .env.local (never committed); the shell environment wins if set.
   if (!process.env.ANTHROPIC_API_KEY && fs.existsSync(path.join(root, ".env.local"))) process.loadEnvFile(path.join(root, ".env.local"));
-  const bills = process.argv.slice(2).filter((a) => /^[HS]\d+$/.test(a));
-  if (!bills.length) throw new Error("usage: npm run data:draft -- S2836 [H4699 ...]");
+  const args = process.argv.slice(2);
+  const mode = args.includes("--hand") ? "hand" : args.includes("--check") ? "check" : "draft";
+  const bills = args.filter((a) => /^[HS]\d+$/.test(a));
+  if (!bills.length) throw new Error("usage: npm run data:draft -- [--check | --hand] S2836 [H4699 ...]");
   const client = new Anthropic();
   const today = new Date().toISOString().slice(0, 10);
   for (const bill of bills) {
     try {
-      await draftOne(client, bill, today);
+      await draftOne(client, bill, today, mode);
     } catch (e) {
       if (e instanceof Anthropic.AuthenticationError) throw new Error("No valid API key: set ANTHROPIC_API_KEY in .env.local or run ant auth login");
       if (e instanceof Anthropic.RateLimitError) throw new Error("Rate limited: try again in a minute");

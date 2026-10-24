@@ -6,6 +6,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import type { CivicItem } from "@/lib/engine/civic";
+import { applySupport, type SupportRecord } from "@/lib/explain/support";
 import type { ExplainerDraft } from "@/lib/explain/types";
 import { verifyExplainer } from "@/lib/explain/verify";
 import { findBannedWords } from "@/lib/vocab";
@@ -84,12 +85,20 @@ function billOriginal(c: (typeof CIVIC)[number]): Pick<CivicItem, "original" | "
     for (const e of r.errors) errors.push(`${c.id} explainer: ${e}`);
     explainer = r.explainer;
   } else if (fs.existsSync(generated)) {
-    const saved = JSON.parse(fs.readFileSync(generated, "utf8")) as { draft: ExplainerDraft; fetchedOn: string };
+    const saved = JSON.parse(fs.readFileSync(generated, "utf8")) as { draft: ExplainerDraft; fetchedOn: string; support?: SupportRecord };
     if (saved.fetchedOn !== snap.fetchedOn) warnings.push(`${c.id}: the AI draft was written from the ${saved.fetchedOn} snapshot; this one is ${snap.fetchedOn}`);
-    const r = verifyExplainer({ draft: { ...saved.draft, author: "model" }, text, history, source, mode: "prune" });
-    for (const d of r.dropped) warnings.push(`${c.id} AI draft dropped: ${d}`);
-    if (r.errors.length) warnings.push(`${c.id} AI draft not shipped: ${r.errors.join("; ")}`);
-    else explainer = r.explainer;
+    if (!saved.support) {
+      // Nothing unchecked ships: run npm run data:draft -- --check <bill>.
+      warnings.push(`${c.id} AI draft not shipped: no support check`);
+    } else {
+      // Keep only claims judged supported, then check quotes and wording.
+      const trimmed = applySupport({ ...saved.draft, author: "model" }, saved.support.judgments);
+      for (const j of trimmed.removed) warnings.push(`${c.id} AI draft removed (${j.verdict}) ${j.key}: ${j.reason}`);
+      const r = verifyExplainer({ draft: trimmed.draft, text, history, source, mode: "prune" });
+      for (const d of r.dropped) warnings.push(`${c.id} AI draft dropped: ${d}`);
+      if (r.errors.length) warnings.push(`${c.id} AI draft not shipped: ${r.errors.join("; ")}`);
+      else explainer = r.explainer;
+    }
   }
   return {
     explainer,
@@ -181,7 +190,7 @@ for (const s of seed.civic_items) {
   if (!used.has(s.id) && !EXCLUDED[s.id]) errors.push(`seed item ${s.id} is neither used nor excluded`);
 }
 if (PREFER_DRAFTS) warnings.push("--prefer-drafts: model drafts replace hand-written ones where both exist. Preview only; rebuild without the flag before committing.");
-for (const bill of Object.keys(BILL_EXPLAINERS)) {
+for (const bill of PREFER_DRAFTS ? [] : Object.keys(BILL_EXPLAINERS)) {
   if (!items.some((i) => i.explainer?.source.id === bill)) errors.push(`explainer for ${bill}: no bill item uses it`);
 }
 const ids = items.map((i) => i.id);

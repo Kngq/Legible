@@ -1,0 +1,53 @@
+{
+  "bill": "H4699",
+  "fetchedOn": "2026-10-24",
+  "model": "claude-opus-5",
+  "checkedOn": "2026-10-24",
+  "judgments": [
+    {
+      "key": "proposes.0",
+      "verdict": "backed",
+      "reason": "The passage establishes a special commission to study and define conditions for legalizing single-stair multi-family residential buildings up to six stories in Massachusetts."
+    },
+    {
+      "key": "proposes.1",
+      "verdict": "backed",
+      "reason": "The passage states the commission shall produce a building code amendment allowing such buildings, including measures mitigating health and safety impacts."
+    },
+    {
+      "key": "changes.0.0",
+      "verdict": "backed",
+      "reason": "The passage names a technical safety study comparing single-stair to two-staircase buildings plus a process map and timeline for implementation."
+    },
+    {
+      "key": "changes.0.1",
+      "verdict": "backed",
+      "reason": "The listed measures—smoke alarms, sprinkler systems, fire-resistant materials, and emergency exit strategies—appear verbatim in the passage."
+    },
+    {
+      "key": "changes.0.2",
+      "verdict": "backed",
+      "reason": "The passage says the study shall build on the named report produced by those three organizations."
+    },
+    {
+      "key": "changes.1.0",
+      "verdict": "backed",
+      "reason": "The passage designates the secretary of housing and livable communities or their designee as chair."
+    },
+    {
+      "key": "changes.1.1",
+      "verdict": "backed",
+      "reason": "Each category named in the claim corresponds to a membership slot listed in the passage."
+    },
+    {
+      "key": "affects.0",
+      "verdict": "backed",
+      "reason": "The listed interests all hold seats on the commission per the passage, and the drafting role is consistent with the bill's commission."
+    },
+    {
+      "key": "takesEffect.0",
+      "verdict": "backed",
+      "reason": "The passage sets the filing deadline of July 31, 2026 for the commission's study, with no added detail in the claim."
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "bill": "S2581",
+  "fetchedOn": "2026-10-24",
+  "model": "claude-opus-5",
+  "checkedOn": "2026-10-24",
+  "judgments": [
+    {
+      "key": "proposes.0",
+      "verdict": "backed",
+      "reason": "The passage states the policy prohibits use and actual possession of a personal electronic device during the school day, expressly including recess, lunch and time between classes."
+    },
+    {
+      "key": "proposes.1",
+      "verdict": "backed",
+      "reason": "The passage requires at least one method for parents and guardians to contact students during the school day, including policies for urgent emergency situations."
+    },
+    {
+      "key": "changes.0.0",
+      "verdict": "backed",
+      "reason": "The passage lists mobile phones, tablets, laptops, smartwatches and bluetooth devices and excludes school issued or sanctioned devices used for educational purposes."
+    },
+    {
+      "key": "changes.0.1",
+      "verdict": "backed",
+      "reason": "The passage states discipline for noncompliance shall not include expulsion or suspension and that enforcement shall ensure prevention of inequitable discipline."
+    },
+    {
+      "key": "changes.0.2",
+      "verdict": "backed",
+      "reason": "The passage permits variations aligned with grade-level developmental needs while barring use and possession unless authorized under subsection (b)."
+    },
+    {
+      "key": "changes.0.3",
+      "verdict": "backed",
+      "reason": "The passage states nothing limits a district from setting restrictions on school grounds or during school-sanctioned activities beyond the school day."
+    },
+    {
+      "key": "changes.1.0",
+      "verdict": "backed",
+      "reason": "The passage allows use in accordance with an IEP or a section 504 education plan."
+    },
+    {
+      "key": "changes.1.1",
+      "verdict": "backed",
+      "reason": "The passage allows use where a healthcare provider provides in writing that it is necessary to treat a student's health condition."
+    },
+    {
+      "key": "changes.1.2",
+      "verdict": "backed",
+      "reason": "The passage covers time spent off school grounds traveling to or from learning opportunities such as early college, dual enrollment or vocational sites."
+    },
+    {
+      "key": "changes.2.0",
+      "verdict": "backed",
+      "reason": "The passage requires approval by the school committee, board or other governing body and solicitation of public input prior to approval."
+    },
+    {
+      "key": "changes.2.1",
+      "verdict": "backed",
+      "reason": "The passage states the department's model policy goes into effect if no local policy is approved by September 1, until a local policy is approved."
+    },
+    {
+      "key": "changes.2.2",
+      "verdict": "backed",
+      "reason": "The passage requires the department to provide guidance, recommendations and a model policy to assist schools and districts."
+    },
+    {
+      "key": "changes.2.3",
+      "verdict": "backed",
+      "reason": "The passage requires annual notification to students and parents/guardians by September 1 and posting of the policy on the school website."
+    },
+    {
+      "key": "affects.0",
+      "verdict": "backed",
+      "reason": "The passage requires each public school or district to adopt a policy on prohibiting student use of a personal electronic device."
+    },
+    {
+      "key": "affects.1",
+      "verdict": "backed",
+      "reason": "The passage permits device use in accordance with an IEP or a section 504 plan."
+    },
+    {
+      "key": "affects.2",
+      "verdict": "backed",
+      "reason": "The passage requires approval by the school committee or other governing body and public input beforehand."
+    },
+    {
+      "key": "personal.0.0",
+      "verdict": "backed",
+      "reason": "The passage prohibits use and possession of a personal electronic device during the school day, including recess and lunch."
+    },
+    {
+      "key": "personal.0.1",
+      "verdict": "backed",
+      "reason": "The passage requires at least one method for parents to contact students during the school day, including emergency situations."
+    },
+    {
+      "key": "takesEffect.0",
+      "verdict": "backed",
+      "reason": "The passage requires adoption of a policy before the start of the 2026-2027 school year."
+    },
+    {
+      "key": "takesEffect.1",
+      "verdict": "backed",
+      "reason": "The passage requires the department of elementary and secondary education to report to legislative committees on implementation of the policies."
+    },
+    {
+      "key": "versionNotes.0",
+      "verdict": "backed",
+      "reason": "The history entry records the House passing the bill to be engrossed on April 8, 2026 by 129 yeas to 25 nays, and the bill is a Senate document."
+    },
+    {
+      "key": "versionNotes.1",
+      "verdict": "backed",
+      "reason": "The history entry records appointment of a committee of conference in concurrence, indicating both chambers' members are reconciling the versions."
+    }
+  ]
+}

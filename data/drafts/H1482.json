@@ -231,5 +231,131 @@
     "takesEffect": [],
     "versionNotes": [],
     "author": "model"
+  },
+  "support": {
+    "model": "claude-opus-5",
+    "checkedOn": "2026-10-24",
+    "judgments": [
+      {
+        "key": "proposes.0",
+        "verdict": "backed",
+        "reason": "The passage states the trust fund supports low- and moderate-income property owners (up to 110% of HUD median income) in building an accessory dwelling unit, and the \"in-law or backyard apartment\" phrasing is a plain-language gloss of that term."
+      },
+      {
+        "key": "proposes.1",
+        "verdict": "backed",
+        "reason": "The passage shows a new chapter titled Accessory Dwelling Unit Fund being inserted into the General Laws."
+      },
+      {
+        "key": "changes.0.0",
+        "verdict": "backed",
+        "reason": "The definition in the passage matches the claim's income threshold, source, and the label \"Eligible Participant.\""
+      },
+      {
+        "key": "changes.0.1",
+        "verdict": "backed",
+        "reason": "The passage defines accessory dwelling unit by reference to MGL Chapter 40A Section 1A, which the claim restates as the existing state zoning law definition."
+      },
+      {
+        "key": "changes.1.0",
+        "verdict": "backed",
+        "reason": "Each listed cost category and the grant/loan/other-assistance forms appear in the passage."
+      },
+      {
+        "key": "changes.1.1",
+        "verdict": "backed",
+        "reason": "The passage lists low and no interest loans, subsidies, and credit enhancements for supporting construction of accessory dwelling units."
+      },
+      {
+        "key": "changes.1.2",
+        "verdict": "backed",
+        "reason": "The passage states assistance shall be the minimum amount necessary to make a project feasible."
+      },
+      {
+        "key": "changes.2.0",
+        "verdict": "backed",
+        "reason": "The passage assigns administration to the Executive Office of Housing and Livable Communities or through contracts with administering agencies."
+      },
+      {
+        "key": "changes.2.1",
+        "verdict": "backed",
+        "reason": "The three named agencies match the list in the passage."
+      },
+      {
+        "key": "changes.2.2",
+        "verdict": "backed",
+        "reason": "The passage permits direct assistance, subcontracts with non-profit organizations, and additional program requirements set by the administering agency."
+      },
+      {
+        "key": "changes.2.3",
+        "verdict": "backed",
+        "reason": "The passage authorizes regulations by the housing office and guidelines issued in consultation with the Executive Office of Economic Development."
+      },
+      {
+        "key": "changes.3.0",
+        "verdict": "backed",
+        "reason": "The listed revenue sources match the credits to the fund described in the passage."
+      },
+      {
+        "key": "changes.3.1",
+        "verdict": "backed",
+        "reason": "The passage states money remaining at the end of a fiscal year shall not revert to the General Fund."
+      },
+      {
+        "key": "affects.0",
+        "verdict": "backed",
+        "reason": "The eligibility definition in the passage matches the income threshold and the purpose of building an accessory dwelling unit."
+      },
+      {
+        "key": "affects.1",
+        "verdict": "backed",
+        "reason": "The passage states the fund is administered by that office or through contracts with administering agencies."
+      },
+      {
+        "key": "affects.2",
+        "verdict": "backed",
+        "reason": "The passage allows an administering agency to enter subcontracts with non-profit organizations to offer the financial assistance."
+      },
+      {
+        "key": "personal.0.0",
+        "verdict": "backed",
+        "reason": "The passage ties the fund's support to property owners with incomes not more than 110 per cent of median income building an accessory dwelling unit."
+      },
+      {
+        "key": "personal.0.1",
+        "verdict": "backed",
+        "reason": "The passage lists design, site preparation, utility connection and permitting fees, and the grant/loan/reimbursement forms of aid."
+      },
+      {
+        "key": "personal.1.0",
+        "verdict": "backed",
+        "reason": "The passage authorizes low and no interest loans and grants for constructing accessory dwelling units, and the closing clause is a general hedged consequence adding no new specific fact."
+      },
+      {
+        "key": "personal.1.notStated",
+        "verdict": "backed",
+        "reason": "Single-family homes, mortgages, and house-buying terms were all among the searched words that do not appear."
+      },
+      {
+        "key": "personal.2.0",
+        "verdict": "backed",
+        "reason": "The passage authorizes financing for construction of accessory dwelling units, and the closing clause is a permitted general hedge."
+      },
+      {
+        "key": "personal.2.notStated",
+        "verdict": "backed",
+        "reason": "Tenant, renter, lease, and rental rate were all searched and absent, covering each item the claim says is missing."
+      },
+      {
+        "key": "personal.3.0",
+        "verdict": "backed",
+        "reason": "The passage describes support for low- and moderate-income property owners to build an accessory dwelling unit."
+      },
+      {
+        "key": "personal.3.notStated",
+        "verdict": "backed",
+        "reason": "Occupancy-related terms including occupant, family member, relative, and in-law were searched and do not appear."
+      }
+    ]
   }
 }

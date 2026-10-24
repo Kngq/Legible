@@ -1,0 +1,158 @@
+{
+  "bill": "S2836",
+  "fetchedOn": "2026-10-24",
+  "model": "claude-opus-5",
+  "checkedOn": "2026-10-24",
+  "judgments": [
+    {
+      "key": "proposes.0",
+      "verdict": "backed",
+      "reason": "The passage bars zoning from prohibiting duplexes or multi-family housing up to 5 units as of right on residentially zoned lots served by a municipal or centrally managed water and sewer system, which the claim restates in plain terms."
+    },
+    {
+      "key": "proposes.1",
+      "verdict": "backed",
+      "reason": "The passage requires as-of-right multifamily or mixed-use at a minimum of 15 units per acre with no minimum parking within 0.5 miles of commuter rail, subway, ferry, or bus stations, matching the claim."
+    },
+    {
+      "key": "changes.0.0",
+      "verdict": "backed",
+      "reason": "The passage allows up to 3 dwelling units as of right (i.e., without a special permit) on residential lots not connected to municipal or centrally managed water and sewer."
+    },
+    {
+      "key": "changes.0.1",
+      "verdict": "backed",
+      "reason": "The passage prohibits zoning from barring accessory dwelling units as of right where the principal dwelling contains more than one unit, as the claim states."
+    },
+    {
+      "key": "changes.0.2",
+      "verdict": "backed",
+      "reason": "The passage bars special permit or discretionary approval requirements for multi-family housing on religious-owned land and requires 20 percent affordable units, matching the claim."
+    },
+    {
+      "key": "changes.1.0",
+      "verdict": "backed",
+      "reason": "The passage permits reasonable site plan review and setback, bulk, and height regulations while barring height limits below 3 stories, as the claim describes."
+    },
+    {
+      "key": "changes.1.1",
+      "verdict": "backed",
+      "reason": "The passage allows short-term rental restrictions and prohibitions while barring regulations that individually or cumulatively render such development infeasible."
+    },
+    {
+      "key": "changes.2.0",
+      "verdict": "backed",
+      "reason": "The passage states no zoning ordinance or by-law shall impose a minimum lot size on new residential developments."
+    },
+    {
+      "key": "changes.2.1",
+      "verdict": "backed",
+      "reason": "The passage bars parking minimums within .5 miles of commuter rail, ferry, or bus stations and caps requirements at 1 space per unit beyond that distance, exactly as claimed."
+    },
+    {
+      "key": "changes.3.0",
+      "verdict": "backed",
+      "reason": "The passage directs the board to approve a plan meeting by-right subdivision criteria without a public hearing."
+    },
+    {
+      "key": "changes.3.1",
+      "verdict": "backed",
+      "reason": "The passage provides that failure to act (or notify) within 21 days results in approval as a by-right subdivision."
+    },
+    {
+      "key": "changes.3.2",
+      "verdict": "backed",
+      "reason": "The passage bars municipalities from enforcing ordinances restricting primarily residential construction that exceed the section's or DEP's requirements."
+    },
+    {
+      "key": "changes.3.3",
+      "verdict": "backed",
+      "reason": "The passage states regulations on minimum requirements for subsurface sewage disposal may not exceed the state environmental code for residential housing development."
+    },
+    {
+      "key": "changes.4.0",
+      "verdict": "backed",
+      "reason": "The passage sets the 15 percent at or below 80 percent AMI or 10 percent at or below 50 percent AMI set-aside for developments of 10 or more units permitted under the cited subsections."
+    },
+    {
+      "key": "changes.4.1",
+      "verdict": "backed",
+      "reason": "The passage requires each municipality to submit a housing production plan addressing its affordable housing needs to the state every 5 years."
+    },
+    {
+      "key": "changes.4.2",
+      "verdict": "backed",
+      "reason": "The passage gives municipalities 2 years from receiving an approved housing production plan to adopt or update zoning to comply."
+    },
+    {
+      "key": "changes.4.3",
+      "verdict": "backed",
+      "reason": "The passage requires the capital asset management commissioner with the housing secretary to determine, before disposition, whether state property should be made available for low or moderate income housing."
+    },
+    {
+      "key": "affects.0",
+      "verdict": "backed",
+      "reason": "The passage voids noncompliant local regulations if a municipality has not conformed by January 1, 2028, as the claim states."
+    },
+    {
+      "key": "affects.1",
+      "verdict": "backed",
+      "reason": "As-of-right permission for duplexes or up to 5 units on sewered residential lots means owners could build without a special permit."
+    },
+    {
+      "key": "affects.2",
+      "verdict": "backed",
+      "reason": "The passage reserves set-aside units for households at or below 80 percent or 50 percent of area median income in developments of 10 or more units."
+    },
+    {
+      "key": "personal.0.0",
+      "verdict": "backed",
+      "reason": "The passage's as-of-right allowance for duplexes or up to 5 units on residentially zoned, sewered lots matches the claim's personal framing."
+    },
+    {
+      "key": "personal.0.1",
+      "verdict": "backed",
+      "reason": "The passage prohibits minimum lot size requirements for new residential developments."
+    },
+    {
+      "key": "personal.1.0",
+      "verdict": "backed",
+      "reason": "The described effect follows from the as-of-right allowance, and the closing consequence stays hedged without adding new facts."
+    },
+    {
+      "key": "personal.1.notStated",
+      "verdict": "backed",
+      "reason": "Renters, tenants, leases, and rent levels are each covered by the searched terms that returned no results."
+    },
+    {
+      "key": "personal.2.0",
+      "verdict": "backed",
+      "reason": "The passage requires as-of-right 15-unit-per-acre multifamily with no parking minimums near rail, subway, ferry, and bus stations, and the added consequence is hedged."
+    },
+    {
+      "key": "personal.2.notStated",
+      "verdict": "backed",
+      "reason": "Fares, schedules, and the MBTA each correspond to searched words that do not appear."
+    },
+    {
+      "key": "personal.3.0",
+      "verdict": "backed",
+      "reason": "Barring minimum parking requirements near commuter rail, ferry, and bus stations directly allows new homes to be built with no parking spaces."
+    },
+    {
+      "key": "personal.3.notStated",
+      "verdict": "backed",
+      "reason": "Street parking and parking permits are both covered by the searched terms that returned no results."
+    },
+    {
+      "key": "takesEffect.0",
+      "verdict": "backed",
+      "reason": "The passage states Section 4 takes effect one year after the act's effective date."
+    },
+    {
+      "key": "takesEffect.1",
+      "verdict": "backed",
+      "reason": "The passage provides that noncompliant existing local regulations become null and void if the municipality has not conformed by the stated date."
+    }
+  ]
+}
