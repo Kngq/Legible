@@ -404,13 +404,23 @@ Home is one timeline (`buildTimeline` in `src/lib/engine/timeline.ts`). There is
 
 1. **Header.** Avatar with its completion ring, town name, "What is being decided near you", and "Your profile".
 2. **Nudge.** At most one card, for `nextItem(profile)` (see Onboarding).
-3. **Your timeline.** Groups Today, This week, Later, and "In the Legislature, no date yet". Within a group, soonest first, then items that touch the person. Each entry is a date tile beside a card:
+3. **Your timeline.** One list, ranked (below). Each entry is a date tile beside a card:
    - name;
    - when it is due, as a fact: "Open, closes in 6 days · Fri, Oct 30, 11:59 PM", "Voters decide in 10 days · Nov 3";
    - one sentence on what it is (the civic item's summary, or "9 statewide questions on your ballot.");
    - one sentence on how it reaches the person, accent-soft with a "For you" tag when it touches them: "For you, because you are not registered at your address.", "On your list: you follow housing costs.", "Applies to every voter in Massachusetts.";
    - for a ballot or warrant, the touching measures as links, then "See all 9 questions". A document's line names those measures; with none it reads "None of the questions points to your answers yet. Each applies to everyone in Massachusetts."
    Only items that touch the person, are on their list, or apply to everyone appear. A ballot is folded into the Election Day entry on the same date. Open windows sit under Today.
+
+   **Ranking.** Each entry gets `score = 0.65 × relevance + 0.35 × urgency`, highest first; ties go to the sooner date.
+
+   | Relevance | Value |
+   |---|---|
+   | Touches the person (a life fact matches, or a document has touching measures) | 1.0, plus 0.05 per extra match, capped at 1.2 |
+   | On their list (a followed subject) | 0.6 |
+   | Applies to everyone | 0.35 |
+
+   Urgency is `1 / (1 + days / 7)` to the day it is due (the closing day for an open window): today 1.0, a week 0.5, a month about 0.19. Undated bills get 0.1. With these weights, anything that touches the person outranks anything that only applies to everyone, even when that item is due today, and a followed subject due within a few days outranks an everyone item due today. The weights live in `WEIGHTS` in `src/lib/engine/timeline.ts`; tests pin these orderings. Everything runs in the browser.
 4. **Open questions for you.** Facts that feed documents ask and the profile has not settled, as the same Pick-all screens, generic copy only. Answering re-runs `buildCards` for every loaded document.
 5. **Decided.** Items whose `decideBy.date` has passed, collapsed by default, kept for reference with "Decided May 4".
 

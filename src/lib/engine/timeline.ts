@@ -5,23 +5,46 @@ import type { CivicCard } from "./civic";
 import { daysBetween, type FeedItem } from "./feed";
 import { measureNoun } from "./decide-by";
 
-export type TimelineGroup = "today" | "week" | "later" | "undated";
+/**
+ * Ranking: relevance first, time second, as one score so a near deadline can
+ * still lift an item within its tier.
+ *
+ *   score     = 0.65 * relevance + 0.35 * urgency
+ *   relevance = 1 + 0.05 per extra match (touches you, capped at 1.2)
+ *             | 0.6  (on your list) | 0.35 (applies to everyone)
+ *   urgency   = 1 / (1 + days / 7) to the due day (closing day for an open
+ *               window); 0.1 for undated bills
+ *
+ * With these weights anything that touches the person outranks anything that
+ * only applies to everyone, even when the latter is due today.
+ */
+export const WEIGHTS = { relevance: 0.65, urgency: 0.35 } as const;
 
-export const GROUP_LABEL: Record<TimelineGroup, string> = {
-  today: "Today",
-  week: "This week",
-  later: "Later",
-  undated: "In the Legislature, no date yet",
-};
+export function relevanceScore(level: "touches" | "list" | "everyone", matches = 1): number {
+  if (level === "touches") return Math.min(1.2, 1 + 0.05 * Math.max(0, matches - 1));
+  return level === "list" ? 0.6 : 0.35;
+}
 
-export type TimelineEntry =
-  | { kind: "civic"; key: string; date?: string; group: TimelineGroup; card: CivicCard; forYou: string; touches: boolean; ballot?: FeedItem }
-  | { kind: "doc"; key: string; date?: string; group: TimelineGroup; item: FeedItem; forYou: string; touches: boolean };
+export function urgencyScore(days?: number): number {
+  if (days === undefined) return 0.1;
+  return 1 / (1 + Math.max(0, days) / 7);
+}
 
-function groupFor(today: string, date?: string): TimelineGroup {
-  if (!date) return "undated";
-  const n = daysBetween(today, date);
-  return n <= 0 ? "today" : n <= 7 ? "week" : "later";
+export type TimelineEntry = {
+  key: string;
+  /** Day shown on the tile, YYYY-MM-DD. Today for an open window. */
+  date?: string;
+  /** Days until it is due: the deadline, the meeting, or the window's close. */
+  days?: number;
+  relevance: number;
+  urgency: number;
+  score: number;
+  forYou: string;
+  touches: boolean;
+} & ({ kind: "civic"; card: CivicCard; ballot?: FeedItem } | { kind: "doc"; item: FeedItem });
+
+function scored<T extends { relevance: number; urgency: number }>(e: T): T & { score: number } {
+  return { ...e, score: WEIGHTS.relevance * e.relevance + WEIGHTS.urgency * e.urgency };
 }
 
 /** One line on how a civic item reaches the person. */
@@ -56,42 +79,53 @@ export function docWhat(item: FeedItem): string {
 
 /**
  * Upcoming documents and civic items that relate to the person (touch them, are on
- * their list, or apply to everyone), soonest first. A ballot is folded into the
- * election on its date instead of appearing twice.
+ * their list, or apply to everyone), most relevant and soonest first. A ballot is
+ * folded into the election on its date instead of appearing twice.
  */
 export function buildTimeline(docs: FeedItem[], civic: CivicCard[], today: string): TimelineEntry[] {
-  const entries: TimelineEntry[] = [];
-  const elections = new Map<string, Extract<TimelineEntry, { kind: "civic" }>>();
+  type CivicEntry = Extract<TimelineEntry, { kind: "civic" }>;
+  const civicEntries: CivicEntry[] = [];
+  const elections = new Map<string, number>();
 
   for (const c of civic) {
     if (c.timing === "past") continue;
-    if (c.relevance === "probably_not" && !c.onYourList) continue;
+    const level = c.relevance === "touches" ? "touches" : c.onYourList ? "list" : c.relevance === "everyone" ? "everyone" : null;
+    if (!level) continue;
     const date = c.item.at ? (c.timing === "open" ? today : c.item.at.slice(0, 10)) : undefined;
-    const e = { kind: "civic" as const, key: `c:${c.item.id}`, date, group: groupFor(today, date), card: c, forYou: civicForYou(c), touches: c.relevance === "touches" };
-    if (c.item.kind === "election" && date) elections.set(date, e);
-    entries.push(e);
+    const days = c.item.at ? daysBetween(today, (c.timing === "open" && c.item.until ? c.item.until : c.item.at).slice(0, 10)) : undefined;
+    if (c.item.kind === "election" && date) elections.set(date, civicEntries.length);
+    civicEntries.push({
+      kind: "civic",
+      key: `c:${c.item.id}`,
+      date,
+      days,
+      relevance: relevanceScore(level, c.because.length),
+      urgency: urgencyScore(days),
+      score: 0,
+      card: c,
+      forYou: civicForYou(c),
+      touches: level === "touches",
+    });
   }
 
+  const docEntries: TimelineEntry[] = [];
   for (const item of docs) {
     if (item.status !== "upcoming") continue;
     const date = item.doc.decideBy?.date;
-    const touches = item.touches > 0;
-    const election = date && item.doc.docType === "ballot" ? elections.get(date) : undefined;
-    if (election) {
-      election.ballot = item;
-      election.forYou = docForYou(item);
-      election.touches = election.touches || touches;
+    const days = date ? daysBetween(today, date) : undefined;
+    const listed = item.cards.some((c) => c.onYourList);
+    const level = item.touches > 0 ? "touches" : listed ? "list" : "everyone";
+    const relevance = relevanceScore(level, item.touches);
+    const at = date && item.doc.docType === "ballot" ? elections.get(date) : undefined;
+    if (at !== undefined) {
+      const e = civicEntries[at];
+      civicEntries[at] = { ...e, ballot: item, forYou: docForYou(item), touches: e.touches || level === "touches", relevance: Math.max(e.relevance, relevance) };
       continue;
     }
-    entries.push({ kind: "doc", key: `d:${item.doc.id}`, date, group: groupFor(today, date), item, forYou: docForYou(item), touches });
+    docEntries.push({ kind: "doc", key: `d:${item.doc.id}`, date, days, relevance, urgency: urgencyScore(days), score: 0, item, forYou: docForYou(item), touches: level === "touches" });
   }
 
-  const order: TimelineGroup[] = ["today", "week", "later", "undated"];
-  return entries.sort(
-    (a, b) =>
-      order.indexOf(a.group) - order.indexOf(b.group) ||
-      (a.date ?? "").localeCompare(b.date ?? "") ||
-      Number(b.touches) - Number(a.touches) ||
-      a.key.localeCompare(b.key),
-  );
+  return [...civicEntries, ...docEntries]
+    .map(scored)
+    .sort((a, b) => b.score - a.score || (a.days ?? Infinity) - (b.days ?? Infinity) || a.key.localeCompare(b.key));
 }

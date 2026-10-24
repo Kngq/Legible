@@ -10,7 +10,7 @@ import { dateTime, timingTag } from "@/lib/engine/civic-copy";
 import type { Feed, FeedItem } from "@/lib/engine/feed";
 import { nextItem, personalization, type ChecklistItem } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
-import { buildTimeline, docWhat, GROUP_LABEL, type TimelineEntry, type TimelineGroup } from "@/lib/engine/timeline";
+import { buildTimeline, docWhat, type TimelineEntry } from "@/lib/engine/timeline";
 import type { Provenance } from "@/lib/engine/types";
 import { LIFE_AREAS } from "@/lib/vocab";
 import { AvatarRing } from "./AvatarRing";
@@ -65,9 +65,6 @@ export function Home({
   const nudge = nudgeDismissed ? null : nextItem(profile);
   const decided = feed.items.filter((i) => i.status === "decided");
   const timeline = buildTimeline(feed.items, civic, today);
-  const groups = (["today", "week", "later", "undated"] as TimelineGroup[])
-    .map((g) => ({ g, entries: timeline.filter((e) => e.group === g) }))
-    .filter((x) => x.entries.length);
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 pb-16 pt-4 sm:px-6 lg:pt-8">
@@ -104,26 +101,21 @@ export function Home({
         <h1 id="h-timeline" className="text-title">
           Your timeline
         </h1>
-        <p className="mt-1 text-small text-muted-foreground">Deadlines, votes, and meetings that relate to you, soonest first. Each one says why it is here.</p>
+        <p className="mt-1 text-small text-muted-foreground">Deadlines, votes, and meetings, most relevant to you first, then soonest. Each one says why it is here.</p>
 
-        {groups.map(({ g, entries }) => (
-          <div key={g} className="mt-6">
-            <h2 className="text-small font-semibold uppercase tracking-wider text-muted-foreground">{GROUP_LABEL[g]}</h2>
-            <ol className="mt-3">
-              {entries.map((e, i) => (
-                <TimelineRow
-                  key={e.key}
-                  entry={e}
-                  today={today}
-                  last={i === entries.length - 1}
-                  onOpenItem={onOpenItem}
-                  onOpenDoc={onOpenDoc}
-                  onOpenMeasure={onOpenMeasure}
-                />
-              ))}
-            </ol>
-          </div>
-        ))}
+        <ol className="mt-5">
+          {timeline.map((e, i) => (
+            <TimelineRow
+              key={e.key}
+              entry={e}
+              today={today}
+              last={i === timeline.length - 1}
+              onOpenItem={onOpenItem}
+              onOpenDoc={onOpenDoc}
+              onOpenMeasure={onOpenMeasure}
+            />
+          ))}
+        </ol>
       </section>
 
       {!feed.items.some((i) => i.scope === "town") && (
@@ -236,7 +228,7 @@ function TimelineRow({
   const open = () => (e.kind === "doc" ? onOpenDoc(e.item.doc.id) : onOpenItem(e.card.item.id));
   const ballot = e.kind === "doc" ? e.item : e.ballot;
   const touching = ballot ? ballot.cards.filter((c) => c.relevance === "touches") : [];
-  const soon = e.group === "today";
+  const soon = e.days !== undefined && e.days <= 0;
 
   return (
     <li className="relative flex gap-4 pb-5">

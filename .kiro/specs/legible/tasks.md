@@ -129,6 +129,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 20.9_
   - [x] 17.8 Render civic cards in the feed and let Up next consider them
   - [x] 17.9 Replace the feed sections (Up next, scope switch, carousels, Coming up, Documents) with one timeline: name, due, what it is, how it reaches you; ballot folded into Election Day
+  - [x] 17.10 Rank the timeline by relevance and time together (`score = 0.65 relevance + 0.35 urgency`), with tests
     - _Requirements: 20.5, 20.9_
   - [ ] 17.6 Add uploaded and sample documents to the feed in memory, tagged by town
     - _Requirements: 20.8_
