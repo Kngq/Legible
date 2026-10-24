@@ -59,7 +59,7 @@ const HEADLINES: Record<string, string> = {
   "ma-2026-registration-deadline": "Last chance to register for the November 3 election",
   "ma-2026-mail-ballot-deadline": "Vote by mail: applications are due October 27",
   "ma-2026-election-day": "Get ready for the November 3 election",
-  "ma-194-s2836": "Cities and towns could no longer ban duplexes and small apartment buildings",
+  "ma-194-s2836": "A bill to limit local bans on duplexes and small apartment buildings",
   "ma-194-s2581": "A proposed ban on student phone use during the school day",
   "ma-194-h4699": "A proposed study of apartment buildings with one stairway",
   "ma-194-h1482": "A proposed fund for in-law and backyard apartments",

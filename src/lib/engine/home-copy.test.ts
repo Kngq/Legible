@@ -28,7 +28,7 @@ const sections = (p: Profile) => {
 describe("headline and explanation", () => {
   it("reads like a sentence, keeps the bill number in the date line, and never calls a bill law", () => {
     const c = card("ma-194-s2836");
-    expect(headline(c)).toBe("Cities and towns could no longer ban duplexes and small apartment buildings");
+    expect(headline(c)).toBe("A bill to limit local bans on duplexes and small apartment buildings");
     expect(billNumber(c.item.title)).toBe("S.2836");
     const e = buildTimeline([], civicFeed(items, withFacts({ rents: true }), today), today).find((x) => x.key === "c:ma-194-s2836")!;
     expect(dateLine(e, today)).toBe("S.2836 · Under consideration");
