@@ -14,6 +14,8 @@ inclusion: always
 
 ## Commands
 
+Setup, checks, and the content pipeline are in `development.md`.
+
 ```bash
 npm run dev        # http://localhost:3000
 npm run build
@@ -38,4 +40,4 @@ npm run data:draft -- <bill>  # model-drafted bill explainer, verified and suppo
 
 ## Working agreement
 
-After every meaningful change that works, commit with a descriptive message.
+See `development.md`.

@@ -23,7 +23,9 @@ public/official/          Official booklet PDF, per-question page text, bill rea
 scripts/                  Content builds (data:build, data:bills, data:civic, data:draft) and hand-written content
 data/                     Raw sources, saved official text, model drafts, reviews (not shipped)
 docs/                     Original spec, decisions log, accounts review, pitch, README screenshots
+.kiro/steering/           Product, tech, structure, and development rules (always included)
 .kiro/specs/legible/      Requirements, design, tasks (source of truth for scope)
+.kiro/specs/ballot-wrapped/  Ballot, Wrapped share feature: requirements, design, tasks
 ```
 
 Planned, not built yet: `src/app/api/analyze/` (uploads, task 9.3), `src/lib/analyze/` (task 20.1), `public/catalog/` and `public/docs/` (tasks 17.2, 20.2), `public/demo/` (task 9.5).

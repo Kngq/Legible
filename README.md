@@ -18,7 +18,7 @@ Legible was developed spec-first with [Kiro](https://kiro.dev). Everything in th
 
 | Folder | What it holds | Role |
 |---|---|---|
-| [`.kiro/steering/`](.kiro/steering/) | [`product.md`](.kiro/steering/product.md), [`tech.md`](.kiro/steering/tech.md), [`structure.md`](.kiro/steering/structure.md) | Standing rules included in every session: the product's non-negotiable principles, the stack, and where code lives |
+| [`.kiro/steering/`](.kiro/steering/) | [`product.md`](.kiro/steering/product.md), [`tech.md`](.kiro/steering/tech.md), [`structure.md`](.kiro/steering/structure.md), [`development.md`](.kiro/steering/development.md) | Standing rules included in every session: the product's non-negotiable principles, the stack, where code lives, and how to set up, check, and change the code |
 | [`.kiro/specs/legible/`](.kiro/specs/legible/) | [`requirements.md`](.kiro/specs/legible/requirements.md), [`design.md`](.kiro/specs/legible/design.md), [`tasks.md`](.kiro/specs/legible/tasks.md) | The feature spec: 23 requirements in EARS form, the technical design, and the implementation plan, with each task linked to the requirements it satisfies |
 
 The spec is the source of truth for scope. It replaced the original draft in [`docs/spec.md`](docs/spec.md) on the morning of the event ([`docs/DECISIONS.md`](docs/DECISIONS.md), "Morning of Oct 24: scope reset"), and it has been updated alongside the code all day: **68 of the repository's 129 commits change a file under `.kiro/`**.
@@ -142,7 +142,16 @@ Full detail: [`design.md`](.kiro/specs/legible/design.md) and [`structure.md`](.
 
 ---
 
-## Getting started
+## Development
+
+Development is driven by the Kiro steering and specs. Open the repository in [Kiro](https://kiro.dev) and the four steering files are included in every session. The full setup, checks, working agreement, and content pipeline are in [`.kiro/steering/development.md`](.kiro/steering/development.md).
+
+1. **Find the task.** Scope lives in [`.kiro/specs/legible/tasks.md`](.kiro/specs/legible/tasks.md) (and [`.kiro/specs/ballot-wrapped/`](.kiro/specs/ballot-wrapped/) for the share feature). If a change alters scope, update [`requirements.md`](.kiro/specs/legible/requirements.md) or [`design.md`](.kiro/specs/legible/design.md) first.
+2. **Build within the steering rules.** [`product.md`](.kiro/steering/product.md) holds the principles the code must keep; [`structure.md`](.kiro/steering/structure.md) says where the code goes.
+3. **Check.** Run the type check, lint, banned-word lint, tests, and build below.
+4. **Close the loop.** Tick the task in `tasks.md` and commit.
+
+### Getting started
 
 Requirements: Node.js 20.9 or later (developed on Node 24) and npm.
 
@@ -157,6 +166,7 @@ The app runs without an API key. Ask Kiro then shows the official passage and it
 | Command | What it does |
 |---|---|
 | `npm run dev` | Development server (Turbopack) |
+| `npx tsc --noEmit` | Type check (run `npm run dev` or `npm run build` once first) |
 | `npm run build` | Production build |
 | `npm test` | Vitest: engine, profile, ranking, verification, copy |
 | `npm run lint` | ESLint |
@@ -173,8 +183,9 @@ The app runs without an API key. Ask Kiro then shows the official passage and it
 ## Repository map
 
 ```
-.kiro/steering/           Product principles, tech stack, structure (always included)
+.kiro/steering/           Product principles, tech stack, structure, development workflow (always included)
 .kiro/specs/legible/      requirements.md, design.md, tasks.md: the source of truth for scope
+.kiro/specs/ballot-wrapped/  Spec for the Ballot, Wrapped share feature
 src/app/                  App Router: the single-page app, web app manifest, and the /api/ask and /api/suggest routes
 src/components/           Screens and UI (For you, Explore, ballot guide, reader, profile sheet, plant)
 src/lib/engine/           Pure personalization, ranking, and copy helpers
