@@ -25,23 +25,23 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 2.3, 8.1_
 
 - [ ] 3. Personalization engine (A)
-  - [ ] 3.1 Implement `buildCards` with relevance, direction, why, because, pending questions, and sort order
+  - [x] 3.1 Implement `buildCards` with relevance, direction, why, because, pending questions, and sort order
     - _Requirements: 3.2, 3.3, 3.4, 3.6, 3.7, 4.3, 6.1_
-  - [ ] 3.2 Test the three personas, the empty profile, contradictory facts, and topics without facts
+  - [x] 3.2 Test the three personas, the empty profile, contradictory facts, and topics without facts
     - _Requirements: 3.6, 3.7, 9.1_
 
 - [ ] 4. Visual system and shell (B)
   - [ ] 4.1 Define design tokens, fonts, type scale, easing, and reduced-motion handling
     - _Requirements: 16.3_
-  - [ ] 4.2 Build the start screen with the town picker and continue-without-town
+  - [x] 4.2 Build the start screen with the town picker and continue-without-town
     - _Requirements: 1.1, 1.2, 1.3_
-  - [ ] 4.3 Build the ballot layout with header, card list, collapsed "Probably not you" group, and 375 px layout
+  - [x] 4.3 Build the ballot layout with header, card list, collapsed "Probably not you" group, and 375 px layout
     - _Requirements: 3.4, 16.1_
 
 - [ ] 5. Cards (B)
-  - [ ] 5.1 Build the card with labels, verbatim YES and NO, official link, and cached-quote fallback
+  - [x] 5.1 Build the card with labels, verbatim YES and NO, official link, and cached-quote fallback
     - _Requirements: 2.1, 2.3, 2.4, 3.3_
-  - [ ] 5.2 Add the inline life-fact question and live re-sort with position animation
+  - [x] 5.2 Add the inline life-fact question and live re-sort with position animation
     - _Requirements: 3.1, 3.2, 3.5_
   - [ ] 5.3 Add because chips that open the fact or topic for editing
     - _Requirements: 6.1, 6.2_
@@ -67,7 +67,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 9.1, 9.2, 9.3_
   - [ ] 8.2 Add the `apiFetch` wrapper and the "What left your browser" panel
     - _Requirements: 10.1, 10.2_
-  - [ ] 8.3 Add "Remember on this device" with guarded storage and "Forget me"
+  - [x] 8.3 Add "Remember on this device" with guarded storage and "Forget me"
     - _Requirements: 10.4, 10.5_
   - [ ] 8.4 Verify offline re-sort and that no request contains profile data
     - _Requirements: 10.1, 10.3_
@@ -103,7 +103,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 1.2, 1.4, 1.5_
   - [ ] 16.6 Bundle the Massachusetts ZIP-to-town table from the Census ZCTA relationship file, with a lookup and tests
     - _Requirements: 1.1_
-  - [ ] 16.7 Build the onboarding avatar that gains one part per answer
+  - [x] 16.7 Build the onboarding avatar that gains one part per answer
     - _Requirements: 1.2, 1.4, 1.5_
   - [ ] 16.2 Store skipped facts and enforce ask-once-more inside cards
     - _Requirements: 1.6_

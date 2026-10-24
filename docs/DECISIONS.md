@@ -52,3 +52,16 @@ The Kiro spec in `.kiro/specs/nine/` is now the source of truth for scope. It su
 7. **Uploads send text, not PDF bytes.** Extraction happens in the browser. The model returns quotes as JSON and the app verifies them itself, because the API's built-in citations cannot be combined with structured output.
 8. **No RAG.** Every document fits in one model call. Retrieval is a post-hackathon idea.
 9. **Persona switcher** ("see it as someone else") doubles as the demo path.
+
+## Oct 24 afternoon: first screens (onboarding, avatar, home)
+Smallest choices made where the spec was silent. Revisit any of them freely.
+
+1. **No DESIGN.md existed.** Visual direction comes from `.kiro/specs/nine/design.md` and the tokens in `globals.css` (the violet, periwinkle, coral, green reference palette). Flat fills only, no glass or blur.
+2. **Town by name, not ZIP.** The ZIP table (task 16.6) is not built, so screen 1 is a type-ahead over `towns.json`, matching neighborhood aliases ("Dorchester is in Boston"). Swap in the ZIP field when 16.6 lands.
+3. **Catalog is bundled.** Home imports `src/data/ballot-2026.json` directly until `public/catalog/ma.json` (task 17) exists.
+4. **Town scope without town documents.** "In {town}" shows an honest empty state for town documents, plus the state questions with a town-level effect. Those sentences live in `LOCAL_REACH` (`src/lib/engine/next-steps.ts`) and each cites an existing quote id; a test checks this.
+5. **Next steps are civic actions, never a vote:** answer the card's question, look up registration (Q4 when not registered), read YES and NO, or draft a factual question to a legislator (template, at most 80 words, never sent, no life facts). The registration URL is the Secretary's lookup page and needs a manual check, since the site is bot-walled for scripts.
+6. **Event hero.** The ballot's `date` drives a "N days until Election Day" card; the dot chart shows the nine questions, taller columns for the ones that touch you.
+7. **Scope switch.** All, Statewide, {town}: a filter in the browser only.
+8. **Because chips** open an inline Yes/No/Remove editor on the card instead of reopening onboarding at that screen.
+9. **Re-sort animation** uses the View Transitions API when present and motion is allowed; otherwise the list jumps.

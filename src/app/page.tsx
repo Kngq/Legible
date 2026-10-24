@@ -1,3 +1,5 @@
-export default function Home() {
-  return <main />;
+import { NineApp } from "@/components/NineApp";
+
+export default function Page() {
+  return <NineApp />;
 }
