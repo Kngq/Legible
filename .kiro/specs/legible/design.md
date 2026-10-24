@@ -2,10 +2,11 @@
 
 ## Overview
 
-Legible is a mostly client-side Next.js app. Documents are plain JSON in one shared format, listed in a public catalog. A short onboarding builds a life profile in the browser. The home feed fetches the whole catalog and filters it locally to the person's state and town. A pure engine combines any document with the profile and returns sorted cards. A reliability layer traces every sentence to a fingerprinted source. Only two server routes exist, and neither ever receives the profile:
+Legible is a mostly client-side Next.js app. Documents are plain JSON in one shared format, listed in a public catalog. A short onboarding builds a life profile in the browser. The home feed fetches the whole catalog and filters it locally to the person's state and town. A pure engine combines any document with the profile and returns sorted cards. A reliability layer traces every sentence to a fingerprinted source. Server routes never receive the profile (the one exception is the opt-in fact phrases described under "Chat dock"):
 
-- `POST /api/analyze` turns the page text of an uploaded PDF into draft measures.
-- `POST /api/ask` answers a question about one measure from its official text.
+- `POST /api/ask` answers a question about official text (a ballot question, a bill, or an official date) from that text only.
+- `POST /api/suggest` proposes three questions about a highlighted official passage.
+- `POST /api/analyze` (planned, task 9.3) will turn the page text of an uploaded PDF into draft measures.
 
 Everything that makes the app trustworthy is ordinary deterministic code: the fixed vocabularies, the sorting rules, the quote verifier, and the banned-word lint. The model only drafts content that this code then checks.
 
@@ -26,14 +27,18 @@ flowchart LR
     NL[Network log] --> PRIV[What left your browser panel]
   end
   subgraph Server
-    A["/api/analyze"] --> C[(Claude claude-opus-5)]
+    A["/api/analyze (planned)"] --> C[(Claude API)]
     Q["/api/ask"] --> C
+    S["/api/suggest"] --> C
   end
   X -- page text only --> A
   A -- draft measures --> V
   V --> D
-  UI -- measure id + question --> Q
+  UI -- source id + highlight + question --> Q
+  UI -- source id + highlight --> S
 ```
+
+Models: `/api/ask` and `/api/suggest` use `claude-sonnet-5`; build-time bill drafting (`npm run data:draft`) uses `claude-opus-5`. The analyze route and ingest below are planned with `claude-opus-5`.
 
 All client requests go through one `apiFetch` wrapper that records each request's route and payload categories for the privacy panel. Profile state is never passed to that wrapper.
 
