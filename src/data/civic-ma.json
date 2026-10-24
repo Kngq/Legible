@@ -441,6 +441,12 @@
     "check": {
       "kind": "page",
       "checkedOn": "2026-10-24"
+    },
+    "original": {
+      "kind": "none",
+      "label": "No agenda posted yet",
+      "url": "https://www.cambridgema.gov/citycouncil",
+      "note": "No agenda is posted for this meeting yet. When it is posted, Legible saves it here with its fingerprint. Until then, the official page has the latest."
     }
   },
   {
@@ -478,6 +484,12 @@
     "check": {
       "kind": "page",
       "checkedOn": "2026-10-24"
+    },
+    "original": {
+      "kind": "none",
+      "label": "No agenda posted yet",
+      "url": "https://www.cambridgema.gov/citycouncil",
+      "note": "No agenda is posted for this meeting yet. When it is posted, Legible saves it here with its fingerprint. Until then, the official page has the latest."
     }
   },
   {
@@ -515,6 +527,12 @@
     "check": {
       "kind": "page",
       "checkedOn": "2026-10-24"
+    },
+    "original": {
+      "kind": "none",
+      "label": "No agenda posted yet",
+      "url": "https://www.cambridgema.gov/citycouncil",
+      "note": "No agenda is posted for this meeting yet. When it is posted, Legible saves it here with its fingerprint. Until then, the official page has the latest."
     }
   },
   {
@@ -552,6 +570,12 @@
     "check": {
       "kind": "page",
       "checkedOn": "2026-10-24"
+    },
+    "original": {
+      "kind": "none",
+      "label": "No agenda posted yet",
+      "url": "https://www.cambridgema.gov/citycouncil",
+      "note": "No agenda is posted for this meeting yet. When it is posted, Legible saves it here with its fingerprint. Until then, the official page has the latest."
     }
   },
   {
@@ -591,6 +615,12 @@
       "kind": "schedule",
       "checkedOn": "2026-10-24",
       "rule": "first and third Tuesday, 6 p.m., September through June"
+    },
+    "original": {
+      "kind": "none",
+      "label": "No agenda posted yet",
+      "url": "https://www.cpsd.us/school-committee/overview",
+      "note": "No agenda is posted for this meeting yet. When it is posted, Legible saves it here with its fingerprint. Until then, the official page has the latest."
     }
   },
   {
@@ -630,6 +660,12 @@
       "kind": "schedule",
       "checkedOn": "2026-10-24",
       "rule": "first and third Tuesday, 6 p.m., September through June"
+    },
+    "original": {
+      "kind": "none",
+      "label": "No agenda posted yet",
+      "url": "https://www.cpsd.us/school-committee/overview",
+      "note": "No agenda is posted for this meeting yet. When it is posted, Legible saves it here with its fingerprint. Until then, the official page has the latest."
     }
   }
 ]

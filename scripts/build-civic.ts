@@ -79,6 +79,41 @@ function billOriginal(c: (typeof CIVIC)[number]): Pick<CivicItem, "original" | "
   };
 }
 
+const AGENDAS_SAVED = path.join(root, "data/official/agendas");
+const AGENDAS_PUBLIC = path.join(root, "public/official/agendas");
+
+/**
+ * A meeting's original is its posted agenda. Save the PDF as
+ * data/official/agendas/<item id>.pdf once it is posted; until then the item says
+ * no agenda is posted (none), and never lists agenda items.
+ */
+function meetingOriginal(c: (typeof CIVIC)[number]): Pick<CivicItem, "original"> {
+  const file = path.join(AGENDAS_SAVED, `${c.id}.pdf`);
+  if (fs.existsSync(file)) {
+    const raw = fs.readFileSync(file);
+    fs.mkdirSync(AGENDAS_PUBLIC, { recursive: true });
+    fs.copyFileSync(file, path.join(AGENDAS_PUBLIC, `${c.id}.pdf`));
+    return {
+      original: {
+        kind: "agenda",
+        label: `Posted agenda, saved ${fs.statSync(file).mtime.toISOString().slice(0, 10)}`,
+        file: `/official/agendas/${c.id}.pdf`,
+        url: c.source.url,
+        hash: crypto.createHash("sha256").update(raw).digest("hex"),
+        savedOn: fs.statSync(file).mtime.toISOString().slice(0, 10),
+      },
+    };
+  }
+  return {
+    original: {
+      kind: "none",
+      label: "No agenda posted yet",
+      url: c.source.url,
+      note: "No agenda is posted for this meeting yet. When it is posted, Legible saves it here with its fingerprint. Until then, the official page has the latest.",
+    },
+  };
+}
+
 const items: CivicItem[] = CIVIC.map((c) => {
   const { seedId: _seedId, check, ...rest } = c;
   void _seedId;
@@ -109,6 +144,7 @@ const items: CivicItem[] = CIVIC.map((c) => {
     };
   }
   if (c.kind === "bill") return { ...rest, check, ...billOriginal(c) };
+  if (c.kind === "meeting") return { ...rest, check, ...meetingOriginal(c) };
   return { ...rest, check };
 });
 
@@ -124,6 +160,7 @@ if (errors.length) {
   process.exit(1);
 }
 
+for (const i of items) if (!i.original) errors.push(`${i.id}: no original, and no statement that none exists`);
 for (const w of warnings) console.warn(`warning: ${w}`);
 const out = path.join(root, "src/data/civic-ma.json");
 fs.writeFileSync(out, JSON.stringify(items, null, 2) + "\n");

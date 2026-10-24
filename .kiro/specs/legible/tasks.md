@@ -157,7 +157,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [ ] 21.2 Fingerprints: SHA-256 of each source file and page text, and the saved date. Ballot done (source.hash, pagesHash, savedOn; shown on the full law and in How do we know this?); civic items come with 21.3–21.5
   - [x] 21.3 Election dates: CivicItem.original (kind, label, verbatim text, saved file, official url, hash, savedOn) built from the booklet quote; "Official text" section on the item page (OriginalText)
   - [x] 21.4 Bills: npm run data:bills saves each bill from the Legislature API (full text, pinslip, history) to data/official/bills/ with its fetch date; build-civic fingerprints it, takes lastAction from the official history, warns when status may be stale, and publishes a reader copy; "Read the bill text" on the item page
-  - [ ] 21.5 Meetings: save posted agendas when they exist; otherwise state that no agenda is posted
+  - [x] 21.5 Meetings: a posted agenda saved as data/official/agendas/<id>.pdf is fingerprinted and served; until then original is "none" with "No agenda posted yet". Checked Oct 24, 2026: neither Cambridge portal (IQM2 through Jul 2026, Granicus through Jan 2026) has Oct–Dec agendas. The build fails if any item has no original record
   - [ ] 21.6 Official text section on every Home and Explore item's detail page
 
 - [ ] 18. Reliability layer (A builds data and checks, B builds panels)
