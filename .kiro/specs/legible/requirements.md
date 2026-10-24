@@ -214,14 +214,14 @@ Out of scope for this build: any 3D map; accounts or server-side storage of prof
 
 1. THE SYSTEM SHALL keep a public catalog of documents, each with an id, title, place (state, or one town), document type, decide-by date with who decides and how, trust level, and the URL of its document JSON.
 2. WHEN the home feed loads THE SYSTEM SHALL fetch the whole catalog for Massachusetts and filter it in the browser to state documents plus documents whose town matches the profile, so that the chosen town is never sent to a server.
-3. THE SYSTEM SHALL show each feed item with its place, document type, title, a decide-by line such as "Town Meeting votes May 4," a locally computed line such as "3 of 14 touch you," a preview of the first touching measure, and its trust level.
-4. THE SYSTEM SHALL order upcoming items before decided ones; within upcoming, items that touch the user first, then the soonest decide-by date. Decided items SHALL be collapsed by default.
-5. THE SYSTEM SHALL feature the most pressing upcoming item in one large card at the top of the feed.
+3. THE SYSTEM SHALL show each timeline entry with its name, when it is due as a fact ("In 3 days · Tue, Oct 27, 5:00 PM"), one sentence on what it is, and one sentence on how it reaches the person ("For you, because you rent", "Applies to every voter in Massachusetts"). A document SHALL name the measures that touch the person and SHALL NOT show a bare count such as "0 of 9".
+4. THE SYSTEM SHALL show the home screen as one timeline grouped Today, This week, Later, and undated bills, soonest first, with items that touch the person first within a day. It SHALL show only items that touch the person, are on their list, or apply to everyone. A ballot SHALL be folded into the election on its date. Decided items SHALL be collapsed by default.
+5. THE SYSTEM SHALL let the person open any entry: a civic item to its detail, a document to its measures, and each touching measure directly from its entry.
 6. THE SYSTEM SHALL show an "Open questions for you" section listing facts that any feed document asks and the profile has not settled, answerable in place, and SHALL re-sort the feed when they change.
 7. IF the catalog has no documents for the user's town THEN THE SYSTEM SHALL say so plainly and offer to upload a town document.
 8. THE SYSTEM SHALL list uploaded and sample documents in the same feed, tagged by town and labeled AI draft, kept in the browser only.
 9. THE SYSTEM SHALL show civic items (election deadlines, voting windows, public meetings, state bills) in the same feed, each with its official source and how it was checked: word for word in an official PDF, read on the official page on a stated date, or following a published standing schedule. Meeting cards SHALL NOT list agenda items until a posted agenda is ingested.
-10. THE SYSTEM SHALL phrase the feed as where the person's life meets what is being decided, SHALL state deadlines as facts, and SHALL NOT phrase it as what the person ought to care about or create urgency.
+10. THE SYSTEM SHALL title the home screen "Your timeline", SHALL state deadlines as facts, and SHALL NOT phrase it as what the person ought to care about or create urgency.
 
 ### Requirement 23: Content pipeline
 

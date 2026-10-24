@@ -1,27 +1,24 @@
 "use client";
 
-// Home: a feed of decisions near the person, state and town. Each item is one
-// document; opening it shows the DocumentView. All filtering runs in the browser.
-import { useState } from "react";
+// Home: one timeline of what is being decided near the person, soonest first.
+// Each entry says what it is, when it is due, and how it reaches this person.
+// All filtering runs in the browser.
 import { avatarParts } from "@/lib/engine/avatar";
-import { decidedLine, decideByLine, decideByRelative, DOC_TYPE_LABEL, measureNoun } from "@/lib/engine/decide-by";
+import { decidedLine, decideByLine, decideByRelative, DOC_TYPE_LABEL, shortDate } from "@/lib/engine/decide-by";
 import type { CivicCard } from "@/lib/engine/civic";
-import { CIVIC_KIND_LABEL, dateTime, timingTag } from "@/lib/engine/civic-copy";
+import { dateTime, timingTag } from "@/lib/engine/civic-copy";
 import type { Feed, FeedItem } from "@/lib/engine/feed";
 import { nextItem, personalization, type ChecklistItem } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
-import type { Card, Provenance } from "@/lib/engine/types";
+import { buildTimeline, docWhat, GROUP_LABEL, type TimelineEntry, type TimelineGroup } from "@/lib/engine/timeline";
+import type { Provenance } from "@/lib/engine/types";
 import { LIFE_AREAS } from "@/lib/vocab";
 import { AvatarRing } from "./AvatarRing";
-import { CivicRow } from "./CivicRow";
-import { Cover, DocTile } from "./covers";
-import { MeasureDots } from "./DocumentView";
-import { Glyph } from "./icons";
+import { DocTile } from "./covers";
+import { Glyph, Part } from "./icons";
 import { itemView, viewForPart, type SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { Button, FOCUS, Tag } from "./ui";
-
-type Scope = "all" | "state" | "town";
 
 const TRUST: Record<Provenance, { label: string; pop: "positive" | "attention" }> = {
   reviewed: { label: "Reviewed", pop: "positive" },
@@ -42,7 +39,6 @@ export function Home({
   onDismissNudge,
   onUpload,
   civic,
-  civicUp,
   onOpenItem,
 }: {
   /** Deadlines, meetings, and bills for this person's state and town, in feed order. */
@@ -63,27 +59,18 @@ export function Home({
   /** Opens the upload panel. Absent until the panel exists (task 9.4). */
   onUpload?: () => void;
 }) {
-  const [scope, setScope] = useState<Scope>("all");
   const town = townName(profile.townId);
   const meter = personalization(profile);
   const parts = avatarParts(profile);
   const nudge = nudgeDismissed ? null : nextItem(profile);
-
-  const inScope = (i: FeedItem) => scope === "all" || i.scope === scope;
-  const upcoming = feed.items.filter((i) => i.status === "upcoming" && inScope(i));
-  const decided = feed.items.filter((i) => i.status === "decided" && inScope(i));
-  const hasTownDocs = feed.items.some((i) => i.scope === "town");
-  const up = feed.upNext;
-  const civicShown = civic.filter((c) => scope === "all" || c.item.place.kind === scope);
-
-  // Decisions, one level below documents: what touches you, then what you follow.
-  const entries = (pick: (c: Card) => boolean) => upcoming.flatMap((item) => item.cards.filter(pick).map((card) => ({ item, card })));
-  const touching = entries((c) => c.relevance === "touches");
-  const listed = entries((c) => c.relevance !== "touches" && c.onYourList);
-  const everyone = touching.length + listed.length === 0 ? entries((c) => c.relevance === "everyone") : [];
+  const decided = feed.items.filter((i) => i.status === "decided");
+  const timeline = buildTimeline(feed.items, civic, today);
+  const groups = (["today", "week", "later", "undated"] as TimelineGroup[])
+    .map((g) => ({ g, entries: timeline.filter((e) => e.group === g) }))
+    .filter((x) => x.entries.length);
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 pb-16 pt-4 sm:px-6 lg:pt-8">
+    <div className="mx-auto w-full max-w-3xl px-4 pb-16 pt-4 sm:px-6 lg:pt-8">
       {/* Header: the person's page. Avatar with its ring, town, profile button. */}
       <header className="flex flex-col items-center pt-4 text-center">
         <AvatarRing
@@ -113,77 +100,33 @@ export function Home({
 
       {nudge && <Nudge item={nudge} onOpen={() => onOpenProfile(itemView(nudge))} onDismiss={onDismissNudge} />}
 
-      {civicUp ? (
-        <CivicUpNext card={civicUp} onOpen={() => onOpenItem(civicUp.item.id)} />
-      ) : (
-        up && <UpNext item={up} today={today} onOpen={() => onOpenDoc(up.doc.id)} />
-      )}
+      <section aria-labelledby="h-timeline" className="mt-8">
+        <h1 id="h-timeline" className="text-title">
+          Your timeline
+        </h1>
+        <p className="mt-1 text-small text-muted-foreground">Deadlines, votes, and meetings that relate to you, soonest first. Each one says why it is here.</p>
 
-      <h1 className="mt-10 text-title">Where your life meets what is being decided.</h1>
-
-      <div role="tablist" aria-label="Scope" className="mt-4 grid grid-cols-3 rounded-full bg-surface p-1 shadow-card">
-        {(
-          [
-            ["all", "All"],
-            ["state", "State"],
-            ["town", town ?? "Your town"],
-          ] as const
-        ).map(([id, label]) => (
-          <button
-            key={id}
-            role="tab"
-            type="button"
-            aria-selected={scope === id}
-            onClick={() => setScope(id)}
-            className={`min-h-11 truncate rounded-full px-3 text-body font-semibold transition-colors duration-(--duration) ease-legible ${FOCUS} ${
-              scope === id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {label}
-          </button>
+        {groups.map(({ g, entries }) => (
+          <div key={g} className="mt-6">
+            <h2 className="text-small font-semibold uppercase tracking-wider text-muted-foreground">{GROUP_LABEL[g]}</h2>
+            <ol className="mt-3">
+              {entries.map((e, i) => (
+                <TimelineRow
+                  key={e.key}
+                  entry={e}
+                  today={today}
+                  last={i === entries.length - 1}
+                  onOpenItem={onOpenItem}
+                  onOpenDoc={onOpenDoc}
+                  onOpenMeasure={onOpenMeasure}
+                />
+              ))}
+            </ol>
+          </div>
         ))}
-      </div>
+      </section>
 
-      {touching.length > 0 && (
-        <Carousel title="Touches you" sub="From your answers" entries={touching} onOpen={onOpenMeasure} />
-      )}
-      {listed.length > 0 && <Carousel title="On your list" sub="Subjects you follow" entries={listed} onOpen={onOpenMeasure} />}
-      {everyone.length > 0 && (
-        <Carousel title="Applies to everyone" sub="Answer a few questions to sort these" entries={everyone} onOpen={onOpenMeasure} />
-      )}
-
-      {civicShown.length > 0 && (
-        <section aria-labelledby="h-coming" className="mt-10">
-          <h2 id="h-coming" className="text-title">
-            Coming up
-          </h2>
-          <p className="text-small text-muted-foreground">Deadlines, meetings, and bills, from official sources</p>
-          <ul className="mt-2 divide-y divide-border">
-            {civicShown.map((c) => (
-              <li key={c.item.id}>
-                <CivicRow card={c} onOpen={() => onOpenItem(c.item.id)} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {upcoming.length > 0 && (
-        <section aria-labelledby="h-docs" className="mt-10">
-          <h2 id="h-docs" className="text-title">
-            Documents
-          </h2>
-          <ul className="mt-2 divide-y divide-border">
-            {upcoming.map((i) => (
-              <li key={i.doc.id}>
-                <FeedRow item={i} today={today} onOpen={() => onOpenDoc(i.doc.id)} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {scope !== "state" && !hasTownDocs && (
+      {!feed.items.some((i) => i.scope === "town") && (
         <EmptyTown town={town} onAddTown={() => onOpenProfile({ kind: "town" })} onUpload={onUpload} />
       )}
 
@@ -241,58 +184,102 @@ export function Home({
   );
 }
 
-/** Up next for a deadline or meeting that touches the person sooner than any document. */
-function CivicUpNext({ card, onOpen }: { card: CivicCard; onOpen: () => void }) {
-  const i = card.item;
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** Date tile for a YYYY-MM-DD day, or a pictogram for undated bills. */
+function DayTile({ date }: { date?: string }) {
+  if (!date) {
+    return (
+      <span aria-hidden="true" className="flex size-14 shrink-0 items-center justify-center rounded-md bg-info text-info-foreground">
+        <Part name="book" size={30} />
+      </span>
+    );
+  }
+  const [, m, d] = date.split("-").map(Number);
   return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className={`mt-4 block w-full rounded-xl bg-accent p-6 text-left text-accent-foreground shadow-card transition-transform duration-(--duration) ease-legible hover:-translate-y-0.5 ${FOCUS}`}
-    >
-      <span className="flex items-center justify-between gap-3 text-small font-semibold opacity-85">
-        <span>
-          Up next · {i.place.kind === "state" ? "State" : i.place.name} {CIVIC_KIND_LABEL[i.kind].toLowerCase()}
-        </span>
-        <span className="flex size-9 rotate-180 items-center justify-center rounded-full bg-accent-foreground/15">
-          <Glyph name="back" size={18} />
-        </span>
-      </span>
-      <span className="mt-3 block text-title">{i.title}</span>
-      <span className="mt-2 block text-body font-semibold">
-        {timingTag(card)}
-        {i.at ? ` · ${dateTime(i.until && card.timing === "open" ? i.until : i.at)}` : ""}
-      </span>
-      <span className="mt-1 block text-body opacity-90">{i.body}</span>
-      <span className="mt-1 block text-small opacity-85">{i.summary}</span>
-    </button>
+    <span aria-hidden="true" className="flex size-14 shrink-0 flex-col items-center justify-center rounded-md bg-surface leading-none shadow-card">
+      <span className="text-small font-semibold uppercase text-muted-foreground">{MONTHS[m - 1]}</span>
+      <span className="mt-0.5 text-title">{d}</span>
+    </span>
   );
 }
 
-function UpNext({ item, today, onOpen }: { item: FeedItem; today: string; onOpen: () => void }) {
-  const d = item.doc.decideBy;
+/** When it is due, as a fact: "Today · Sat, Oct 24, 11:59 PM", "Voters decide in 10 days · Nov 3". */
+function dueLine(e: TimelineEntry, today: string): string {
+  if (e.kind === "doc") {
+    const d = e.item.doc.decideBy;
+    return d ? `${decideByRelative(d, today)} · ${shortDate(d.date)}` : DOC_TYPE_LABEL[e.item.doc.docType];
+  }
+  const c: CivicCard = e.card;
+  const i = c.item;
+  if (!i.at) return [i.status, i.lastAction && `latest action ${i.lastAction.date}`].filter(Boolean).join(" · ");
+  return `${timingTag(c)} · ${dateTime(i.until && c.timing === "open" ? i.until : i.at)}`;
+}
+
+function TimelineRow({
+  entry: e,
+  today,
+  last,
+  onOpenItem,
+  onOpenDoc,
+  onOpenMeasure,
+}: {
+  entry: TimelineEntry;
+  today: string;
+  last: boolean;
+  onOpenItem: (id: string) => void;
+  onOpenDoc: (id: string) => void;
+  onOpenMeasure: (docId: string, measureId: string) => void;
+}) {
+  const title = e.kind === "doc" ? e.item.doc.title : e.card.item.title;
+  const what = e.kind === "doc" ? docWhat(e.item) : e.card.item.summary;
+  const open = () => (e.kind === "doc" ? onOpenDoc(e.item.doc.id) : onOpenItem(e.card.item.id));
+  const ballot = e.kind === "doc" ? e.item : e.ballot;
+  const touching = ballot ? ballot.cards.filter((c) => c.relevance === "touches") : [];
+  const soon = e.group === "today";
+
   return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className={`mt-4 block w-full rounded-xl bg-accent p-6 text-left text-accent-foreground shadow-card transition-transform duration-(--duration) ease-legible hover:-translate-y-0.5 ${FOCUS}`}
-    >
-      <span className="flex items-center justify-between gap-3 text-small font-semibold opacity-85">
-        <span>
-          Up next · {item.scope === "state" ? "State" : item.doc.place.name} {DOC_TYPE_LABEL[item.doc.docType].toLowerCase()}
-        </span>
-        <span className="flex size-9 rotate-180 items-center justify-center rounded-full bg-accent-foreground/15">
-          <Glyph name="back" size={18} />
-        </span>
-      </span>
-      <span className="mt-3 block text-title">{item.doc.title}</span>
-      {d && <span className="mt-2 block text-body font-semibold">{decideByRelative(d, today)}</span>}
-      <span className="mt-1 block text-body opacity-90">
-        {item.touches} of {item.total} {measureNoun(item.doc.docType, item.total)} touch you
-      </span>
-      {item.topTouching && <span className="mt-1 block text-small opacity-85">Including: {item.topTouching}</span>}
-      <MeasureDots cards={item.doc.measures.map((m) => item.cards.find((c) => c.measure.id === m.id)!)} prefix={item.doc.docType === "ballot" ? "Q" : "#"} />
-    </button>
+    <li className="relative flex gap-4 pb-5">
+      {!last && <span aria-hidden="true" className="absolute bottom-0 left-7 top-14 w-px bg-border" />}
+      <DayTile date={e.date} />
+      <div className="min-w-0 flex-1 overflow-hidden rounded-lg bg-surface shadow-card">
+        <button type="button" onClick={open} className={`block w-full p-4 text-left hover:bg-surface-muted/60 ${FOCUS}`}>
+          <span className="flex items-start justify-between gap-3">
+            <span className="text-body font-semibold">{title}</span>
+            {e.touches && <Tag pop="accent">For you</Tag>}
+          </span>
+          <span className={`mt-1 block text-small font-semibold ${soon ? "text-foreground" : "text-muted-foreground"}`}>{dueLine(e, today)}</span>
+          <span className="mt-2 line-clamp-3 block text-body">{what}</span>
+          <span className={`mt-3 block rounded-md px-3 py-2 text-small ${e.touches ? "bg-accent-soft font-semibold" : "bg-surface-muted"}`}>{e.forYou}</span>
+        </button>
+        {ballot && (
+          <div className="border-t border-border px-4 pb-3 pt-2">
+            {touching.map((c) => (
+              <button
+                key={c.measure.id}
+                type="button"
+                onClick={() => onOpenMeasure(ballot.doc.id, c.measure.id)}
+                className={`flex min-h-11 w-full items-center justify-between gap-3 text-left text-small font-semibold ${FOCUS}`}
+              >
+                <span>
+                  {ballot.doc.docType === "ballot" ? "Question" : "Article"} {c.measure.number}: {c.measure.title}
+                </span>
+                <span className="-rotate-90">
+                  <Glyph name="chevron" size={16} />
+                </span>
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => onOpenDoc(ballot.doc.id)}
+              className={`min-h-11 text-small font-semibold underline underline-offset-4 ${FOCUS}`}
+            >
+              See all {ballot.total} {ballot.doc.docType === "ballot" ? "questions" : "items"}
+            </button>
+          </div>
+        )}
+      </div>
+    </li>
   );
 }
 
@@ -322,60 +309,6 @@ function FeedRow({ item, today, onOpen }: { item: FeedItem; today: string; onOpe
         </span>
       </span>
     </button>
-  );
-}
-
-/** A horizontal row of decisions with covers. Snaps card by card; scrolls by touch or keyboard. */
-function Carousel({
-  title,
-  sub,
-  entries,
-  onOpen,
-}: {
-  title: string;
-  sub: string;
-  entries: { item: FeedItem; card: Card }[];
-  onOpen: (docId: string, measureId: string) => void;
-}) {
-  const id = `h-${title.toLowerCase().replace(/\W+/g, "-")}`;
-  return (
-    <section aria-labelledby={id} className="mt-8">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 id={id} className="text-title">
-          {title}
-        </h2>
-        <span className="text-small text-muted-foreground">{entries.length}</span>
-      </div>
-      <p className="text-small text-muted-foreground">{sub}</p>
-      {/* Keyed by its contents: when the decisions change, the row starts again at the
-          first card instead of re-snapping to whichever card was in view. */}
-      <ul key={entries.map((e) => e.card.measure.id).join()} className="-mx-4 mt-3 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:scroll-px-6 sm:px-6 [scrollbar-width:none]">
-        {entries.map(({ item, card }) => {
-          const m = card.measure;
-          const ballot = item.doc.docType === "ballot";
-          return (
-            <li key={`${item.doc.id}:${m.id}`} className="w-64 shrink-0 snap-start sm:w-72">
-              <button
-                type="button"
-                onClick={() => onOpen(item.doc.id, m.id)}
-                className={`flex h-full w-full flex-col overflow-hidden rounded-lg bg-surface text-left shadow-card transition-transform duration-(--duration) ease-legible hover:-translate-y-0.5 ${FOCUS}`}
-              >
-                <Cover measure={m} label={`${ballot ? "Q" : "#"}${m.number}`} size={44} className="h-28 w-full" />
-                <span className="flex flex-1 flex-col gap-1 p-4">
-                  <span className="text-small text-muted-foreground">
-                    {item.scope === "state" ? "State" : item.doc.place.name} {DOC_TYPE_LABEL[item.doc.docType].toLowerCase()}
-                  </span>
-                  <span className="line-clamp-2 text-body font-semibold">{m.title}</span>
-                  {card.why[0] && (
-                    <span className="line-clamp-3 font-[family-name:var(--font-serif)] text-small text-muted-foreground">{card.why[0].text}</span>
-                  )}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
   );
 }
 

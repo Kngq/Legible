@@ -238,7 +238,7 @@ Pure template in the browser. Inputs are selected measure numbers and one factua
 
 - **Onboarding:** first run is hello and ZIP only. **ProfileSheet:** the avatar ring, the seven-item checklist, and one screen per life area and subjects, opened from the avatar.
 - **TownPicker:** type-ahead over a bundled list of 351 municipalities with aliases.
-- **Feed (Home):** header with avatar ring, one nudge, Up next card, scope switch, decision cards with place, type, decide-by line, touches, preview, and trust, open questions, and a collapsed Decided group. **DocumentView:** one document's measures as cards.
+- **Feed (Home):** header with avatar ring, one nudge, one timeline (name, due, what it is, how it reaches you), open questions, and a collapsed Decided group. **DocumentView:** one document's measures as cards.
 - **ChatDock:** bottom-corner button and panel scoped to the open document or measure, citations on every sentence.
 - **TrustPanel and ChainView:** per-document trust summary, and the sentence-to-source chain opened from "How do we know this?"
 - **Ballot header:** avatar, document title, persona switcher, privacy panel button, "Remember on this device" and "Forget me."
@@ -249,7 +249,7 @@ Pure template in the browser. Inputs are selected measure numbers and one factua
 - **UploadPanel:** file input, extraction status, size and scanned-PDF errors, progress with cancel, verified-quote counter, flagged list, sample fallback.
 - **PrivacyPanel:** reads the `apiFetch` log and lists what was and was not sent.
 
-Visual system lives in CSS custom properties in `src/app/globals.css`, exposed as Tailwind utilities: grey `background`, white `surface` cards, `surface-muted` pills, black `primary` pill, ink and grey text only. Palette sampled from the chosen reference: `accent` deep purple (touches you, meter, Up next card), `info` lilac (on your list), `attention` terracotta (new, AI draft, flagged), `positive` sand (reviewed, verified), `ai` light purple (chat dock orb), plus `data-in` and `data-out` for budget charts. Each has a `-soft` tint for tags and its own `-foreground`: white on purple, ink on lilac, terracotta, and sand. All pairs meet 4.5:1. Radii `sm` 10 / `md` 14 / `lg` 20 / `xl` 32, one `shadow-card`, one easing curve (`ease-legible`, 400 ms), four type sizes, Figtree. Light and dark themes. Re-sorting animates card positions unless reduced motion is preferred.
+Visual system lives in CSS custom properties in `src/app/globals.css`, exposed as Tailwind utilities: grey `background`, white `surface` cards, `surface-muted` pills, black `primary` pill, ink and grey text only. Palette sampled from the chosen reference: `accent` deep purple (touches you, meter), `info` lilac (on your list), `attention` terracotta (new, AI draft, flagged), `positive` sand (reviewed, verified), `ai` light purple (chat dock orb), plus `data-in` and `data-out` for budget charts. Each has a `-soft` tint for tags and its own `-foreground`: white on purple, ink on lilac, terracotta, and sand. All pairs meet 4.5:1. Radii `sm` 10 / `md` 14 / `lg` 20 / `xl` 32, one `shadow-card`, one easing curve (`ease-legible`, 400 ms), four type sizes, Figtree. Light and dark themes. Re-sorting animates card positions unless reduced motion is preferred.
 
 ## Onboarding
 
@@ -394,33 +394,31 @@ Next to documents, the feed carries lighter **civic items**: election deadlines,
 
 An item touches the person when a profile fact matches one of its `touches` rules (the registration deadline touches `registered_here: false`; the school cellphone bill and School Committee meetings touch `kids_in_schools: true`). Election dates apply to everyone. Topics mark "On your list." `civicFeed` drops past items and orders touches, then followed topics, then everyone; within each, today, open windows, upcoming by date, then undated bills.
 
-Civic items mix into the feed with documents. Up next considers both: a deadline that touches the person today outranks a document decided next month. Meeting cards never list agenda items until a real posted agenda is ingested.
+Civic items mix into the timeline with documents, by date. Meeting cards never list agenda items until a real posted agenda is ingested.
 
 Source data: `data/legible_ma_seed.json` (the team's Supabase seed) is rebuilt by `npm run data:civic` through `scripts/civic-ma.content.ts`, which replaces news and advocacy sources with official ones, rewrites summaries neutrally, maps the seed's topics and circumstances onto Legible's vocab, and lists every seed item it leaves out with the reason (ballot questions duplicated by the reviewed ballot; bills without an official citation). The build fails if a booklet quote is not found, a source is not an official domain, a banned word appears, or a seed item is unaccounted for.
 
 ### Layout, top to bottom
 
-1. **Header.** Town name ("Somerville") and "What is being decided near you"; the avatar with its completion ring on the right.
-2. **Nudge.** At most one card, for `nextItem(profile)` (see Onboarding).
-3. **Up next.** One large purple card for the most pressing upcoming item: the soonest `decideBy` among items with touches, else the soonest overall. It shows the title, "Town Meeting votes in 12 days", "3 of 14 articles touch you", and the first touching title. Tap opens the document.
-4. **Scope switch.** Black-pill segmented control: All, State, and the town name.
-5. **Feed list.** One card per item:
-   - place tag (State, or the town) and document type ("Warrant", "Budget", "Ballot");
-   - title;
-   - decide-by line built from `decideBy`: "Voters decide Nov 3", "Town Meeting votes May 4", "Comments close Feb 10";
-   - the local touches line, "3 of 14 touch you" in an accent-soft tag, or "Nothing in your answers points here yet" in grey;
-   - preview "Including: Single-family homes on smaller lots" from `topTouching`;
-   - trust label (Reviewed, Verified, AI draft).
-6. **Open questions for you.** Facts that feed documents ask and the profile has not settled, as the same Pick-all screens, generic copy only. Answering re-runs `buildCards` for every loaded document.
-7. **Decided.** Items whose `decideBy.date` has passed, collapsed by default, kept for reference with "Decided May 4".
+Home is one timeline (`buildTimeline` in `src/lib/engine/timeline.ts`). There is no Up next card, no scope switch, and no "N of M touch you" count: people read "0 of 9" as an error.
 
-**Order.** Upcoming before decided. Within upcoming: items with touches first, then soonest `decideBy`, then newest date. Items without `decideBy` sort after dated ones.
+1. **Header.** Avatar with its completion ring, town name, "What is being decided near you", and "Your profile".
+2. **Nudge.** At most one card, for `nextItem(profile)` (see Onboarding).
+3. **Your timeline.** Groups Today, This week, Later, and "In the Legislature, no date yet". Within a group, soonest first, then items that touch the person. Each entry is a date tile beside a card:
+   - name;
+   - when it is due, as a fact: "Open, closes in 6 days · Fri, Oct 30, 11:59 PM", "Voters decide in 10 days · Nov 3";
+   - one sentence on what it is (the civic item's summary, or "9 statewide questions on your ballot.");
+   - one sentence on how it reaches the person, accent-soft with a "For you" tag when it touches them: "For you, because you are not registered at your address.", "On your list: you follow housing costs.", "Applies to every voter in Massachusetts.";
+   - for a ballot or warrant, the touching measures as links, then "See all 9 questions". A document's line names those measures; with none it reads "None of the questions points to your answers yet. Each applies to everyone in Massachusetts."
+   Only items that touch the person, are on their list, or apply to everyone appear. A ballot is folded into the Election Day entry on the same date. Open windows sit under Today.
+4. **Open questions for you.** Facts that feed documents ask and the profile has not settled, as the same Pick-all screens, generic copy only. Answering re-runs `buildCards` for every loaded document.
+5. **Decided.** Items whose `decideBy.date` has passed, collapsed by default, kept for reference with "Decided May 4".
 
 **Empty town.** When the catalog has nothing for the town: "Legible does not have documents for Somerville yet." with "Upload a town document" (opens the upload panel) and a line naming the kinds that help: warrants, budgets, hearing notices. State items still show.
 
 **Uploaded documents** join the feed in memory, tagged with the profile's town and labeled AI draft, until the page is closed.
 
-Copy rule: the feed heading is "Where your life meets what is being decided." Never "what you ought to care about." Deadlines are stated as facts ("Town Meeting votes May 4"), never as urgency ("Act now").
+Copy rule: the home heading is "Your timeline." Never "what you ought to care about." Deadlines are stated as facts ("Town Meeting votes May 4"), never as urgency ("Act now").
 
 ## Measure page
 
