@@ -47,7 +47,6 @@ export function ComingUp({ entries, today, onOpenItem, onOpenDoc, onOpenProfile 
         <h2 id="h-coming" className="text-body font-bold">
           Coming up
         </h2>
-        <p className="text-small text-muted-foreground">Dates from official sources</p>
       </div>
 
       <div className="-mx-4 mt-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0 [scrollbar-width:thin]">
@@ -100,6 +99,8 @@ export function ComingUp({ entries, today, onOpenItem, onOpenDoc, onOpenProfile 
       </div>
 
       <DatePanel key={sel.key} entry={sel} today={today} onOpenItem={onOpenItem} onOpenDoc={onOpenDoc} onOpenProfile={onOpenProfile} />
+
+      <p className="mt-2 text-right text-[11px] text-muted-foreground">Dates from official sources</p>
     </section>
   );
 }

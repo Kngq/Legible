@@ -13,6 +13,8 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { transition } from "@/lib/motion";
+import { useAuth } from "./AuthProvider";
+import { AuthDialog, type AuthMode } from "./AuthDialog";
 import { Glyph } from "./icons";
 import type { SheetView } from "./ProfileSheet";
 import { FOCUS } from "./ui";
@@ -27,7 +29,9 @@ export type HeaderTab = "home" | "explore";
 /** The Legible mark as a menu button: the about links and account actions. */
 function BrandMenu() {
   const reduce = useReducedMotion() ?? false;
+  const { user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
+  const [dialog, setDialog] = useState<AuthMode | null>(null);
   const root = useRef<HTMLDivElement>(null);
   const button = useRef<HTMLButtonElement>(null);
 
@@ -49,6 +53,11 @@ function BrandMenu() {
       window.removeEventListener("pointerdown", onDown);
     };
   }, [open]);
+
+  const openAuth = (mode: AuthMode) => {
+    setOpen(false);
+    setDialog(mode);
+  };
 
   const item = `flex min-h-11 w-full items-center rounded-md px-3 text-left text-body font-semibold interactive hover:bg-surface-muted ${FOCUS}`;
 
@@ -91,19 +100,34 @@ function BrandMenu() {
               ))}
             </nav>
             <div className="mx-3 my-1.5 border-t border-border" />
-            <button type="button" onClick={() => setOpen(false)} className={item}>
-              Login
-            </button>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className={`mt-1 flex min-h-11 w-full items-center justify-center rounded-md bg-primary px-3 text-body font-semibold text-primary-foreground interactive press hover:bg-primary-hover ${FOCUS}`}
-            >
-              Sign up
-            </button>
+            {user ? (
+              <>
+                <p className="truncate px-3 py-1 text-small text-muted-foreground" title={user.email ?? undefined}>
+                  Signed in as <span className="font-semibold text-foreground">{user.email}</span>
+                </p>
+                <button type="button" onClick={() => { setOpen(false); void signOut(); }} className={item}>
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
+                <button type="button" onClick={() => openAuth("login")} className={item}>
+                  Login
+                </button>
+                <button
+                  type="button"
+                  onClick={() => openAuth("signup")}
+                  className={`mt-1 flex min-h-11 w-full items-center justify-center rounded-md bg-primary px-3 text-body font-semibold text-primary-foreground interactive press hover:bg-primary-hover ${FOCUS}`}
+                >
+                  Sign up
+                </button>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
+
+      {dialog && <AuthDialog mode={dialog} onClose={() => setDialog(null)} />}
     </div>
   );
 }

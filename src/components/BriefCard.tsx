@@ -292,11 +292,14 @@ function FeaturedNote({ d, onOpenProfile }: { d: Decision; onOpenProfile: (v: Sh
 }
 
 /** The first decision: the page's one raised surface, with an editorial headline. */
-export function FeaturedDecision({ d, onOpenProfile }: { d: Decision; onOpenProfile: (v: SheetView) => void }) {
+export function FeaturedDecision({ d, label, onOpenProfile }: { d: Decision; label?: string; onOpenProfile: (v: SheetView) => void }) {
   const cta = useCursorCta(d.open);
   return (
     <article {...cta.handlers} className={`relative -mx-1 rounded-lg bg-surface px-5 pb-6 pt-6 shadow-card sm:mx-0 sm:px-8 sm:pt-7 ${cta.cursorClass}`}>
       {cta.pill}
+      {label && (
+        <p className="mb-3 text-small font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+      )}
       <div className="flex items-center justify-between gap-3">
         <p className="flex min-w-0 items-center gap-2.5 text-small font-semibold text-muted-foreground">
           <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground shadow-[inset_0_0_0_1.5px_var(--foreground)]">

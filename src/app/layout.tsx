@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Figtree, Fraunces, Geist_Mono, Raleway, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/components/AuthProvider";
 import { ChatDockGate } from "@/components/ChatDockGate";
 
 const figtree = Figtree({
@@ -46,8 +47,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${figtree.variable} ${fraunces.variable} ${raleway.variable} ${serif.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
-        <ChatDockGate />
+        <AuthProvider>
+          {children}
+          <ChatDockGate />
+        </AuthProvider>
       </body>
     </html>
   );

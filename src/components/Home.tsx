@@ -7,13 +7,9 @@
 // rest as compact rows, ranked by how they connect to the person. Dates and
 // decisions never mix. Everything else is on Explore, one link away. Order comes
 // from buildTimeline and homeSections. Runs in the browser.
-import { motion, useReducedMotion } from "motion/react";
-import { useState } from "react";
 import type { CivicCard } from "@/lib/engine/civic";
 import type { Feed } from "@/lib/engine/feed";
 import { homeSections, profileBasis } from "@/lib/engine/home-copy";
-import { personalization } from "@/lib/engine/personalization";
-import { DURATION, EASE } from "@/lib/motion";
 import type { Profile } from "@/lib/engine/profile";
 import { buildTimeline } from "@/lib/engine/timeline";
 import { FACT_DEFS, LIFE_AREAS } from "@/lib/vocab";
@@ -70,16 +66,6 @@ export function Home({
   const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure };
   const list = decisionsFor({ touching, affect, listed, ballot: ballotItem, ...cardProps });
   const [featured, ...rest] = list;
-  const meter = personalization(profile);
-  // A dot that fills in after a save pulses once, so the change shows on the page.
-  const doneKey = meter.items.map((i) => (i.done ? 1 : 0)).join("");
-  const [seen, setSeen] = useState(doneKey);
-  const [pulse, setPulse] = useState<{ at: number; dots: number[] }>({ at: 0, dots: [] });
-  if (seen !== doneKey) {
-    setPulse({ at: pulse.at + 1, dots: meter.items.flatMap((i, n) => (i.done && seen[n] !== "1" ? [n] : [])) });
-    setSeen(doneKey);
-  }
-  const reduce = useReducedMotion() ?? false;
   const facts = answeredFacts(profile);
   // Interests are "decided" once the person confirms the topics screen or picks any.
   const needsInterests = !profile.topicsConfirmedAt && Object.keys(profile.topics).length === 0;
@@ -89,30 +75,14 @@ export function Home({
     <div className="mx-auto w-full max-w-2xl px-4 pb-28 sm:px-6">
       <header className="pt-6 sm:pt-10">
         {profile.name && (
-          <p className="font-display text-lg italic text-muted-foreground">
+          <p className="font-display text-display font-bold italic text-muted-foreground">
             {greeting}, {profile.name}.
           </p>
         )}
-        <h1 className="mt-1 font-display text-headline text-balance">
-          Public decisions that may matter to your life in <span className="font-medium">{town ?? "Massachusetts"}</span>.
+        <h1 className="mt-2 font-display text-headline text-balance">
+          Public decisions that <span className="font-bold">matter</span> to your life in <span className="font-medium">{town ?? "Massachusetts"}</span>.
         </h1>
         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-small">
-          <button
-            type="button"
-            onClick={editProfile}
-            aria-label={`Your profile: ${meter.done} of ${meter.total} steps filled in`}
-            className={`group inline-flex min-h-9 items-center gap-1.5 rounded-sm ${FOCUS}`}
-          >
-            {meter.items.map((item, i) => (
-              <motion.span
-                key={pulse.dots.includes(i) ? `${i}-${pulse.at}` : i}
-                aria-hidden="true"
-                animate={pulse.dots.includes(i) && !reduce ? { scale: [1, 1.8, 1] } : { scale: 1 }}
-                transition={{ duration: DURATION.slow * 2, ease: EASE }}
-                className={`size-2.5 rounded-full ${item.done ? "bg-accent" : "shadow-[inset_0_0_0_1.5px_var(--info)]"}`}
-              />
-            ))}
-          </button>
           {(town || facts.length > 0) && (
             <p className="font-semibold">
               {[town, ...facts.slice(0, 3)].filter(Boolean).join(" · ")}
@@ -138,12 +108,11 @@ export function Home({
           <h2 id="h-foryou" className="text-body font-bold">
             Decisions for you
           </h2>
-          {featured && <p className="text-small text-muted-foreground">Closest to your life first</p>}
         </div>
         {featured ? (
           <>
             <div className="mt-3">
-              <FeaturedDecision d={featured} onOpenProfile={onOpenProfile} />
+              <FeaturedDecision d={featured} label="Coming up: " onOpenProfile={onOpenProfile} />
             </div>
             {rest.length > 0 && (
               <ul className="mt-4 divide-y divide-border">
