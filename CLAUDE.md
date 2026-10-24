@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-**Nine**: a Next.js app for the 9 questions on the Nov 3, 2026 Massachusetts ballot. The user enters their town and a few facts about their life; the app re-sorts the questions by which ones touch them, quoting only the Attorney General's official text and never saying how to vote. Built for Hackachusetts (Oct 24, 2026). Read `docs/DECISIONS.md` first; it supersedes `docs/spec.md` where they differ.
+**Nine**: a Next.js app for the 9 questions on the Nov 3, 2026 Massachusetts ballot. The user enters their town and a few facts about their life; the app re-sorts the questions by which ones touch them, quoting only the Attorney General's official text and never saying how to vote. Built for Hackachusetts (Oct 24, 2026). Scope lives in `.kiro/specs/nine/` (requirements, design, tasks) and `.kiro/steering/`. Read those first; they supersede `docs/spec.md` and the earlier parts of `docs/DECISIONS.md`. Check off tasks in `tasks.md` as they land.
 
 ## Commands
 
@@ -25,15 +25,17 @@ Next.js 16 differs from older versions. Check `node_modules/next/dist/docs/` bef
 
 ## Structure
 
-- `src/app/` App Router. `page.tsx` is intentionally blank so far; `layout.tsx` loads Geist fonts.
+- `src/app/` App Router. `page.tsx` is intentionally blank so far. Planned layout is in `.kiro/steering/structure.md`.
 - `data/questions.json` is machine-extracted from the official booklet by `data/extract_questions.py` (source text in `data/official/`). Review before shipping; the sec.state.ma.us HTML pages are bot-walled, so the PDF is the source of truth.
-- `docs/` spec, decisions log, teammate pitch.
+- `docs/` original spec, decisions log, teammate pitch.
+- `.kiro/` Kiro steering and spec. Kiro is required by the event, so keep these current.
 
-## Product rules (from DECISIONS.md)
+## Product rules
 
-- Relevance sorting is a hand-written tag → direction table, not AI. Directions: expands / restricts / rule_change / who_decides / none. Never "good/bad" or "vote yes/no".
-- "What YES does / What NO does" is copied verbatim from the AG summary. Q9 is a referendum: YES keeps the law in place.
-- The profile never leaves the browser. Server routes may receive only question ids, user questions and quoted citations.
-- Two grounded AI routes (Ask the official text, Draft a message) may use only the text passed in and must cite paragraphs; "how should I vote" gets a fixed refusal.
-- Banned-word lint (should, recommend, good, bad, support, oppose) applies to app-authored strings only, not verbatim quotes.
-- Visual direction: "official booklet + highlighter". Paper tones, serif display, sans body, one highlighter-yellow accent, no gradients.
+Full list in `.kiro/steering/product.md`. The ones code most often breaks:
+
+- Never recommend a vote. Five directions only: expands, restricts, rule_change, who_decides, none.
+- Life facts, topics, and the town never leave the browser. Server routes receive only public document text, measure ids, user questions, and verified quotes.
+- YES and NO text is verbatim. Q9 is a referendum: YES keeps the law in place.
+- Every generated quote is verified word for word against page text; measures with failed quotes are flagged, not shown.
+- Banned words (should, recommend, good, bad, support, oppose) are linted in app strings and generated explanations, not in verbatim quotes.

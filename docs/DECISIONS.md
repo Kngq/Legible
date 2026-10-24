@@ -39,3 +39,16 @@ You tell it your town and a few facts about your life, and it re-sorts the 9 Mas
 - data/questions.json — machine-extracted; **review before shipping**
 - data/extract_questions.py — regenerates questions.json from the booklet text
 - data/official/ — the official PDF and its text extraction
+
+## Morning of Oct 24: scope reset
+The Kiro spec in `.kiro/specs/nine/` is now the source of truth for scope. It supersedes the scope sections above where they differ.
+
+1. **Engine, not just a ballot.** Documents and measures share one format. The 2026 ballot is the first, hand-reviewed document. An uploaded text PDF, such as a town meeting warrant, is analyzed by AI into the same format.
+2. **No 3D map.** Dropped entirely. Town context is a stretch: a sourced number on a card, or a flat map of towns named in an upload.
+3. **No intake form.** Town first, then cards immediately. Each card asks its one deciding life fact inline.
+4. **Facts and topics are separate.** Life facts drive "Touches you." Topics the person cares about drive "On your list." Topics name subjects, never sides.
+5. **Avatar.** A line-drawn figure built from facts and topics. It is also the figure inside each direction pictogram. No red or blue. No shareable image.
+6. **Visible trust features.** Quote badges with page numbers, a verified-quote counter, a flagged list for quotes not found, an AI-draft label on uploads, a "What left your browser" panel, offline re-sorting, and a fixed how-to-vote refusal.
+7. **Uploads send text, not PDF bytes.** Extraction happens in the browser. The model returns quotes as JSON and the app verifies them itself, because the API's built-in citations cannot be combined with structured output.
+8. **No RAG.** Every document fits in one model call. Retrieval is a post-hackathon idea.
+9. **Persona switcher** ("see it as someone else") doubles as the demo path.
