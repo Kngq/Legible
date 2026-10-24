@@ -12,6 +12,7 @@ import { canAskInCard, type Profile } from "@/lib/engine/profile";
 import { docWhat } from "@/lib/engine/timeline";
 import { buildGuide, guideTopics, topicLabel, type GuideEntry, type GuideFilter, type GuideSort } from "@/lib/engine/ballot-guide";
 import { DIRECTION_DEFS, type TopicId } from "@/lib/vocab";
+import { AskButton } from "./AskSheet";
 import { DirectionMark, Glyph } from "./icons";
 import { FOCUS, Tag } from "./ui";
 import { SECONDARY } from "./updates";
@@ -69,6 +70,12 @@ export function DocumentView({
         </p>
       </header>
 
+      {ballot && (
+        <div className="mt-4">
+          <AskButton documentId={doc.id} variant="pill" />
+        </div>
+      )}
+
       <Controls
         sort={sort}
         setSort={setSort}
@@ -81,7 +88,7 @@ export function DocumentView({
 
       <ol className="mt-4 space-y-4" aria-label={`${ballot ? "Questions" : "Items"}, ${sort === "relevance" ? "most relevant to you first" : "in ballot order"}`}>
         {entries.map((e) => (
-          <GuideCard key={e.card.measure.id} entry={e} ballot={ballot} sortedByYou={sort === "relevance"} town={town} profile={profile} onOpen={() => onOpenMeasure(e.card.measure.id)} />
+          <GuideCard key={e.card.measure.id} documentId={doc.id} entry={e} ballot={ballot} sortedByYou={sort === "relevance"} town={town} profile={profile} onOpen={() => onOpenMeasure(e.card.measure.id)} />
         ))}
       </ol>
       {entries.length === 0 && <p className="mt-6 text-small text-muted-foreground">Nothing matches this filter. Try All.</p>}
@@ -157,6 +164,7 @@ function Controls({
 
 /** One question as a guide card: what it does, both outcomes, the cost, and how it reaches you. */
 function GuideCard({
+  documentId,
   entry: e,
   ballot,
   sortedByYou,
@@ -164,6 +172,7 @@ function GuideCard({
   profile,
   onOpen,
 }: {
+  documentId: string;
   entry: GuideEntry;
   ballot: boolean;
   sortedByYou: boolean;
@@ -245,12 +254,15 @@ function GuideCard({
         {local && <p className="mt-2 text-small text-muted-foreground">In {town ?? "your city or town"}: {local.text}</p>}
       </div>
 
-      <button type="button" onClick={onOpen} className={`mt-4 inline-flex min-h-11 items-center gap-1.5 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
-        {asks ? "Answer one question and read more" : "Read more and check the official text"}
-        <span aria-hidden="true" className="-rotate-90">
-          <Glyph name="chevron" size={14} />
-        </span>
-      </button>
+      <div className="mt-3 flex flex-wrap items-center gap-x-5">
+        <AskButton documentId={documentId} measure={m} />
+        <button type="button" onClick={onOpen} className={`inline-flex min-h-11 items-center gap-1.5 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
+          {asks ? "Answer one question and read more" : "Read more and check the official text"}
+          <span aria-hidden="true" className="-rotate-90">
+            <Glyph name="chevron" size={14} />
+          </span>
+        </button>
+      </div>
     </li>
   );
 }

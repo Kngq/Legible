@@ -519,7 +519,12 @@ UI: a quote badge on every citation; "How do we know this?" on each card opening
 
 ## Chat dock
 
-A ChatDock component mounts in the app layout, bottom right. It reads the current document id and, when a card is expanded, the measure id. Messages go to `/api/ask` with `{ documentId, measureId?, question, quotes? }` through `apiFetch`. Answers arrive as `{ sentences: { text, quoteId }[] }`; the browser checks each `quoteId` against the document's quotes and falls back to the fixed response on any miss or banned word. Each sentence renders with a quote badge that opens SourceView. Under each answer, a chip reads "Sent: document id, your question." The local how-to-vote check runs before any request. Three suggested questions per measure come from a small list in the content file. Offline, the dock shows a notice and the card's official text link.
+Asking happens in context, not from a floating corner button. An **"Ask about this question"** button sits on every ballot guide card and on the measure page, and **"Ask about the ballot"** sits under the ballot page header. Each opens a bottom sheet (`AskSheet.tsx`) that leaves the page visible above it, titled with its scope ("Ask about Question 7" and the short title).
+
+- **Starter questions.** Three per measure and three for the whole ballot, in `src/lib/engine/ask-suggestions.ts`. Each is neutral, never mentions the person (so tapping one cannot reveal a profile answer), and names the quote that answers it; tests check the quote exists, the banned words, the how-to-vote check, and the absence of I/me/my.
+- **Answers.** `/api/ask` with `{ documentId, measureId?, question }` answers only from that measure's quotes (all summaries and outcomes for the whole ballot), one cited quote per sentence; any miss or banned word becomes "The official text does not answer this." Each sentence shows its locator and page with "See the official words" opening the verbatim quote in place.
+- **Privacy line** under every answer: "Sent: Question 7 and your question. Nothing from your profile."
+- The local how-to-vote check runs before any request. Offline, or with no API key on the server, the sheet says so plainly.
 
 ## Error handling
 

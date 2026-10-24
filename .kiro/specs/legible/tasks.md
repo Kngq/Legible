@@ -136,6 +136,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 17.14 Add three optional Duolingo-style questions after the town in first run (progress bar, Skip records nothing, Finish later) and a keep-on-device screen when anything was answered
   - [x] 17.15 Pace first run like language-app onboarding without copying its look: one welcome screen with the mission and a placeholder logo, one question per screen with a progress bar and percentage, the app's own buttons and option cards
   - [x] 17.16 Make the ballot page a ranked, filterable guide: plain line, official YES and NO side by side, Cost, and "If you …" per question
+  - [x] 17.17 Replace the floating ChatDock with a contextual Ask sheet on ballot cards and measure pages, with checked starter questions per measure; rename Nine to Legible in the ask route and vote check
     - _Requirements: 20.5, 20.9_
   - [ ] 17.6 Add uploaded and sample documents to the feed in memory, tagged by town
     - _Requirements: 20.8_

@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import ballot2026 from "@/data/ballot-2026.json";
 import type { DocumentData, Quote } from "@/lib/engine/types";
-import { asksHowToVote, findBannedWords, VOTE_FIXED_RESPONSE } from "@/lib/vocab";
+import { asksHowToVote, BANNED_WORDS, findBannedWords, VOTE_FIXED_RESPONSE } from "@/lib/vocab";
 
 /**
- * Ask route (see .kiro/specs/nine/design.md, "Ask route" and "Chat dock").
+ * Ask route (see .kiro/specs/legible/design.md, "Ask route" and "Chat dock").
  *
  * Only public document text, a measure id, and the question ever reach here.
  * No life profile data is accepted or read. The model answers from the given
@@ -137,12 +137,13 @@ export async function POST(request: Request) {
     .map((q) => `- id: ${q.id}\n  locator: ${q.locator}${q.page ? ` (page ${q.page})` : ""}\n  text: "${q.text}"`)
     .join("\n");
 
-  const system = `You are the chat assistant inside Nine, an app that explains the 9 Massachusetts ballot questions on the Nov 3, 2026 state ballot using only the Attorney General's official text.
+  // The banned list comes from vocab so this prompt holds no banned literals of its own.
+  const system = `You are the assistant inside Legible, an app that explains the 9 Massachusetts ballot questions on the Nov 3, 2026 state ballot using only the Attorney General's official text.
 
 Rules, non-negotiable:
 - Answer only using the quotes listed below. Never use outside knowledge about these measures, current events, or predictions.
 - Every sentence you write must cite exactly one quote id from the list.
-- Never say how someone should vote or which side is better. Never use these words in your own sentences: should, recommend, good, bad, support, oppose.
+- Never tell anyone how to vote or which side to take. Never use these words in your own sentences: ${BANNED_WORDS.join(", ")}.
 - Keep the answer to at most 4 short sentences.
 - If none of the quotes actually answer the question, set "answered" to false and return an empty sentence list — do not guess.
 

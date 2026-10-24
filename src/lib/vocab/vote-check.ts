@@ -9,4 +9,4 @@ export function asksHowToVote(question: string): boolean {
 }
 
 export const VOTE_FIXED_RESPONSE =
-  "Nine doesn't say how to vote or which side to take. It can tell you what changes under YES or under NO, in the official text's own words — ask it that way.";
+  "Legible doesn't say how to vote or which side to take. It can tell you what changes under YES or under NO, in the official text's own words. Ask it that way.";

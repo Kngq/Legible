@@ -13,6 +13,7 @@ import type { Card, Quote } from "@/lib/engine/types";
 import type { CivicCard } from "@/lib/engine/civic";
 import { CivicRow } from "./CivicRow";
 import { Cover, DocTile } from "./covers";
+import { AskButton } from "./AskSheet";
 import { ForYou } from "./ForYou";
 import { Glyph } from "./icons";
 import { Draft, OfficialText, Sentences } from "./MeasureCard";
@@ -127,6 +128,10 @@ export function MeasureView({
       <Cover measure={m} label={`${isBallot ? "Q" : "#"}${m.number}`} size={48} className="mt-5 aspect-[16/5] rounded-lg" />
 
       <ForYou card={card} doc={doc} profile={profile} update={update} onOpenProfile={onOpenProfile} />
+
+      <div className="mt-3">
+        <AskButton documentId={doc.id} measure={m} variant="pill" />
+      </div>
 
       {registration?.kind === "registration" && (
         <section className="mt-4 rounded-lg bg-surface p-5 shadow-card" aria-labelledby="next-h">
