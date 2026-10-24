@@ -1,46 +1,55 @@
 "use client";
 
-// The Legible magnifying glass as a small cursor companion on clickable decision
-// cards: it fades and scales in just below-right of the pointer, follows with a
-// light spring, tilts a few degrees with sideways movement, and squeezes on
-// press. Decorative only (aria-hidden, pointer-events none); every card keeps
-// its visible links and buttons, so nothing depends on it.
+// A small "Read more" capsule in warm glass, carrying the Legible magnifying
+// glass, that follows the mouse across a clickable decision card. It fades and
+// scales in just below-right of the pointer, follows with a responsive spring,
+// stretches a touch and tilts with sideways speed, settles back when the mouse
+// stops, and gives a little on press. Decorative only (aria-hidden, pointer-
+// events none); every card keeps its visible links and buttons.
 // It shows over the card's own surface (the card, or an element marked
 // data-cursor-surface such as a row's stretched title link) and hides over any
 // nested button or link. With onOpen, a click on that surface opens the card.
-// Mouse only: touch and pen never see it. Reduced motion keeps a plain fade.
+// Off for cards that leave Legible (enabled: false), for touch and pen, and
+// reduced to a plain fade under reduced motion.
 import { AnimatePresence, motion, useReducedMotion, useSpring, useTransform, useVelocity } from "motion/react";
 import { useEffect, useRef, useState, type MouseEvent, type PointerEvent } from "react";
 import { LegibleMark } from "./LegibleMark";
 
-const SIZE = 38;
-const OFFSET = 18;
-const EDGE = 6;
-const FOLLOW = { stiffness: 600, damping: 40, mass: 0.35 };
-const TILT = { stiffness: 260, damping: 22 };
-const PRESS = { stiffness: 700, damping: 22 };
+const OFFSET = 16;
+const EDGE = 8;
+const FOLLOW = { stiffness: 520, damping: 42, mass: 0.4 };
+// Softer than the follow, so shape changes trail position slightly, like a liquid.
+const FLUID = { stiffness: 220, damping: 26, mass: 0.6 };
+const PRESS = { stiffness: 520, damping: 28 };
+const SPEED = [0, 1800];
 const INTERACTIVE = "a, button, summary, input, textarea, select, label, [role=button]";
 
-export function useCursorCta(onOpen?: () => void) {
+export function useCursorCta(onOpen?: () => void, { enabled = true }: { enabled?: boolean } = {}) {
   const reduce = useReducedMotion();
   const [visible, setVisible] = useState(false);
   const x = useSpring(0, FOLLOW);
   const y = useSpring(0, FOLLOW);
-  // Sideways speed becomes a small lean, settling back to upright when still.
-  const rotate = useSpring(useTransform(useVelocity(x), [-1500, 0, 1500], [-7, 0, 7]), TILT);
-  const scale = useSpring(1, PRESS);
+  const vx = useVelocity(x);
+  // Sideways speed: a slight lean and a slight horizontal stretch, volume kept.
+  const rotate = useSpring(useTransform(vx, [-SPEED[1], 0, SPEED[1]], [-4, 0, 4]), FLUID);
+  const stretch = useSpring(useTransform(vx, (v) => Math.min(Math.abs(v) / SPEED[1], 1)), FLUID);
+  const press = useSpring(1, PRESS);
+  const scaleX = useTransform(() => (1 + stretch.get() * 0.1) * press.get());
+  const scaleY = useTransform(() => (1 - stretch.get() * 0.05) * (1 - (1 - press.get()) * 1.4));
   const card = useRef<HTMLElement | null>(null);
   const last = useRef<{ x: number; y: number } | null>(null);
+  const size = useRef({ w: 120, h: 34 });
 
   // Below-right of the pointer, flipped to the other side near a viewport edge.
   const place = (clientX: number, clientY: number, jump: boolean) => {
     const r = card.current?.getBoundingClientRect();
     if (!r) return;
     last.current = { x: clientX, y: clientY };
+    const { w, h } = size.current;
     let left = clientX + OFFSET;
     let top = clientY + OFFSET;
-    if (left + SIZE > window.innerWidth - EDGE) left = clientX - OFFSET - SIZE;
-    if (top + SIZE > window.innerHeight - EDGE) top = clientY - OFFSET - SIZE;
+    if (left + w > window.innerWidth - EDGE) left = clientX - OFFSET - w;
+    if (top + h > window.innerHeight - EDGE) top = clientY - OFFSET - h;
     if (jump || reduce) {
       x.jump(left - r.left);
       y.jump(top - r.top);
@@ -50,7 +59,7 @@ export function useCursorCta(onOpen?: () => void) {
     }
   };
 
-  // The page can scroll under a still cursor; keep the mark beside it.
+  // The page can scroll under a still cursor; keep the capsule beside it.
   useEffect(() => {
     if (!visible) return;
     const onScroll = () => last.current && place(last.current.x, last.current.y, true);
@@ -81,15 +90,15 @@ export function useCursorCta(onOpen?: () => void) {
     },
     onPointerLeave: () => {
       last.current = null;
-      scale.jump(1);
+      press.jump(1);
       setVisible(false);
     },
     onPointerDown: (e: PointerEvent<HTMLElement>) => {
-      if (e.pointerType === "mouse" && !reduce) scale.set(0.82);
+      if (e.pointerType === "mouse" && !reduce) press.set(0.94);
     },
-    onPointerUp: () => scale.set(1),
+    onPointerUp: () => press.set(1),
     onClick: (e: MouseEvent<HTMLElement>) => {
-      // Only while the mark is showing, so touch taps on the card body do nothing new.
+      // Only while the capsule is showing, so touch taps on the card body do nothing new.
       // A nested link or button, a surface link included, handles its own click.
       const hit = e.target instanceof Element ? e.target.closest(INTERACTIVE) : null;
       if (!onOpen || !visible || (hit && hit !== card.current)) return;
@@ -102,20 +111,28 @@ export function useCursorCta(onOpen?: () => void) {
     <motion.div aria-hidden="true" style={{ x, y }} className="pointer-events-none absolute left-0 top-0 z-20">
       <AnimatePresence>
         {visible && (
-          <motion.span
-            initial={{ opacity: 0, scale: reduce ? 1 : 0.6 }}
-            animate={{ opacity: 1, scale: 1, transition: { duration: reduce ? 0.12 : 0.18, ease: [0.2, 0.8, 0.2, 1] } }}
-            exit={{ opacity: 0, scale: reduce ? 1 : 0.8, transition: { duration: 0.12, ease: "easeIn" } }}
-            className="block"
+          <motion.div
+            initial={{ opacity: 0, scale: reduce ? 1 : 0.8, filter: reduce ? "none" : "blur(2px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)", transition: { duration: reduce ? 0.12 : 0.2, ease: [0.2, 0.8, 0.2, 1] } }}
+            exit={{ opacity: 0, scale: reduce ? 1 : 0.9, transition: { duration: 0.12, ease: "easeIn" } }}
+            className="origin-top-left"
           >
-            <motion.span style={reduce ? undefined : { rotate, scale }} className="block origin-[40%_40%]">
-              <LegibleMark size={SIZE} />
-            </motion.span>
-          </motion.span>
+            <motion.div
+              ref={(el: HTMLDivElement | null) => {
+                if (el) size.current = { w: el.offsetWidth, h: el.offsetHeight };
+              }}
+              style={reduce ? undefined : { rotate, scaleX, scaleY }}
+              className="cursor-glass flex h-[34px] origin-left items-center gap-1.5 whitespace-nowrap rounded-full pl-2 pr-3.5 text-small font-semibold leading-none"
+            >
+              <LegibleMark size={20} />
+              Read more
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </motion.div>
   );
 
+  if (!enabled) return { handlers: {}, mark: null, cursorClass: "" };
   return { handlers, mark, cursorClass: visible ? "cursor-pointer" : "" };
 }

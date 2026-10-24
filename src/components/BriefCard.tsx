@@ -9,7 +9,7 @@
 //   whole row opens the detail page (a quiet "Explore →" says so); "Add
 //   details", "Details", and the official source keep their own clicks.
 // Every word of relevance comes from relevanceOf (or the ballot card's own
-// match); nothing here adds a fact. On a mouse, the Legible magnifying glass
+// match); nothing here adds a fact. On a mouse, a "Read more" glass capsule
 // follows the cursor over a decision, and a click on empty space opens it.
 import { useState, type ReactNode } from "react";
 import { docWhat, type TimelineEntry } from "@/lib/engine/timeline";
@@ -356,14 +356,15 @@ function RowRelevance({ d, why, onWhy, onOpenProfile }: { d: Decision; why: bool
 }
 
 /** A decision as a compact row. The headline is the row's link; it covers the row,
- * and the cursor mark treats it as the row's surface. */
+ * and the cursor capsule treats it as the row's surface. */
 export function DecisionRow({ d, onOpenProfile }: { d: Decision; onOpenProfile: (v: SheetView) => void }) {
   const [why, setWhy] = useState(false);
-  const cta = useCursorCta();
   const external = d.noDetail && "href" in d.primary.to ? d.primary.to.href : undefined;
+  // A row that goes straight to a government site keeps the plain pointer.
+  const cta = useCursorCta(undefined, { enabled: !external });
   const stretch = "text-left after:absolute after:inset-0 after:rounded-md after:content-['']";
   const title: ReactNode = external ? (
-    <a href={external} target="_blank" rel="noreferrer" data-cursor-surface className={`${stretch} ${FOCUS}`}>
+    <a href={external} target="_blank" rel="noreferrer" className={`${stretch} ${FOCUS}`}>
       {d.title}
       <span className="sr-only"> (opens the official site)</span>
     </a>
