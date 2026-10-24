@@ -56,6 +56,8 @@ export function BriefCard({
   const relevance = relevanceOf(e);
   const personal = relevance && relevance.kind !== "open" ? relevance : null;
   const { primary, secondary } = actionsFor(e);
+  // Phones have no cursor pill; if both actions leave the app, add an in-app way in.
+  const noDetail = "href" in primary.to && (!secondary || "href" in secondary.to);
   // "Add details" opens the profile step that holds the unanswered question.
   const openArea = LIFE_AREAS.find((a) => civic?.open.some((o) => a.facts.includes(o.fact)));
 
@@ -149,6 +151,11 @@ export function BriefCard({
       <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1">
         {button(primary, true)}
         {secondary && button(secondary, false)}
+        {noDetail && (
+          <button type="button" onClick={openDetail} className={`[@media(hover:hover)_and_(pointer:fine)]:hidden ${LINK}`}>
+            Read more
+          </button>
+        )}
       </div>
     </li>
   );
