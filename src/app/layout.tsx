@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Figtree, Geist_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
+import { ChatDockGate } from "@/components/ChatDockGate";
 
 const figtree = Figtree({
   variable: "--font-figtree",
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         {children}
+        <ChatDockGate />
       </body>
     </html>
   );

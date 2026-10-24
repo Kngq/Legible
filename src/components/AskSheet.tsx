@@ -92,17 +92,6 @@ export function AskProvider({ doc, scopeMeasureId, children }: { doc: DocumentDa
     <AskContext.Provider value={open}>
       {children}
 
-      {!target && (
-        <button
-          type="button"
-          data-ask-ignore
-          onClick={() => open()}
-          aria-label={scopeMeasureId ? "Ask about this question" : "Ask about the ballot"}
-          className={`${ORB} fixed bottom-5 right-5 z-[65] size-14 animate-float shadow-card transition-transform duration-(--duration) ease-legible hover:scale-105 ${FOCUS}`}
-        >
-          <Glyph name="quote" size={22} />
-        </button>
-      )}
 
       {target && <AskSheet doc={doc} target={target} onClose={() => setTarget(null)} />}
     </AskContext.Provider>
