@@ -8,7 +8,7 @@ import ballot from "@/data/ballot-2026.json";
 import civicData from "@/data/civic-ma.json";
 import { civicCard, civicFeed, type CivicItem } from "@/lib/engine/civic";
 import { buildFeed } from "@/lib/engine/feed";
-import { civicUpNext, relatedCivic, relatedMeasures } from "@/lib/engine/related";
+import { relatedCivic, relatedMeasures } from "@/lib/engine/related";
 import type { DocumentData } from "@/lib/engine/types";
 import { parentRoute, parseRoute, routeHash, type Route } from "@/lib/nav/route";
 import { CivicView } from "./CivicView";
@@ -158,7 +158,6 @@ export function LegibleApp() {
       <Home
         feed={feed}
         civic={civic}
-        civicUp={civicUpNext(feed.upNext, civic, today)}
         today={today}
         profile={profile}
         remember={preferences.remember}

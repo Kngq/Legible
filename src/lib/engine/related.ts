@@ -4,7 +4,6 @@
 import type { FactId } from "@/lib/vocab";
 import type { CivicCard, CivicItem } from "./civic";
 import type { FeedItem } from "./feed";
-import { daysBetween } from "./feed";
 import type { Card, Measure } from "./types";
 
 function measureFacts(m: Measure): Set<FactId> {
@@ -37,15 +36,4 @@ export function relatedMeasures(item: CivicItem, feed: FeedItem[], max = 3): { i
     .sort((a, b) => b.s - a.s || a.i - b.i)
     .slice(0, max)
     .map(({ item, card }) => ({ item, card }));
-}
-
-/**
- * A civic item takes the Up next card when it touches the person and comes no
- * later than the document Up next (or that document touches nothing).
- */
-export function civicUpNext(docUp: FeedItem | null, civic: CivicCard[], today: string): CivicCard | null {
-  const c = civic.find((x) => x.relevance === "touches" && (x.timing === "today" || x.timing === "open" || x.timing === "upcoming"));
-  if (!c) return null;
-  if (!docUp || docUp.touches === 0 || !docUp.doc.decideBy) return c;
-  return (c.days ?? 0) <= daysBetween(today, docUp.doc.decideBy.date) ? c : null;
 }

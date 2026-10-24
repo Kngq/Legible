@@ -43,8 +43,6 @@ export function Home({
 }: {
   /** Deadlines, meetings, and bills for this person's state and town, in feed order. */
   civic: CivicCard[];
-  /** A civic item that takes the Up next card, when it touches the person sooner. */
-  civicUp: CivicCard | null;
   onOpenItem: (id: string) => void;
   feed: Feed;
   today: string;

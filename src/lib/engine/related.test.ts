@@ -6,7 +6,7 @@ import { civicFeed, type CivicItem } from "./civic";
 import { civicMeta, timingTag } from "./civic-copy";
 import { buildFeed } from "./feed";
 import { answerFact, emptyProfile } from "./profile";
-import { civicUpNext, relatedCivic, relatedMeasures } from "./related";
+import { relatedCivic, relatedMeasures } from "./related";
 import type { DocumentData } from "./types";
 
 const t0 = "2026-10-24T14:00:00.000Z";
@@ -31,12 +31,6 @@ describe("related content", () => {
     const ids = relatedCivic(q("7"), cards).map((c) => c.item.id);
     expect(ids).toContain("ma-194-s2836");
     expect(ids).not.toContain("ma-2026-registration-deadline");
-  });
-
-  it("a deadline today that touches the person takes Up next from a vote in 10 days", () => {
-    expect(civicUpNext(feed.upNext, cards, TODAY)?.item.id).toBe("ma-2026-registration-deadline");
-    const registered = { ...answerFact(emptyProfile(t0), "registered_here", true, ob, t0) };
-    expect(civicUpNext(buildFeed([BALLOT], registered, TODAY).upNext, civicFeed(ITEMS, registered, TODAY), TODAY)).toBeNull();
   });
 
   it("civic wording is plain and neutral", () => {
