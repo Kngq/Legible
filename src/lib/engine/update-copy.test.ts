@@ -3,7 +3,10 @@ import civicData from "@/data/civic-ma.json";
 import { findBannedWords } from "@/lib/vocab";
 import { civicCard, type CivicItem } from "./civic";
 import { answerFact, emptyProfile } from "./profile";
-import { friendlyWhen, KIND_LABEL, whyLine } from "./update-copy";
+import ballot from "@/data/ballot-2026.json";
+import { buildCards } from "./cards";
+import type { DocumentData } from "./types";
+import { ballotWhyLine, friendlyWhen, joinAnd, KIND_LABEL, questionBecause, whyLine } from "./update-copy";
 
 const t0 = "2026-10-24T14:00:00.000Z";
 const today = "2026-10-24";
@@ -39,4 +42,39 @@ describe("whyLine", () => {
 
 it("labels and lines pass the word lint", () => {
   for (const l of Object.values(KIND_LABEL)) expect(findBannedWords(l)).toEqual([]);
+});
+
+describe("ballot wording", () => {
+  const doc = ballot as unknown as DocumentData;
+  const withFacts = (facts: Record<string, boolean>) => {
+    let p = emptyProfile(t0);
+    for (const [k, v] of Object.entries(facts)) p = answerFact(p, k as never, v, { kind: "onboarding" }, t0);
+    return buildCards(doc, p);
+  };
+
+  it("joins in plain English", () => {
+    expect(joinAnd([])).toBe("");
+    expect(joinAnd(["a"])).toBe("a");
+    expect(joinAnd(["a", "b"])).toBe("a and b");
+    expect(joinAnd(["a", "b", "c"])).toBe("a, b and c");
+  });
+
+  it("names the answer behind each touching question", () => {
+    const q2 = withFacts({ state_employee: true }).find((c) => String(c.measure.number) === "2")!;
+    expect(q2.relevance).toBe("touches");
+    expect(questionBecause(q2)).toBe("Because you work for the state");
+  });
+
+  it("says why the ballot card is shown, once per answer", () => {
+    const cards = withFacts({ state_employee: true, rents: true });
+    const line = ballotWhyLine(cards)!;
+    expect(line).toMatch(/^You told us .*you work for the state/);
+    expect(line).toMatch(/you rent/);
+    expect(line.match(/you rent/g)).toHaveLength(1);
+    expect(findBannedWords(line)).toEqual([]);
+  });
+
+  it("says nothing when no question touches the person", () => {
+    expect(ballotWhyLine(withFacts({}))).toBeNull();
+  });
 });

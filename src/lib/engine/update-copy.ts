@@ -3,6 +3,7 @@
 import { FACT_DEFS, TOPIC_DEFS } from "@/lib/vocab";
 import type { CivicCard, CivicKind } from "./civic";
 import { appliesIf } from "./timeline";
+import type { Because, Card } from "./types";
 
 const TZ = "America/New_York";
 
@@ -51,4 +52,36 @@ export function whyLine(c: CivicCard): string | null {
   }
   if (c.open.length) return `${appliesIf(c.open)}. You haven't said yet.`;
   return null;
+}
+
+/** "a", "a and b", "a, b and c". */
+export function joinAnd(parts: string[]): string {
+  return parts.length < 2 ? (parts[0] ?? "") : `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}`;
+}
+
+/** Each answer or followed subject behind a card, in plain words, without repeats. */
+function becausePhrases(because: Because[], withTopics: boolean): string[] {
+  const out = because.flatMap((b) =>
+    b.kind === "fact" ? [b.value ? FACT_DEFS[b.id].because.yes : FACT_DEFS[b.id].because.no] : withTopics ? [`you follow ${TOPIC_DEFS[b.id].label.toLowerCase()}`] : [],
+  );
+  return [...new Set(out)];
+}
+
+/** Under one ballot question: "Because you work for the state". Null when nothing matched. */
+export function questionBecause(card: Card): string | null {
+  const parts = becausePhrases(card.because, true);
+  return parts.length ? `Because ${joinAnd(parts)}` : null;
+}
+
+/**
+ * Why a ballot-backed card (Election Day, or the ballot itself) is shown: every
+ * answer behind the questions that touch the person. "You told us you work for
+ * the state and you rent." Null when no question touches them.
+ */
+export function ballotWhyLine(cards: Card[]): string | null {
+  const parts = becausePhrases(
+    cards.filter((c) => c.relevance === "touches").flatMap((c) => c.because),
+    false,
+  );
+  return parts.length ? `You told us ${joinAnd(parts)}.` : null;
 }
