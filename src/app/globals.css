@@ -299,33 +299,90 @@ body {
   font-variation-settings: "opsz" 144;
 }
 
-/* The "Read more" cursor capsule on decision cards: warm translucent glass.
-   Opaque enough that the label reads over any card, with a soft inner light
-   along the top edge, a hairline rim, and a barely-there shadow. */
-.cursor-glass {
-  color: var(--purple-800);
+/* The "Read more" cursor capsule on decision cards: a drop of liquid glass.
+   - shell: mostly clear, a light blur and lift of what is behind, a hairline
+     luminous edge, a brighter upper rim, a faint plum depth at the bottom, and
+     a small, low shadow. Its ::after is the specular streak along the top.
+   - rim: a 3px ring that blurs and brightens the page more strongly than the
+     body does, so text crossing the edge bends a little: a CSS stand-in for
+     refraction (backdrop blur alone is not refraction; true displacement would
+     need SVG filters that Safari does not support on backdrops).
+   - ink: the logo and label, with a soft halo so they stay readable over text.
+   Without backdrop-filter the shell falls back to a near-solid warm fill.
+   Write only standard properties here: the CSS build adds the -webkit- forms,
+   and hand-written pairs collapse to the prefixed one, which Chrome ignores. */
+.cursor-glass-shell {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.6) 0%, rgb(255 255 255 / 0) 50%),
-    linear-gradient(180deg, rgb(252 244 233 / 0.82) 0%, rgb(243 232 243 / 0.82) 100%);
-  border: 1px solid rgb(255 255 255 / 0.75);
+    linear-gradient(180deg, rgb(255 255 255 / 0.28) 0%, rgb(255 255 255 / 0.06) 55%, rgb(241 230 243 / 0.18) 100%);
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.95),
-    inset 0 -1px 2px rgb(91 26 116 / 0.08),
-    0 0 0 0.5px rgb(91 26 116 / 0.18),
-    0 8px 20px -10px rgb(74 19 95 / 0.38);
-  backdrop-filter: blur(10px) saturate(1.4);
-  -webkit-backdrop-filter: blur(10px) saturate(1.4);
+    inset 0 0 0 0.5px rgb(255 255 255 / 0.75),
+    inset 0 1px 0.5px rgb(255 255 255 / 0.95),
+    inset 0 -1px 1px rgb(255 255 255 / 0.4),
+    inset 0 -8px 12px -8px rgb(91 26 116 / 0.14),
+    0 0 0 0.5px rgb(74 19 95 / 0.16),
+    0 1px 2px rgb(74 19 95 / 0.08),
+    0 6px 14px -8px rgb(74 19 95 / 0.3);
+  backdrop-filter: blur(6px) saturate(1.6) brightness(1.06);
+}
+.cursor-glass-shell::after {
+  content: "";
+  position: absolute;
+  top: 1.5px;
+  left: 16%;
+  right: 16%;
+  height: 42%;
+  border-radius: 999px;
+  background: radial-gradient(ellipse at 50% 0%, rgb(255 255 255 / 0.7), rgb(255 255 255 / 0) 70%);
+}
+.cursor-glass-rim {
+  padding: 3px;
+  backdrop-filter: blur(2px) brightness(1.12) saturate(1.9);
+  /* The ring: the border box minus the content box. */
+  mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  mask-clip: content-box, border-box;
+  mask-composite: exclude;
+}
+.cursor-glass-ink {
+  color: var(--purple-800);
+  text-shadow: 0 0 5px rgb(255 255 255 / 0.75), 0 0.5px 0 rgb(255 255 255 / 0.6);
+}
+.cursor-glass-ink svg {
+  filter: drop-shadow(0 0.5px 0.75px rgb(74 19 95 / 0.25));
 }
 @media (prefers-color-scheme: dark) {
-  .cursor-glass {
-    color: #f3eef4;
+  .cursor-glass-shell {
     background:
-      linear-gradient(180deg, rgb(255 255 255 / 0.12) 0%, rgb(255 255 255 / 0) 55%),
-      rgb(52 38 60 / 0.72);
-    border-color: rgb(255 255 255 / 0.14);
+      linear-gradient(180deg, rgb(255 255 255 / 0.14) 0%, rgb(255 255 255 / 0.03) 55%, rgb(198 155 224 / 0.1) 100%),
+      rgb(30 25 33 / 0.28);
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.18),
-      0 0 0 0.5px rgb(0 0 0 / 0.4),
-      0 6px 16px -8px rgb(0 0 0 / 0.6);
+      inset 0 0 0 0.5px rgb(255 255 255 / 0.22),
+      inset 0 1px 0.5px rgb(255 255 255 / 0.35),
+      inset 0 -8px 12px -8px rgb(198 155 224 / 0.16),
+      0 0 0 0.5px rgb(0 0 0 / 0.5),
+      0 6px 14px -8px rgb(0 0 0 / 0.7);
+    backdrop-filter: blur(6px) saturate(1.4) brightness(0.9);
+  }
+  .cursor-glass-shell::after {
+    background: radial-gradient(ellipse at 50% 0%, rgb(255 255 255 / 0.22), rgb(255 255 255 / 0) 70%);
+  }
+  .cursor-glass-rim {
+    backdrop-filter: blur(2px) brightness(1.25) saturate(1.6);
+  }
+  .cursor-glass-ink {
+    color: #f3eef4;
+    text-shadow: 0 0 6px rgb(0 0 0 / 0.7);
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .cursor-glass-shell {
+    background: rgb(252 247 241 / 0.94);
+  }
+  .cursor-glass-rim {
+    display: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    .cursor-glass-shell {
+      background: rgb(41 34 44 / 0.95);
+    }
   }
 }
