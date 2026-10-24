@@ -45,3 +45,6 @@ next-env.d.ts
 
 # claude code local settings
 .claude/settings.local.json
+
+# feed photos saved by PHOTO_STORE=local
+/.photos/

@@ -2,7 +2,7 @@
 // Pure TypeScript, no network, so the route and the tests share it.
 //
 // Searches name a plain subject per kind of item (a ballot box, the State House,
-// a council chamber), never the item's title or its town, so a photo can't take
+// an empty meeting room), never the item's title or its town, so a photo can't take
 // a side or pass for a real local scene. Results that show protests, campaigns,
 // or party symbols are skipped.
 import type { CivicItem, CivicKind } from "@/lib/engine/civic";
@@ -39,29 +39,31 @@ export interface PhotoTarget {
 
 const CIVIC_QUERY: Record<CivicKind, string> = {
   deadline: "ballot box",
-  window: "ballot box",
-  election: "polling station",
-  meeting: "council chamber",
+  window: "i voted sticker",
+  election: "i voted sticker",
+  meeting: "empty meeting room chairs",
   bill: "Massachusetts State House dome",
 };
 
-// Searches for the State House also return City Hall and the Old State House,
-// so bills accept only photos tagged exactly "state house".
-const CIVIC_TAG: Partial<Record<CivicKind, string>> = { bill: "state house" };
-
 const DOC_QUERY: Record<DocType, string> = {
   ballot: "ballot box",
-  warrant: "town hall",
-  budget: "town hall",
-  hearing: "council chamber",
-  agenda: "council chamber",
-  other: "town hall",
+  warrant: "empty meeting room chairs",
+  budget: "empty meeting room chairs",
+  hearing: "empty meeting room chairs",
+  agenda: "empty meeting room chairs",
+  other: "empty meeting room chairs",
 };
+
+// Some searches drift: "ballot box" also returns gift boxes and chocolates, and
+// the State House search returns City Hall and the Old State House. These kinds
+// accept only photos carrying the tag exactly. Few photos pass, so items share.
+const CIVIC_TAG: Partial<Record<CivicKind, string>> = { deadline: "ballot box", window: "i voted", election: "i voted", bill: "state house" };
+const DOC_TAG: Partial<Record<DocType, string>> = { ballot: "ballot box" };
 
 /** Every item a feed can show, for every town. The server never learns which one a person sees. */
 export function photoTargets(civic: CivicItem[], docs: DocumentData[]): PhotoTarget[] {
   return [
-    ...docs.map((d) => ({ key: `d:${d.id}`, query: DOC_QUERY[d.docType] })),
+    ...docs.map((d) => ({ key: `d:${d.id}`, query: DOC_QUERY[d.docType], tag: DOC_TAG[d.docType] })),
     ...civic.map((i) => ({ key: `c:${i.id}`, query: CIVIC_QUERY[i.kind], tag: CIVIC_TAG[i.kind] })),
   ];
 }
@@ -72,6 +74,15 @@ const MIN_RATIO = 1.3;
 
 // Tags that would put a side, a campaign, or a crowd on a neutral card.
 const SKIP_TAGS = ["protest", "demonstration", "rally", "campaign", "politician", "president", "democrat", "republican", "trump", "biden", "flag", "riot", "police"];
+
+// Photos a person looked at and turned down: foreign ballots, signs, or national
+// emblems that tags don't reveal. Add an id here, delete its row, and fetch again.
+export const REJECTED_IDS: ReadonlySet<number> = new Set([
+  4247398, // ballot box with Israel's state emblem
+  4878405, // German "Kommunalwahl" ballot
+  4708321, // German "Kommunalwahl" floor sign
+  1838985, // UK polling station signage
+]);
 
 export function isLandscape(h: Pick<PixabayHit, "imageWidth" | "imageHeight">): boolean {
   return h.imageWidth >= MIN_WIDTH && h.imageWidth >= h.imageHeight * MIN_RATIO;
@@ -84,9 +95,10 @@ function tagList(tags: string): string[] {
     .filter(Boolean);
 }
 
+// Whole words and plurals: "riot" must not catch "patriotic", "campaign" catches "campaigns".
 function isNeutral(h: PixabayHit): boolean {
-  const tags = tagList(h.tags);
-  return !tags.some((t) => SKIP_TAGS.some((s) => t.includes(s)));
+  const words = new Set(tagList(h.tags).flatMap((t) => t.split(/[^a-z]+/)));
+  return !SKIP_TAGS.some((s) => words.has(s) || words.has(`${s}s`));
 }
 
 /**
@@ -95,7 +107,7 @@ function isNeutral(h: PixabayHit): boolean {
  * photo before giving up.
  */
 export function pickLandscape(hits: PixabayHit[], used: ReadonlySet<number>, tag?: string): PixabayHit | null {
-  const ok = hits.filter((h) => h.largeImageURL && isLandscape(h) && isNeutral(h) && (!tag || tagList(h.tags).includes(tag)));
+  const ok = hits.filter((h) => h.largeImageURL && !REJECTED_IDS.has(h.id) && isLandscape(h) && isNeutral(h) && (!tag || tagList(h.tags).includes(tag)));
   return ok.find((h) => !used.has(h.id)) ?? ok[0] ?? null;
 }
 

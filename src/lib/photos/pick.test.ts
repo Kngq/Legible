@@ -57,6 +57,16 @@ describe("pickLandscape", () => {
     expect(pickLandscape(hits.slice(0, 2), new Set(), "state house")).toBeNull();
   });
 
+  it("skips side-taking tags as whole words only", () => {
+    expect(pickLandscape([hit({ tags: "i voted, america, patriotic" })], new Set())).not.toBeNull();
+    expect(pickLandscape([hit({ tags: "street riot, city" })], new Set())).toBeNull();
+    expect(pickLandscape([hit({ tags: "election campaigns" })], new Set())).toBeNull();
+  });
+
+  it("never picks a rejected photo", () => {
+    expect(pickLandscape([hit({ id: 4247398 }), hit({ id: 9 })], new Set())?.id).toBe(9);
+  });
+
   it("returns null when nothing fits", () => {
     expect(pickLandscape([], new Set())).toBeNull();
     expect(pickLandscape([hit({ imageWidth: 1000, imageHeight: 1000 })], new Set())).toBeNull();
