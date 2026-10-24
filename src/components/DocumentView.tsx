@@ -72,7 +72,7 @@ export function DocumentView({
 
       {ballot && (
         <div className="mt-4">
-          <AskButton documentId={doc.id} variant="pill" />
+          <AskButton variant="pill" />
         </div>
       )}
 
@@ -88,7 +88,7 @@ export function DocumentView({
 
       <ol className="mt-4 space-y-4" aria-label={`${ballot ? "Questions" : "Items"}, ${sort === "relevance" ? "most relevant to you first" : "in ballot order"}`}>
         {entries.map((e) => (
-          <GuideCard key={e.card.measure.id} documentId={doc.id} entry={e} ballot={ballot} sortedByYou={sort === "relevance"} town={town} profile={profile} onOpen={() => onOpenMeasure(e.card.measure.id)} />
+          <GuideCard key={e.card.measure.id} entry={e} ballot={ballot} sortedByYou={sort === "relevance"} town={town} profile={profile} onOpen={() => onOpenMeasure(e.card.measure.id)} />
         ))}
       </ol>
       {entries.length === 0 && <p className="mt-6 text-small text-muted-foreground">Nothing matches this filter. Try All.</p>}
@@ -164,7 +164,6 @@ function Controls({
 
 /** One question as a guide card: what it does, both outcomes, the cost, and how it reaches you. */
 function GuideCard({
-  documentId,
   entry: e,
   ballot,
   sortedByYou,
@@ -172,7 +171,6 @@ function GuideCard({
   profile,
   onOpen,
 }: {
-  documentId: string;
   entry: GuideEntry;
   ballot: boolean;
   sortedByYou: boolean;
@@ -189,7 +187,7 @@ function GuideCard({
   const origin = referendum ? "Referendum on a law already in effect" : m.kind === "initiative" ? "Placed on the ballot by voter petition" : DOC_TYPE_LABEL.ballot;
 
   return (
-    <li className={`rounded-lg bg-surface p-5 shadow-card ${touches ? "ring-2 ring-accent" : ""}`}>
+    <li data-ask-measure={m.id} className={`rounded-lg bg-surface p-5 shadow-card ${touches ? "ring-2 ring-accent" : ""}`}>
       <div className="flex items-start gap-4">
         <span aria-hidden="true" className="flex size-14 shrink-0 flex-col items-center justify-center rounded-md bg-accent-soft leading-none">
           <span className="text-small font-bold uppercase text-muted-foreground">{ballot ? "Q" : "#"}</span>
@@ -255,7 +253,7 @@ function GuideCard({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-x-5">
-        <AskButton documentId={documentId} measure={m} />
+        <AskButton measureId={m.id} />
         <button type="button" onClick={onOpen} className={`inline-flex min-h-11 items-center gap-1.5 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
           {asks ? "Answer one question and read more" : "Read more and check the official text"}
           <span aria-hidden="true" className="-rotate-90">

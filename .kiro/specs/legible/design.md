@@ -519,11 +519,17 @@ UI: a quote badge on every citation; "How do we know this?" on each card opening
 
 ## Chat dock
 
-Asking happens in context, not from a floating corner button. An **"Ask about this question"** button sits on every ballot guide card and on the measure page, and **"Ask about the ballot"** sits under the ballot page header. Each opens a bottom sheet (`AskSheet.tsx`) that leaves the page visible above it, titled with its scope ("Ask about Question 7" and the short title).
+Three ways in, one bottom sheet (`AskSheet.tsx`, mounted once by `AskProvider` in `LegibleApp`), which leaves the page visible above it and is titled with its scope ("Ask about Question 7" and the short title):
+
+1. **The floating button,** a light purple orb bottom right on every page after first run, scoped to the open question on a measure page and to the whole ballot elsewhere.
+2. **"Ask about this question"** on every ballot guide card and the measure page, and **"Ask about the ballot"** under the ballot page header.
+3. **Highlighting text** anywhere shows an "Ask about this" chip under the selection. Cards and the measure page carry `data-ask-measure`, so the sheet is scoped to the question the text sits in.
+
+**What a highlight may send.** Pages mix official words with lines that exist only because of the person's answers ("If you rent", "Where you rent, …"), so a highlight could reveal a life fact. `publicExcerpt` (`src/lib/engine/ask-context.ts`) sends the highlighted text only when it is found word for word in an official quote, capped at 240 characters; the sheet then shows it under "You highlighted official text" with three follow-ups (what this part means, what changes under YES, what a NO vote keeps). Anything else is never sent: the sheet says "That part is about your own answers, so Legible won't send it anywhere" and offers the question's starter questions.
 
 - **Starter questions.** Three per measure and three for the whole ballot, in `src/lib/engine/ask-suggestions.ts`. Each is neutral, never mentions the person (so tapping one cannot reveal a profile answer), and names the quote that answers it; tests check the quote exists, the banned words, the how-to-vote check, and the absence of I/me/my.
 - **Answers.** `/api/ask` with `{ documentId, measureId?, question }` answers only from that measure's quotes (all summaries and outcomes for the whole ballot), one cited quote per sentence; any miss or banned word becomes "The official text does not answer this." Each sentence shows its locator and page with "See the official words" opening the verbatim quote in place.
-- **Privacy line** under every answer: "Sent: Question 7 and your question. Nothing from your profile."
+- **Privacy line** under every answer: "Sent: Question 7, the highlighted official words, and your question. Nothing from your profile." (the middle part only when an excerpt was sent).
 - The local how-to-vote check runs before any request. Offline, or with no API key on the server, the sheet says so plainly.
 
 ## Error handling

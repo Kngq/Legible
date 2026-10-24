@@ -14,6 +14,7 @@ import { parentRoute, parseRoute, routeHash, type Route } from "@/lib/nav/route"
 import { CivicView } from "./CivicView";
 import { DocumentView } from "./DocumentView";
 import { FirstRun } from "./FirstRun";
+import { AskProvider } from "./AskSheet";
 import { Explore } from "./Explore";
 import { Home } from "./Home";
 import { MeasureView } from "./MeasureView";
@@ -195,7 +196,7 @@ export function LegibleApp() {
   }
 
   return (
-    <>
+    <AskProvider doc={DOCS[0]} scopeMeasureId={route.kind === "measure" ? route.measureId : undefined}>
       {page}
       {sheet && (
         <ProfileSheet
@@ -214,6 +215,6 @@ export function LegibleApp() {
           }}
         />
       )}
-    </>
+    </AskProvider>
   );
 }
