@@ -1,17 +1,18 @@
 "use client";
 
 // Home after onboarding: the For you page. A compact personal header (whose
-// town, and which parts of the profile sort the page), then two sections that
-// never mix: "Coming up", the time-sensitive dates as compact rows, and
-// "Decisions for you", the cards ranked by how they connect to the person.
+// town, and which parts of the profile sort the page); a compact alert only for
+// a date due today or tomorrow; "Decisions for you", the cards ranked by how
+// they connect to the person, so one is on the first screen; then "Coming up",
+// the other time-sensitive dates as compact rows. Dates and decisions never mix.
 // Everything else is on Explore, one button away. Order comes from buildTimeline
 // and homeSections. Runs in the browser.
 import type { CivicCard } from "@/lib/engine/civic";
 import type { Feed } from "@/lib/engine/feed";
-import { homeSections, profileBasis } from "@/lib/engine/home-copy";
+import { homeSections, isUrgent, profileBasis } from "@/lib/engine/home-copy";
 import type { Profile } from "@/lib/engine/profile";
 import { buildTimeline } from "@/lib/engine/timeline";
-import { BriefCard, DeadlineRow } from "./BriefCard";
+import { BriefCard, DeadlineRow, UrgentAlert } from "./BriefCard";
 import { Glyph } from "./icons";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
@@ -48,6 +49,8 @@ export function Home({
   const greeting = GREETINGS[(profile.name ?? "").length % GREETINGS.length];
   const all = buildTimeline(feed.items, civic, today, { includeOthers: true });
   const { attention, affect } = homeSections(buildTimeline(feed.items, civic, today), all);
+  const urgent = attention.filter(isUrgent);
+  const comingUp = attention.filter((e) => !isUrgent(e));
   const basis = profileBasis(profile);
   const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure, onOpenProfile };
   // Interests are "decided" once the person confirms the topics screen or picks any.
@@ -77,25 +80,17 @@ export function Home({
         </p>
       </header>
 
-      {/* Dates first, in their own panel, so a deadline never reads as a recommendation. */}
-      {attention.length > 0 && (
-        <section aria-labelledby="h-coming" className="mt-7">
-          <div className="flex items-baseline justify-between gap-3">
-            <h2 id="h-coming" className={H2}>
-              Coming up
-            </h2>
-            <p className="text-small text-muted-foreground">Dates from official sources</p>
-          </div>
-          <ul className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border/60 bg-surface shadow-card">
-            {attention.map((e) => (
-              <DeadlineRow key={e.key} entry={e} {...cardProps} />
-            ))}
-          </ul>
+      {/* Only a date due today or tomorrow sits above the decisions. */}
+      {urgent.length > 0 && (
+        <section aria-label="Due soon" className="mt-5 space-y-2">
+          {urgent.map((e) => (
+            <UrgentAlert key={e.key} entry={e} {...cardProps} />
+          ))}
         </section>
       )}
 
       {/* Only what relates to this person. Everything else is on Explore. */}
-      <section aria-labelledby="h-foryou" className="mt-9">
+      <section aria-labelledby="h-foryou" className="mt-7">
         <div className="flex items-baseline justify-between gap-3">
           <h2 id="h-foryou" className={H2}>
             Decisions for you
@@ -117,13 +112,31 @@ export function Home({
             and the decisions that reach your life will show here first.
           </p>
         )}
-        <button type="button" onClick={onExplore} className={`mt-5 ${SECONDARY}`}>
-          Explore everything happening near you
-          <span aria-hidden="true" className="-rotate-90">
-            <Glyph name="chevron" size={14} />
-          </span>
-        </button>
       </section>
+
+      {/* Other dates in their own panel, so a deadline never reads as a recommendation. */}
+      {comingUp.length > 0 && (
+        <section aria-labelledby="h-coming" className="mt-10">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 id="h-coming" className={H2}>
+              Coming up
+            </h2>
+            <p className="text-small text-muted-foreground">Dates from official sources</p>
+          </div>
+          <ul className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border/60 bg-surface shadow-card">
+            {comingUp.map((e) => (
+              <DeadlineRow key={e.key} entry={e} {...cardProps} />
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <button type="button" onClick={onExplore} className={`mt-8 ${SECONDARY}`}>
+        Explore everything happening near you
+        <span aria-hidden="true" className="-rotate-90">
+          <Glyph name="chevron" size={14} />
+        </span>
+      </button>
     </div>
   );
 }

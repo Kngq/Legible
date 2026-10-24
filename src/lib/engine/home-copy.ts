@@ -33,6 +33,26 @@ function dayName(iso: string): string {
   return new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "long", month: "long", day: "numeric" }).format(new Date(iso));
 }
 
+const md = (iso: string) => new Intl.DateTimeFormat("en-US", { timeZone: TZ, month: "long", day: "numeric" }).format(new Date(iso));
+
+/** "October 17–30", or "October 28 – November 2" across months. */
+export function windowRange(from: string, to: string): string {
+  const [a, b] = [md(from), md(to)];
+  const [am, bm] = [a.split(" ")[0], b.split(" ")[0]];
+  return am === bm ? `${a}–${b.split(" ")[1]}` : `${a} – ${b}`;
+}
+
+/**
+ * The date a person acts by: the closing day for an open window, the item's own
+ * day otherwise. Tiles and headlines lead with it, never with a start already past.
+ */
+export function keyDate(c: CivicCard): string | undefined {
+  return c.timing === "open" && c.item.until ? c.item.until : c.item.at;
+}
+
+/** "6 days left", "1 day left", "Last day", from the verified close date. */
+const left = (days?: number) => (days === 0 ? "Last day" : days === 1 ? "1 day left" : `${days} days left`);
+
 /** Headlines a person can read at a glance. Data titles stay on the detail page. */
 const HEADLINES: Record<string, string> = {
   "ma-2026-registration-deadline": "Last chance to register for the November 3 election",
@@ -47,7 +67,7 @@ const HEADLINES: Record<string, string> = {
 export function headline(c: CivicCard): string {
   const i = c.item;
   if (HEADLINES[i.id]) return HEADLINES[i.id];
-  if (i.kind === "window") return c.timing === "open" ? "Early voting is open" : i.title;
+  if (i.kind === "window" && c.timing === "open" && i.until) return c.days === 0 ? "Early voting ends today" : `Early voting ends ${md(i.until)}`;
   if (i.kind === "meeting" && i.at) return `${i.body} meets ${dayName(i.at)}`;
   return i.title;
 }
@@ -88,7 +108,8 @@ const AREA: Partial<Record<TopicId, string>> = {
 /**
  * The card's compact header: a quiet metadata line and a neutral status chip.
  * Bills: "Housing · H.1482" and "Proposal under review", so nothing reads as law.
- * Dated items: "Deadline · October 27" and "In 3 days" / "Today" / "Open now".
+ * Dated items: "Deadline · October 27" and "In 3 days" / "Today".
+ * Open windows: "Voting · October 17–30" and "6 days left", counted to the close.
  */
 export function cardHeader(c: CivicCard): { meta: string; status?: string } {
   const i = c.item;
@@ -97,11 +118,9 @@ export function cardHeader(c: CivicCard): { meta: string; status?: string } {
     return { meta: [area, billNumber(i.title)].filter(Boolean).join(" · "), status: "Proposal under review" };
   }
   if (!i.at) return { meta: CATEGORY[i.kind] };
-  const when = new Intl.DateTimeFormat("en-US", { timeZone: TZ, month: "long", day: "numeric" }).format(new Date(c.timing === "open" && i.until ? i.until : i.at));
-  const meta = `${CATEGORY[i.kind]} · ${c.timing === "open" ? `until ${when}` : when}`;
-  const status =
-    c.timing === "today" ? "Today" : c.timing === "open" ? (c.days === 0 ? "Closes today" : "Open now") : c.days === 1 ? "Tomorrow" : c.days !== undefined ? `In ${c.days} days` : undefined;
-  return { meta, status };
+  if (c.timing === "open" && i.until) return { meta: `${CATEGORY[i.kind]} · ${windowRange(i.at, i.until)}`, status: left(c.days) };
+  const status = c.timing === "today" ? "Today" : c.days === 1 ? "Tomorrow" : c.days !== undefined ? `In ${c.days} days` : undefined;
+  return { meta: `${CATEGORY[i.kind]} · ${md(i.at)}`, status };
 }
 
 /** The date line: "Today · Registration closes 11:59 PM", "November 3 · in 10 days", "Under consideration". */
@@ -114,9 +133,9 @@ export function dateLine(e: TimelineEntry, today: string): string {
   const i = c.item;
   if (i.kind === "bill") return [billNumber(i.title), "Under consideration"].filter(Boolean).join(" · ");
   if (!i.at) return "";
-  const when = new Intl.DateTimeFormat("en-US", { timeZone: TZ, month: "long", day: "numeric" }).format(new Date(c.timing === "open" && i.until ? i.until : i.at));
+  const when = md(keyDate(c)!);
   if (c.timing === "today") return `Today · ${when}`;
-  if (c.timing === "open") return c.days === 0 ? "Open now · closes today" : `Open now · closes ${when}`;
+  if (c.timing === "open") return c.days === 0 ? "Ends today" : `Ends ${when} · ${left(c.days)}`;
   return c.days === 1 ? `Tomorrow · ${when}` : `${when} · in ${c.days} days`;
 }
 
@@ -279,6 +298,16 @@ export function isTimeSensitive(e: TimelineEntry): boolean {
   if (e.kind !== "civic" || e.days === undefined || e.days > ATTENTION_DAYS) return false;
   const k = e.card.item.kind;
   return k === "deadline" || k === "window" || k === "election" || (k === "meeting" && e.days <= MEETING_DAYS);
+}
+
+/**
+ * Urgent enough to sit above the decisions: a deadline or election today or
+ * tomorrow, or the last day of an open window. Only verified dates decide it.
+ */
+export function isUrgent(e: TimelineEntry): boolean {
+  if (e.kind !== "civic" || !isTimeSensitive(e) || e.card.item.kind === "meeting") return false;
+  const c = e.card;
+  return c.timing === "today" || (c.days !== undefined && c.days <= (c.timing === "open" ? 0 : 1));
 }
 
 /**

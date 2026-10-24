@@ -7,9 +7,8 @@ import { FOCUS, Tag } from "./ui";
 
 const KIND_PART = { deadline: "ballot", window: "ballot_box", election: "ballot_box", meeting: "town_hall", bill: "book" } as const;
 
-/** Calendar tile for dated items, a pictogram tile for bills. */
-export function CivicTile({ card, size = 56 }: { card: CivicCard; size?: number }) {
-  const at = card.item.at;
+/** Calendar tile for dated items, a pictogram tile for bills. `at` overrides the day shown. */
+export function CivicTile({ card, size = 56, at = card.item.at }: { card: CivicCard; size?: number; at?: string }) {
   const small = size < 40;
   if (!at || small) {
     return (

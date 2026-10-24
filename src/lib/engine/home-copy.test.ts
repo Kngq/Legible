@@ -4,7 +4,7 @@ import civicData from "@/data/civic-ma.json";
 import { asksHowToVote, findBannedWords } from "@/lib/vocab";
 import { civicCard, civicFeed, type CivicItem } from "./civic";
 import { buildFeed } from "./feed";
-import { actionsFor, billNumber, cardHeader, civicRelevance, dateLine, explanation, headline, homeSections, profileBasis, relevanceOf } from "./home-copy";
+import { actionsFor, billNumber, cardHeader, civicRelevance, dateLine, explanation, headline, homeSections, isUrgent, keyDate, profileBasis, relevanceOf, windowRange } from "./home-copy";
 import { answerFact, emptyProfile, setTopic, type Profile } from "./profile";
 import { buildTimeline } from "./timeline";
 import type { DocumentData } from "./types";
@@ -143,5 +143,24 @@ describe("profileBasis", () => {
     expect(profileBasis(withFacts({ rents: true }, "boston"))).toBe("Based on your town and housing.");
     const p = setTopic(withFacts({ rents: true, drives: false }), "schools", true, "chip");
     expect(profileBasis(p)).toBe("Based on your housing, how you get around, and one subject you follow.");
+  });
+});
+
+describe("open windows lead with the close", () => {
+  it("counts down to the verified end date, not the start", () => {
+    const c = card("ma-2026-early-voting");
+    expect(c.timing).toBe("open");
+    expect(keyDate(c)).toBe(c.item.until);
+    expect(headline(c)).toBe("Early voting ends October 30");
+    expect(cardHeader(c)).toEqual({ meta: "Voting · October 17–30", status: "6 days left" });
+    expect(windowRange("2026-10-28T00:00:00-04:00", "2026-11-02T00:00:00-05:00")).toBe("October 28 – November 2");
+  });
+});
+
+describe("isUrgent", () => {
+  it("lifts only what is due today or tomorrow", () => {
+    const s = sections(withFacts({ registered_here: false }, "boston"));
+    const urgent = s.attention.filter(isUrgent).map((e) => e.key);
+    expect(urgent).toEqual(["c:ma-2026-registration-deadline"]);
   });
 });

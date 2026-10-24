@@ -11,7 +11,7 @@
 // On a mouse, the cursor "Read more" pill opens the detail page from empty space.
 import { useState } from "react";
 import { docWhat, type TimelineEntry } from "@/lib/engine/timeline";
-import { actionsFor, cardHeader, dateLine, explanation, headline, relevanceOf, type Action, type Relevance, type RelevanceKind } from "@/lib/engine/home-copy";
+import { actionsFor, cardHeader, dateLine, explanation, headline, keyDate, relevanceOf, type Action, type Relevance, type RelevanceKind } from "@/lib/engine/home-copy";
 import { DOC_TYPE_LABEL } from "@/lib/engine/decide-by";
 import type { CivicCard } from "@/lib/engine/civic";
 import { LIFE_AREAS, type LifeAreaId, type TopicId } from "@/lib/vocab";
@@ -218,7 +218,8 @@ export function DeadlineRow({ entry: e, today, onOpenItem, onOpenDoc, onOpenProf
     <li {...cta.handlers} className={`relative flex flex-wrap items-center gap-x-3.5 gap-y-2 px-4 py-3 sm:flex-nowrap sm:gap-x-4 sm:px-5 ${cta.cursorClass}`}>
       {cta.pill}
       <span className="self-start">
-        <CivicTile card={civic} size={48} />
+        {/* An open window shows its closing day: the date a person acts by. */}
+        <CivicTile card={civic} size={48} at={keyDate(civic)} />
       </span>
       <div className="min-w-0 flex-1">
         <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-small text-muted-foreground">
@@ -246,6 +247,39 @@ export function DeadlineRow({ entry: e, today, onOpenItem, onOpenDoc, onOpenProf
       </div>
       <span className="sr-only">{dateLine(e, today)}</span>
     </li>
+  );
+}
+
+/**
+ * A date due today or tomorrow, above the decisions. One compact bar: when, what,
+ * who it is for (the relevance line keeps "May be relevant if" when Legible
+ * does not know), and one action. Never shown for a date further out.
+ */
+export function UrgentAlert({ entry: e, onOpenItem, onOpenDoc, onOpenProfile }: { entry: TimelineEntry; onOpenProfile: (v: SheetView) => void } & CardProps) {
+  const { civic, openDetail, go, openArea, primary, relevance } = useEntry(e, onOpenItem, onOpenDoc);
+  if (!civic) return null;
+  const head = cardHeader(civic);
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-attention/40 bg-attention-soft px-4 py-3 sm:flex-nowrap sm:px-5">
+      <div className="min-w-0 flex-1">
+        <p className="flex flex-wrap items-center gap-x-2 text-small">
+          <span className="inline-flex items-center gap-1 font-bold">
+            <StatusMark dated />
+            {head.status}
+          </span>
+          <span className="text-muted-foreground">{head.meta}</span>
+        </p>
+        <p className="mt-0.5 text-body font-semibold leading-snug">
+          <button type="button" onClick={openDetail} className={`text-left hover:underline hover:underline-offset-4 ${FOCUS}`}>
+            {headline(civic)}
+          </button>
+        </p>
+        <RelevanceLine relevance={relevance} openArea={openArea} compact onOpenProfile={onOpenProfile} />
+      </div>
+      <div className="w-full sm:w-auto sm:shrink-0">
+        <ActionLink a={primary} main go={go} className={BUTTON} />
+      </div>
+    </div>
   );
 }
 
