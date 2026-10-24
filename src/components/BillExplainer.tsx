@@ -252,7 +252,7 @@ export function BillExplainer({
           Where it stands
         </PartLabel>
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <Tag pop="attention">Proposed, not law</Tag>
+          <Tag>Proposed, not law</Tag>
           {card.item.status && <span className="text-body font-semibold">{card.item.status}</span>}
         </div>
         <p className="mt-2 text-body">To become law, the House and the Senate would both have to pass the same version, and then the Governor would act on it.</p>

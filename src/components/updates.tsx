@@ -25,10 +25,10 @@ export const SECONDARY = `inline-flex min-h-11 items-center justify-center gap-2
 const TOUCH_HIDDEN = "[@media(hover:hover)_and_(pointer:fine)]:hidden";
 const FINE_SHOWN = "[@media(hover:hover)_and_(pointer:fine)]:inline";
 
-const TRUST: Record<Provenance, { label: string; pop: "positive" | "attention" }> = {
+const TRUST: Record<Provenance, { label: string; pop: "positive" | "muted" }> = {
   reviewed: { label: "Reviewed", pop: "positive" },
   verified: { label: "Verified", pop: "positive" },
-  ai_draft: { label: "AI draft", pop: "attention" },
+  ai_draft: { label: "AI draft", pop: "muted" },
 };
 
 /** "Legible", Home and Explore tabs, and the avatar that opens the profile. */
@@ -76,7 +76,7 @@ export function TopBar({
           {needsInterests && (
             <span
               aria-hidden="true"
-              className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-attention text-[11px] font-bold leading-none text-attention-foreground ring-2 ring-background"
+              className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-accent text-[11px] font-bold leading-none text-accent-foreground ring-2 ring-background"
             >
               !
             </span>

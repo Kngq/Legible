@@ -185,7 +185,7 @@ export function AskButton({ source, variant = "link", label = "Ask Kiro about th
           : `inline-flex min-h-11 items-center gap-2 text-small font-semibold ${FOCUS}`
       }
     >
-      <span aria-hidden="true" className="flex size-6 items-center justify-center rounded-full bg-[#9046FF] text-white">
+      <span aria-hidden="true" className="flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground">
         <Sparkle />
       </span>
       {label}

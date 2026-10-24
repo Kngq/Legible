@@ -8,18 +8,26 @@
  * text colour: white on plum, ink on the light fills. Product rule: colour never
  * encodes a side, a vote, YES or NO, or a direction (directions use pictograms).
  * No gradients.
+ *
+ * Colour roles, one family each:
+ *   plum (accent, primary, ring)  interaction and what touches the person. Ask
+ *                                 Kiro uses it too; no second purple.
+ *   apricot (attention)           time: deadlines, dates, the Coming up timeline.
+ *   sage (plant, profile)         the Civic Profile plant and profile progress
+ *                                 only. Not in the For You feed.
  */
 :root {
   /* Palette (raw). Use the semantic tokens below in components. */
-  --purple-50: #f3e8f4;
+  --purple-100: #f1e6f3;
   --purple-300: #a46fbb;
   --purple-700: #5b1a74;
+  --purple-800: #4a135f;
   --lilac-100: #f4eaf5;
   --lilac-300: #e5cce6;
-  --sand-100: #f8ecd7;
   --sand-300: #e9be77;
-  --terracotta-100: #f6e1d5;
   --terracotta-400: #cf8d69;
+  --sage-400: #789477;
+  --forest-700: #365b45;
   --cream-200: #f5e6d3;
   --apricot-100: #fbead8;
   --apricot-400: #d9893f;
@@ -36,20 +44,23 @@
   /* Semantic colour. Every fill pairs with its own foreground. */
   --accent: var(--purple-700); /* "Touches you", the meter, the Up next card */
   --accent-foreground: #ffffff;
-  --accent-soft: #f1e6f3; /* the relevance note, highlighted words in a quote */
+  --accent-soft: var(--purple-100); /* the relevance note, highlighted words, selected surfaces */
   --info: var(--lilac-300); /* secondary feature card, "On your list" */
   --info-foreground: var(--foreground);
   --info-soft: var(--lilac-100);
-  --attention: var(--apricot-400); /* time: dates, deadlines; also "New", AI draft, flagged */
+  --attention: var(--apricot-400); /* time only: dates, deadlines, the timeline, "Today" */
   --attention-foreground: var(--foreground);
   --attention-soft: var(--apricot-100);
   --attention-strong: var(--apricot-700); /* apricot text on the soft tint */
   --positive: var(--sand-300); /* reviewed, found word for word */
   --positive-foreground: var(--foreground);
   --positive-soft: var(--cream-200);
-  --on-strong: #ffffff; /* text on the accent fill; kept for older call sites */
-  --on-pop: var(--on-strong);
-  --ai: var(--purple-300); /* the chat dock orb: marks what the model wrote */
+
+  /* Civic Profile plant. Sage is its own accent; keep it out of the feed. */
+  --plant-leaf: var(--sage-400);
+  --plant-detail: var(--forest-700); /* stems, veins, outlines; also passes as text */
+  --plant-pot: var(--terracotta-400);
+  --profile-accent: var(--plant-leaf); /* gentle profile progress marks (non-text) */
 
   /* Data marks, for budgets and money charts only */
   --data-in: var(--purple-700);
@@ -58,7 +69,7 @@
   /* Primary action: plum, white text */
   --primary: var(--purple-700);
   --primary-foreground: #ffffff;
-  --primary-hover: #4a135f;
+  --primary-hover: var(--purple-800);
 
   --ring: var(--purple-700);
 
@@ -86,8 +97,12 @@
     --border: #352d38;
     --muted-foreground: #aca1b0;
 
-    /* Light fills keep their colour and their ink text; soft tints darken. */
-    --accent: #7a3496;
+    /* Light fills keep their colour and their ink text; soft tints darken.
+       Plum follows the same rule here: a deep plum cannot pass AA both as text
+       on the dark page and under white text, so it lightens to lavender and
+       its fills switch to ink text. */
+    --accent: #c69be0;
+    --accent-foreground: #1a1220;
     --accent-soft: #2f1f38;
     --info-foreground: #111111;
     --info-soft: #2a2230;
@@ -97,11 +112,14 @@
     --positive-foreground: #111111;
     --positive-soft: #322a1d;
 
-    --primary: #8a3fa8;
-    --primary-foreground: #ffffff;
-    --primary-hover: #9b4fba;
+    --primary: #c69be0;
+    --primary-foreground: #1a1220;
+    --primary-hover: #d6b4ec;
 
-    --ring: var(--purple-300);
+    --ring: var(--accent);
+
+    --plant-leaf: #93ad92;
+    --plant-detail: #a9c4a8;
 
     --card-shadow: 0 0 0 1px var(--border), 0 18px 40px -24px rgb(0 0 0 / 0.6);
   }
@@ -117,8 +135,6 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-accent-foreground: var(--accent-foreground);
-  --color-on-strong: var(--on-strong);
-  --color-on-pop: var(--on-pop);
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
   --color-info-soft: var(--info-soft);
@@ -129,7 +145,10 @@
   --color-positive: var(--positive);
   --color-positive-foreground: var(--positive-foreground);
   --color-positive-soft: var(--positive-soft);
-  --color-ai: var(--ai);
+  --color-plant-leaf: var(--plant-leaf);
+  --color-plant-detail: var(--plant-detail);
+  --color-plant-pot: var(--plant-pot);
+  --color-profile-accent: var(--profile-accent);
   --color-data-in: var(--data-in);
   --color-data-out: var(--data-out);
   --color-primary: var(--primary);

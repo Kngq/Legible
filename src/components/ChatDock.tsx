@@ -229,33 +229,33 @@ export function ChatDock() {
     <div className="fixed bottom-4 right-4 z-[75] flex flex-col items-end gap-2 font-sans">
       {open && (
         <div
-          className={`flex h-[32rem] max-h-[calc(100dvh-6rem)] w-[22rem] max-w-[calc(100vw-2rem)] origin-bottom-right flex-col overflow-hidden rounded-xl border border-[#9046FF]/20 bg-white text-[#171717] shadow-xl ${
+          className={`flex h-[32rem] max-h-[calc(100dvh-6rem)] w-[22rem] max-w-[calc(100vw-2rem)] origin-bottom-right flex-col overflow-hidden rounded-xl border border-border bg-surface text-foreground shadow-xl ${
             closing ? "animate-dock-out" : "animate-dock-in"
           }`}
         >
-          <div className="flex items-center justify-between border-b border-[#9046FF]/15 bg-white px-4 py-3">
+          <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3">
             <div>
-              <p className="text-sm font-semibold text-[#9046FF]">Ask Kiro</p>
-              <p className="text-xs text-black/60">Answers come from the official text only.</p>
+              <p className="text-sm font-semibold text-accent">Ask Kiro</p>
+              <p className="text-xs text-muted-foreground">Answers come from the official text only.</p>
             </div>
             <button
               type="button"
               onClick={closePanel}
               aria-label="Close chat"
-              className="rounded p-1 text-black/50 transition-colors hover:bg-[#9046FF]/10 hover:text-[#9046FF]"
+              className="rounded p-1 text-muted-foreground transition-colors hover:bg-surface-muted hover:text-accent"
             >
               ✕
             </button>
           </div>
 
           {active && (
-            <div className="border-b border-[#9046FF]/15 bg-[#9046FF]/5 px-4 py-2 text-xs">
+            <div className="border-b border-border bg-accent-soft px-4 py-2 text-xs">
               <div className="flex items-start justify-between gap-2">
                 <p className="min-w-0">
-                  <span className="text-black/50">Reading: </span>
-                  <span className="font-semibold text-[#5b2bb0]">{active.source.title}</span>
+                  <span className="text-muted-foreground">Reading: </span>
+                  <span className="font-semibold text-accent">{active.source.title}</span>
                   {active.source.locator && (
-                    <span className="text-black/50">
+                    <span className="text-muted-foreground">
                       {" "}
                       · {active.source.locator}
                       {active.source.page ? `, p.${active.source.page}` : ""}
@@ -273,19 +273,19 @@ export function ChatDock() {
                     setPersonal([]);
                     setShare(false);
                   }}
-                  className="shrink-0 rounded px-1 text-black/50 hover:bg-[#9046FF]/10 hover:text-[#9046FF]"
+                  className="shrink-0 rounded px-1 text-muted-foreground hover:bg-surface hover:text-accent"
                 >
                   Clear
                 </button>
               </div>
               {active.source.url && (
-                <a href={active.source.url} target="_blank" rel="noreferrer" className="mt-0.5 inline-block text-[#5b2bb0] underline underline-offset-2">
+                <a href={active.source.url} target="_blank" rel="noreferrer" className="mt-0.5 inline-block text-accent underline underline-offset-2">
                   Official source ↗
                 </a>
               )}
               {personal.length > 0 && (
-                <label className="mt-1.5 flex cursor-pointer items-start gap-2 text-black/70">
-                  <input type="checkbox" checked={share} onChange={(e) => setShare(e.target.checked)} className="mt-0.5 accent-[#9046FF]" />
+                <label className="mt-1.5 flex cursor-pointer items-start gap-2 text-muted-foreground">
+                  <input type="checkbox" checked={share} onChange={(e) => setShare(e.target.checked)} className="mt-0.5 accent-accent" />
                   <span>
                     Use what I told Legible: <strong>{personal.join(", ")}</strong>. Only these words are sent with your question.
                   </span>
@@ -297,7 +297,7 @@ export function ChatDock() {
           <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
             {messages.length === 0 && (
               <div className="space-y-2">
-                <p className="text-sm text-black/60">
+                <p className="text-sm text-muted-foreground">
                   Ask about any document in your catalog. Kiro never says how to vote.
                 </p>
                 <div className="flex flex-col gap-1.5">
@@ -307,7 +307,7 @@ export function ChatDock() {
                       type="button"
                       onClick={() => void ask(q)}
                       style={{ animationDelay: `${i * 80}ms` }}
-                      className="animate-fade-in rounded-full border border-[#9046FF]/30 bg-[#9046FF]/5 px-3 py-1.5 text-left text-sm text-[#5b2bb0] transition-colors duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:bg-[#9046FF]/10"
+                      className="animate-fade-in rounded-full border border-border bg-surface px-3 py-1.5 text-left text-sm text-accent transition-colors duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:bg-accent-soft"
                     >
                       {q}
                     </button>
@@ -318,8 +318,8 @@ export function ChatDock() {
 
             {messages.map((m, i) =>
               m.role === "context" ? (
-                <p key={i} className="animate-fade-in border-t border-[#9046FF]/15 pt-2 text-center text-xs text-black/50">
-                  Now asking about <span className="font-semibold text-[#5b2bb0]">{m.source?.title ?? "the 2026 ballot"}</span>
+                <p key={i} className="animate-fade-in border-t border-border pt-2 text-center text-xs text-muted-foreground">
+                  Now asking about <span className="font-semibold text-accent">{m.source?.title ?? "the 2026 ballot"}</span>
                 </p>
               ) : (
               <div
@@ -329,14 +329,14 @@ export function ChatDock() {
                 <div
                   className={
                     m.role === "user"
-                      ? "max-w-[85%] rounded-lg bg-[#9046FF] px-3 py-2 text-sm text-white"
-                      : "max-w-[85%] rounded-lg border border-[#9046FF]/15 bg-[#9046FF]/5 px-3 py-2 text-sm"
+                      ? "max-w-[85%] rounded-lg bg-primary px-3 py-2 text-sm text-primary-foreground"
+                      : "max-w-[85%] rounded-lg border border-border bg-surface-muted px-3 py-2 text-sm"
                   }
                 >
                   {m.passage && (
-                    <blockquote className="mb-1.5 border-l-2 border-white/60 pl-2 text-xs italic text-white/90">
+                    <blockquote className="mb-1.5 border-l-2 border-primary-foreground/60 pl-2 text-xs italic text-primary-foreground/90">
                       <span className="line-clamp-3">“{m.passage.text}”</span>
-                      <span className="mt-0.5 block not-italic text-white/70">
+                      <span className="mt-0.5 block not-italic text-primary-foreground/75">
                         {m.passage.source.locator ?? m.passage.source.title}
                         {m.passage.source.page ? `, p.${m.passage.source.page}` : ""}
                       </span>
@@ -344,15 +344,15 @@ export function ChatDock() {
                   )}
                   {m.text && <p>{m.text}</p>}
                   {m.fallback?.passage && (
-                    <div className="mt-1.5 rounded bg-white p-2 text-xs">
+                    <div className="mt-1.5 rounded bg-surface p-2 text-xs">
                       <p className="italic">“{m.fallback.passage}”</p>
-                      <p className="mt-1 text-black/50">
+                      <p className="mt-1 text-muted-foreground">
                         {m.fallback.source.title}
                         {m.fallback.source.locator ? ` · ${m.fallback.source.locator}` : ""}
                         {m.fallback.source.page ? `, p.${m.fallback.source.page}` : ""}
                       </p>
                       {m.fallback.source.url && (
-                        <a href={m.fallback.source.url} target="_blank" rel="noreferrer" className="text-[#5b2bb0] underline underline-offset-2">
+                        <a href={m.fallback.source.url} target="_blank" rel="noreferrer" className="text-accent underline underline-offset-2">
                           Read it in the official source ↗
                         </a>
                       )}
@@ -363,20 +363,20 @@ export function ChatDock() {
                       {m.sentences.map((s, j) => (
                         <p key={j}>
                           {s.part && s.part !== "answer" && s.part !== m.sentences![j - 1]?.part && (
-                            <span className="mb-0.5 mt-1 block text-[11px] font-semibold uppercase tracking-wide text-[#5b2bb0]">{PART_LABEL[s.part]}</span>
+                            <span className="mb-0.5 mt-1 block text-[11px] font-semibold uppercase tracking-wide text-accent">{PART_LABEL[s.part]}</span>
                           )}
                           {s.text}{" "}
                           <button
                             type="button"
                             onClick={() => setOpenQuoteId(openQuoteId === s.quoteId ? null : s.quoteId)}
-                            className="ml-0.5 rounded border border-[#9046FF]/40 bg-[#9046FF]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#5b2bb0] align-middle transition-colors duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:bg-[#9046FF]/20"
+                            className="ml-0.5 rounded border border-accent/30 bg-accent-soft px-1.5 py-0.5 text-[10px] font-medium text-accent align-middle transition-colors duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:border-accent/60"
                             aria-expanded={openQuoteId === s.quoteId}
                           >
                             {s.quote.locator}
                             {s.quote.page ? `, p.${s.quote.page}` : ""}
                           </button>
                           {openQuoteId === s.quoteId && (
-                            <span className="mt-1 block animate-fade-in rounded bg-[#9046FF]/10 p-2 text-xs italic">
+                            <span className="mt-1 block animate-fade-in rounded bg-accent-soft p-2 text-xs italic">
                               “{s.quote.text}”
                             </span>
                           )}
@@ -384,36 +384,36 @@ export function ChatDock() {
                       ))}
                     </div>
                   )}
-                  {m.sent && <p className="mt-1.5 text-[10px] text-black/40">{m.sent}</p>}
+                  {m.sent && <p className="mt-1.5 text-[10px] text-muted-foreground">{m.sent}</p>}
                 </div>
               </div>
               ),
             )}
 
             {loading && (
-              <div className="flex animate-fade-in items-center gap-1.5 text-sm text-black/50">
+              <div className="flex animate-fade-in items-center gap-1.5 text-sm text-muted-foreground">
                 <span className="flex gap-1">
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#9046FF] [animation-delay:-0.2s]" />
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#9046FF] [animation-delay:-0.1s]" />
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#9046FF]" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-accent [animation-delay:-0.2s]" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-accent [animation-delay:-0.1s]" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-accent" />
                 </span>
                 Checking the official text…
               </div>
             )}
           </div>
 
-          <form onSubmit={onSubmit} className="flex items-end gap-2 border-t border-[#9046FF]/15 p-3">
+          <form onSubmit={onSubmit} className="flex items-end gap-2 border-t border-border p-3">
             <input
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder={active ? (active.passage ? "Ask a follow-up about this passage…" : `Ask about ${active.source.title}…`) : "Ask about a measure…"}
               maxLength={300}
-              className="flex-1 rounded-md border-2 border-[#9046FF]/30 bg-white px-3 py-2 text-sm text-black outline-none transition-all duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] focus:border-[#9046FF] focus:ring-2 focus:ring-[#9046FF]/40"
+              className="flex-1 rounded-md border-2 border-border bg-surface px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground transition-all duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] focus:border-accent focus:ring-2 focus:ring-ring/30"
             />
             <button
               type="submit"
               disabled={loading || !question.trim()}
-              className="rounded-md bg-[#9046FF] px-3 py-2 text-sm font-medium text-white transition-all duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:bg-[#7d35e6] active:scale-95 disabled:opacity-40 disabled:active:scale-100"
+              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-all duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:bg-primary-hover active:scale-95 disabled:opacity-40 disabled:active:scale-100"
             >
               Ask
             </button>
@@ -426,7 +426,7 @@ export function ChatDock() {
         onClick={toggle}
         aria-expanded={open}
         aria-label={open ? "Close chat" : "Ask Kiro a question"}
-        className="relative flex h-14 w-14 items-center justify-center rounded-[1.5rem] bg-[#9046FF] text-xl text-white shadow-lg transition-transform duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:scale-105 active:scale-95"
+        className="group relative flex h-14 w-14 items-center justify-center rounded-[1.5rem] bg-primary text-xl text-primary-foreground shadow-card outline-none ring-2 ring-background transition-[background-color,transform] duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:bg-primary-hover active:scale-95 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <span
           className={`absolute transition-all duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${
@@ -440,16 +440,27 @@ export function ChatDock() {
             open && !closing ? "scale-50 rotate-90 opacity-0" : "scale-100 rotate-0 opacity-100"
           }`}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/icons/kiro-ghost.svg" alt="" className="h-8 w-8" />
+          <KiroGhost className="h-8 w-8" />
         </span>
         {!(open && !closing) && (
           <span
             aria-hidden="true"
-            className="absolute -bottom-1 right-3 h-3 w-3 rotate-45 rounded-[2px] bg-[#9046FF]"
+            className="absolute -bottom-1 right-3 h-3 w-3 rotate-45 rounded-[2px] bg-primary transition-colors duration-[400ms] group-hover:bg-primary-hover"
           />
         )}
       </button>
     </div>
+  );
+}
+
+/** The Kiro ghost from /icons/kiro-ghost.svg without its own purple tile, so the
+    button's plum shows through: the body takes the text colour, the eyes the fill. */
+function KiroGhost({ className }: { className?: string }) {
+  return (
+    <svg viewBox="272 202 655 796" aria-hidden="true" className={className}>
+      <path fill="currentColor" d="M398.554 818.914C316.315 1001.03 491.477 1046.74 620.672 940.156C658.687 1059.66 801.052 970.473 852.234 877.795C964.787 673.567 919.318 465.357 907.64 422.374C827.637 129.443 427.623 128.946 358.8 423.865C342.651 475.544 342.402 534.18 333.458 595.051C328.986 625.86 325.507 645.488 313.83 677.785C306.873 696.424 297.68 712.819 282.773 740.645C259.915 783.881 269.604 867.113 387.87 823.883L399.051 818.914H398.554Z" />
+      <path fill="var(--primary)" d="M636.123 549.353C603.328 549.353 598.359 510.097 598.359 486.742C598.359 465.623 602.086 448.977 609.293 438.293C615.504 428.852 624.697 424.131 636.123 424.131C647.555 424.131 657.492 428.852 664.447 438.541C672.398 449.474 676.623 466.12 676.623 486.742C676.623 525.998 661.471 549.353 636.375 549.353H636.123Z" />
+      <path fill="var(--primary)" d="M771.24 549.353C738.445 549.353 733.477 510.097 733.477 486.742C733.477 465.623 737.203 448.977 744.41 438.293C750.621 428.852 759.814 424.131 771.24 424.131C782.672 424.131 792.609 428.852 799.564 438.541C807.516 449.474 811.74 466.12 811.74 486.742C811.74 525.998 796.588 549.353 771.492 549.353H771.24Z" />
+    </svg>
   );
 }

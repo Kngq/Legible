@@ -222,7 +222,7 @@ export function ChainSheet({ s, src, onClose }: { s: PageSentence; src: CiteSour
 export function TrustLine({ lines, quotes, provenance, against }: { lines: number; quotes: number; provenance: "reviewed" | "verified" | "ai_draft"; against: string }) {
   const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
   return (
-    <p className={`mt-4 flex items-start gap-2.5 rounded-md px-3.5 py-3 text-small ${provenance === "ai_draft" ? "bg-attention-soft" : "bg-positive-soft"}`}>
+    <p className={`mt-4 flex items-start gap-2.5 rounded-md px-3.5 py-3 text-small ${provenance === "ai_draft" ? "bg-surface-muted" : "bg-positive-soft"}`}>
       <span className="mt-0.5 shrink-0">
         <Glyph name="check" size={16} />
       </span>

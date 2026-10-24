@@ -176,7 +176,7 @@ export function SiteHeader({
             {needsInterests && (
               <span
                 aria-hidden="true"
-                className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-attention text-[11px] font-bold leading-none text-attention-foreground ring-2 ring-background"
+                className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-accent text-[11px] font-bold leading-none text-accent-foreground ring-2 ring-background"
               >
                 !
               </span>
