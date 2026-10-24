@@ -209,6 +209,10 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [ ] 23.8 Turn `PLANT_ENABLED` on in production after the visual sign-off and 23.7, and retire the ring layout and the old hero
   - [ ] 23.9 Decide the header avatar's "!" badge for unset interests (keep, soften to a dot, or remove)
 
+- [ ] 24. Your ballot, wrapped (development only: `WRAPPED_ENABLED` in `src/lib/wrapped/flag.ts`; spec in `.kiro/specs/ballot-wrapped/`, rebuilt from Layla's `f20bfe8`)
+  - [x] 24.1 Six-slide story, share preview, For you invite, `#/wrapped`, `?demo=true`; tasks tracked in `.kiro/specs/ballot-wrapped/tasks.md`
+  - [ ] 24.2 Visual sign-off, then turn `WRAPPED_ENABLED` on in production
+
 - [ ] 12. Acceptance and demo
   - [ ] 12.1 Run lint, lint:words, tests, and build; fix failures
   - [ ] 12.2 Do a keyboard pass and a 375 px pass
