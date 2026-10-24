@@ -13,6 +13,7 @@ import { docWhat } from "@/lib/engine/timeline";
 import { buildGuide, guideTopics, topicLabel, type GuideEntry, type GuideFilter, type GuideSort } from "@/lib/engine/ballot-guide";
 import { DIRECTION_DEFS, type TopicId } from "@/lib/vocab";
 import { AskButton } from "./AskSheet";
+import { FullTextLink } from "./FullText";
 import { DirectionMark, Glyph } from "./icons";
 import { FOCUS, Tag } from "./ui";
 import { SECONDARY } from "./updates";
@@ -254,6 +255,7 @@ function GuideCard({
 
       <div className="mt-3 flex flex-wrap items-center gap-x-5">
         <AskButton measureId={m.id} />
+        <FullTextLink measure={m} />
         <button type="button" onClick={onOpen} className={`inline-flex min-h-11 items-center gap-1.5 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
           {asks ? "Answer one question and read more" : "Read more and check the official text"}
           <span aria-hidden="true" className="-rotate-90">

@@ -3,6 +3,7 @@
 // booklet's page text; the build fails if any quote is missing.
 //
 //   npx tsx scripts/build-ballot.ts
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import type { DocumentData, Measure, Quote, WhySentence } from "@/lib/engine/types";
@@ -31,6 +32,39 @@ const pages: string[] = JSON.parse(
 const normPages = pages.map(normalize);
 
 const errors: string[] = [];
+
+// Where each question's full law sits in the booklet. Checked below: every page in
+// the range must carry that question's "Full Text of ... Law" heading.
+const FULL_TEXT_PAGES: Record<number, [number, number]> = {
+  1: [36, 36],
+  2: [36, 36],
+  3: [36, 38],
+  4: [38, 39],
+  5: [40, 40],
+  6: [40, 41],
+  7: [41, 41],
+  8: [42, 44],
+  9: [45, 85],
+};
+const PDF_PUBLIC = "/official/IFV_2026_English.pdf";
+const FULL_DIR = path.join(root, "public/official/ballot-2026");
+
+function fullText(n: number): Measure["fullText"] {
+  const [from, to] = FULL_TEXT_PAGES[n] ?? [0, -1];
+  let label: string | undefined;
+  for (let pg = from; pg <= to; pg++) {
+    const m = (pages[pg - 1] ?? "").match(new RegExp(`QUESTION\\s+${n}:\\s*Full Text of (Proposed|Existing) Law`));
+    if (!m) errors.push(`Q${n}: page ${pg} has no "QUESTION ${n}: Full Text" heading`);
+    else label ??= `Full Text of ${m[1]} Law`;
+  }
+  if (!label) return undefined;
+  const file = `ballot-2026-q${n}.json`;
+  const pageTexts = [];
+  for (let pg = from; pg <= to; pg++) pageTexts.push({ page: pg, text: pages[pg - 1] });
+  fs.mkdirSync(FULL_DIR, { recursive: true });
+  fs.writeFileSync(path.join(FULL_DIR, file), JSON.stringify({ measureId: `ballot-2026-q${n}`, label, pdf: PDF_PUBLIC, pages: pageTexts }) + "\n");
+  return { label, pages: [from, to], pdf: PDF_PUBLIC, pageText: `/official/ballot-2026/${file}` };
+}
 
 /** The extractor cut some summaries at a page-number line. Re-read the summary from its page. */
 function repairSummary(q: RawQuestion): string {
@@ -129,8 +163,16 @@ const measures: Measure[] = CONTENT.map((c) => {
     topics: c.topics,
     quotes: Object.values(quotes),
     sourceUrl: q.full_text_url,
+    fullText: fullText(c.number),
   };
 });
+
+// Serve the booklet itself, so every full-text link opens the original pages.
+const pdfSrc = path.join(root, "data/official/IFV_2026_English.pdf");
+const pdfOut = path.join(root, "public", PDF_PUBLIC);
+const sha = (b: Buffer) => crypto.createHash("sha256").update(b).digest("hex");
+fs.mkdirSync(path.dirname(pdfOut), { recursive: true });
+if (!fs.existsSync(pdfOut) || sha(fs.readFileSync(pdfOut)) !== sha(fs.readFileSync(pdfSrc))) fs.copyFileSync(pdfSrc, pdfOut);
 
 const allReviewed = CONTENT.every((c) => c.reviewedBy);
 const doc: DocumentData = {

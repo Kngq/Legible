@@ -44,6 +44,8 @@ export interface Measure {
   topics: TopicId[];
   quotes: Quote[]; // every quote referenced anywhere in this measure
   sourceUrl?: string;
+  /** The full text of the law in the official booklet: which pages, and the PDF that holds them. */
+  fullText?: { label: string; pages: [number, number]; pdf: string; pageText: string };
   towns?: string[]; // Massachusetts municipalities named (uploads)
 }
 

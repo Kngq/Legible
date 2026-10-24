@@ -15,6 +15,7 @@ import { CivicRow } from "./CivicRow";
 import { Cover, DocTile } from "./covers";
 import { AskButton } from "./AskSheet";
 import { ForYou } from "./ForYou";
+import { FullText } from "./FullText";
 import { Glyph } from "./icons";
 import { Draft, OfficialText, Sentences } from "./MeasureCard";
 import type { SheetView } from "./ProfileSheet";
@@ -186,6 +187,8 @@ export function MeasureView({
           </p>
         </section>
       )}
+
+      <FullText measure={m} />
 
       <section id="draft" className="mt-10 scroll-mt-20">
         {drafting ? (
