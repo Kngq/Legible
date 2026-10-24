@@ -60,24 +60,46 @@ export const FACT_IDS = [
   "owns_firearm",
   "kids_in_schools",
   "runs_business_here",
+  "drives",
+  "rides_transit",
 ] as const;
 export type FactId = (typeof FACT_IDS)[number];
 
 /**
- * Everyday facts onboarding may ask. Onboarding shows only the ones some document
- * in the person's feed uses (see onboardingFacts in engine/personalization), so it
- * never asks for something nothing reads.
+ * Everyday facts asked during onboarding, the same for every person and every
+ * document. Facts not listed here (sensitive ones, and narrow ones such as
+ * wants_single_family) are asked only inside a card that depends on them.
  */
 export const ONBOARDING_FACTS: readonly FactId[] = [
   "rents",
   "owns",
-  "wants_single_family",
+  "lives_with_family",
+  "kids_in_schools",
+  "state_employee",
+  "runs_business_here",
+  "drives",
+  "rides_transit",
   "registered_here",
   "votes_in_primaries",
-  "state_employee",
-  "kids_in_schools",
-  "runs_business_here",
-  "lives_with_family",
+];
+
+export type LifeAreaId = "home" | "household" | "work" | "getting_around" | "voting";
+
+/** One onboarding screen per life area: "Pick all that apply" over the area's facts. */
+export interface LifeArea {
+  id: LifeAreaId;
+  heading: string;
+  /** Generic reason, never tied to one document or measure. */
+  why: string;
+  facts: FactId[];
+}
+
+export const LIFE_AREAS: readonly LifeArea[] = [
+  { id: "home", heading: "Your home", why: "Decisions about zoning, rent, and property tax depend on this.", facts: ["rents", "owns"] },
+  { id: "household", heading: "Who you live with", why: "Decisions about schools and family services depend on this.", facts: ["lives_with_family", "kids_in_schools"] },
+  { id: "work", heading: "Your work", why: "Decisions about public jobs and local business depend on this.", facts: ["state_employee", "runs_business_here"] },
+  { id: "getting_around", heading: "Getting around", why: "Decisions about roads, parking, and transit depend on this.", facts: ["drives", "rides_transit"] },
+  { id: "voting", heading: "Voting", why: "Decisions about how elections run depend on this.", facts: ["registered_here", "votes_in_primaries"] },
 ];
 
 /** Facts never asked cold. They appear only on a card, with the reason visible. */
@@ -90,6 +112,8 @@ export const SENSITIVE_FACTS: readonly FactId[] = [
 export interface FactDef {
   id: FactId;
   question: string;
+  /** First-person line for "Pick all that apply" cards, e.g. "I rent my home". */
+  statement: string;
   avatarPart: string;
   // "because" chip text for each answer, e.g. "you rent" / "you do not rent".
   because: { yes: string; no: string };
@@ -99,24 +123,28 @@ export const FACT_DEFS: Record<FactId, FactDef> = {
   rents: {
     id: "rents",
     question: "Do you rent your home?",
+    statement: "I rent my home",
     avatarPart: "key",
     because: { yes: "you rent", no: "you do not rent" },
   },
   owns: {
     id: "owns",
     question: "Do you own your home?",
+    statement: "I own my home",
     avatarPart: "house",
     because: { yes: "you own your home", no: "you do not own your home" },
   },
   lives_with_family: {
     id: "lives_with_family",
     question: "Do you live with family?",
+    statement: "I live with family",
     avatarPart: "two_figures",
     because: { yes: "you live with family", no: "you do not live with family" },
   },
   registered_here: {
     id: "registered_here",
     question: "Are you registered to vote at your current address?",
+    statement: "I'm registered to vote at my current address",
     avatarPart: "ballot",
     because: {
       yes: "you are registered at your address",
@@ -126,6 +154,7 @@ export const FACT_DEFS: Record<FactId, FactDef> = {
   votes_in_primaries: {
     id: "votes_in_primaries",
     question: "Do you usually vote in state primaries?",
+    statement: "I usually vote in state primaries",
     avatarPart: "checkmark",
     because: { yes: "you vote in primaries", no: "you skip primaries" },
   },
@@ -133,6 +162,7 @@ export const FACT_DEFS: Record<FactId, FactDef> = {
     id: "public_defender_contact",
     question:
       "Have you or someone close to you been represented by a public defender?",
+    statement: "I or someone close to me has had a public defender",
     avatarPart: "scales",
     because: {
       yes: "you have had contact with a public defender",
@@ -142,12 +172,14 @@ export const FACT_DEFS: Record<FactId, FactDef> = {
   state_employee: {
     id: "state_employee",
     question: "Do you work for the state?",
+    statement: "I work for the state",
     avatarPart: "badge",
     because: { yes: "you work for the state", no: "you do not work for the state" },
   },
   wants_single_family: {
     id: "wants_single_family",
     question: "Are you hoping to build or buy a single-family home?",
+    statement: "I'm hoping to build or buy a single-family home",
     avatarPart: "blueprint",
     because: {
       yes: "you want a single-family home",
@@ -157,6 +189,7 @@ export const FACT_DEFS: Record<FactId, FactDef> = {
   buys_cannabis: {
     id: "buys_cannabis",
     question: "Do you buy cannabis from a licensed store?",
+    statement: "I buy cannabis from a licensed store",
     avatarPart: "leaf",
     because: {
       yes: "you buy cannabis at a store",
@@ -166,20 +199,37 @@ export const FACT_DEFS: Record<FactId, FactDef> = {
   owns_firearm: {
     id: "owns_firearm",
     question: "Do you own a firearm?",
+    statement: "I own a firearm",
     avatarPart: "target",
     because: { yes: "you own a firearm", no: "you do not own a firearm" },
   },
   kids_in_schools: {
     id: "kids_in_schools",
     question: "Do you have kids in the public schools?",
+    statement: "I have kids in the public schools",
     avatarPart: "backpack",
     because: { yes: "you have kids in the public schools", no: "you have no kids in the public schools" },
   },
   runs_business_here: {
     id: "runs_business_here",
     question: "Do you run a business in town?",
+    statement: "I run a business in town",
     avatarPart: "storefront",
     because: { yes: "you run a business in town", no: "you do not run a business in town" },
+  },
+  drives: {
+    id: "drives",
+    question: "Do you drive in town?",
+    statement: "I drive",
+    avatarPart: "car",
+    because: { yes: "you drive", no: "you do not drive" },
+  },
+  rides_transit: {
+    id: "rides_transit",
+    question: "Do you ride the bus, train, or subway?",
+    statement: "I ride the bus, train, or subway",
+    avatarPart: "bus",
+    because: { yes: "you ride transit", no: "you do not ride transit" },
   },
 };
 

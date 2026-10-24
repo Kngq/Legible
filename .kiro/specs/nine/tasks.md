@@ -99,7 +99,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
 - [ ] 16. Onboarding (B)
   - [x] 16.0 Profile schema with answer sources, skip counts, topic provenance, storage parsing, and tests (`src/lib/engine/profile.ts`)
     - _Requirements: 1.5, 1.6, 10.4_
-  - [ ] 16.1 Build the one-question-per-screen onboarding: hello, ZIP, fact screens from `onboardingFacts`, subjects, keep it, done
+  - [ ] 16.1 Build the one-question-per-screen onboarding: hello, ZIP, one screen per life area, subjects, keep it, done
     - _Requirements: 1.2, 1.4, 1.5_
   - [ ] 16.6 Bundle the Massachusetts ZIP-to-town table from the Census ZCTA relationship file, with a lookup and tests
     - _Requirements: 1.1_
@@ -107,9 +107,9 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 1.2, 1.4, 1.5_
   - [ ] 16.2 Store skipped facts and enforce ask-once-more inside cards
     - _Requirements: 1.6_
-  - [x] 16.4 Personalization meter logic: feed-derived fact list, Prefer not to say, topics confirmation, and tests (`src/lib/engine/personalization.ts`)
+  - [x] 16.4 Personalization meter logic: life areas, Prefer not to say, topics confirmation, and tests (`src/lib/engine/personalization.ts`)
     - _Requirements: 1.5, 1.9_
-  - [ ] 16.5 Build the meter bar in onboarding, the feed header, and the profile panel, with the "N left, asked on cards" list
+  - [ ] 16.5 Build the meter bar in onboarding, the feed header, and the profile panel, with the "N left" list by life area
     - _Requirements: 1.9_
   - [ ] 16.3 Make the profile editable from the feed header, because chips, and avatar badges
     - _Requirements: 1.7, 6.2_

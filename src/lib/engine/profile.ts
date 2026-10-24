@@ -100,6 +100,18 @@ export function isFactSettled(p: Profile, id: FactId): boolean {
   return Boolean(p.facts[id]) || (p.skipped[id]?.times ?? 0) >= MAX_SKIP_TIMES;
 }
 
+/**
+ * Record one "Pick all that apply" screen: picked facts are yes, the rest of the
+ * screen's facts are no. Only called once the person picks something or "None of these".
+ */
+export function answerArea(p: Profile, facts: readonly FactId[], picked: readonly FactId[], source: AnswerSource, now = new Date().toISOString()): Profile {
+  return facts.reduce((acc, id) => answerFact(acc, id, picked.includes(id), source, now), p);
+}
+
+export function declineArea(p: Profile, facts: readonly FactId[], source: AnswerSource, now = new Date().toISOString()): Profile {
+  return facts.reduce((acc, id) => declineFact(acc, id, source, now), p);
+}
+
 export function confirmTopics(p: Profile, now = new Date().toISOString()): Profile {
   return { ...p, topicsConfirmedAt: now, updatedAt: now };
 }
