@@ -2,11 +2,13 @@
 
 ## Introduction
 
-Nine helps a Massachusetts resident understand an official civic document by sorting it around their own life. The first document is the 9 questions on the Nov 3, 2026 state ballot, using hand-reviewed content from the official Information for Voters booklet. The same engine also accepts an uploaded text PDF, such as a town meeting warrant, drafts measures from it with AI, and verifies every quote word for word.
+Nine is a place where a Massachusetts resident sees the public decisions being made around them, at town and state level, sorted by where those decisions meet their own life. A person builds a short life profile once: their town, a few everyday facts, and the subjects they follow. From then on the home feed shows every document in the catalog for their state and town, each with how many measures touch them, and the open questions still worth answering. Opening a document shows its measures as cards, with a cited explanation of what changes for this person.
 
-Personalization uses three inputs: the person's town, a few life facts asked only when a measure depends on them, and topics the person cares about. A line-drawn avatar reflects those inputs. Nine never recommends a vote, and the profile never leaves the browser.
+The 9 questions on the Nov 3, 2026 state ballot are the first document, built from hand-reviewed content in the official Information for Voters booklet. Town documents, such as a town meeting warrant, enter the same catalog either pre-analyzed by the team or uploaded by the person as a text PDF, drafted into measures by AI, with every quote verified word for word.
 
-Out of scope for this build: any 3D map; accounts or server-side storage of profiles; voting recommendations, scores, or party framing; computed dollar impacts; OCR of scanned PDFs; retrieval over many documents (RAG); languages other than English; sending messages on the user's behalf; a shareable avatar image.
+A reliability layer makes every sentence traceable: sentence to quote, quote to page, page to a fingerprinted source, with a visible trust level. A chat dock answers questions from the official text only, with a citation on every sentence. Nine never recommends a vote, and the profile never leaves the browser.
+
+Out of scope for this build: any 3D map; accounts or server-side storage of profiles; voting recommendations, scores, or party framing; computed dollar impacts; OCR of scanned PDFs; retrieval over many documents (RAG); languages other than English; sending messages on the user's behalf; a shareable avatar image; notifications or email.
 
 ## Glossary
 
@@ -16,18 +18,27 @@ Out of scope for this build: any 3D map; accounts or server-side storage of prof
 - **Topic:** a subject the person cares about, such as open space. Drives "On your list."
 - **Direction:** one of expands, restricts, rule_change, who_decides, none.
 - **Verified quote:** a quote whose normalized text appears exactly in the source page text.
+- **Life profile:** the town, answered facts, skipped facts, and topics, stored only in the browser. Never called a political profile.
+- **Catalog:** the public list of documents Nine knows about, each tagged with its place (state, or one town) and trust level.
+- **Feed:** the home screen list of catalog documents for the person's state and town, with locally computed counts.
+- **Trust level:** reviewed, verified, AI draft, or flagged. See Requirement 21.
 
 ## Requirements
 
-### Requirement 1: Town selection
+### Requirement 1: Onboarding and life profile
 
-**User Story:** As a resident, I want to pick my town quickly, so that the ballot reflects where I live.
+**User Story:** As a resident, I want to tell the app about my life once, in under a minute, so that every document I open is already sorted for me.
 
 #### Acceptance Criteria
 
 1. WHEN the user types in the town field THE SYSTEM SHALL suggest matches from all 351 Massachusetts municipalities, including common aliases such as "Manchester-by-the-Sea" and "North Attleborough."
-2. WHEN the user selects a town THE SYSTEM SHALL show the document's measures immediately, with no further form.
-3. IF the user cannot find their town THEN THE SYSTEM SHALL let them continue without one.
+2. WHEN the user completes or skips onboarding THE SYSTEM SHALL show the home feed immediately, with no further form.
+3. IF the user cannot find their town THEN THE SYSTEM SHALL let them continue without one and show state documents only.
+4. THE SYSTEM SHALL run onboarding in three skippable steps: town; everyday facts as Yes, No, or skip chips; topics as chips plus a type-to-match box; followed by a "Remember on this device" toggle that defaults to off.
+5. THE SYSTEM SHALL ask only everyday facts in onboarding: rents, owns, registered_here, kids_in_schools, runs_business_here, state_employee. Sensitive facts (owns_firearm, buys_cannabis, public_defender_contact) SHALL be asked only inside the card that depends on them.
+6. THE SYSTEM SHALL record skipped facts so that a fact skipped in onboarding is asked at most once more, inside a card, and a fact declined there is not asked again.
+7. THE SYSTEM SHALL let the user reopen and edit the profile from the home feed and from any because chip or avatar badge.
+8. THE SYSTEM SHALL name this a life profile in all copy and SHALL NOT collect name, email, age, party, income, or free text about the person.
 
 ### Requirement 2: Reviewed ballot content
 
@@ -193,6 +204,45 @@ Out of scope for this build: any 3D map; accounts or server-side storage of prof
 1. THE SYSTEM SHALL work at 375 px width with no horizontal scrolling.
 2. THE SYSTEM SHALL support keyboard operation for every control, including the avatar badges and citation highlights.
 3. WHEN the user prefers reduced motion THE SYSTEM SHALL re-sort cards without animation.
+
+### Requirement 20: Home feed from a public catalog
+
+**User Story:** As a resident, I want the app to bring me the decisions being made around me, so that I do not have to know which documents exist.
+
+#### Acceptance Criteria
+
+1. THE SYSTEM SHALL keep a public catalog of documents, each with an id, title, place (state, or one town), date, trust level, and the URL of its document JSON.
+2. WHEN the home feed loads THE SYSTEM SHALL fetch the whole catalog for Massachusetts and filter it in the browser to state documents plus documents whose town matches the profile, so that the chosen town is never sent to a server.
+3. THE SYSTEM SHALL show each feed entry with its title, date, trust level, and a locally computed line such as "3 of 9 touch you," and SHALL order entries by touches, then date.
+4. THE SYSTEM SHALL show an "Open questions for you" section listing facts that any feed document asks and the profile has not answered, answerable in place, and SHALL re-sort the feed when they change.
+5. THE SYSTEM SHALL list uploaded and sample documents in the same feed, tagged by town and labeled AI draft, kept in the browser only.
+6. THE SYSTEM SHALL phrase the feed as where the person's life meets what is being decided, and SHALL NOT phrase it as what the person ought to care about.
+
+### Requirement 21: Trust and traceability
+
+**User Story:** As a skeptical voter or a judge, I want to follow any sentence back to its source, so that I never have to take the app's word for it.
+
+#### Acceptance Criteria
+
+1. THE SYSTEM SHALL make every app-authored sentence about a measure traceable through a chain: sentence, quote id, quote with page and locator, page text, source document with a SHA-256 fingerprint and URL.
+2. THE SYSTEM SHALL assign every quote one trust level: reviewed (a named person checked it against the source), verified (located word for word by code, page known), AI draft (from an upload, quotes verified, not human reviewed), or flagged (not found; the measure is hidden and listed).
+3. THE SYSTEM SHALL check quotes at three points: at build time for shipped documents, failing the build on any miss; at upload time on the server and again in the browser; and at chat time on every answer sentence before it renders.
+4. THE SYSTEM SHALL show a trust panel per document with verified quotes out of total, reviewer and date when reviewed, source fingerprint, and source link.
+5. WHEN the user opens "How do we know this?" on a card THE SYSTEM SHALL show that card's chain with each link clickable down to the highlighted page text.
+6. THE SYSTEM SHALL run the banned-word check on every app-authored and generated sentence at the same three points.
+
+### Requirement 22: Chat dock
+
+**User Story:** As a resident with a question, I want to ask it right where I am, so that I get an answer from the official text without leaving the page.
+
+#### Acceptance Criteria
+
+1. THE SYSTEM SHALL show a chat button in the bottom corner of every screen that opens a panel scoped to the open document, or to one measure when a card is open.
+2. THE SYSTEM SHALL send only the document id, measure id when scoped, the question, and, for uploads, that measure's verified quotes. The profile SHALL never be sent.
+3. THE SYSTEM SHALL cite a quote on every answer sentence, verify each citation before rendering, and replace any answer with a failed citation or a banned word with the fixed "the official text does not answer this" response.
+4. IF the question asks how to vote or which side to take THEN THE SYSTEM SHALL show the fixed response locally without any request.
+5. THE SYSTEM SHALL offer three suggested questions per measure and SHALL show under each answer what was sent, linked to the privacy panel.
+6. WHILE offline THE SYSTEM SHALL say so and point to the official text on the card.
 
 ### Requirement 17 (stretch): YES and NO flip
 

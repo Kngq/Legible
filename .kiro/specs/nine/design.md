@@ -2,7 +2,7 @@
 
 ## Overview
 
-Nine is a mostly client-side Next.js app. Documents are plain JSON in one shared format. A pure engine combines a document with the in-browser profile and returns sorted cards. Only two server routes exist, and neither ever receives the profile:
+Nine is a mostly client-side Next.js app. Documents are plain JSON in one shared format, listed in a public catalog. A short onboarding builds a life profile in the browser. The home feed fetches the whole catalog and filters it locally to the person's state and town. A pure engine combines any document with the profile and returns sorted cards. A reliability layer traces every sentence to a fingerprinted source. Only two server routes exist, and neither ever receives the profile:
 
 - `POST /api/analyze` turns the page text of an uploaded PDF into draft measures.
 - `POST /api/ask` answers a question about one measure from its official text.
@@ -14,8 +14,12 @@ Everything that makes the app trustworthy is ordinary deterministic code: the fi
 ```mermaid
 flowchart LR
   subgraph Browser
-    P[Profile: town, facts, topics] --> E[Engine buildCards]
-    D[Document JSON] --> E
+    O[Onboarding] --> P[Life profile: town, facts, skipped, topics]
+    CAT[Catalog JSON, fetched whole] --> F[Feed: filter by state and town, count touches]
+    P --> F
+    F --> D[Document JSON]
+    P --> E[Engine buildCards]
+    D --> E
     E --> UI[Cards, avatar, pictograms]
     PDF[Uploaded PDF] --> X[pdfjs text per page]
     X --> V[verifyMeasures]
@@ -43,12 +47,17 @@ type FactId =
   | "rents" | "owns" | "lives_with_family"
   | "registered_here" | "votes_in_primaries"
   | "public_defender_contact" | "state_employee"
-  | "wants_single_family" | "buys_cannabis" | "owns_firearm";
+  | "wants_single_family" | "buys_cannabis" | "owns_firearm"
+  | "kids_in_schools" | "runs_business_here";   // added for town documents
 
 type TopicId =
   | "housing_costs" | "open_space" | "voting_access" | "elections"
   | "government_transparency" | "taxes" | "labor" | "criminal_justice"
-  | "cannabis_policy" | "gun_policy" | "public_safety" | "local_control";
+  | "cannabis_policy" | "gun_policy" | "public_safety" | "local_control"
+  | "schools" | "roads_transit";                 // added for town documents
+
+// Onboarding asks only: rents, owns, registered_here, kids_in_schools, runs_business_here, state_employee.
+// Every other fact is asked inline on the card that depends on it.
 
 // src/lib/engine
 interface Quote {
@@ -85,22 +94,48 @@ interface Measure {
   towns?: string[];       // Massachusetts municipalities named (uploads)
 }
 
+type TrustLevel = "reviewed" | "verified" | "ai_draft" | "flagged";
+
 interface DocumentData {
   id: string;
   title: string;
-  place: { kind: "state" | "town"; name: string };
+  place: { kind: "state" | "town"; name: string; townId?: string };
   date?: string;
-  source: { name: string; url?: string };
-  provenance: "reviewed" | "ai_draft";
+  source: { name: string; url?: string; hash?: string };  // hash: SHA-256 of the source PDF
+  pagesHash?: string;     // SHA-256 of the page text snapshot the quotes were checked against
+  provenance: "reviewed" | "verified" | "ai_draft";
+  reviewedBy?: { name: string; date: string };
   measures: Measure[];
   flagged?: { measure: Measure; reasons: string[] }[];
   pages?: string[];       // page text, kept in memory for uploads only
 }
 
+// public/catalog/ma.json: the whole list is fetched; filtering happens in the browser.
+interface CatalogEntry {
+  id: string;
+  title: string;
+  place: { kind: "state" | "town"; name: string; townId?: string };
+  date?: string;
+  trust: TrustLevel;
+  url: string;            // document JSON, same origin
+  askFacts: FactId[];     // union over measures, so the feed can list open questions before loading
+  measureCount: number;
+}
+
 interface Profile {
+  version: 1;
   townId?: string;
-  facts: Partial<Record<FactId, boolean>>;
+  facts: Partial<Record<FactId, boolean>>;   // only answered facts
+  skipped: FactId[];                          // declined; ask at most once more, inside a card
   topics: TopicId[];
+  source: "self" | "persona";                 // persona view is never written to storage
+  updatedAt: string;
+}
+
+interface FeedEntry {
+  entry: CatalogEntry;
+  touches?: number;       // computed locally once the document JSON is loaded
+  openQuestions: FactId[];
 }
 
 type Relevance = "touches" | "everyone" | "probably_not";
@@ -186,7 +221,11 @@ Pure template in the browser. Inputs are selected measure numbers and one factua
 
 ## UI components
 
+- **Onboarding:** three skippable steps, town, everyday facts, topics, then the remember toggle.
 - **TownPicker:** type-ahead over a bundled list of 351 municipalities with aliases.
+- **Feed:** catalog entries for the person's state and town with touch counts, trust labels, and the open-questions section.
+- **ChatDock:** bottom-corner button and panel scoped to the open document or measure, citations on every sentence.
+- **TrustPanel and ChainView:** per-document trust summary, and the sentence-to-source chain opened from "How do we know this?"
 - **Ballot header:** avatar, document title, persona switcher, privacy panel button, "Remember on this device" and "Forget me."
 - **MeasureCard:** number, short title, relevance label, "On your list" label, direction pictogram with the avatar as the figure, why sentences, because chips, inline fact question, YES and NO quotes, quote badges, ask box.
 - **Avatar:** SVG built from layered line-drawn parts keyed by facts and topics. No red or blue.
@@ -196,6 +235,39 @@ Pure template in the browser. Inputs are selected measure numbers and one factua
 - **PrivacyPanel:** reads the `apiFetch` log and lists what was and was not sent.
 
 Visual system lives in CSS custom properties: paper background, ink text, highlighter yellow accent, one easing curve near 400 ms, four type sizes, serif display and sans body. Re-sorting animates card positions unless reduced motion is preferred.
+
+## Onboarding
+
+Three screens, each with a Skip link, then the feed. Town uses the TownPicker. Facts are six chips in a grid, each a three-way control (Yes, No, skip) with the question in plain words from `FACT_DEFS`. Topics are the fixed chips plus a text box that runs `matchTopics` locally and adds the matched chip; the typed text is discarded. A final toggle "Remember on this device" defaults to off. Skipped facts go to `profile.skipped`. The profile is held in a client component and written to storage only when the toggle is on. Onboarding can be reopened from the feed header and from any because chip.
+
+## Home feed and catalog
+
+`public/catalog/ma.json` lists every document Nine ships, plus the sample town document. The feed fetches it whole through `apiFetch`, which logs "catalog, no profile data." Filtering runs in the browser: `place.kind === "state"` or `place.townId === profile.townId`. For each entry the feed loads the document JSON, runs `buildCards`, and shows the count of `touches` cards. Order: most touches first, then newest date. Uploaded documents are added to the feed in memory, tagged with the profile's town and labeled AI draft.
+
+"Open questions for you" is the union of `askFacts` across feed entries minus answered and declined facts, shown as the same three-way chips. Answering one re-runs `buildCards` for every loaded document.
+
+Copy rule: the feed heading is "Where your life meets what is being decided." Never "what you ought to care about."
+
+## Reliability layer
+
+Every app-authored sentence is a `WhySentence` with a `quoteId`. Every `Quote` has `page`, `locator`, and `status`. Every document carries `source.hash` and `pagesHash`. That is the chain: sentence, quote, page, fingerprinted source.
+
+Trust levels and where they are set:
+
+| Level | Set by | Shown as |
+|---|---|---|
+| reviewed | a person sets `reviewedBy` in the content file; build flips quote status | "Reviewed by name, date" |
+| verified | build or runtime locates the quote word for word | "Found word for word, page N" |
+| ai_draft | document came from the analyze route | "AI draft, quotes verified, not human reviewed" |
+| flagged | a quote was not found or a string failed the word lint | hidden from cards, listed under "Flagged" |
+
+Checkpoints: `npm run data:build` for shipped documents, `verifyMeasures` on the server then in the browser for uploads, and per-sentence citation checks on chat answers. `findBannedWords` runs at all three.
+
+UI: a quote badge on every citation; "How do we know this?" on each card opening a chain view with sentence, quote, page, and source as four clickable rows; a TrustPanel per document showing verified out of total, reviewer and date, source hash, and link.
+
+## Chat dock
+
+A ChatDock component mounts in the app layout, bottom right. It reads the current document id and, when a card is expanded, the measure id. Messages go to `/api/ask` with `{ documentId, measureId?, question, quotes? }` through `apiFetch`. Answers arrive as `{ sentences: { text, quoteId }[] }`; the browser checks each `quoteId` against the document's quotes and falls back to the fixed response on any miss or banned word. Each sentence renders with a quote badge that opens SourceView. Under each answer, a chip reads "Sent: document id, your question." The local how-to-vote check runs before any request. Three suggested questions per measure come from a small list in the content file. Offline, the dock shows a notice and the card's official text link.
 
 ## Error handling
 
@@ -208,6 +280,9 @@ Visual system lives in CSS custom properties: paper background, ink text, highli
 | Ask route error | Show a retry and the measure's official text. |
 | Official page link broken | Cached quote still renders; link marked unavailable. |
 | Browser storage unavailable | Remember-on-device is disabled with a note; the app still works. |
+| Catalog fetch fails | Feed shows the bundled 2026 ballot and says other documents are unavailable. |
+| No town chosen | Feed shows state documents only, with a prompt to add a town. |
+| Chat answer cites an unknown quote | Answer replaced by the fixed response; the event is logged in the privacy panel. |
 | Offline after load | Sorting, avatar, persona switching, and drafting still work; ask and analyze show an offline message. |
 
 ## Testing strategy

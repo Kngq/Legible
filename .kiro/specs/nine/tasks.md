@@ -11,6 +11,8 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 7.3, 13.2, 15.3_
   - [x] 1.4 Add the bundled list of 351 municipalities with aliases
     - _Requirements: 1.1_
+  - [ ] 1.5 Extend the vocab with town facts (kids_in_schools, runs_business_here) and topics (schools, roads_transit), and mark which facts onboarding asks
+    - _Requirements: 1.5, 4.1_
 
 - [ ] 2. Reviewed ballot data (A)
   - [x] 2.1 Write a script converting `data/questions.json` into `src/data/ballot-2026.json` in the Document format
@@ -94,16 +96,50 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [ ] 11.1 Build the template draft, edit, and copy, with a word-count and lint check
     - _Requirements: 15.1, 15.2, 15.3_
 
+- [ ] 16. Onboarding (B)
+  - [ ] 16.1 Build the three-step skippable onboarding with town, everyday fact chips, topic chips, and the remember toggle
+    - _Requirements: 1.2, 1.4, 1.5_
+  - [ ] 16.2 Store skipped facts and enforce ask-once-more inside cards
+    - _Requirements: 1.6_
+  - [ ] 16.3 Make the profile editable from the feed header, because chips, and avatar badges
+    - _Requirements: 1.7, 6.2_
+
+- [ ] 17. Catalog and home feed (A builds catalog and counts, B builds the screen)
+  - [ ] 17.1 Write `public/catalog/ma.json` and a build step that regenerates it from `src/data` and `public/demo`
+    - _Requirements: 20.1_
+  - [ ] 17.2 Fetch the catalog whole through `apiFetch` and filter by state and town in the browser
+    - _Requirements: 20.2, 10.1_
+  - [ ] 17.3 Build the feed with touch counts, trust labels, ordering, and the open-questions section
+    - _Requirements: 20.3, 20.4, 20.6_
+  - [ ] 17.4 Add uploaded and sample documents to the feed in memory, tagged by town
+    - _Requirements: 20.5_
+
+- [ ] 18. Reliability layer (A builds data and checks, B builds panels)
+  - [ ] 18.1 Add `source.hash` and `pagesHash` to shipped and uploaded documents
+    - _Requirements: 21.1_
+  - [ ] 18.2 Build the TrustPanel per document
+    - _Requirements: 21.4_
+  - [ ] 18.3 Build the ChainView opened from "How do we know this?" on each card
+    - _Requirements: 21.5_
+  - [ ] 18.4 Verify chat answer citations and banned words in the browser before render
+    - _Requirements: 21.3, 21.6, 22.3_
+
+- [ ] 19. Chat dock (B, using A's ask route)
+  - [ ] 19.1 Build the ChatDock with document and measure scoping, suggested questions, and the "Sent" chip
+    - _Requirements: 22.1, 22.2, 22.5_
+  - [ ] 19.2 Wire the local how-to-vote check and the offline notice
+    - _Requirements: 22.4, 22.6_
+
 - [ ] 12. Acceptance and demo
   - [ ] 12.1 Run lint, lint:words, tests, and build; fix failures
   - [ ] 12.2 Do a keyboard pass and a 375 px pass
     - _Requirements: 16.1, 16.2_
   - [ ] 12.3 Save screenshots of the three personas and the upload flow with one flagged item
-  - [ ] 12.4 Rehearse the 90-second demo: town, inline answer, because chip, persona switch, quote badge, upload, offline change, how-to-vote refusal
+  - [ ] 12.4 Rehearse the 90-second demo: onboarding, feed with touch counts, open a document, inline answer, because chip, persona switch, quote badge and chain view, chat question with citations, upload, offline change, how-to-vote refusal
 
 - [ ]* 13. Stretch: YES and NO flip on two cards
   - _Requirements: 17.1_
-- [ ]* 14. Stretch: one real town document, analyzed and checked by a team member
-  - _Requirements: 18.1_
+- [ ]* 14. Stretch: one real town document, analyzed and checked by a team member, listed in the catalog
+  - _Requirements: 18.1, 20.1_
 - [ ]* 15. Stretch: sourced town statistic on Q7 and Q4, and a flat map of towns named in an upload
   - _Requirements: 19.1, 19.2_
