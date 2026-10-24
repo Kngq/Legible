@@ -1,7 +1,7 @@
 "use client";
 
-// Home, laid out like a news reader: the most relevant item as a hero card, then
-// sections (For you, You follow, For everyone) of rows with a thumbnail, a serif
+// Home, laid out like a news reader: For you first (its top item as a hero card),
+// then You follow and Everyone in Massachusetts, as rows with a thumbnail, a serif
 // headline, and a date line. Order comes from buildTimeline: relevance, then time.
 // All filtering runs in the browser.
 import { useState, type ReactNode } from "react";
@@ -33,10 +33,10 @@ const TRUST: Record<Provenance, { label: string; pop: "positive" | "attention" }
 };
 
 type Tier = "touches" | "list" | "everyone";
-const TIERS: { id: Tier; title: string }[] = [
-  { id: "touches", title: "For you" },
-  { id: "list", title: "You follow" },
-  { id: "everyone", title: "For everyone" },
+const TIERS: { id: Tier; title: string; sub: string }[] = [
+  { id: "touches", title: "For you", sub: "These match your answers." },
+  { id: "list", title: "You follow", sub: "Subjects you picked in your profile." },
+  { id: "everyone", title: "Everyone in Massachusetts", sub: "These apply to everyone, whatever your answers." },
 ];
 const tierOf = (e: TimelineEntry): Tier => (e.touches ? "touches" : e.relevance >= 0.6 ? "list" : "everyone");
 
@@ -77,7 +77,7 @@ export function Home({
   const nudge = nudgeDismissed ? null : nextItem(profile);
   const decided = feed.items.filter((i) => i.status === "decided");
   const timeline = buildTimeline(feed.items, civic, today);
-  const [hero, ...rest] = timeline;
+  const forYou = timeline.filter((e) => tierOf(e) === "touches");
   const open = (e: TimelineEntry) => (e.kind === "doc" ? onOpenDoc(e.item.doc.id) : onOpenItem(e.card.item.id));
 
   return (
@@ -107,15 +107,42 @@ export function Home({
         </div>
       </header>
 
-      {nudge && <Nudge item={nudge} onOpen={() => onOpenProfile(itemView(nudge))} onDismiss={onDismissNudge} />}
+      {nudge && forYou.length > 0 && <Nudge item={nudge} onOpen={() => onOpenProfile(itemView(nudge))} onDismiss={onDismissNudge} />}
 
       <h1 className="sr-only">Your timeline</h1>
-      {hero && <Hero entry={hero} today={today} onOpen={() => open(hero)} onOpenMeasure={onOpenMeasure} />}
 
-      {TIERS.map((t) => {
-        const entries = rest.filter((e) => tierOf(e) === t.id);
+      {/* For you always comes first: its top item as the hero, or a prompt when nothing matches yet. */}
+      <section aria-labelledby="h-touches" className="mt-8">
+        <h2 id="h-touches" className="text-title font-bold tracking-tight">
+          For you
+        </h2>
+        <p className="text-small text-muted-foreground">{TIERS[0].sub}</p>
+        {forYou[0] ? (
+          <>
+            <Hero entry={forYou[0]} today={today} onOpen={() => open(forYou[0])} onOpenMeasure={onOpenMeasure} />
+            <Rows entries={forYou.slice(1)} today={today} open={open} onOpenMeasure={onOpenMeasure} />
+          </>
+        ) : (
+          <div className="mt-4 rounded-lg border border-border p-5">
+            <p className={`text-body font-semibold ${SERIF}`}>Nothing matches your answers yet.</p>
+            <p className="mt-1 text-small text-muted-foreground">
+              Answer a few questions about your home, work, and voting, and what touches you shows up here first. Your answers stay in this browser.
+            </p>
+            <button
+              type="button"
+              onClick={() => onOpenProfile(nudge ? itemView(nudge) : { kind: "list" })}
+              className={`mt-3 inline-flex min-h-10 items-center rounded-md bg-primary px-4 text-small font-semibold text-primary-foreground ${FOCUS}`}
+            >
+              Answer questions
+            </button>
+          </div>
+        )}
+      </section>
+
+      {TIERS.slice(1).map((t) => {
+        const entries = timeline.filter((e) => tierOf(e) === t.id);
         return entries.length ? (
-          <Section key={t.id} id={`h-${t.id}`} title={t.title} count={entries.length}>
+          <Section key={t.id} id={`h-${t.id}`} title={t.title} sub={t.sub} count={entries.length}>
             {(all) =>
               (all ? entries : entries.slice(0, ROWS_SHOWN)).map((e) => (
                 <Row key={e.key} entry={e} today={today} onOpen={() => open(e)} onOpenMeasure={onOpenMeasure} />
@@ -190,7 +217,37 @@ export function Home({
 }
 
 /** Section heading in bold sans with a "Show all" pill, like a news reader's topic block. */
-function Section({ id, title, count, children }: { id: string; title: string; count: number; children: (all: boolean) => ReactNode }) {
+/** The rest of For you, below its hero, with the same Show all pill. */
+function Rows({
+  entries,
+  today,
+  open,
+  onOpenMeasure,
+}: {
+  entries: TimelineEntry[];
+  today: string;
+  open: (e: TimelineEntry) => void;
+  onOpenMeasure: (docId: string, measureId: string) => void;
+}) {
+  const [all, setAll] = useState(false);
+  if (!entries.length) return null;
+  return (
+    <>
+      <ul className="mt-2">
+        {(all ? entries : entries.slice(0, ROWS_SHOWN)).map((e) => (
+          <Row key={e.key} entry={e} today={today} onOpen={() => open(e)} onOpenMeasure={onOpenMeasure} />
+        ))}
+      </ul>
+      {entries.length > ROWS_SHOWN && (
+        <button type="button" onClick={() => setAll(!all)} aria-expanded={all} className={`mt-2 ${PILL}`}>
+          {all ? "Show less" : `Show all ${entries.length}`}
+        </button>
+      )}
+    </>
+  );
+}
+
+function Section({ id, title, sub, count, children }: { id: string; title: string; sub: string; count: number; children: (all: boolean) => ReactNode }) {
   const [all, setAll] = useState(false);
   return (
     <section aria-labelledby={id} className="mt-10">
@@ -204,6 +261,7 @@ function Section({ id, title, count, children }: { id: string; title: string; co
           </button>
         )}
       </div>
+      <p className="text-small text-muted-foreground">{sub}</p>
       <ul className="mt-2">{children(all)}</ul>
     </section>
   );
@@ -266,7 +324,7 @@ function Hero({
   const part = e.kind === "doc" ? "ballot_box" : KIND_PART[e.card.item.kind];
   const ballot = e.kind === "doc" ? e.item : e.ballot;
   return (
-    <section aria-label="Most relevant to you" className="mt-6">
+    <section aria-label="Most relevant to you" className="mt-4">
       <button
         type="button"
         onClick={onOpen}
@@ -341,7 +399,7 @@ function Row({
           <span className={`line-clamp-2 block text-body font-semibold leading-snug ${SERIF}`}>{titleOf(e)}</span>
           <span className="mt-1 block text-small text-muted-foreground">{dueLine(e, today)}</span>
           <span className="mt-1.5 line-clamp-2 block text-small">{what}</span>
-          <span className={`mt-1.5 block text-small ${e.touches ? "font-semibold" : "text-muted-foreground"}`}>{e.forYou}</span>
+          {tierOf(e) !== "everyone" && <span className={`mt-1.5 block text-small ${e.touches ? "font-semibold" : "text-muted-foreground"}`}>{e.forYou}</span>}
         </span>
       </button>
       {ballot && <MeasureLinks ballot={ballot} onOpenMeasure={onOpenMeasure} />}
