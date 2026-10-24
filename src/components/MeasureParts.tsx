@@ -54,7 +54,9 @@ export function WhatItDoes({ card, detailed = false }: { card: Card; detailed?: 
           </button>
           {open && (
             <div className="mt-1 animate-fade-in rounded-md bg-surface-muted p-4">
-              <p className={`text-body leading-relaxed ${SERIF}`}>{m.summary.text}</p>
+              <p data-ask-official className={`text-body leading-relaxed ${SERIF}`}>
+                {m.summary.text}
+              </p>
               <p className="mt-2 text-small text-muted-foreground">
                 {m.summary.locator}
                 {m.summary.page ? `, page ${m.summary.page}` : ""}, word for word
@@ -83,7 +85,11 @@ export function Outcomes({ card, detailed = false }: { card: Card; detailed?: bo
           <span aria-hidden="true" className={`size-2 rounded-full ${yes ? "bg-accent" : "bg-muted-foreground"}`} />
           If {yes ? "YES" : "NO"} wins{referendum ? (yes ? " · law stays" : " · law ends") : ""}
         </p>
-        {q && <p className={`mt-1.5 text-body ${SERIF}`}>{q.text}</p>}
+        {q && (
+          <p data-ask-official className={`mt-1.5 text-body ${SERIF}`}>
+            {q.text}
+          </p>
+        )}
         {detailed && q && (
           <p className="mt-1 text-small text-muted-foreground">
             {q.locator}
@@ -116,7 +122,9 @@ export function Cost({ measure: m, detailed = false }: { measure: Measure; detai
   return (
     <section className="mt-5">
       <PartLabel n={3}>Cost</PartLabel>
-      <p className={`mt-2 ${detailed ? `text-body leading-relaxed ${SERIF}` : "text-small"}`}>{detailed ? m.fiscal.text : firstSentence(m.fiscal.text)}</p>
+      <p data-ask-official className={`mt-2 ${detailed ? `text-body leading-relaxed ${SERIF}` : "text-small"}`}>
+        {detailed ? m.fiscal.text : firstSentence(m.fiscal.text)}
+      </p>
       <p className="mt-1 text-small text-muted-foreground">
         Official fiscal statement
         {detailed && m.fiscal.page ? `, page ${m.fiscal.page}, word for word` : ""}

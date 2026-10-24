@@ -1,13 +1,15 @@
 "use client";
 
-// Ask, three ways in: the floating button (scoped to the page you are on), an
-// "Ask about this question" button on each question, and highlighting text,
-// which shows an "Ask about this" chip. All open one bottom sheet with checked
+// Ask in context: an "Ask about this question" button on each question, and
+// highlighting original text (anything marked data-ask-official), which opens
+// the sheet with questions built from the highlighted words. The floating chat
+// is ChatDock. All open one bottom sheet with checked
 // starter questions. Only the document id, measure id, the question, and
 // highlighted text found word for word in an official quote are sent; text that
 // exists because of the person's answers never is.
 import { createContext, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { officialExcerpt, publicExcerpt } from "@/lib/engine/ask-context";
+import { officialExcerpt } from "@/lib/engine/ask-context";
+import { highlightQuestions } from "@/lib/engine/highlight-questions";
 import { ASK_SUGGESTIONS, BALLOT_SUGGESTIONS } from "@/lib/engine/ask-suggestions";
 import type { DocumentData } from "@/lib/engine/types";
 import { asksHowToVote, VOTE_FIXED_RESPONSE } from "@/lib/vocab";
@@ -68,15 +70,13 @@ export function AskProvider({ doc, scopeMeasureId, children }: { doc: DocumentDa
         const node = sel.anchorNode;
         const el = node instanceof Element ? node : node?.parentElement;
         if (!el || el.closest("[data-ask-ignore], input, textarea, button, a")) return;
-        const measureId = el.closest("[data-ask-measure]")?.getAttribute("data-ask-measure") ?? scopeMeasureId;
+        // Only highlights in original text open the sheet; anywhere else is just a selection.
         const container = el.closest("[data-ask-official]");
-        const label = container?.getAttribute("data-ask-label") ?? undefined;
-        if (container) {
-          const ex = officialExcerpt(text);
-          if (ex) return setTarget({ measureId: label ? undefined : measureId, excerpt: ex, label });
-        }
-        const pub = publicExcerpt(text, doc, measureId);
-        setTarget(pub ? { measureId: pub.measureId, excerpt: pub.text } : { measureId, personal: true });
+        if (!container) return;
+        const measureId = el.closest("[data-ask-measure]")?.getAttribute("data-ask-measure") ?? scopeMeasureId;
+        const label = container.getAttribute("data-ask-label") ?? undefined;
+        const ex = officialExcerpt(text);
+        if (ex) setTarget({ measureId: label ? undefined : measureId, excerpt: ex, label });
       }, 350);
     };
     document.addEventListener("mouseup", check);
@@ -140,7 +140,7 @@ function AskSheet({ doc, target, onClose }: { doc: DocumentData; target: AskTarg
   const onCloseRef = useRef(onClose);
   const scope = target.label ?? (measure ? `Question ${measure.number}` : "the ballot");
   const suggestions = target.excerpt
-    ? ["What does this part mean?", "What would change under YES?", "What does a NO vote keep?"]
+    ? highlightQuestions(target.excerpt)
     : measure
       ? (ASK_SUGGESTIONS[measure.id] ?? []).map((s) => s.q)
       : BALLOT_SUGGESTIONS.map((s) => s.q);

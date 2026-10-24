@@ -13,7 +13,7 @@ import { FOCUS } from "./ui";
 
 const SERIF = "font-[family-name:var(--font-serif)]";
 
-export function OriginalText({ original }: { original?: CivicOriginal }) {
+export function OriginalText({ original, title }: { original?: CivicOriginal; title?: string }) {
   if (!original) return null;
   return (
     <section className="mt-8 rounded-lg bg-surface p-5 shadow-card" aria-labelledby="original-h">
@@ -23,7 +23,7 @@ export function OriginalText({ original }: { original?: CivicOriginal }) {
       <p className="mt-1 text-small text-muted-foreground">{original.label}</p>
       <Fingerprint source={original} />
       {original.text && (
-        <blockquote className={`mt-3 rounded-md bg-surface-muted p-4 text-body leading-relaxed ${SERIF}`}>
+        <blockquote data-ask-official data-ask-label={title} className={`mt-3 rounded-md bg-surface-muted p-4 text-body leading-relaxed ${SERIF}`}>
           <mark className="bg-accent-soft text-foreground">{original.text}</mark>
         </blockquote>
       )}

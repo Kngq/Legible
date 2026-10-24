@@ -153,7 +153,7 @@ export function CivicView({
         </section>
       )}
 
-      <OriginalText original={i.original} />
+      <OriginalText original={i.original} title={i.title} />
 
       <section className="mt-10" aria-labelledby="checked-h">
         <h2 id="checked-h" className="text-small font-semibold uppercase tracking-wider text-muted-foreground">
