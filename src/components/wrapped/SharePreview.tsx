@@ -126,7 +126,7 @@ export function SharePreview({ base, onClose }: { base: ShareBase; onClose: () =
           disabled={!image || state === "drawing" || state === "error"}
           onClick={() => {
             if (!image) return;
-            downloadBlob(image.blob);
+            downloadBlob(image.blob, base.year ? `my-ballot-wrapped-${base.year}.png` : undefined);
             setState("saved");
           }}
           className={`inline-flex min-h-12 items-center justify-center rounded-md bg-primary px-6 text-body font-semibold text-primary-foreground interactive press hover:bg-primary-hover disabled:bg-surface-muted disabled:text-muted-foreground ${FOCUS}`}

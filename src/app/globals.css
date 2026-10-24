@@ -213,6 +213,16 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  /* viewport-fit=cover (layout.tsx): keep content clear of the notch in landscape.
+     The insets are 0 everywhere else. */
+  padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
+}
+
+/* Screen slide-ins briefly push past the right edge; clip, so a phone never
+   scrolls sideways. clip (not hidden) keeps sticky headers working. */
+html,
+body {
+  overflow-x: clip;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -237,6 +247,18 @@ body {
 @utility press {
   &:active:not(:disabled) {
     transform: scale(0.98);
+  }
+}
+/* A bigger tap area on touch screens for a small control that sits on a
+   row-wide link (the compact Details toggle), so a near miss does not open the
+   row. Invisible: the control looks the same. Needs a positioned element. */
+@utility touch-target {
+  @media (pointer: coarse) {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: -10px -8px;
+    }
   }
 }
 @utility nudge {

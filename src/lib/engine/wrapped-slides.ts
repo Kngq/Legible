@@ -9,6 +9,7 @@
 import { FACT_DEFS, TOPIC_DEFS, TOPIC_IDS, type TopicId } from "@/lib/vocab";
 import { WRAPPED_STRINGS as S } from "@/lib/vocab/wrapped";
 import { routeHash } from "@/lib/nav/route";
+import { shortDate } from "./decide-by";
 import { topicIds, type Profile } from "./profile";
 import type { Card, DocumentData, Measure, WhySentence } from "./types";
 import { topicMeasureCount, type WrappedSummary } from "./wrapped";
@@ -53,7 +54,7 @@ export interface RadarTopic {
 }
 
 export type SlideModel =
-  | { id: "opening"; heading: string; line: string; hint: string; texts: string[] }
+  | { id: "opening"; heading: string; line: string; hint: string; ballotLabel: string; texts: string[] }
   | { id: "world"; heading: string; place: string; placeKnown: boolean; questionCount: number; countLabel: string; statewide?: string; dateLabel?: string; line: string; texts: string[] }
   | { id: "connects"; mode: "personal" | "general"; heading: string; intro: string; items: ConnectItem[]; action?: string; texts: string[] }
   | {
@@ -207,7 +208,9 @@ export function buildStory(doc: DocumentData, summary: WrappedSummary, profile: 
   const total = summary.measureTotal;
   const date = doc.decideBy ? decidedLabel(doc.decideBy.date) : undefined;
 
-  const opening: SlideModel = { id: "opening", heading: S.openingHeading, line: S.openingLine, hint: S.openingHint, texts: [S.openingHeading, S.openingLine, S.openingHint] };
+  // "Massachusetts · Nov 3", from the ballot's own place and decision date.
+  const ballotLabel = [doc.place.name, doc.decideBy ? shortDate(doc.decideBy.date) : undefined].filter(Boolean).join(" · ");
+  const opening: SlideModel = { id: "opening", heading: S.openingHeading, line: S.openingLine, hint: S.openingHint, ballotLabel, texts: [S.openingHeading, S.openingLine, S.openingHint, ballotLabel] };
 
   const statewide = doc.place.kind === "state" ? S.worldStatewide(total) : undefined;
   const world: SlideModel = {

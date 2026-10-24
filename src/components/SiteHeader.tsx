@@ -5,11 +5,11 @@
 // the second in-page bar (TopBar) that Home and Explore used to draw under it.
 // Sticky; a hairline appears once the page scrolls under it.
 //
-// The Legible mark opens a small menu with the links and account buttons added
-// with the site header: Who we are, Our mission, Login, and Sign up. They are
-// placeholders for now: Legible keeps the profile in the browser and has no
-// accounts yet, so they do not navigate or authenticate. They mark where that
-// navigation will live. The For you tab is the way home.
+// The Legible mark opens a small menu with the links added with the site
+// header: Who we are and Our mission. They are placeholders for now and do not
+// navigate. The Login and Sign up buttons stay in the code but are hidden
+// (SHOW_ACCOUNT_BUTTONS): Legible keeps the profile in the browser and has no
+// accounts (docs/accounts-review.md). The For you tab is the way home.
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { transition } from "@/lib/motion";
@@ -23,6 +23,9 @@ const NAV_LINKS = [
   { label: "Who we are", href: "#" },
   { label: "Our mission", href: "#" },
 ];
+
+/** Login and Sign up do nothing until accounts have a purpose; kept, not shown. */
+const SHOW_ACCOUNT_BUTTONS = false;
 
 export type HeaderTab = "home" | "explore";
 
@@ -92,17 +95,21 @@ function BrandMenu() {
                 </a>
               ))}
             </nav>
-            <div className="mx-3 my-1.5 border-t border-border" />
-            <button type="button" onClick={() => setOpen(false)} className={item}>
-              Login
-            </button>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className={`mt-1 flex min-h-11 w-full items-center justify-center rounded-md bg-primary px-3 text-body font-semibold text-primary-foreground interactive press hover:bg-primary-hover ${FOCUS}`}
-            >
-              Sign up
-            </button>
+            {SHOW_ACCOUNT_BUTTONS && (
+              <>
+                <div className="mx-3 my-1.5 border-t border-border" />
+                <button type="button" onClick={() => setOpen(false)} className={item}>
+                  Login
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className={`mt-1 flex min-h-11 w-full items-center justify-center rounded-md bg-primary px-3 text-body font-semibold text-primary-foreground interactive press hover:bg-primary-hover ${FOCUS}`}
+                >
+                  Sign up
+                </button>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

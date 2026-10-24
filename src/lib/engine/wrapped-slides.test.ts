@@ -180,6 +180,19 @@ describe("buildStory", () => {
   });
 });
 
+describe("dates come from the ballot data", () => {
+  it("labels the opening and the world slide with the ballot's own decision date (2026-11-03, a Tuesday)", () => {
+    expect(BALLOT_2026.decideBy?.date).toBe("2026-11-03");
+    const s = story(emptyProfile());
+    expect(slide(s, "opening").ballotLabel).toBe("Massachusetts · Nov 3");
+    expect(slide(s, "world").dateLabel).toBe("Decided Tuesday, November 3");
+    const moved: DocumentData = { ...BALLOT_2026, decideBy: { ...BALLOT_2026.decideBy!, date: "2028-11-07" } };
+    const t = buildStory(moved, computeWrapped(moved, emptyProfile()), emptyProfile(), TOWNS);
+    expect(slide(t, "opening").ballotLabel).toBe("Massachusetts · Nov 7");
+    expect(slide(t, "world").dateLabel).toBe("Decided Tuesday, November 7");
+  });
+});
+
 describe("decisionStatus", () => {
   it("calls initiatives proposals and Question 9 a law in effect", () => {
     const q7 = BALLOT_2026.measures.find((m) => m.number === "7")!;

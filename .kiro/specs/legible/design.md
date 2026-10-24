@@ -2,10 +2,11 @@
 
 ## Overview
 
-Legible is a mostly client-side Next.js app. Documents are plain JSON in one shared format, listed in a public catalog. A short onboarding builds a life profile in the browser. The home feed fetches the whole catalog and filters it locally to the person's state and town. A pure engine combines any document with the profile and returns sorted cards. A reliability layer traces every sentence to a fingerprinted source. Only two server routes exist, and neither ever receives the profile:
+Legible is a mostly client-side Next.js app. Documents are plain JSON in one shared format, listed in a public catalog. A short onboarding builds a life profile in the browser. The home feed fetches the whole catalog and filters it locally to the person's state and town. A pure engine combines any document with the profile and returns sorted cards. A reliability layer traces every sentence to a fingerprinted source. Server routes never receive the profile (the one exception is the opt-in fact phrases described under "Chat dock"):
 
-- `POST /api/analyze` turns the page text of an uploaded PDF into draft measures.
-- `POST /api/ask` answers a question about one measure from its official text.
+- `POST /api/ask` answers a question about official text (a ballot question, a bill, or an official date) from that text only.
+- `POST /api/suggest` proposes three questions about a highlighted official passage.
+- `POST /api/analyze` (planned, task 9.3) will turn the page text of an uploaded PDF into draft measures.
 
 Everything that makes the app trustworthy is ordinary deterministic code: the fixed vocabularies, the sorting rules, the quote verifier, and the banned-word lint. The model only drafts content that this code then checks.
 
@@ -26,14 +27,18 @@ flowchart LR
     NL[Network log] --> PRIV[What left your browser panel]
   end
   subgraph Server
-    A["/api/analyze"] --> C[(Claude claude-opus-5)]
+    A["/api/analyze (planned)"] --> C[(Claude API)]
     Q["/api/ask"] --> C
+    S["/api/suggest"] --> C
   end
   X -- page text only --> A
   A -- draft measures --> V
   V --> D
-  UI -- measure id + question --> Q
+  UI -- source id + highlight + question --> Q
+  UI -- source id + highlight --> S
 ```
+
+Models: `/api/ask` and `/api/suggest` use `claude-sonnet-5`; build-time bill drafting (`npm run data:draft`) uses `claude-opus-5`. The analyze route and ingest below are planned with `claude-opus-5`.
 
 All client requests go through one `apiFetch` wrapper that records each request's route and payload categories for the privacy panel. Profile state is never passed to that wrapper.
 
@@ -259,9 +264,9 @@ Pattern borrowed from Duolingo: one question per screen, a back arrow top left, 
 
 The figure is the Legible avatar (line-drawn, see Avatar). It gains one part per yes (a key for renting, a bus for transit). It never shows red or blue and never reflects a sensitive fact.
 
-**No account, no sign-in.** Duolingo's "Create profile" exists to sync progress to a server. Legible's promise is that the profile never leaves the browser, so its counterpart is "Keep on this device." There is no name, email, or password step anywhere. If cross-device use is wanted after the event, the candidate is an export code the person copies to another browser, not an account.
+**No account, no sign-in.** Duolingo's "Create profile" exists to sync progress to a server. Legible's promise is that the profile never leaves the browser, so its counterpart is "Keep on this device." There is no email or password step anywhere, and no account. The optional profile name below is not an account. If cross-device use is wanted after the event, the candidate is an export code the person copies to another browser, not an account.
 
-**No name.** A name adds nothing to sorting, and a name stored next to "owns a firearm" turns a shared or screenshotted device into an identifying record. Greetings use the town instead: "Here is what Somerville is deciding."
+**Optional name, local only.** A person may enter a first name or nickname for their local profile (profile sheet), used only to greet and address the person within their own Legible interface, including the Home headline, Civic Profile, and header avatar. It adds nothing to sorting. Like every other profile field it stays in browser storage and is never sent to a server or any third-party service, including Supabase. Onboarding never asks for it. A name stored next to "owns a firearm" makes a shared or screenshotted device more identifying, so it stays optional and "Clear my information" removes it with the rest. Without a name, greetings use the town: "Here is what Somerville is deciding."
 
 Onboarding belongs to the platform, not to any one document. Every screen is the same for every person, whatever is in their feed (a state ballot, a Town Meeting warrant, a school budget). No screen names a measure, a question number, or a document.
 
@@ -358,6 +363,7 @@ Everything Legible gathers, where it comes from, where it lives, and what it is 
 
 | Field | Gathered by | Stored | Used for |
 |---|---|---|---|
+| `name` | optional, typed in the profile sheet (first name or nickname, up to 40 characters) | profile | greeting and addressing the person in their own interface (Home headline, Civic Profile, header avatar); never sorting, never sent to a server or third party, including Supabase |
 | `townId` | onboarding screen 1 (ZIP or town name, resolved locally; the ZIP is not kept), or feed header | profile | filtering the catalog in the browser; town context on cards later |
 | `facts[id].value` | onboarding, a card, open questions, or an edit | profile | firing rules: "Touches you," direction, why sentences |
 | `facts[id].source`, `.at` | set automatically with each answer | profile | explaining where an answer came from; tests for ask-once rules |
@@ -372,7 +378,7 @@ Everything Legible gathers, where it comes from, where it lives, and what it is 
 | `session.dismissedOpenQuestions` | dismissing an open question on the feed | memory, storage only if remember is on | not nagging |
 | `session.activePersonaId` | persona switcher | memory only | restoring the self profile when the persona view closes |
 
-Never gathered: name, email, password, account, phone, age, party, income, address beyond the town, free text about the person, typed topic text, IP address, device fingerprint, analytics events. Reduced-motion comes from the operating system setting at render time and is not stored.
+Never gathered: email, password, account, a name beyond the optional local `name` above, phone, age, party, income, address beyond the town, free text about the person, typed topic text, IP address, device fingerprint, analytics events. Reduced-motion comes from the operating system setting at render time and is not stored.
 
 Derived, never stored: sorted cards, touch counts, avatar parts, because chips. All recomputed by `buildCards` whenever the profile changes.
 
@@ -547,6 +553,37 @@ The civic build fails if any item has no original record.
 **Personal context is opt-in.** The dock offers only the answers that matched this item ("Use what I told Legible: you rent"), unchecked each time the document changes. Only those phrases are sent, checked server-side against Legible's own fact phrases. A line under each reply says exactly what was sent.
 
 **No model configured.** `/api/ask` and `/api/suggest` answer 503: the menu keeps its rule-based questions, and Kiro says it isn't connected yet and shows the official passage and source instead of an explanation. The local how-to-vote check still runs first.
+
+## Installable web app (PWA)
+
+Legible can be added to a phone's home screen and opens in its own window, with no browser bar. It is the same website: same code, same deploy, same browser-only profile. Nothing new is sent, stored, or asked for.
+
+**What ships.**
+- `src/app/manifest.ts` (served as `/manifest.webmanifest`): name and short name Legible, `display: standalone`, `start_url` and `scope` `/`, background and theme colour the Notebook page colour.
+- Icons: the Legible mark from `public/icons/legible-mark.svg` on the page colour, in `public/icons/icon-192.png`, `icon-512.png`, `icon-maskable-512.png` (mark kept inside the 80% safe zone), and `src/app/apple-icon.png` (180 px, opaque, for iOS). No new artwork.
+- `src/app/layout.tsx`: `viewport` (`viewport-fit=cover`, theme colour per light and dark scheme from `src/lib/theme-color.ts`, zoom allowed) and `appleWebApp` (title Legible, default status bar, so the page starts below it).
+- Mobile fixes, checked at 375 and 390 px: `overflow-x: clip` on the page so screen slide-ins never scroll sideways; body padding for the left and right safe-area insets (landscape notch); the onboarding footer and the "How do we know this?" sheet clear the home indicator (the profile sheet and the Kiro launcher already did); the Ask Kiro field is 16 px on phones, so iOS does not zoom in on focus, with a 44 px Ask button; the compact Details toggle on feed rows gets an invisible larger tap area on touch screens (`touch-target`), so a near miss does not open the row. Desktop is unchanged.
+
+**Installing.**
+- iPhone and iPad: open Legible in Safari, tap Share, then Add to Home Screen. (iOS 16.4 and later also offer this from the share menu in other browsers.)
+- Android: open Legible in Chrome, open the menu, then Install app (or Add to Home screen). Some versions show an install banner.
+- Desktop Chrome and Edge show an install icon in the address bar. Not needed for the election, but it works.
+
+**What needs the internet.**
+- Opening the app. There is no service worker, so a launch with no connection shows the browser's offline page rather than old information.
+- Ask Kiro and the suggested questions on a highlight (`/api/ask`, `/api/suggest`).
+- Official sources: the booklet PDF, bill pages, mass.gov and other links open from the network.
+
+Once a page has loaded, everything Legible itself shows (the feed, ballot explanations, quotes and citations, the profile) runs in the browser and keeps working if the connection drops, as before. All of it comes from the deploy the page was loaded from; there are no separate live updates, so there is nothing that could be shown stale while looking current. Kiro already says when it is offline.
+
+**Limitations of this first version.**
+- No offline launch and no caching, on purpose (see above). If offline launch is added later, cached content must say when it was published and that it may be out of date.
+- iOS keeps a home-screen app's storage apart from Safari's. A profile remembered in Safari does not carry into the installed app; the person sets it up once there. On Android, the installed app shares Chrome's storage for the site.
+- Links shared from the app open in the browser, not in the installed app. External links (`target="_blank"`) open in the browser or its in-app view.
+- No push notifications, badges, or background work.
+- The install prompt cannot be triggered by the page on iOS; the person uses the Share menu.
+
+**Toward Capacitor (not started).** This work is what a Capacitor wrapper would need from the web app anyway: icon sources at 512 px, the theme colours in one TypeScript file, safe-area handling under `viewport-fit=cover` (which native web views use), phone-sized form fields, and no service worker that could compete with bundled files. No server dependency was added. The remaining steps (a mobile-only static export, an API base URL with CORS on the two routes, native links, share, and back button) are in the Capacitor audit and wait for approval.
 
 ## Error handling
 

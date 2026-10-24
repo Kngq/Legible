@@ -408,17 +408,18 @@ export function ChatDock({ hidden = null }: { hidden?: DockHide | null } = {}) {
           </div>
 
           <form onSubmit={onSubmit} className="flex items-end gap-2 border-t border-border p-3">
+            {/* 16px on phones: iOS zooms the page into any field set smaller. */}
             <input
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder={active ? (active.passage ? "Ask a follow-up about this passage…" : `Ask about ${active.source.title}…`) : "Ask about a measure…"}
               maxLength={300}
-              className="flex-1 rounded-md border-2 border-border bg-surface px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground transition-all duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] focus:border-accent focus:ring-2 focus:ring-ring/30"
+              className="flex-1 rounded-md border-2 border-border bg-surface px-3 py-2 text-sm text-foreground max-sm:text-base outline-none placeholder:text-muted-foreground transition-all duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] focus:border-accent focus:ring-2 focus:ring-ring/30"
             />
             <button
               type="submit"
               disabled={loading || !question.trim()}
-              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-all duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:bg-primary-hover active:scale-95 disabled:opacity-40 disabled:active:scale-100"
+              className="rounded-md bg-primary px-3 py-2 text-sm font-medium max-sm:min-h-11 text-primary-foreground transition-all duration-[400ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:bg-primary-hover active:scale-95 disabled:opacity-40 disabled:active:scale-100"
             >
               Ask
             </button>

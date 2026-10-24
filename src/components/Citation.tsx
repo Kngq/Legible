@@ -179,7 +179,7 @@ export function ChainSheet({ s, src, onClose }: { s: PageSentence; src: CiteSour
         role="dialog"
         aria-modal="true"
         aria-labelledby="chain-h"
-        className="relative max-h-[88vh] w-full max-w-2xl animate-fade-in overflow-y-auto rounded-t-xl bg-background px-4 pb-8 pt-3 sm:px-6"
+        className="relative max-h-[88dvh] w-full max-w-2xl animate-fade-in overflow-y-auto rounded-t-xl bg-background px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-3 sm:px-6"
       >
         <div aria-hidden="true" className="mx-auto h-1.5 w-10 rounded-full bg-border" />
         <div className="mt-2 flex items-center justify-between gap-3">

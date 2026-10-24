@@ -87,7 +87,7 @@ function Opening({ s }: { s: Extract<SlideModel, { id: "opening" }> }) {
         {sheet({ left: "8%", right: "14%", top: "14%", bottom: "-6%", ["--r" as string]: "-7deg", transform: "rotate(-7deg)", ["--drift-s" as string]: "9s" }, "opacity-70")}
         {sheet({ left: "18%", right: "4%", top: "6%", bottom: "0%", ["--r" as string]: "4deg", transform: "rotate(4deg)", ["--drift-s" as string]: "11s", ["--drift-d" as string]: "-3s" }, "opacity-85")}
         <div className={`${css.rise} absolute inset-x-[12%] bottom-[4%] top-0 -rotate-1 rounded-lg bg-surface p-5 shadow-card`} style={at(3)}>
-          <p className="text-small font-semibold text-muted-foreground">Massachusetts · Nov 3</p>
+          <p className="text-small font-semibold text-muted-foreground">{s.ballotLabel}</p>
           <div className="mt-3 w-[72%]">
             <NineBoxes />
           </div>

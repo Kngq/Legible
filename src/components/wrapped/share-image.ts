@@ -139,7 +139,7 @@ export function renderShareImage(items: ShareItem[]): Promise<Blob> {
 }
 
 /** Saves `blob` through a temporary download link. */
-export function downloadBlob(blob: Blob, filename = "my-ballot-wrapped-2026.png"): void {
+export function downloadBlob(blob: Blob, filename = "my-ballot-wrapped.png"): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

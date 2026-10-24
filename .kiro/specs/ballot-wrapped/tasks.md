@@ -2,9 +2,9 @@
 
 Development only behind `WRAPPED_ENABLED` until the visual design is approved. Built on branch `feature/ballot-wrapped` from main; Layla's `f20bfe8` is the source of the reused logic and tests.
 
-- [ ] 1. Spec
+- [x] 1. Spec
   - [x] 1.1 Requirements, design, and tasks for the six-slide story
-  - [ ] 1.2 Product owner approves the visual design (screenshots of all six slides)
+  - [x] 1.2 Product owner approves the visual design (approved after design iteration 2)
 
 - [x] 2. Pure logic (reused from `f20bfe8` where still correct)
   - [x] 2.1 `computeWrapped` and `topicMeasureCount` kept; `wrappedEntry` dropped (the story needs no topics)
