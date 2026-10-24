@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
 /*
- * Theme tokens. Minimal and friendly: mostly ink on paper and white cards,
- * soft grey pills, large rounded corners, one highlighter accent that marks
- * what touches you. Status colours are used only for trust badges.
- * Product rules: no red or blue anywhere, no gradients, at most four type sizes.
+ * Theme tokens. Minimal and friendly: every word is ink or grey, never coloured.
+ * Colour appears only as a small fill behind a tag, a bar, or a highlight, with
+ * ink text on top, so a few things pop out of an otherwise monochrome page.
+ * Three pops, each with one job: accent (touches you), attention (new or needs
+ * a look), positive (checked). Product rules: no red or blue, no gradients, at
+ * most four type sizes.
  */
 :root {
   /* Surfaces */
@@ -15,20 +17,17 @@
   --border: #e6e6e1; /* hairline dividers */
   --muted-foreground: #6b6b70; /* body copy under headings, captions */
 
-  /* The one pop: highlighter */
-  --accent: #f2e94e; /* "Touches you", the meter fill, the primary highlight */
-  --accent-soft: #fbf7c4; /* highlighted quote background, selected chip */
-  --accent-foreground: #16161a; /* text on the accent: always ink */
+  /* Pops: fills only, never text colour. Text on any pop is --on-pop. */
+  --accent: #e4f45a; /* lime highlighter: "Touches you" tag, the meter fill */
+  --accent-soft: #f4fac4; /* highlighted sentence inside a quote */
+  --attention: #ff9f5a; /* tangerine: "New" tag, active tab bar, "3 left", AI draft, flagged */
+  --positive: #a6e8c0; /* mint: "Reviewed" and "Found word for word" badges */
+  --on-pop: #16161a;
+  --accent-foreground: var(--on-pop);
 
   /* Primary action: ink button, paper text */
   --primary: #16161a;
   --primary-foreground: #ffffff;
-
-  /* Status, for trust badges only */
-  --positive: #3f8f5a; /* reviewed, verified */
-  --positive-soft: #e3f1e7;
-  --caution: #b7791f; /* AI draft, flagged */
-  --caution-soft: #f8ecd6;
 
   --ring: #16161a;
 
@@ -48,17 +47,11 @@
     --border: #2e2e33;
     --muted-foreground: #a1a1a6;
 
-    --accent: #ece35a;
-    --accent-soft: #3a3714;
-    --accent-foreground: #16161a;
+    /* Pops keep their brightness in dark mode; text on them stays ink. */
+    --accent-soft: #33361a;
 
     --primary: #f2f2ee;
     --primary-foreground: #111113;
-
-    --positive: #6fbf88;
-    --positive-soft: #1d3324;
-    --caution: #e0a64a;
-    --caution-soft: #3a2c14;
 
     --ring: #f2f2ee;
 
@@ -76,12 +69,11 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-accent-foreground: var(--accent-foreground);
+  --color-attention: var(--attention);
+  --color-on-pop: var(--on-pop);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-positive: var(--positive);
-  --color-positive-soft: var(--positive-soft);
-  --color-caution: var(--caution);
-  --color-caution-soft: var(--caution-soft);
   --color-ring: var(--ring);
 
   --font-sans: var(--font-figtree);

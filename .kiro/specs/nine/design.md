@@ -234,7 +234,7 @@ Pure template in the browser. Inputs are selected measure numbers and one factua
 - **UploadPanel:** file input, extraction status, size and scanned-PDF errors, progress with cancel, verified-quote counter, flagged list, sample fallback.
 - **PrivacyPanel:** reads the `apiFetch` log and lists what was and was not sent.
 
-Visual system lives in CSS custom properties in `src/app/globals.css`, exposed as Tailwind utilities: paper `background` with white `surface` cards and `surface-muted` pills, ink text, `accent` highlighter yellow (the only pop), `positive` and `caution` for trust badges only, radii `sm` 10 / `md` 14 / `lg` 20 / `xl` 32, one `shadow-card`, one easing curve (`ease-nine`, 400 ms), four type sizes (`text-display`, `text-title`, `text-body`, `text-small`), Figtree for display and body. Light and dark themes. Re-sorting animates card positions unless reduced motion is preferred.
+Visual system lives in CSS custom properties in `src/app/globals.css`, exposed as Tailwind utilities: paper `background` with white `surface` cards and `surface-muted` pills, ink text, text always ink or grey; three pops used only as fills under ink text: `accent` lime highlighter (touches you, meter, `accent-soft` for quote highlights), `attention` tangerine (new, AI draft, flagged, active tab), `positive` mint (reviewed, verified), radii `sm` 10 / `md` 14 / `lg` 20 / `xl` 32, one `shadow-card`, one easing curve (`ease-nine`, 400 ms), four type sizes (`text-display`, `text-title`, `text-body`, `text-small`), Figtree for display and body. Light and dark themes. Re-sorting animates card positions unless reduced motion is preferred.
 
 ## Onboarding
 
