@@ -42,39 +42,43 @@ export function PhotosProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * A card's header. With a photo, the photo fills the top of the card and the
- * header sits on a frosted panel over its lower part, with the credit. Without
- * one, or if the file fails to load, the header renders plain.
+ * One entry's photo, or null when there is none or its file failed to load.
+ * The card uses it for both the thumbnail and the credit, so they hide together.
  */
-export function PhotoHeader({ entryKey, children }: { entryKey: string; children: ReactNode }) {
+export function useEntryPhoto(entryKey: string) {
   const photo = useContext(PhotosContext).photos.get(entryKey);
-  const [state, setState] = useState<"loading" | "loaded" | "failed">("loading");
-  if (!photo || state === "failed") return <div className="px-5 pt-5">{children}</div>;
+  const [failed, setFailed] = useState(false);
+  return { photo: photo && !failed ? photo : null, onError: () => setFailed(true) };
+}
+
+/** A small rounded thumbnail beside the card title. */
+export function PhotoThumb({ photo, onError }: { photo: FeedPhoto; onError: () => void }) {
+  const [loaded, setLoaded] = useState(false);
   return (
-    <div className={`relative isolate overflow-hidden rounded-lg ${state === "loading" ? "animate-pulse bg-surface-muted" : "bg-surface-muted"}`}>
+    <span className={`relative block size-18 shrink-0 overflow-hidden rounded-md bg-surface-muted ${loaded ? "" : "animate-pulse"}`}>
       <Image
         src={photo.url}
         alt={photo.alt}
         fill
         unoptimized
-        sizes="(min-width: 672px) 672px, 100vw"
-        className={`-z-10 object-cover transition-opacity duration-(--duration) ease-legible ${state === "loaded" ? "opacity-100" : "opacity-0"}`}
-        onLoad={() => setState("loaded")}
-        onError={() => setState("failed")}
+        sizes="72px"
+        className={`object-cover transition-opacity duration-(--duration) ease-legible ${loaded ? "opacity-100" : "opacity-0"}`}
+        onLoad={() => setLoaded(true)}
+        onError={onError}
       />
-      <div aria-hidden="true" className="aspect-[16/10]" />
-      {/* Dark glass over the photo: white text, captions at 85%. Tags keep ink on their tints. */}
-      <div className="bg-black/55 px-5 pt-5 pb-4 text-white backdrop-blur-xl [--color-muted-foreground:rgb(255_255_255/0.85)] [--muted-foreground:rgb(255_255_255/0.85)]">
-        {children}
-        <p className="mt-3 text-small text-white/80">
-          Photo: {photo.contributor} on{" "}
-          <a href={photo.sourceUrl} target="_blank" rel="noreferrer" className={`underline underline-offset-4 ${FOCUS}`}>
-            Pixabay
-            <span className="sr-only"> (opens the photo&apos;s page)</span>
-          </a>
-        </p>
-      </div>
-    </div>
+    </span>
+  );
+}
+
+export function PhotoCredit({ photo }: { photo: FeedPhoto }) {
+  return (
+    <p className="mt-2 text-small text-muted-foreground">
+      Photo: {photo.contributor} ·{" "}
+      <a href={photo.sourceUrl} target="_blank" rel="noreferrer" className={`underline underline-offset-4 ${FOCUS}`}>
+        Pixabay
+        <span className="sr-only"> (opens the photo&apos;s page)</span>
+      </a>
+    </p>
   );
 }
 
