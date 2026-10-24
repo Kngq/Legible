@@ -11,7 +11,7 @@ import { personalization } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
 import { docWhat, type TimelineEntry } from "@/lib/engine/timeline";
 import type { Provenance } from "@/lib/engine/types";
-import { friendlyWhen, KIND_LABEL, whyLine } from "@/lib/engine/update-copy";
+import { ballotWhyLine, friendlyWhen, KIND_LABEL, questionBecause, whyLine } from "@/lib/engine/update-copy";
 import { AvatarRing } from "./AvatarRing";
 import { useCursorCta } from "./CursorCta";
 import { DocTile } from "./covers";
@@ -147,7 +147,7 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
     when = i.at ? `${friendlyWhen(c)} · ${timingTag(c)}` : friendlyWhen(c);
     title = i.title;
     explain = i.summary;
-    why = whyLine(c);
+    why = whyLine(c) ?? (ballot ? ballotWhyLine(ballot.cards) : null);
     const links = i.actions.filter((a) => a.url);
     actions = (
       <>
@@ -170,7 +170,7 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
     when = d ? `${decideByRelative(d, today)} · ${shortDate(d.date)}` : "";
     title = e.item.doc.title;
     explain = docWhat(e.item);
-    why = null;
+    why = ballotWhyLine(e.item.cards);
     actions = (
       <button type="button" onClick={() => onOpenDoc(e.item.doc.id)} className={PRIMARY}>
         See all {e.item.total} {e.item.doc.docType === "ballot" ? "questions" : "items"}
@@ -210,6 +210,7 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
                     <span className="block text-small font-semibold">
                       Question {c.measure.number}: {c.measure.title}
                     </span>
+                    {questionBecause(c) && <span className="mt-0.5 block text-small text-foreground">{questionBecause(c)}</span>}
                     {c.why[0] && <span className="mt-0.5 block text-small text-muted-foreground">{c.why[0].text}</span>}
                   </span>
                   <span aria-hidden="true" className="mt-0.5 -rotate-90">
