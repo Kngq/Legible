@@ -24,6 +24,7 @@ Next.js 16 differs from older versions. Check `node_modules/next/dist/docs/` bef
 ## Workflow
 
 - After every meaningful change that works, commit with a descriptive message.
+- Browser tests that touch the profile run on their own origin, e.g. `http://legible-test.localhost:3000` against the shared dev server: localStorage is per origin, so it starts empty and never overwrites the profile saved at `localhost:3000`. Do not start a second `next dev` in this folder (Next refuses), and do not clear or restore `localhost:3000` storage.
 - Never commit real secrets. Public config uses the NEXT_PUBLIC_ prefix; secret keys stay server-side only. `.env.example` lists variable names only; real values go in `.env.local`.
 
 ## Structure

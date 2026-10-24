@@ -142,6 +142,33 @@ export function canAskInCard(p: Profile, id: FactId): boolean {
   return (p.skipped[id]?.times ?? 0) < MAX_SKIP_TIMES;
 }
 
+/** What "Remember on this device" writes: the profile and its preferences. */
+export interface StoredProfile {
+  profile: Profile;
+  preferences: Preferences;
+}
+
+export function storedProfileJSON(profile: Profile, preferences: Preferences): string {
+  return JSON.stringify({ profile, preferences, session: {} });
+}
+
+/**
+ * Read what storedProfileJSON wrote. A stored profile exists only because
+ * remember was on, so remember reads back as on; onboardingDone is kept as saved,
+ * which is what lets a returning person skip first run. Null for anything unreadable.
+ */
+export function parseStoredProfile(raw: string | null): StoredProfile | null {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as { profile?: unknown; preferences?: Partial<Preferences> };
+    const profile = parseProfile(parsed.profile);
+    if (!profile) return null;
+    return { profile, preferences: { remember: true, onboardingDone: Boolean(parsed.preferences?.onboardingDone) } };
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Validate a value read from storage. Unknown fact or topic ids are dropped so a
  * vocab change never breaks an old profile. Returns null when the shape is wrong.

@@ -142,6 +142,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 17.20 Compact Home feed cards: header with subject, number, and status chip; short description without committee history; small "Why this may matter to you" box only when supported, grey line when an answer is missing; Explore proposal and Read original bill
     - _Requirements: 20.5, 20.9_
   - [x] 17.21 Progressive profiling: first run is three optional steps (town, home, subjects) with a light step indicator and "Show my Legible" / "Explore Legible"; name, school, getting around, work, and voting move to the profile sheet; civic item pages invite one missing detail in context (open fact, Add details, Not now as a skip). Remembered profiles skip first run; Skip undoes only that run's picks
+  - [x] 17.22 Phone Coming up as snapping date cards sharing the ribbon's entries, selection, and panel; ribbon labels lean away from a busy neighbouring day; Ask Kiro hidden during first run and behind phone-width sheets (kept mounted), clear of safe areas; "Something else" on the home step writes no facts and every first-run step restores the pre-run profile (onboarding.ts, with tests)
   - [ ] 17.6 Add uploaded and sample documents to the feed in memory, tagged by town
     - _Requirements: 20.8_
 

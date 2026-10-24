@@ -13,6 +13,7 @@ import { buildFeed } from "@/lib/engine/feed";
 import { relatedCivic, relatedMeasures } from "@/lib/engine/related";
 import type { DocumentData } from "@/lib/engine/types";
 import { parentRoute, parseRoute, routeHash, type Route } from "@/lib/nav/route";
+import { hideChatDock } from "@/lib/ui/chat-dock";
 import { CivicView } from "./CivicView";
 import { DocumentView } from "./DocumentView";
 import { FirstRun } from "./FirstRun";
@@ -90,6 +91,9 @@ export function LegibleApp() {
       window.removeEventListener("popstate", onPop);
     };
   }, []);
+  // The profile sheet fills a phone's width; the Ask Kiro launcher would sit on its footer.
+  const sheetOpen = sheet !== null;
+  useEffect(() => (sheetOpen ? hideChatDock("narrow") : undefined), [sheetOpen]);
   // A new screen starts at the top; going back restores where the person was.
   useLayoutEffect(() => {
     const top = restoreNext.current ? (scrolls.current[hash || "#/"] ?? 0) : 0;

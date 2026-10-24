@@ -6,9 +6,10 @@
 // profile sheet and is asked in context on the decisions it would sharpen. Steps
 // write to the same profile as the sheet, only what the person actually picks,
 // and everything stays in this browser.
-import { useState, type ReactNode } from "react";
-import { answerArea, clearFact, confirmTopics, type Profile } from "@/lib/engine/profile";
-import type { FactId } from "@/lib/vocab";
+import { useEffect, useState, type ReactNode } from "react";
+import { hideChatDock } from "@/lib/ui/chat-dock";
+import { applyHome, confirmFirstRunTopics, firstRunGave, firstRunStart, skipStep, type HomeChoice } from "@/lib/engine/onboarding";
+import type { Profile } from "@/lib/engine/profile";
 import { Glyph } from "./icons";
 import { Option, TopicsStep, TownStep } from "./profile-steps";
 import { SiteHeader } from "./SiteHeader";
@@ -20,20 +21,13 @@ const STEPS = [
   { kind: "topics", ask: "What matters to you?", hint: "Pick a few topics you'd like to follow. You can change these anytime." },
 ] as const;
 
-/**
- * One choice on the home step, written onto the existing housing facts. Renting
- * and owning rule each other out, so picking one answers both; living with family
- * is independent, so picking it leaves rent and own unanswered for later.
- * "Something else" answers no to all three.
- */
-type Home = "rents" | "owns" | "family" | "else";
-const HOME_CHOICES: { id: Home; label: string; facts: FactId[]; picked: FactId[] }[] = [
-  { id: "rents", label: "I rent", facts: ["rents", "owns"], picked: ["rents"] },
-  { id: "owns", label: "I own my home", facts: ["rents", "owns"], picked: ["owns"] },
-  { id: "family", label: "I live with family", facts: ["lives_with_family"], picked: ["lives_with_family"] },
-  { id: "else", label: "Something else", facts: ["rents", "owns", "lives_with_family"], picked: [] },
+/** The home step's choices; what each one records lives in applyHome. */
+const HOME_CHOICES: { id: HomeChoice; label: string }[] = [
+  { id: "rents", label: "I rent" },
+  { id: "owns", label: "I own my home" },
+  { id: "family", label: "I live with family" },
+  { id: "else", label: "Something else" },
 ];
-const ONBOARDING = { kind: "onboarding" } as const;
 
 type Screen = "start" | "welcome" | "keep" | number;
 
@@ -73,13 +67,13 @@ export function FirstRun({
 }) {
   const [screen, setScreen] = useState<Screen>("start");
   const [forward, setForward] = useState(true);
-  // What the profile held before this run, so Skip only undoes this run's picks.
-  const [initial] = useState(() => ({ townId: profile.townId, topics: profile.topics }));
-  const [home, setHome] = useState<Home | null>(null);
-  // Facts this run wrote for the home step, cleared if the person changes or skips it.
-  const [homeWritten, setHomeWritten] = useState<FactId[]>([]);
+  // What the profile held before this run, so Skip and changed answers only undo this run's picks.
+  const [start] = useState(() => firstRunStart(profile));
+  const [home, setHome] = useState<HomeChoice | null>(null);
+  // Ask Kiro is not part of getting started; its launcher would sit over the footer links.
+  useEffect(() => hideChatDock(), []);
 
-  const provided = Boolean(profile.townId) || homeWritten.length > 0 || Object.keys(profile.topics).length > 0;
+  const provided = firstRunGave(profile, start);
   const go = (next: Screen, fwd = true) => {
     setForward(fwd);
     setScreen(next);
@@ -92,38 +86,25 @@ export function FirstRun({
     else if (typeof screen === "number") go(screen === 0 ? "welcome" : screen - 1, false);
   };
 
-  const unwriteHome = (p: Profile) => homeWritten.reduce((acc, f) => clearFact(acc, f), p);
-  const writeHome = (choice: Home) => {
-    const c = HOME_CHOICES.find((h) => h.id === choice)!;
-    setProfile(answerArea(unwriteHome(profile), c.facts, c.picked, ONBOARDING));
-    setHomeWritten(c.facts);
-  };
-
   const step = typeof screen === "number" ? STEPS[screen] : null;
   const last = typeof screen === "number" && screen === STEPS.length - 1;
   const canContinue = step?.kind === "town" ? Boolean(profile.townId) : step?.kind === "home" ? home !== null : true;
 
   const cont = () => {
     if (typeof screen !== "number" || !step) return;
-    if (step.kind === "home" && home) writeHome(home);
-    if (step.kind === "topics" && Object.keys(profile.topics).length) setProfile(confirmTopics(profile));
+    if (step.kind === "home" && home) setProfile(applyHome(profile, start, home));
+    if (step.kind === "topics") setProfile(confirmFirstRunTopics(profile));
     next(screen);
   };
   const skip = () => {
     if (typeof screen !== "number" || !step) return;
-    if (step.kind === "town") setProfile({ ...profile, townId: initial.townId });
-    if (step.kind === "home") {
-      setHome(null);
-      setProfile(unwriteHome(profile));
-      setHomeWritten([]);
-    }
-    if (step.kind === "topics") setProfile({ ...profile, topics: initial.topics });
+    if (step.kind === "home") setHome(null);
+    setProfile(skipStep(profile, start, step.kind));
     next(screen);
   };
 
   // The last step's button names where it goes: personal only if something was given.
-  const willProvide = provided || (step?.kind === "home" && home !== null);
-  const lastLabel = willProvide ? "Show my Legible →" : "Explore Legible →";
+  const lastLabel = provided ? "Show my Legible →" : "Explore Legible →";
 
   let body: ReactNode = null;
   if (screen === "start") {

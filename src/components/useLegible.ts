@@ -4,17 +4,12 @@
 // localStorage only when "Remember on this device" is on. Never sent anywhere.
 import { useCallback, useEffect, useState } from "react";
 import { localISODate } from "@/lib/engine/feed";
-import { emptyProfile, LEGACY_PROFILE_STORAGE_KEY, parseProfile, PROFILE_STORAGE_KEY, type Preferences, type Profile } from "@/lib/engine/profile";
-
-interface Stored {
-  profile: Profile;
-  preferences: Preferences;
-}
+import { emptyProfile, LEGACY_PROFILE_STORAGE_KEY, parseStoredProfile, PROFILE_STORAGE_KEY, storedProfileJSON, type Preferences, type Profile, type StoredProfile } from "@/lib/engine/profile";
 
 const PRERENDER_AT = "1970-01-01T00:00:00.000Z";
 const DEFAULT_PREFS: Preferences = { remember: false, onboardingDone: false };
 
-function readStored(): Stored | null {
+function readStored(): StoredProfile | null {
   try {
     let raw = window.localStorage.getItem(PROFILE_STORAGE_KEY);
     if (!raw) {
@@ -25,11 +20,7 @@ function readStored(): Stored | null {
         window.localStorage.removeItem(LEGACY_PROFILE_STORAGE_KEY);
       }
     }
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as { profile?: unknown; preferences?: Partial<Preferences> };
-    const profile = parseProfile(parsed.profile);
-    if (!profile) return null;
-    return { profile, preferences: { remember: true, onboardingDone: Boolean(parsed.preferences?.onboardingDone) } };
+    return parseStoredProfile(raw);
   } catch {
     return null;
   }
@@ -72,7 +63,7 @@ export function useLegible() {
   useEffect(() => {
     if (!loaded || !preferences.remember) return;
     try {
-      window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify({ profile, preferences, session: {} }));
+      window.localStorage.setItem(PROFILE_STORAGE_KEY, storedProfileJSON(profile, preferences));
     } catch {
       // Storage full or blocked: keep running in memory.
     }

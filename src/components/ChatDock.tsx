@@ -5,6 +5,7 @@ import { ASK_EVENT, sourceKey, type AskRequest, type AskSource } from "@/lib/ask
 import { PART_LABEL, type Part } from "@/lib/ask/prompt";
 import { ASK_SUGGESTIONS } from "@/lib/engine/ask-suggestions";
 import { asksHowToVote, VOTE_FIXED_RESPONSE } from "@/lib/vocab";
+import type { DockHide } from "@/lib/ui/chat-dock";
 
 interface QuoteRef {
   id: string;
@@ -47,7 +48,7 @@ const SUGGESTED_QUESTIONS = [
   "Does Question 5 change my taxes?",
 ];
 
-export function ChatDock() {
+export function ChatDock({ hidden = null }: { hidden?: DockHide | null } = {}) {
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const [question, setQuestion] = useState("");
@@ -226,7 +227,11 @@ export function ChatDock() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-[75] flex flex-col items-end gap-2 font-sans">
+    <div
+      className={`fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-[75] flex flex-col items-end gap-2 font-sans ${
+        hidden === "always" ? "hidden" : hidden === "narrow" ? "max-sm:hidden" : ""
+      }`}
+    >
       {open && (
         <div
           className={`flex h-[32rem] max-h-[calc(100dvh-6rem)] w-[22rem] max-w-[calc(100vw-2rem)] origin-bottom-right flex-col overflow-hidden rounded-xl border border-border bg-surface text-foreground shadow-xl ${
