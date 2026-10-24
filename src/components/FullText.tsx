@@ -4,16 +4,16 @@
 // the exact page; "Read it here" loads that page range's text only when asked, so
 // long laws (Question 9 runs 41 pages) never weigh down the page.
 import { useState } from "react";
+import { reflow } from "@/lib/engine/reflow";
 import type { DocumentData, Measure } from "@/lib/engine/types";
 import { Glyph } from "./icons";
+import { READ, Reader } from "./Reader";
 import { FOCUS } from "./ui";
 
 interface PageText {
   page: number;
   text: string;
 }
-
-const SERIF = "font-[family-name:var(--font-serif)]";
 
 function pageLabel([from, to]: [number, number]): string {
   return from === to ? `page ${from}` : `pages ${from}–${to}`;
@@ -50,15 +50,17 @@ export function FullText({ measure, source }: { measure: Measure; source?: Docum
   const f = measure.fullText;
   const [pages, setPages] = useState<PageText[] | null>(null);
   const [state, setState] = useState<"idle" | "loading" | "error">("idle");
+  const [open, setOpen] = useState(false);
   if (!f) return null;
 
   const load = async () => {
-    if (pages) return setPages(null);
+    if (pages) return setOpen(true);
     setState("loading");
     try {
       const res = await fetch(f.pageText);
       const data = (await res.json()) as { pages: PageText[] };
       setPages(data.pages);
+      setOpen(true);
       setState("idle");
     } catch {
       setState("error");
@@ -91,25 +93,42 @@ export function FullText({ measure, source }: { measure: Measure; source?: Docum
         <button
           type="button"
           onClick={load}
-          aria-expanded={Boolean(pages)}
+          aria-haspopup="dialog"
           className={`inline-flex min-h-11 items-center gap-2 rounded-full bg-surface-muted px-5 text-small font-semibold hover:bg-border ${FOCUS}`}
         >
-          {pages ? "Hide the text" : state === "loading" ? "Loading…" : "Read it here"}
+          {state === "loading" ? "Loading…" : "Read it here"}
         </button>
       </div>
       {state === "error" && <p className="mt-2 text-small">The text didn&apos;t load. The PDF link above has the same pages.</p>}
-      {pages && (
-        <div className="mt-4 max-h-[70vh] space-y-4 overflow-y-auto rounded-md bg-surface-muted p-4">
-          <p className="text-small text-muted-foreground">
-            Copied from the booklet&apos;s pages. Where a page prints more than one question, the columns run together here; the PDF shows the original layout.
-          </p>
+      {open && pages && (
+        <Reader
+          kicker={`Question ${measure.number} · ${f.label}`}
+          title={measure.title}
+          meta={
+            <>
+              <p>Information for Voters 2026, {pageLabel(f.pages)}. Line breaks are joined for reading; the words are the booklet&apos;s.</p>
+              {source && <Fingerprint source={source} />}
+            </>
+          }
+          onClose={() => setOpen(false)}
+          footer={
+            <a href={`${f.pdf}#page=${f.pages[0]}`} target="_blank" rel="noreferrer" className={`inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 text-small font-semibold text-primary-foreground ${FOCUS}`}>
+              See the original layout in the PDF
+              <Glyph name="external" size={14} />
+            </a>
+          }
+        >
           {pages.map((p) => (
-            <article key={p.page}>
-              <h3 className="text-small font-bold uppercase tracking-wider text-muted-foreground">Page {p.page}</h3>
-              <p className={`mt-1 whitespace-pre-line text-small leading-relaxed ${SERIF}`}>{p.text}</p>
-            </article>
+            <section key={p.page} aria-label={`Page ${p.page}`} className="space-y-5">
+              <p className="text-small font-semibold uppercase tracking-wider text-muted-foreground">Page {p.page}</p>
+              {reflow(p.text).map((para, k) => (
+                <p key={k} className={READ}>
+                  {para}
+                </p>
+              ))}
+            </section>
           ))}
-        </div>
+        </Reader>
       )}
     </section>
   );

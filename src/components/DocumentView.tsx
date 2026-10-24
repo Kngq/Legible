@@ -189,7 +189,7 @@ function GuideCard({
 
   return (
     <li data-ask-measure={m.id} className={`rounded-lg bg-surface p-5 shadow-card ${touches ? "ring-2 ring-accent" : ""}`}>
-      <div className="flex items-start gap-4">
+      <div className="relative -m-2 flex items-start gap-4 rounded-md p-2 hover:bg-surface-muted/60">
         <span aria-hidden="true" className="flex size-14 shrink-0 flex-col items-center justify-center rounded-md bg-accent-soft leading-none">
           <span className="text-small font-bold uppercase text-muted-foreground">{ballot ? "Q" : "#"}</span>
           <span className="text-title font-bold">{m.number}</span>
@@ -199,8 +199,19 @@ function GuideCard({
             {touches && <Tag pop="accent">{sortedByYou ? `#${e.rank} for you · ` : ""}May affect you</Tag>}
             {c.onYourList && <Tag pop="info">You follow this</Tag>}
           </div>
-          <h3 className="mt-1 font-[family-name:var(--font-serif)] text-title font-semibold leading-tight">{m.title}</h3>
+          <h3 className="mt-1 font-[family-name:var(--font-serif)] text-title font-semibold leading-tight">
+            {/* The whole header is the tap target: number, title, and the Read label. */}
+            <button type="button" onClick={onOpen} className={`text-left after:absolute after:inset-0 after:rounded-md ${FOCUS}`}>
+              {m.title}
+            </button>
+          </h3>
           <p className="mt-1 text-small text-muted-foreground">{origin}</p>
+          <span aria-hidden="true" className="mt-2 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-small font-semibold text-primary-foreground">
+            Read the question
+            <span className="-rotate-90">
+              <Glyph name="chevron" size={12} />
+            </span>
+          </span>
         </div>
       </div>
 

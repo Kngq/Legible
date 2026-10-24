@@ -46,6 +46,19 @@ const FULL_TEXT_PAGES: Record<number, [number, number]> = {
   8: [42, 44],
   9: [45, 85],
 };
+// Each law starts with its official title, which is where its text is cut from on
+// a page shared with another question; the next question's title ends it.
+const ACT_TITLES: Record<number, string> = {
+  1: "An Act to improve access to public records.",
+  2: "An Act relative to labor relations policies for committee",
+  3: "An Act to implement all-party state primaries.",
+  4: "An Act relative to election day registration.",
+  5: "An Act relative to limiting state tax collection growth",
+  6: "An Act to protect water and nature.",
+  7: "An Act to allow single-family homes on small lots",
+  8: "An Act to restore a sensible marijuana policy.",
+  9: "AN ACT MODERNIZING FIREARM LAWS",
+};
 const PDF_PUBLIC = "/official/IFV_2026_English.pdf";
 const FULL_DIR = path.join(root, "public/official/ballot-2026");
 
@@ -60,7 +73,19 @@ function fullText(n: number): Measure["fullText"] {
   if (!label) return undefined;
   const file = `ballot-2026-q${n}.json`;
   const pageTexts = [];
-  for (let pg = from; pg <= to; pg++) pageTexts.push({ page: pg, text: pages[pg - 1] });
+  const others = Object.entries(ACT_TITLES).filter(([k]) => Number(k) !== n).map(([, t]) => t);
+  for (let pg = from; pg <= to; pg++) {
+    const text = pages[pg - 1] ?? "";
+    let start = 0;
+    if (pg === from) {
+      start = text.indexOf(ACT_TITLES[n]);
+      if (start < 0) errors.push(`Q${n}: its title "${ACT_TITLES[n]}" is not on page ${pg}`);
+      start = Math.max(start, 0);
+    }
+    const ends = others.map((t) => text.indexOf(t, start + 1)).filter((i) => i > start);
+    const end = ends.length ? Math.min(...ends) : text.length;
+    pageTexts.push({ page: pg, text: text.slice(start, end).trim() });
+  }
   fs.mkdirSync(FULL_DIR, { recursive: true });
   fs.writeFileSync(path.join(FULL_DIR, file), JSON.stringify({ measureId: `ballot-2026-q${n}`, label, pdf: PDF_PUBLIC, pages: pageTexts }) + "\n");
   return { label, pages: [from, to], pdf: PDF_PUBLIC, pageText: `/official/ballot-2026/${file}` };

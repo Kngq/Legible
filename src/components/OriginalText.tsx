@@ -5,8 +5,10 @@
 // says so instead of showing anything else in its place.
 import { useState } from "react";
 import type { CivicOriginal } from "@/lib/engine/civic";
+import { reflow } from "@/lib/engine/reflow";
 import { Fingerprint } from "./FullText";
 import { Glyph } from "./icons";
+import { READ, Reader } from "./Reader";
 import { FOCUS } from "./ui";
 
 const SERIF = "font-[family-name:var(--font-serif)]";
@@ -27,7 +29,7 @@ export function OriginalText({ original }: { original?: CivicOriginal }) {
       )}
       {original.note && <p className="mt-3 text-body">{original.note}</p>}
       <div className="mt-3 flex flex-wrap gap-2">
-        {original.kind === "bill" && original.file && <BillReader file={original.file} />}
+        {original.kind === "bill" && original.file && <BillReader file={original.file} original={original} />}
         {original.kind !== "bill" && original.file && (
           <a
             href={original.file}
@@ -61,15 +63,17 @@ interface BillCopy {
   history: { date: string; branch: string; action: string }[];
 }
 
-/** The saved bill: its official description, full text, and every action, loaded when asked. */
-function BillReader({ file }: { file: string }) {
+/** The saved bill in the reader: official description, full text, and every action, loaded when asked. */
+function BillReader({ file, original }: { file: string; original: CivicOriginal }) {
   const [copy, setCopy] = useState<BillCopy | null>(null);
+  const [open, setOpen] = useState(false);
   const [state, setState] = useState<"idle" | "loading" | "error">("idle");
-  const toggle = async () => {
-    if (copy) return setCopy(null);
+  const show = async () => {
+    if (copy) return setOpen(true);
     setState("loading");
     try {
       setCopy((await (await fetch(file)).json()) as BillCopy);
+      setOpen(true);
       setState("idle");
     } catch {
       setState("error");
@@ -79,36 +83,48 @@ function BillReader({ file }: { file: string }) {
     <>
       <button
         type="button"
-        onClick={toggle}
-        aria-expanded={Boolean(copy)}
+        onClick={show}
+        aria-haspopup="dialog"
         className={`inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 text-small font-semibold text-primary-foreground ${FOCUS}`}
       >
-        {copy ? "Hide the bill" : state === "loading" ? "Loading…" : "Read the bill text"}
+        {state === "loading" ? "Loading…" : "Read the bill text"}
       </button>
       {state === "error" && <p className="basis-full text-small">The saved copy didn&apos;t load. The official page has the same text.</p>}
-      {copy && (
-        <div className="basis-full space-y-4 rounded-md bg-surface-muted p-4">
-          {copy.pinslip && (
-            <p className="text-small">
-              <span className="font-semibold">Official description: </span>
-              {copy.pinslip}
+      {open && copy && (
+        <Reader
+          kicker={`Bill ${copy.bill}`}
+          title={copy.title ?? copy.bill}
+          meta={
+            <>
+              {copy.pinslip && <p>{copy.pinslip}</p>}
+              <Fingerprint source={original} />
+            </>
+          }
+          onClose={() => setOpen(false)}
+          footer={
+            <section aria-labelledby="bill-history-h">
+              <h2 id="bill-history-h" className="text-body font-bold">
+                Official history
+              </h2>
+              <ol className="mt-3 space-y-2 text-small">
+                {copy.history.map((h, k) => (
+                  <li key={k}>
+                    <span className="font-semibold">{h.date}</span> · {h.branch}: {h.action}
+                  </li>
+                ))}
+              </ol>
+              <a href={original.url} target="_blank" rel="noreferrer" className={`mt-5 inline-flex min-h-11 items-center gap-2 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
+                Official page <Glyph name="external" size={14} />
+              </a>
+            </section>
+          }
+        >
+          {reflow(copy.text).map((para, k) => (
+            <p key={k} className={READ}>
+              {para}
             </p>
-          )}
-          <div className="max-h-[60vh] overflow-y-auto">
-            <h3 className="text-small font-bold uppercase tracking-wider text-muted-foreground">Bill text</h3>
-            <p className={`mt-1 whitespace-pre-line text-small leading-relaxed ${SERIF}`}>{copy.text}</p>
-          </div>
-          <div>
-            <h3 className="text-small font-bold uppercase tracking-wider text-muted-foreground">Official history</h3>
-            <ol className="mt-1 space-y-1 text-small">
-              {copy.history.map((h, k) => (
-                <li key={k}>
-                  <span className="font-semibold">{h.date}</span> · {h.branch}: {h.action}
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
+          ))}
+        </Reader>
       )}
     </>
   );

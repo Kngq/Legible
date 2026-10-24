@@ -12,6 +12,7 @@ import { ASK_SUGGESTIONS, BALLOT_SUGGESTIONS } from "@/lib/engine/ask-suggestion
 import type { DocumentData } from "@/lib/engine/types";
 import { asksHowToVote, VOTE_FIXED_RESPONSE } from "@/lib/vocab";
 import { Glyph } from "./icons";
+import { READ, Reader } from "./Reader";
 import { FOCUS } from "./ui";
 
 interface QuoteRef {
@@ -159,6 +160,7 @@ function AskSheet({ doc, target, onClose }: { doc: DocumentData; target: AskTarg
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [openQuote, setOpenQuote] = useState<string | null>(null);
+  const [reading, setReading] = useState<number | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const onCloseRef = useRef(onClose);
@@ -309,12 +311,44 @@ function AskSheet({ doc, target, onClose }: { doc: DocumentData; target: AskTarg
                     </div>
                   );
                 })}
+                {m.sentences && m.sentences.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setReading(i)}
+                    aria-haspopup="dialog"
+                    className={`mt-2 inline-flex min-h-10 items-center gap-1.5 rounded-full bg-surface-muted px-4 text-small font-semibold hover:bg-border ${FOCUS}`}
+                  >
+                    Read as a page
+                  </button>
+                )}
                 {m.sent && <p className="mt-2 text-small text-muted-foreground">{m.sent}</p>}
               </div>
             ),
           )}
           {loading && <p className="text-small text-muted-foreground">Checking the official text…</p>}
         </div>
+
+        {reading !== null && messages[reading]?.sentences && (
+          <Reader
+            kicker={`Answer about ${scope}`}
+            title={messages[reading - 1]?.text ?? "Your question"}
+            meta={<p>{messages[reading].sent}</p>}
+            onClose={() => setReading(null)}
+          >
+            {messages[reading].sentences!.map((s, j) => (
+              <div key={j}>
+                <p className={READ}>{s.text}</p>
+                <blockquote className="mt-3 border-l-2 border-accent pl-4">
+                  <p className={`${READ} text-muted-foreground`}>{s.quote.text}</p>
+                  <footer className="mt-1 text-small text-muted-foreground">
+                    {s.quote.locator}
+                    {s.quote.page ? `, page ${s.quote.page}` : ""}, official text
+                  </footer>
+                </blockquote>
+              </div>
+            ))}
+          </Reader>
+        )}
 
         <form onSubmit={onSubmit} className="flex items-center gap-2 border-t border-border bg-background px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
           <label htmlFor="ask-input" className="sr-only">
