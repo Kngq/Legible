@@ -6,7 +6,7 @@ import { civicFeed, type CivicItem } from "./civic";
 import { buildFeed } from "./feed";
 import { answerFact, emptyProfile, type Profile } from "./profile";
 import { LIFE_AREAS } from "@/lib/vocab";
-import { areasThatMatter, buildTimeline, entryFacts, EVERYONE_SHOWN, forYouGroups, MAYBE_SHOWN, relevanceScore, urgencyScore, WEIGHTS } from "./timeline";
+import { areasThatMatter, buildTimeline, entryFacts, forYouGroups, MAYBE_SHOWN, relevanceScore, urgencyScore, WEIGHTS } from "./timeline";
 import type { DocumentData } from "./types";
 
 const t0 = "2026-10-24T14:00:00.000Z";
@@ -109,22 +109,20 @@ describe("buildTimeline", () => {
 });
 
 describe("forYouGroups", () => {
-  it("is never empty for someone who skipped the questions", () => {
-    const { personal, maybe, everyone } = forYouGroups(timelineFor(emptyProfile(t0)));
+  it("someone who skipped the questions sees what might apply, never what only applies to everyone", () => {
+    const { personal, maybe } = forYouGroups(timelineFor(emptyProfile(t0)));
     expect(personal).toHaveLength(0);
-    expect(maybe.length + everyone.length).toBeGreaterThan(0);
+    expect(maybe.length).toBeGreaterThan(0);
     expect(maybe.length).toBeLessThanOrEqual(MAYBE_SHOWN);
-    expect(everyone.length).toBeLessThanOrEqual(EVERYONE_SHOWN);
   });
 
   it("groups by level with no overlap, keeping the timeline's order", () => {
     for (const p of [emptyProfile(t0), withFacts({ registered_here: false }, "cambridge"), withFacts({ rents: true, drives: true }, "cambridge")]) {
       const t = timelineFor(p);
-      const { personal, maybe, everyone } = forYouGroups(t);
+      const { personal, maybe } = forYouGroups(t);
       expect(personal.every((e) => e.level === "touches" || e.level === "list")).toBe(true);
       expect(maybe.every((e) => e.level === "maybe")).toBe(true);
-      expect(everyone.every((e) => e.level === "everyone")).toBe(true);
-      for (const g of [personal, maybe, everyone]) expect(g.map((e) => e.key)).toEqual(t.filter((e) => g.includes(e)).map((e) => e.key));
+      for (const g of [personal, maybe]) expect(g.map((e) => e.key)).toEqual(t.filter((e) => g.includes(e)).map((e) => e.key));
     }
   });
 

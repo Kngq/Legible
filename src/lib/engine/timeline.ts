@@ -160,22 +160,20 @@ export function buildTimeline(docs: FeedItem[], civic: CivicCard[], today: strin
     .sort((a, b) => b.score - a.score || (a.days ?? Infinity) - (b.days ?? Infinity) || a.key.localeCompare(b.key));
 }
 
-/** How many "might apply" and "applies to everyone" entries For you shows; the rest are on Explore. */
+/** How many "might apply" entries For you shows; the rest are on Explore. */
 export const MAYBE_SHOWN = 3;
-export const EVERYONE_SHOWN = 3;
 
 /**
- * Home's For you, in three groups, each kept in the timeline's ranked order:
- * entries that touch the person or are on their list; entries that might apply
- * because they depend on a fact the person has not answered; then the most
- * pressing entries for everyone, so the section is never empty. Nothing here
- * names a fact or a question: it follows whatever the profile and items hold.
+ * Home's For you, in two groups, each kept in the timeline's ranked order:
+ * entries that touch the person or are on their list, then entries that might
+ * apply because they depend on a fact the person has not answered. What applies
+ * to everyone lives on Explore. Nothing here names a fact or a question: it
+ * follows whatever the profile and items hold.
  */
-export function forYouGroups(timeline: TimelineEntry[]): { personal: TimelineEntry[]; maybe: TimelineEntry[]; everyone: TimelineEntry[] } {
+export function forYouGroups(timeline: TimelineEntry[]): { personal: TimelineEntry[]; maybe: TimelineEntry[] } {
   return {
     personal: timeline.filter((e) => e.level === "touches" || e.level === "list"),
     maybe: timeline.filter((e) => e.level === "maybe").slice(0, MAYBE_SHOWN),
-    everyone: timeline.filter((e) => e.level === "everyone").slice(0, EVERYONE_SHOWN),
   };
 }
 

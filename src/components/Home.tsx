@@ -2,8 +2,8 @@
 
 // Home after onboarding, kept short: a welcome, "What matters to you?" first,
 // then For you: what matches the person's answers or subjects, what might apply
-// if they answered a question, then the most pressing things for everyone.
-// Everything else lives on Explore. Order comes from buildTimeline, and which
+// if they answered a question. What applies to everyone, and everything else,
+// lives on Explore. Order comes from buildTimeline, and which
 // areas Home asks about comes from the facts upcoming items depend on, so
 // nothing here is tied to a fixed set of onboarding questions.
 import type { CivicCard } from "@/lib/engine/civic";
@@ -43,7 +43,7 @@ export function Home({
   const town = townName(profile.townId);
   const meter = personalization(profile);
   const done = new Set(meter.items.flatMap((i) => (i.kind === "area" && i.done ? [i.id] : [])));
-  const { personal, maybe, everyone } = forYouGroups(buildTimeline(feed.items, civic, today));
+  const { personal, maybe } = forYouGroups(buildTimeline(feed.items, civic, today));
   const areas = areasThatMatter(buildTimeline(feed.items, civic, today, { includeOthers: true }));
   const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure };
 
@@ -124,7 +124,8 @@ export function Home({
           </>
         ) : (
           <p className="mt-1 text-small text-muted-foreground">
-            Nothing matches your answers yet. Add details above and the updates that reach your life will show here first.
+            Nothing matches your answers yet. Add details above and the updates that reach your life will show here first. What applies to everyone is on
+            Explore.
           </p>
         )}
 
@@ -141,18 +142,6 @@ export function Home({
           </>
         )}
 
-        {/* Never empty: the most pressing things that apply to everyone come next. */}
-        {everyone.length > 0 && (
-          <>
-            <p className={`${personal.length + maybe.length > 0 ? "mt-8" : "mt-5"} text-body font-bold`}>For everyone</p>
-            <p className="text-small text-muted-foreground">These apply to every voter or resident, not only you. Soonest first.</p>
-            <ul className="mt-4 space-y-4">
-              {everyone.map((e) => (
-                <UpdateCard key={e.key} entry={e} {...cardProps} />
-              ))}
-            </ul>
-          </>
-        )}
         <button type="button" onClick={onExplore} className={`mt-5 ${SECONDARY}`}>
           Explore everything happening near you
           <span aria-hidden="true" className="-rotate-90">
