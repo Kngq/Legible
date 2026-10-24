@@ -113,6 +113,8 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 1.9_
   - [ ] 16.3 Make the profile editable from the feed header, because chips, and avatar badges
     - _Requirements: 1.7, 6.2_
+  - [x] 16.8 Profile navigation: the header avatar (and every general profile link) always opens the overview, never an editor; contextual Add details opens its own editor (registration deadline → voting, housing bills → housing, schools bill → household); every editor has Back, Close, Escape, and Not now (leaves without saving); interests read "What interests you?" with a check on chosen chips and a sticky Not now | Save interests footer; the overview says details are optional with a small "Make Legible yours" line. Verified in Chrome at desktop and 375 px (`ProfileSheet.tsx`, `profile-steps.tsx`, `SiteHeader.tsx`, `ComingUp.tsx`)
+    - _Requirements: 1.7_
 
 - [ ] 17. Catalog and home feed (A builds catalog and counts, B builds the screen)
   - [x] 17.1 Add `docType` and `decideBy` to the document and catalog types; set them on the 2026 ballot (Voters, vote, 2026-11-03)
@@ -195,6 +197,17 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 22.4 Expandable sections with Motion (`Reveal`): why you're seeing this, citations ("Show the words"), official summary, YES and NO text, the legislator draft. The bill page's "Show N more changes" waits for BillExplainer to be free
   - [x] 22.5 Route transitions (`ScreenIn`), profile save feedback (`SavedNote`, the For you dot pulse), the bill page as an annotated reader (the bill's words in a pane beside each line on wide screens, inline on phones), and one header (`SiteHeader`; placeholder links and accounts kept behind `SHOW_PLACEHOLDERS`)
   - [ ] 22.6 Next: the ballot question page as an annotated reader, Explore in the Notebook style, dark mode pass
+
+- [ ] 23. Plant companion and Growth Story (development only: `PLANT_ENABLED` in `src/components/plant/useGrowth.ts`; production keeps the previous profile and hero)
+  - [x] 23.1 The plant: `CivicPlant`, a layered SVG drawn from `design-references/civic-plant.png` with five stages (Seed, Sprout, Growing, Flourishing, Blooming); idle sway and blink, lean toward a nearby mouse (never on touch), soft squash on tap, leaves that unfold as the stage rises, a flower with a few sparkles at bloom, a still mode for small illustrations, and reduced motion applied instantly; dev preview at `/dev/plant` (404 in production)
+  - [x] 23.2 One growth model: `src/lib/growth.ts` (stage definitions; growth from decisions explored and official sources opened only, never profile completion, interests, or personal answers; a browser-only history shape of aggregate totals plus the date each stage was reached) with tests; `useGrowth` is the single source every plant reads; development uses clearly labelled preview data with dev-only controls for an empty story and stages 1 to 5
+  - [x] 23.3 The header avatar is the same plant at the same stage (`SiteHeader`)
+  - [x] 23.4 Civic Profile: the plant replaces the person avatar and completion ring as the centrepiece; the saved name sits under it with inline Edit (no separate name card) or "Your civic journey" with an optional Add your name; compact totals tagged Preview data; completion as a small "Your profile details" line, calculated as before
+  - [x] 23.5 Growth Story ("Your journey") inside the profile sheet: a timeline of reached stages with miniature plants, dates, and aggregate totals, then a faint look at the next stage or a closing note at bloom; a welcome when there is no history; a line on what grows the plant and a privacy note
+  - [x] 23.6 For you hero: "Your corner of <town>." (the profile's town only; the person's name added while the line stays short) beside the plant (`HomePlant`), which leans toward a nearby mouse and opens the Growth Story on click or Enter, with "See your journey →"; checked at desktop, 320, 375, 390, and 430 px
+  - [ ] 23.7 Real growth tracking: agree the data model first; then count decisions explored and official sources opened in the browser only (when Remember on this device is on), record dated milestones with `withTotals`, define what counts as "explored" and as an "official source", and confirm the stage thresholds (now 1, 3, 6, 9 decisions and 0, 1, 3, 5 sources)
+  - [ ] 23.8 Turn `PLANT_ENABLED` on in production after the visual sign-off and 23.7, and retire the ring layout and the old hero
+  - [ ] 23.9 Decide the header avatar's "!" badge for unset interests (keep, soften to a dot, or remove)
 
 - [ ] 12. Acceptance and demo
   - [ ] 12.1 Run lint, lint:words, tests, and build; fix failures
