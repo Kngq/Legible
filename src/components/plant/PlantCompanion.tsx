@@ -50,8 +50,9 @@ export function PlantCompanion({
   // No card: the plant sits on the page background as the profile's centrepiece.
   return (
     <section aria-labelledby="plant-h" className="-mt-3 flex flex-col items-center text-center">
-      <CivicPlant stage={g.stage} size={plantSize} signal={signal} className="cursor-pointer select-none" />
-      <Identity name={name?.trim() || undefined} onNameChange={onNameChange} />
+      {/* As a companion the plant is announced plainly, never by a stage name. */}
+      <CivicPlant stage={g.stage} size={plantSize} signal={signal} {...(g.tracking ? {} : { label: "Your plant" })} className="cursor-pointer select-none" />
+      <Identity name={name?.trim() || undefined} onNameChange={onNameChange} tracking={g.tracking} />
       {onSeeGrowth && (
         <button
           type="button"
@@ -101,7 +102,7 @@ export function PlantCompanion({
 }
 
 /** The name under the plant, or "Your civic journey" without one, with an inline editor. */
-function Identity({ name, onNameChange }: { name?: string; onNameChange?: (name: string | undefined) => void }) {
+function Identity({ name, onNameChange, tracking }: { name?: string; onNameChange?: (name: string | undefined) => void; tracking: boolean }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
   const start = () => {
@@ -173,14 +174,14 @@ function Identity({ name, onNameChange }: { name?: string; onNameChange?: (name:
           </button>
         )}
       </div>
-      <p className="mt-1 text-small text-muted-foreground">Your civic journey, growing with you.</p>
+      <p className="mt-1 text-small text-muted-foreground">{tracking ? "Your civic journey, growing with you." : "Your Civic Profile. It stays in this browser."}</p>
     </>
   ) : (
     <>
       <h3 id="plant-h" className="mt-1 font-display text-[1.25rem] font-normal leading-tight">
-        Your civic journey
+        {tracking ? "Your civic journey" : "Your Civic Profile"}
       </h3>
-      <p className="mt-1 text-small text-muted-foreground">Every decision you explore helps your plant grow.</p>
+      <p className="mt-1 text-small text-muted-foreground">{tracking ? "Every decision you explore helps your plant grow." : "Your answers and the subjects you follow, kept in this browser."}</p>
       {onNameChange && (
         <button
           type="button"

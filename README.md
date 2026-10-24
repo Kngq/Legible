@@ -88,7 +88,7 @@ The Civic Profile is where a person tells Legible about their life. It is also w
 | Growth from exploring only, never from personal answers | [`src/lib/growth.ts`](src/lib/growth.ts) | [`growth.test.ts`](src/lib/growth.test.ts) |
 | Profile sheet and editors | [`ProfileSheet.tsx`](src/components/ProfileSheet.tsx), [`profile-steps.tsx`](src/components/profile-steps.tsx) | checked in the browser at desktop and 375 px (task 16.8) |
 
-> The plant companion and Growth Story (tasks 23.1–23.6) run in development builds only, behind `PLANT_ENABLED`. Production keeps the earlier avatar ring until task 23.8 is signed off. The growth totals shown are labeled preview data until task 23.7 lands.
+> The plant appears in production as a visual companion (header avatar, For you hero, Civic Profile) at one fixed look, with no stages, totals, or journey. Growth tracking and the Growth Story (tasks 23.1–23.6) run in development builds only, behind `GROWTH_TRACKING_ENABLED`, with labeled preview data until task 23.7 lands.
 
 ---
 

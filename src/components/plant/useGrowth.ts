@@ -4,15 +4,25 @@
 // profile plant, and the Growth Story all read this hook, so they always show
 // the same stage and animate together.
 //
-// Real growth is not tracked yet, so the plant is development only. In
-// development the history comes from a preview store (clearly labelled preview
-// data) that the preview controls switch between an empty story and stages 1-5.
-// Connecting real milestones later means returning a real GrowthHistory here.
+// The plant has two parts. As a visual companion (header avatar, For you hero,
+// Civic Profile) it shows everywhere. Growth tracking (stages that change,
+// totals, the Growth Story) is not real yet, so it stays development only: in
+// production the plant stands still at one fixed look, with no stage name,
+// totals, journey, or preview data. In development the history comes from a
+// preview store (clearly labelled preview data) that the preview controls switch
+// between an empty story and stages 1-5. Connecting real milestones later means
+// returning a real GrowthHistory here and turning tracking on.
 import { useSyncExternalStore } from "react";
 import { currentStage, GROWTH_STAGES, type GrowthHistory, type GrowthStage, type GrowthTotals } from "@/lib/growth";
 
-/** The plant shows only in development until it is connected to real milestones. */
-export const PLANT_ENABLED = process.env.NODE_ENV === "development";
+/** The plant as a visual companion: on everywhere. */
+export const PLANT_ENABLED = true;
+
+/** Growth tracking (changing stages, totals, the Growth Story): development only until it records real milestones. */
+export const GROWTH_TRACKING_ENABLED = process.env.NODE_ENV === "development";
+
+/** The plant's fixed look while growth is not tracked. A drawing, never shown or announced as a stage. */
+export const COMPANION_STAGE: GrowthStage = 3;
 
 export type PreviewChoice = "empty" | GrowthStage;
 
@@ -41,7 +51,7 @@ let choice: PreviewChoice = 3;
 const listeners = new Set<() => void>();
 
 export function setPreviewGrowth(next: PreviewChoice) {
-  if (!PLANT_ENABLED || next === choice) return;
+  if (!GROWTH_TRACKING_ENABLED || next === choice) return;
   choice = next;
   listeners.forEach((l) => l());
 }
@@ -52,8 +62,10 @@ function subscribe(l: () => void) {
 }
 
 export type Growth = {
-  /** False in production for now: callers render nothing plant-related. */
+  /** The plant shows as a visual companion. */
   enabled: boolean;
+  /** Growth tracking is on: stages, totals, the journey link, and the Growth Story. Development only for now. */
+  tracking: boolean;
   stage: GrowthStage;
   /** Null when there is no genuine history yet: the Growth Story shows its welcome. */
   history: GrowthHistory | null;
@@ -68,7 +80,9 @@ export function useGrowth(): Growth {
     () => choice,
     () => choice,
   );
-  if (!PLANT_ENABLED) return { enabled: false, stage: 1, history: null, preview: false, choice: "empty" };
+  if (!PLANT_ENABLED) return { enabled: false, tracking: false, stage: 1, history: null, preview: false, choice: "empty" };
+  // Companion only: one fixed look; no history, totals, or preview data to show.
+  if (!GROWTH_TRACKING_ENABLED) return { enabled: true, tracking: false, stage: COMPANION_STAGE, history: null, preview: false, choice: "empty" };
   const history = previewHistory(c);
-  return { enabled: true, stage: currentStage(history), history, preview: true, choice: c };
+  return { enabled: true, tracking: true, stage: currentStage(history), history, preview: true, choice: c };
 }

@@ -11,7 +11,7 @@ src/app/api/ask/          POST: question about official text (ballot, bill, civi
 src/app/api/suggest/      POST: highlighted official passage -> three suggested questions
 src/app/dev/plant/        Development-only plant preview (404 in production)
 src/components/           UI: For you, Explore, ballot guide, measure and bill pages, reader, profile sheet, chat dock
-src/components/plant/     Plant companion and Growth Story (development only, PLANT_ENABLED)
+src/components/plant/     Plant companion (everywhere) and Growth Story (growth tracking development only, GROWTH_TRACKING_ENABLED)
 src/lib/engine/           Pure personalization: profile, cards, timeline ranking, copy helpers
 src/lib/verify/           Pure quote normalization and verification against page text
 src/lib/explain/          Bill explainer verification, model prompt, and support check

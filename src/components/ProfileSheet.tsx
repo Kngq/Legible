@@ -77,13 +77,14 @@ export function ProfileSheet({
   /** Clears the profile and preferences from this browser. Absent hides the button. */
   onClear?: () => void;
 }) {
-  const [view, setView] = useState<SheetView>(initial);
+  const growth = useGrowth();
+  // The Growth Story exists only while growth is tracked; otherwise its links open the overview.
+  const [view, setView] = useState<SheetView>(initial.kind === "growth" && !growth.tracking ? { kind: "list" } : initial);
   const [draft, setDraft] = useState<Profile>(profile);
   const [lastSave, setLastSave] = useState<{ from: number; part?: string; at: number } | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
   const panel = useRef<HTMLDivElement>(null);
   const m = personalization(profile);
-  const growth = useGrowth();
   const next = nextItem(profile);
 
   useEffect(() => {
@@ -172,7 +173,7 @@ export function ProfileSheet({
             <PlantCompanion
               name={profile.name}
               onNameChange={(name) => setProfile({ ...profile, name })}
-              onSeeGrowth={() => open({ kind: "growth" })}
+              onSeeGrowth={growth.tracking ? () => open({ kind: "growth" }) : undefined}
             />
             <div className="mt-5 border-t border-border pt-4">
               <h3 className="text-body font-semibold">Your profile details</h3>
@@ -351,7 +352,7 @@ export function ProfileSheet({
         </div>
       </div>
     );
-  } else if (view.kind === "growth") {
+  } else if (view.kind === "growth" && growth.tracking) {
     body = <GrowthStory />;
   } else {
     body = (

@@ -159,13 +159,14 @@ export function Home({
               {...(reduce ? {} : { initial: { opacity: 0, y: -6, scale: 0.96 }, animate: { opacity: 1, y: 0, scale: 1 }, transition: { duration: 0.35, ease: EASE, delay: 0.05 } })}
               className="col-start-2 row-start-1 flex flex-col items-center sm:row-span-2"
             >
-              <HomePlant size={wide ? 164 : 96} onOpen={() => onOpenProfile({ kind: "growth" })} />
+              {/* With growth tracked, the plant opens the journey; as a companion, the Civic Profile. */}
+              <HomePlant size={wide ? 164 : 96} onOpen={() => onOpenProfile(growth.tracking ? { kind: "growth" } : { kind: "list" })} />
               <button
                 type="button"
-                onClick={() => onOpenProfile({ kind: "growth" })}
+                onClick={() => onOpenProfile(growth.tracking ? { kind: "growth" } : { kind: "list" })}
                 className={`mt-1 inline-flex min-h-9 items-center gap-1 whitespace-nowrap rounded-sm text-small font-semibold text-primary underline-offset-4 hover:underline ${FOCUS}`}
               >
-                See your journey <span aria-hidden="true">→</span>
+                {growth.tracking ? "See your journey" : "Your Civic Profile"} <span aria-hidden="true">→</span>
               </button>
             </motion.div>
           </div>

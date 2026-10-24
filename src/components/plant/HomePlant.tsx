@@ -3,7 +3,8 @@
 // The plant in the For you hero: the same CivicPlant and growth stage as the
 // header avatar and Civic Profile. It leans toward a mouse that comes near
 // (within its own padded area, never page-wide), and a press gives a small
-// squash and then opens the Growth Story. A button, so it works from the
+// squash and then opens the Growth Story (or, while growth is not tracked, the
+// Civic Profile). A button, so it works from the
 // keyboard too.
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
@@ -29,7 +30,7 @@ export function HomePlant({ size, onOpen }: { size: number; onOpen: () => void }
     <button
       type="button"
       onClick={press}
-      aria-label="Your plant. Open your journey"
+      aria-label={g.tracking ? "Your plant. Open your journey" : "Your plant. Open your Civic Profile"}
       className="group relative rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
     >
       {/* Padding widens the lean area around the plant; the negative margin keeps layout unchanged. */}

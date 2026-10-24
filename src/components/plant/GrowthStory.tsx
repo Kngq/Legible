@@ -17,7 +17,7 @@ const MINI = 64;
 export function GrowthStory() {
   const g = useGrowth();
   const reduce = useReducedMotion() ?? false;
-  if (!g.enabled) return null;
+  if (!g.enabled || !g.tracking) return null;
 
   const enter = (i: number) => ({
     initial: reduce ? false : ({ opacity: 0, y: 8 } as const),

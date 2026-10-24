@@ -209,5 +209,5 @@ Changing an answer re-sorts the feed instantly, in the browser, with no network 
 ### In development
 
 - Your ballot, wrapped (`WRAPPED_ENABLED`)
-- Civic plant and Growth Story (`PLANT_ENABLED`); real growth tracking still to be agreed (task 23.7)
+- Growth Story and changing plant stages (`GROWTH_TRACKING_ENABLED`); the plant itself shows in production as a fixed companion; real growth tracking still to be agreed (task 23.7)
 - Planned, not built: document upload with AI analysis, persona switcher, "What left your browser" panel, draft a message to a legislator
