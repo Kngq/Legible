@@ -2,6 +2,7 @@
 // it is shown to this person. Dates are Boston time. Pure TypeScript.
 import { FACT_DEFS, TOPIC_DEFS } from "@/lib/vocab";
 import type { CivicCard, CivicKind } from "./civic";
+import type { FeedItem } from "./feed";
 import { appliesIf } from "./timeline";
 import type { Because, Card } from "./types";
 
@@ -84,4 +85,47 @@ export function ballotWhyLine(cards: Card[]): string | null {
     false,
   );
   return parts.length ? `You told us ${joinAnd(parts)}.` : null;
+}
+
+/**
+ * The first sentence of a summary, for the one-line "what it means". Splits only
+ * where a word of two or more letters ends a sentence, so "7 a.m." stays whole;
+ * without a clean split the summary is returned as is.
+ */
+export function firstSentence(text: string): string {
+  const m = /^(.+?[A-Za-z0-9)]{2}\.)\s+(?=[A-Z])/.exec(text.trim());
+  return m ? m[1] : text.trim();
+}
+
+/** "you rent" -> "rent", "you own your home" -> "own their home". From FACT_DEFS, so any fact works. */
+function thirdPerson(phrase: string): string {
+  return phrase.replace(/^you /, "").replace(/\byour\b/g, "their");
+}
+
+/** "a", "a or b", "a, b or c". */
+function joinOr(parts: string[]): string {
+  return parts.length < 2 ? (parts[0] ?? "") : `${parts.slice(0, -1).join(", ")} or ${parts[parts.length - 1]}`;
+}
+
+/**
+ * Who an item applies to, in plain words, from its data: every voter, everyone
+ * in a place, or the people its life facts describe ("Cambridge residents who
+ * have kids in the public schools").
+ */
+export function whoLine(c: CivicCard): string {
+  const i = c.item;
+  const state = i.place.kind === "state";
+  if (i.everyone) return i.body === "Voters" ? "Every voter in Massachusetts" : `Everyone in ${i.place.name}`;
+  if (i.touches.length) {
+    const who = joinOr([...new Set(i.touches.map((t) => thirdPerson(t.when ? FACT_DEFS[t.fact].because.yes : FACT_DEFS[t.fact].because.no)))]);
+    return state ? `People in Massachusetts who ${who}` : `${i.place.name} residents who ${who}`;
+  }
+  if (i.kind === "meeting") return `Anyone in ${i.place.name}`;
+  return state ? "People in Massachusetts the bill would cover" : `People in ${i.place.name} it would cover`;
+}
+
+/** Who a document applies to: every voter for a statewide ballot, else everyone in its place. */
+export function docWho(item: FeedItem): string {
+  if (item.doc.docType === "ballot" && item.scope === "state") return "Every voter in Massachusetts";
+  return `Everyone in ${item.doc.place.name}`;
 }

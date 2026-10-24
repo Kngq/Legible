@@ -16,7 +16,8 @@ import { Glyph, Part } from "./icons";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { FOCUS } from "./ui";
-import { H2, PRIMARY, SECONDARY, TopBar, UpdateCard } from "./updates";
+import { BriefCard } from "./BriefCard";
+import { H2, PRIMARY, SECONDARY, TopBar } from "./updates";
 
 export function Home({
   feed,
@@ -118,7 +119,7 @@ export function Home({
             <p className="mt-1 text-small text-muted-foreground">Updates that match your answers, most likely to affect you first.</p>
             <ul className="mt-4 space-y-4">
               {personal.map((e) => (
-                <UpdateCard key={e.key} entry={e} {...cardProps} />
+                <BriefCard key={e.key} entry={e} {...cardProps} />
               ))}
             </ul>
           </>
@@ -136,7 +137,7 @@ export function Home({
             <p className="text-small text-muted-foreground">These depend on something you haven&apos;t told us yet. Each card says what.</p>
             <ul className="mt-4 space-y-4">
               {maybe.map((e) => (
-                <UpdateCard key={e.key} entry={e} {...cardProps} />
+                <BriefCard key={e.key} entry={e} {...cardProps} />
               ))}
             </ul>
           </>
