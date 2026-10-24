@@ -179,7 +179,6 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
 
   return (
     <li className="rounded-lg bg-surface p-5 shadow-card">
-      <EntryPhoto entryKey={e.key} />
       <div className="flex items-start justify-between gap-3">
         <p className="text-small font-semibold uppercase tracking-wider text-muted-foreground">{kind}</p>
         {e.touches ? <Tag pop="accent">May affect you</Tag> : e.relevance >= 0.6 ? <Tag pop="info">You follow this</Tag> : null}
@@ -220,6 +219,7 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
       )}
 
       <div className="mt-4 flex flex-wrap items-center gap-2">{actions}</div>
+      <EntryPhoto entryKey={e.key} />
     </li>
   );
 }

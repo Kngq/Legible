@@ -41,14 +41,14 @@ export function PhotosProvider({ children }: { children: ReactNode }) {
   return <PhotosContext.Provider value={value}>{children}</PhotosContext.Provider>;
 }
 
-/** The photo for one timeline entry, with its credit. Renders nothing without one. */
+/** The photo for one timeline entry, floating under the card's text, with its credit. Renders nothing without one. */
 export function EntryPhoto({ entryKey }: { entryKey: string }) {
   const photo = useContext(PhotosContext).photos.get(entryKey);
   const [state, setState] = useState<"loading" | "loaded" | "failed">("loading");
   if (!photo || state === "failed") return null;
   return (
-    <figure className="-mx-5 -mt-5 mb-4">
-      <div className={`relative aspect-video overflow-hidden rounded-t-lg ${state === "loading" ? "animate-pulse bg-surface-muted" : "bg-surface-muted"}`}>
+    <figure className="mt-5">
+      <div className={`relative aspect-video overflow-hidden rounded-lg shadow-card ${state === "loading" ? "animate-pulse bg-surface-muted" : "bg-surface-muted"}`}>
         <Image
           src={photo.url}
           alt={photo.alt}
@@ -60,7 +60,7 @@ export function EntryPhoto({ entryKey }: { entryKey: string }) {
           onError={() => setState("failed")}
         />
       </div>
-      <figcaption className="px-5 pt-2 text-small text-muted-foreground">
+      <figcaption className="pt-2 text-small text-muted-foreground">
         Photo: {photo.contributor} on{" "}
         <a href={photo.sourceUrl} target="_blank" rel="noreferrer" className={`underline underline-offset-4 ${FOCUS}`}>
           Pixabay
