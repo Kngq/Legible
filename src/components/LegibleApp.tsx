@@ -89,6 +89,9 @@ export function LegibleApp() {
       <FirstRun
         profile={profile}
         setProfile={setProfile}
+        askToKeep={canStore && !preferences.remember}
+        onKeep={() => setPreferences((p) => ({ ...p, remember: true }))}
+        onNotNow={() => setRememberNotNow(true)}
         onDone={() => {
           setPreferences((p) => ({ ...p, onboardingDone: true }));
           window.scrollTo({ top: 0 });

@@ -99,7 +99,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
 - [ ] 16. Onboarding (B)
   - [x] 16.0 Profile schema with answer sources, skip counts, topic provenance, storage parsing, and tests (`src/lib/engine/profile.ts`)
     - _Requirements: 1.5, 1.6, 10.4_
-  - [x] 16.1 Build first-run onboarding (hello, ZIP) and the profile sheet (avatar ring, checklist, life area and subjects screens, remember prompt)
+  - [x] 16.1 Build first-run onboarding (hello, ZIP, then optional home, work, and voting questions with Skip and a keep prompt; see 17.14) and the profile sheet (avatar ring, checklist, life area and subjects screens, remember prompt)
     - _Requirements: 1.2, 1.4, 1.5_
   - [ ] 16.6 Bundle the Massachusetts ZIP-to-town table from the Census ZCTA relationship file, with a lookup and tests
     - _Requirements: 1.1_
@@ -133,6 +133,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 17.11 Move the profile prompts into For you (cards when nothing matches, a dismissible pill row after), drop the upload card from Home, and keep the empty-town notice as one footer line
   - [x] 17.12 Redesign Home around three questions: welcome, Coming up (top three), What matters to you (home, work, elections with Added/Edit), Happening near you (with local meetings and bills), How Legible works; update cards with plain dates, why, and real actions; "Clear my information" with a confirm step in the profile sheet
   - [x] 17.13 Split Home and Explore: Home is the welcome, What matters to you, and For you; Explore (`#/explore`, Home · Explore tabs) holds every update, decided items, and How Legible works
+  - [x] 17.14 Add three optional Duolingo-style questions after the town in first run (progress bar, Skip records nothing, Finish later) and a keep-on-device screen when anything was answered
     - _Requirements: 20.5, 20.9_
   - [ ] 17.6 Add uploaded and sample documents to the feed in memory, tagged by town
     - _Requirements: 20.8_

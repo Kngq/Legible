@@ -272,7 +272,11 @@ Onboarding belongs to the platform, not to any one document. Every screen is the
 | 0 | Hello | Avatar with bubble: "Your town and state decide things every year that reach your daily life. Let's find the ones that touch you." | Primary "Get started". Text button "Just show me everything" goes to the feed with no town. |
 | 1 | ZIP | "What's your ZIP code?" Under the field: "Stays in your browser." | Numeric field, 5 digits. A valid Massachusetts ZIP shows a check and the town name; a ZIP that spans towns shows those towns as chips. Link "Type your town instead" opens the TownPicker. Primary "Show my decisions" goes straight to the feed. |
 
-That is all. No progress bar (two screens do not need one), no life facts, no topics, no remember screen. The feed opens with the avatar ring at 14% (town only) and the feed already filtered to the person's town and state.
+| 2 | Optional intro | Avatar with bubble: "Want it more personal? Answer up to 3 quick questions and Legible can point out what may affect you. Skip any of them. Your answers stay in this browser." | Primary "Answer a few questions". Text button "Skip for now" goes to Home. |
+| 3–5 | Your home, Your work, Voting | The same "Pick all that apply" screens as the profile sheet, under "Optional · 1 of 3". | Progress bar in the header, Skip top right (records nothing, the next screen slides in), None of these, Prefer not to say, "Continue" ("Finish" on the last), and "Finish later" at the foot. |
+| 6 | Keep (only if something was answered and storage works) | Avatar, now with its new parts, and the bubble: "Keep your answers on this device? They stay in this browser only, so Legible stays personal next time. Clear my information erases them any time." | Primary "Keep on this device", text button "Not now". |
+
+The town is the one required answer; the three optional questions are where Duolingo's pattern earns its place, since each answer immediately fills For you on Home. Who you live with, getting around, and subjects stay in the profile sheet. The feed opens with the ring at 14% (town only) and up to 57% if all three are answered.
 
 ### Fill in later: the avatar ring
 
@@ -336,7 +340,7 @@ A ring around the avatar with the percentage under it, shown in the feed header 
 | Voting | registered_here and votes_in_primaries |
 | Subjects you follow | at least one topic on, or Continue with none |
 
-`percent = floor(done / 7 * 100)`, so 100 appears only when every item is done. First run ends at 14% (town); each life area adds 14 or 15 points.
+`percent = floor(done / 7 * 100)`, so 100 appears only when every item is done. First run ends at 14% (town only) to 57% (town and the three optional areas); each life area adds 14 or 15 points.
 
 **Rules.**
 
