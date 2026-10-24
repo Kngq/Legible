@@ -32,3 +32,8 @@ export function personalization(p: Profile): Personalization {
   const done = items.filter((i) => i.done).length;
   return { items, done, total: items.length, percent: Math.floor((done / items.length) * 100) };
 }
+
+/** The first open checklist item, for the single nudge card in the feed. Null at 100%. */
+export function nextItem(p: Profile): ChecklistItem | null {
+  return personalization(p).items.find((i) => !i.done) ?? null;
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { LIFE_AREAS, ONBOARDING_FACTS, SENSITIVE_FACTS } from "@/lib/vocab";
-import { personalization } from "./personalization";
+import { nextItem, personalization } from "./personalization";
 import { answerArea, answerFact, confirmTopics, declineArea, emptyProfile, skipFact, type Profile } from "./profile";
 
 const t0 = "2026-10-24T14:00:00.000Z";
@@ -37,5 +37,11 @@ describe("personalization meter", () => {
     expect(personalization(declineArea(emptyProfile(t0), ["rents", "owns"], ob, t0)).done).toBe(1);
     expect(personalization(skipFact(emptyProfile(t0), "rents", ob, t0)).done).toBe(0);
     expect(personalization(answerFact(emptyProfile(t0), "rents", true, ob, t0)).done).toBe(0);
+  });
+
+  it("first run ends at 14% and nudges the first life area next", () => {
+    const p: Profile = { ...emptyProfile(t0), townId: "somerville" };
+    expect(personalization(p).percent).toBe(14);
+    expect(nextItem(p)).toEqual({ kind: "area", id: "home", done: false });
   });
 });

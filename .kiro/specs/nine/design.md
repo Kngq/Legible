@@ -222,7 +222,7 @@ Pure template in the browser. Inputs are selected measure numbers and one factua
 
 ## UI components
 
-- **Onboarding:** one question per screen: hello, ZIP, one screen per life area, subjects, keep it, done. Progress bar, back, Skip, pinned primary button.
+- **Onboarding:** first run is hello and ZIP only. **ProfileSheet:** the avatar ring, the seven-item checklist, and one screen per life area and subjects, opened from the avatar.
 - **TownPicker:** type-ahead over a bundled list of 351 municipalities with aliases.
 - **Feed:** catalog entries for the person's state and town with touch counts, trust labels, and the open-questions section.
 - **ChatDock:** bottom-corner button and panel scoped to the open document or measure, citations on every sentence.
@@ -239,24 +239,45 @@ Visual system lives in CSS custom properties in `src/app/globals.css`, exposed a
 
 ## Onboarding
 
-Goal: a life profile in under a minute, then the feed. Pattern borrowed from Duolingo: one question per screen, a thin progress bar on top, a back arrow top left, Skip top right, one big button pinned to the bottom that stays grey until the answer is valid, and a friendly figure with a speech bubble on the first and last screens. Mobile first at 375 px, one column, tap targets at least 48 px.
+Two parts. **First run** is minimal: two screens, one answer, then the feed. **Fill in later** is where the life profile grows, pulled along by a completion ring around the avatar that the person sees every time they open Nine. The bet: people give more when they have already seen the feed and want it sharper, not before they know what the app does.
 
-The figure is the Nine avatar (line-drawn, see Avatar). It starts blank and gains one part per yes (a key for renting, a bus for transit), so the person watches the profile assemble. It never shows red or blue and never reflects a sensitive fact.
+Pattern borrowed from Duolingo: one question per screen, a back arrow top left, Skip top right, one big button pinned to the bottom that stays grey until the answer is valid, and a friendly figure with a speech bubble. Mobile first at 375 px, one column, tap targets at least 48 px.
 
-**No account, no sign-in.** Duolingo's "Create profile" exists to sync progress to a server. Nine's promise is that the profile never leaves the browser, so its counterpart is "Keep this on this device" (screen 10). There is no name, email, or password step anywhere. If cross-device use is wanted after the event, the candidate is an export code the person copies to another browser, not an account.
+The figure is the Nine avatar (line-drawn, see Avatar). It gains one part per yes (a key for renting, a bus for transit). It never shows red or blue and never reflects a sensitive fact.
 
-**No name.** A name adds nothing to sorting, and a name stored next to "owns a firearm" turns a shared or screenshotted device into an identifying record. Greetings use the town instead: "Here is your ballot, Somerville."
+**No account, no sign-in.** Duolingo's "Create profile" exists to sync progress to a server. Nine's promise is that the profile never leaves the browser, so its counterpart is "Keep on this device." There is no name, email, or password step anywhere. If cross-device use is wanted after the event, the candidate is an export code the person copies to another browser, not an account.
+
+**No name.** A name adds nothing to sorting, and a name stored next to "owns a firearm" turns a shared or screenshotted device into an identifying record. Greetings use the town instead: "Here is what Somerville is deciding."
 
 Onboarding belongs to the platform, not to any one document. Every screen is the same for every person, whatever is in their feed (a state ballot, a Town Meeting warrant, a school budget). No screen names a measure, a question number, or a document.
 
-| # | Screen | Heading and copy | Controls | Valid when | Skip |
-|---|---|---|---|---|---|
-| 0 | Hello | Bubble: "Your town and state decide things every year that reach your daily life. Let's find the ones that touch you." | Primary "Get started". Text button "Just show me everything" goes to the feed, unsorted. | always | n/a |
-| 1 | ZIP | "What's your ZIP code?" Under the field: "Picks your town's decisions. Stays in your browser." | Numeric field, 5 digits. A valid Massachusetts ZIP shows a check and the town name. A ZIP that spans towns shows those towns as chips. Link "Type your town instead" opens the TownPicker. | one town resolved | state decisions only |
-| 2 to 6 | One life area each (`LIFE_AREAS`) | The area heading, then "Pick all that apply." Under it the area's `why` line, e.g. "Decisions about zoning, rent, and property tax depend on this." | One checkbox card per fact, labeled with its `statement` ("I rent my home", "I own my home"). A last card "None of these". Text button "Prefer not to say". Primary "Next". | at least one card or "None of these" | area skipped for now |
-| 7 | Subjects | "Pick any subjects you follow." Under: "These add an On your list tag. They never change what touches you." | Topic chips, multi-select, plus a type-to-match box. Primary "Continue" sets `topicsConfirmedAt` even with none picked. | always | no topics |
-| 8 | Keep it | Bubble: "Want Nine to remember this next time?" Under: "It stays in this browser only. Forget me erases it any time." | Primary "Keep on this device" sets `remember`. Text button "Not now". | always | n/a |
-| 9 | Done | Bubble: "Your feed is ready." Under it the personalization meter. | Primary "Show my decisions". | always | n/a |
+### First run
+
+| # | Screen | Copy | Controls |
+|---|---|---|---|
+| 0 | Hello | Avatar with bubble: "Your town and state decide things every year that reach your daily life. Let's find the ones that touch you." | Primary "Get started". Text button "Just show me everything" goes to the feed with no town. |
+| 1 | ZIP | "What's your ZIP code?" Under the field: "Stays in your browser." | Numeric field, 5 digits. A valid Massachusetts ZIP shows a check and the town name; a ZIP that spans towns shows those towns as chips. Link "Type your town instead" opens the TownPicker. Primary "Show my decisions" goes straight to the feed. |
+
+That is all. No progress bar (two screens do not need one), no life facts, no topics, no remember screen. The feed opens with the avatar ring at 14% (town only) and the feed already filtered to the person's town and state.
+
+### Fill in later: the avatar ring
+
+The avatar sits in the feed header inside a thin ring that fills with the personalization meter (`personalization(p).percent`). The number sits under it in small type: "14%". It is visible on every visit and never animates on its own.
+
+Tapping the avatar opens the **profile sheet**: a bottom sheet titled "Your profile" with the ring large at the top and a checklist of the seven meter items (town, the five life areas, subjects). Done items show a check and a one-line summary ("Rent · Ride transit"); open items show "Add". Each row opens the same one-question screen used everywhere:
+
+| Screen | Copy | Controls |
+|---|---|---|
+| Life area (`LIFE_AREAS`) | Area heading, "Pick all that apply," and the area's `why` line. | One checkbox card per fact `statement`, a last card "None of these", text button "Prefer not to say", primary "Save". Valid once a card or "None of these" is picked. |
+| Subjects | "Pick any subjects you follow." Under: "These add an On your list tag. They never change what touches you." | Topic chips plus a type-to-match box. "Save" sets `topicsConfirmedAt` even with none picked. |
+
+After Save the sheet returns, the ring fills to its new value over 400 ms, the avatar gains its part, and the feed behind re-sorts. "Next: Getting around" appears as a text button so a person on a roll can keep going without returning to the list.
+
+**One nudge in the feed.** Below 100%, the feed shows a single dismissible card above the documents for the first open item (`nextItem(p)`): "Add your home to sort decisions about zoning, rent, and property tax." It uses the area's `why` line, never a document name. Dismissing hides it for the session; it never shows two at once and never returns the same day once dismissed if remember is on.
+
+**Remember, asked at the right moment.** The ring only brings people back if the profile survives a refresh, but storage stays opt-in. So the first time a person saves anything beyond the town, the sheet shows one line under the ring: "Keep this on this device? It stays in this browser only. Forget me erases it any time." with "Keep" and "Not now." Not now is not asked again that session.
+
+At 100% the ring closes and the line under it reads "Your profile is filled in." No confetti, no streaks, no badge. Persona views hide the ring.
 
 The five life areas, in order:
 
@@ -281,13 +302,13 @@ Rules:
 - Sensitive facts (`SENSITIVE_FACTS`) never appear here. They are asked inside the card that depends on them, with the reason visible.
 - Every answer is written with its source (`{ kind: "onboarding" }`) and timestamp, so the UI can later say "you answered this during setup" on a because chip.
 - A fact skipped here may be asked once more, inside a card. Declined there, it is never asked again (`MAX_SKIP_TIMES`).
-- Onboarding can be reopened from the feed header ("Edit your profile"), from any because chip, and from any avatar badge, landing on that one screen with Done returning to where the person was.
+- The profile sheet opens from the avatar, from any because chip, and from any avatar badge, landing on the relevant row.
 - Persona profiles bypass onboarding entirely and are never written to storage.
 - Copy never uses the banned words and never says "political." The phrase is "life profile."
 
 ## Personalization meter
 
-A small bar with a count, "Your profile is 71% filled in," shown on the Done screen, in the feed header next to "Edit your profile," and in the profile panel. It measures how much of the life profile is filled in. It does not depend on which documents are in the feed, and it never measures how much the person has disclosed. Logic: `src/lib/engine/personalization.ts`.
+A ring around the avatar with the percentage under it, shown in the feed header and large at the top of the profile sheet. It measures how much of the life profile is filled in. It does not depend on which documents are in the feed, and it never measures how much the person has disclosed. Logic: `src/lib/engine/personalization.ts`.
 
 **What counts.** Seven items, one per onboarding screen that holds information, all weighted the same:
 
@@ -301,14 +322,14 @@ A small bar with a count, "Your profile is 71% filled in," shown on the Done scr
 | Voting | registered_here and votes_in_primaries |
 | Subjects you follow | at least one topic on, or Continue with none |
 
-`percent = floor(done / 7 * 100)`, so 100 appears only when every item is done. Finishing onboarding without skipping reaches 100%.
+`percent = floor(done / 7 * 100)`, so 100 appears only when every item is done. First run ends at 14% (town); each life area adds 14 or 15 points.
 
 **Rules.**
 
 - "Prefer not to say" counts as done. A plain Skip for now does not. Yes and No count the same.
 - Facts asked inside cards (sensitive and narrow ones) are never counted. Those questions come with their own context; the meter never pushes anyone toward them.
 - Not counted: the remember toggle (storage stays opt-in; the meter never nudges it), opened documents, chat use.
-- Below 100%, the meter lists what is left by life area, "2 left: Getting around, Voting," and tapping one opens that onboarding screen.
+- Below 100%, the profile sheet lists what is left by life area, and the feed shows one nudge card for `nextItem(p)`.
 - At 100%: "Your profile is filled in." No confetti, no streaks, no badge.
 - Persona views hide the meter.
 - Copy avoids the banned words.
@@ -324,10 +345,10 @@ Everything Nine gathers, where it comes from, where it lives, and what it is for
 | `facts[id].source`, `.at` | set automatically with each answer | profile | explaining where an answer came from; tests for ask-once rules |
 | `skipped[id].times`, `.source`, `.at` | set automatically on each skip | profile | never re-asking past the limit |
 | `topics[id].via`, `.at` | onboarding screen 3 or a chip | profile | "On your list"; the typed text is never stored |
-| `topicsConfirmedAt` | Continue on onboarding screen 7 | profile | the personalization meter's topics item |
+| `topicsConfirmedAt` | Save on the Subjects screen | profile | the personalization meter's topics item |
 | `source` | set by the persona switcher | profile | keeping persona views out of storage |
 | `createdAt`, `updatedAt` | automatic | profile | "Forget me" confirmation, migrations |
-| `preferences.remember` | onboarding screen 8 or header | preferences | whether anything is written to storage at all |
+| `preferences.remember` | profile sheet, the first time something beyond the town is saved, or header | preferences | whether anything is written to storage at all |
 | `preferences.onboardingDone` | end of onboarding | preferences | skipping onboarding on return visits |
 | `session.openedDocuments` | opening a document or expanding a card | memory, storage only if remember is on | restoring the view; feed ordering tiebreak |
 | `session.dismissedOpenQuestions` | dismissing an open question on the feed | memory, storage only if remember is on | not nagging |
