@@ -96,11 +96,11 @@ export interface LifeArea {
 }
 
 export const LIFE_AREAS: readonly LifeArea[] = [
-  { id: "home", heading: "Your home", why: "Decisions about zoning, rent, and property tax depend on this.", facts: ["rents", "owns"] },
-  { id: "household", heading: "Who you live with", why: "Decisions about schools and family services depend on this.", facts: ["lives_with_family", "kids_in_schools"] },
+  { id: "home", heading: "Your housing situation", why: "Decisions about zoning, rent, and property tax depend on this.", facts: ["rents", "owns"] },
+  { id: "household", heading: "Your household", why: "Decisions about schools and family services depend on this.", facts: ["lives_with_family", "kids_in_schools"] },
   { id: "work", heading: "Your work", why: "Decisions about public jobs and local business depend on this.", facts: ["state_employee", "runs_business_here"] },
   { id: "getting_around", heading: "Getting around", why: "Decisions about roads, parking, and transit depend on this.", facts: ["drives", "rides_transit"] },
-  { id: "voting", heading: "Voting", why: "Decisions about how elections run depend on this.", facts: ["registered_here", "votes_in_primaries"] },
+  { id: "voting", heading: "Your voting information", why: "Decisions about how elections run depend on this.", facts: ["registered_here", "votes_in_primaries"] },
 ];
 
 /** Facts never asked cold. They appear only on a card, with the reason visible. */

@@ -1,17 +1,19 @@
 "use client";
 
-// Home after onboarding, kept short: a welcome, "What matters to you?" first,
-// then For you: what matches the person's answers or subjects, what might apply
-// if they answered a question. What applies to everyone, and everything else,
-// lives on Explore. Order comes from buildTimeline, and which
-// areas Home asks about comes from the facts upcoming items depend on, so
-// nothing here is tied to a fixed set of onboarding questions.
+// Home after onboarding: a welcome, "What matters to you?" first, then three
+// sections from homeSections: Needs your attention (dates coming up soon),
+// Decisions that could affect you (from the person's answers and interests), and
+// Explore more (a few other things nearby; Explore holds the full list). Order
+// comes from buildTimeline, and which areas Home asks about comes from the facts
+// upcoming items depend on, so nothing is tied to fixed onboarding questions.
 import type { CivicCard } from "@/lib/engine/civic";
 import type { Feed } from "@/lib/engine/feed";
 import { personalization } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
-import { areasThatMatter, buildTimeline, forYouGroups } from "@/lib/engine/timeline";
-import { FACT_DEFS } from "@/lib/vocab";
+import { homeSections } from "@/lib/engine/home-copy";
+import { topicIds } from "@/lib/engine/profile";
+import { areasThatMatter, buildTimeline, type TimelineEntry } from "@/lib/engine/timeline";
+import { FACT_DEFS, TOPIC_DEFS } from "@/lib/vocab";
 import { Glyph, Part } from "./icons";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
@@ -44,9 +46,24 @@ export function Home({
   const town = townName(profile.townId);
   const meter = personalization(profile);
   const done = new Set(meter.items.flatMap((i) => (i.kind === "area" && i.done ? [i.id] : [])));
-  const { personal, maybe } = forYouGroups(buildTimeline(feed.items, civic, today));
-  const areas = areasThatMatter(buildTimeline(feed.items, civic, today, { includeOthers: true }));
-  const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure };
+  const all = buildTimeline(feed.items, civic, today, { includeOthers: true });
+  const { attention, affect, explore } = homeSections(buildTimeline(feed.items, civic, today), all);
+  const areas = areasThatMatter(all);
+  const topics = topicIds(profile).map((id) => TOPIC_DEFS[id].label);
+  const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure, onOpenProfile };
+  const section = (id: string, title: string, sub: string, entries: TimelineEntry[], showTag: boolean) => (
+    <section aria-labelledby={id} className="mt-12">
+      <h2 id={id} className={H2}>
+        {title}
+      </h2>
+      <p className="mt-1 text-small text-muted-foreground">{sub}</p>
+      <ul className="mt-4 space-y-4">
+        {entries.map((e) => (
+          <BriefCard key={e.key} entry={e} showTag={showTag} {...cardProps} />
+        ))}
+      </ul>
+    </section>
+  );
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-16 sm:px-6">
@@ -63,7 +80,8 @@ export function Home({
           What matters to you?
         </h2>
         <p className="mt-1 text-small text-muted-foreground">
-          Tell us a little about yourself so we can highlight decisions that may affect your life. Your answers stay in this browser.
+          Tell us a little about your life and interests. We&apos;ll highlight the local decisions that may matter most to you. Your answers stay in this
+          browser.
         </p>
         {!town && (
           <button type="button" onClick={() => onOpenProfile({ kind: "town" })} className={`mt-4 ${PRIMARY}`}>
@@ -105,51 +123,32 @@ export function Home({
           })}
         </ul>
         <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={`mt-3 min-h-11 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
-          More about you: household, getting around, and subjects you follow
+          Your interests{topics.length ? `: ${topics.join(", ")}` : ""}
         </button>
       </section>
 
-      {/* Only what matches this person. Everything else is on Explore. */}
-      <section aria-labelledby="h-foryou" className="mt-12">
-        <h2 id="h-foryou" className={H2}>
-          For you
-        </h2>
-        {personal.length > 0 ? (
-          <>
-            <p className="mt-1 text-small text-muted-foreground">Updates that match your answers, most likely to affect you first.</p>
-            <ul className="mt-4 space-y-4">
-              {personal.map((e) => (
-                <BriefCard key={e.key} entry={e} {...cardProps} />
-              ))}
-            </ul>
-          </>
-        ) : (
-          <p className="mt-1 text-small text-muted-foreground">
-            Nothing matches your answers yet. Add details above and the updates that reach your life will show here first. What applies to everyone is on
-            Explore.
-          </p>
+      {attention.length > 0 && section("h-attention", "Needs your attention", "Important dates and decisions coming up soon.", attention, false)}
+
+      {affect.length > 0
+        ? section("h-affect", "Decisions that could affect you", "Based on your profile and interests.", affect, true)
+        : (
+          <section aria-labelledby="h-affect" className="mt-12">
+            <h2 id="h-affect" className={H2}>
+              Decisions that could affect you
+            </h2>
+            <p className="mt-1 text-small text-muted-foreground">
+              Nothing matches your answers yet. Add details above and the decisions that reach your life will show here first.
+            </p>
+          </section>
         )}
 
-        {/* Depends on something the person hasn't answered: one tap on the card's details settles it. */}
-        {maybe.length > 0 && (
-          <>
-            <p className={`${personal.length > 0 ? "mt-8" : "mt-5"} text-body font-bold`}>Might apply to you</p>
-            <p className="text-small text-muted-foreground">These depend on something you haven&apos;t told us yet. Each card says what.</p>
-            <ul className="mt-4 space-y-4">
-              {maybe.map((e) => (
-                <BriefCard key={e.key} entry={e} {...cardProps} />
-              ))}
-            </ul>
-          </>
-        )}
-
-        <button type="button" onClick={onExplore} className={`mt-5 ${SECONDARY}`}>
-          Explore everything happening near you
-          <span aria-hidden="true" className="-rotate-90">
-            <Glyph name="chevron" size={14} />
-          </span>
-        </button>
-      </section>
+      {explore.length > 0 && section("h-explore", "Explore more", "Other decisions happening in your community.", explore, false)}
+      <button type="button" onClick={onExplore} className={`mt-5 ${SECONDARY}`}>
+        Explore everything happening near you
+        <span aria-hidden="true" className="-rotate-90">
+          <Glyph name="chevron" size={14} />
+        </span>
+      </button>
     </div>
   );
 }

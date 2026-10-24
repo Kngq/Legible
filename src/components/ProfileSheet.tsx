@@ -23,7 +23,7 @@ export function itemView(item: ChecklistItem): SheetView {
 
 export function itemLabel(item: ChecklistItem): string {
   if (item.kind === "town") return "Your town";
-  if (item.kind === "topics") return "Subjects you follow";
+  if (item.kind === "topics") return "Your interests";
   return LIFE_AREAS.find((a) => a.id === item.id)!.heading;
 }
 
