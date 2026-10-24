@@ -132,6 +132,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 17.10 Rank the timeline by relevance and time together (`score = 0.65 relevance + 0.35 urgency`), with tests
   - [x] 17.11 Move the profile prompts into For you (cards when nothing matches, a dismissible pill row after), drop the upload card from Home, and keep the empty-town notice as one footer line
   - [x] 17.12 Redesign Home around three questions: welcome, Coming up (top three), What matters to you (home, work, elections with Added/Edit), Happening near you (with local meetings and bills), How Legible works; update cards with plain dates, why, and real actions; "Clear my information" with a confirm step in the profile sheet
+  - [x] 17.13 Split Home and Explore: Home is the welcome, What matters to you, and For you; Explore (`#/explore`, Home · Explore tabs) holds every update, decided items, and How Legible works
     - _Requirements: 20.5, 20.9_
   - [ ] 17.6 Add uploaded and sample documents to the feed in memory, tagged by town
     - _Requirements: 20.8_

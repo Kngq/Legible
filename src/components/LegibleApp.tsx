@@ -14,6 +14,7 @@ import { parentRoute, parseRoute, routeHash, type Route } from "@/lib/nav/route"
 import { CivicView } from "./CivicView";
 import { DocumentView } from "./DocumentView";
 import { FirstRun } from "./FirstRun";
+import { Explore } from "./Explore";
 import { Home } from "./Home";
 import { MeasureView } from "./MeasureView";
 import { ProfileSheet, type SheetView } from "./ProfileSheet";
@@ -160,9 +161,24 @@ export function LegibleApp() {
         onOpenMeasure={(measureId) => openMeasure(docItem.doc.id, measureId)}
       />
     );
+  } else if (route.kind === "explore") {
+    page = (
+      <Explore
+        feed={feed}
+        civic={civic}
+        today={today}
+        profile={profile}
+        onHome={() => go({ kind: "feed" })}
+        onOpenDoc={(docId) => go({ kind: "doc", docId })}
+        onOpenMeasure={openMeasure}
+        onOpenItem={openItem}
+        onOpenProfile={setSheet}
+      />
+    );
   } else {
     page = (
       <Home
+        onExplore={() => go({ kind: "explore" })}
         feed={feed}
         civic={civic}
         today={today}

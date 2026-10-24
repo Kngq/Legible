@@ -5,6 +5,7 @@ describe("routes", () => {
   it("round-trips every screen", () => {
     const routes: Route[] = [
       { kind: "feed" },
+      { kind: "explore" },
       { kind: "doc", docId: "ballot-2026" },
       { kind: "measure", docId: "ballot-2026", measureId: "ballot-2026-q7" },
       { kind: "item", itemId: "cam-council-2026-11-02" },
