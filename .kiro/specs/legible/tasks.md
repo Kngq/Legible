@@ -187,7 +187,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
 
 - [ ] 20. Visual direction "Notebook" (see the Visual direction section of `.kiro/steering/product.md`)
   - [x] 20.1 Tokens: Notebook palette (light and dark), Fraunces for editorial headlines, headline size, spacing roles, smaller radii, motion speeds and stagger, CSS press and hover utilities, `src/lib/motion.ts`
-  - [ ] 20.2 For you: featured decision (relevance emphasis only when supported), compact secondary decisions, Coming up as a time ribbon
+  - [x] 20.2 For you: featured decision (relevance emphasis only when supported), compact secondary decisions, Coming up as a time ribbon
   - [ ] 20.3 Review desktop and phone screenshots before continuing
   - [ ] 20.4 Expandable sections with Motion (why you're seeing this, more changes, citations)
   - [ ] 20.5 Later, separately: route transitions, profile feedback, detail page as an annotated reader, unified header (after the header's owner agrees)

@@ -1,25 +1,34 @@
 "use client";
 
-// Home after onboarding: the For you page. A compact personal header (whose
-// town, and which parts of the profile sort the page); a compact alert only for
-// a date due today or tomorrow; "Decisions for you", the cards ranked by how
-// they connect to the person, so one is on the first screen; then "Coming up",
-// the other time-sensitive dates as compact rows. Dates and decisions never mix.
-// Everything else is on Explore, one button away. Order comes from buildTimeline
-// and homeSections. Runs in the browser.
+// Home after onboarding: the For you page, in the Notebook direction. A personal
+// header (greeting, whose town, how much of the profile is filled in, and the
+// answers that sort the page); "Coming up" as a time ribbon, with the most urgent
+// date selected; then "Decisions for you": the first as a featured decision, the
+// rest as compact rows, ranked by how they connect to the person. Dates and
+// decisions never mix. Everything else is on Explore, one link away. Order comes
+// from buildTimeline and homeSections. Runs in the browser.
 import type { CivicCard } from "@/lib/engine/civic";
 import type { Feed } from "@/lib/engine/feed";
-import { homeSections, isUrgent, profileBasis } from "@/lib/engine/home-copy";
+import { homeSections, profileBasis } from "@/lib/engine/home-copy";
+import { personalization } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
 import { buildTimeline } from "@/lib/engine/timeline";
-import { BallotQuestionCard, BriefCard, DeadlineRow, UrgentAlert } from "./BriefCard";
+import { FACT_DEFS, LIFE_AREAS } from "@/lib/vocab";
+import { decisionsFor, DecisionRow, FeaturedDecision } from "./BriefCard";
+import { ComingUp } from "./ComingUp";
 import { Glyph } from "./icons";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { FOCUS } from "./ui";
-import { SECONDARY, TopBar } from "./updates";
+import { TopBar } from "./updates";
 
-const H2 = "text-body font-bold";
+/** The answers that sort the page, as short phrases: "You rent". Life-area facts only. */
+function answeredFacts(p: Profile): string[] {
+  return LIFE_AREAS.flatMap((a) => a.facts.filter((f) => p.facts[f]?.value === true)).map((f) => {
+    const t = FACT_DEFS[f].because.yes;
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  });
+}
 
 export function Home({
   feed,
@@ -49,75 +58,94 @@ export function Home({
   const greeting = GREETINGS[(profile.name ?? "").length % GREETINGS.length];
   const all = buildTimeline(feed.items, civic, today, { includeOthers: true });
   const { attention, affect } = homeSections(buildTimeline(feed.items, civic, today), all);
-  const urgent = attention.filter(isUrgent);
-  const comingUp = attention.filter((e) => !isUrgent(e));
   // The ballot behind Election Day: its questions that reach this person become
   // decision cards; the date itself stays in Coming up. A ballot shown as its own
   // card in the decisions keeps that card instead, so nothing appears twice.
   const ballotItem = attention.flatMap((e) => (e.kind === "civic" && e.ballot ? [e.ballot] : []))[0];
   const touching = ballotItem?.cards.filter((c) => c.relevance === "touches") ?? [];
   const listed = ballotItem?.cards.filter((c) => c.relevance !== "touches" && c.onYourList) ?? [];
-  const decisions = touching.length + affect.length + listed.length;
   const basis = profileBasis(profile);
-  const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure, onOpenProfile };
+  const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure };
+  const list = decisionsFor({ touching, affect, listed, ballot: ballotItem, ...cardProps });
+  const [featured, ...rest] = list;
+  const meter = personalization(profile);
+  const facts = answeredFacts(profile);
   // Interests are "decided" once the person confirms the topics screen or picks any.
   const needsInterests = !profile.topicsConfirmedAt && Object.keys(profile.topics).length === 0;
+  const editProfile = () => onOpenProfile({ kind: needsInterests ? "topics" : "list" });
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-28 sm:px-6">
       <TopBar active="home" needsInterests={needsInterests} onHome={() => window.scrollTo({ top: 0 })} onExplore={onExplore} onOpenProfile={onOpenProfile} />
 
-      <header className="pt-4 sm:pt-6">
+      <header className="pt-5 sm:pt-8">
         {profile.name && (
-          <p className="text-small font-semibold text-muted-foreground">
-            {greeting}, {profile.name}
+          <p className="font-display text-lg italic text-muted-foreground">
+            {greeting}, {profile.name}.
           </p>
         )}
-        <h1 className="text-display font-extrabold">For you</h1>
-        <p className="mt-2 text-body">Public decisions that may matter to your life in {town ?? "Massachusetts"}.</p>
-        <p className="mt-1 text-small text-muted-foreground">
-          {basis ?? "Add a few details and Legible sorts this page by what touches your life."}{" "}
+        <h1 className="mt-1 font-display text-headline text-balance">
+          Public decisions that may matter to your life in <span className="font-medium">{town ?? "Massachusetts"}</span>.
+        </h1>
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-small">
           <button
             type="button"
-            onClick={() => onOpenProfile({ kind: needsInterests ? "topics" : "list" })}
-            className={`inline-flex items-center gap-1 font-semibold text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground ${FOCUS}`}
+            onClick={editProfile}
+            aria-label={`Your profile: ${meter.done} of ${meter.total} steps filled in`}
+            className={`group inline-flex min-h-9 items-center gap-1.5 rounded-sm ${FOCUS}`}
+          >
+            {meter.items.map((item, i) => (
+              <span
+                key={i}
+                aria-hidden="true"
+                className={`size-2.5 rounded-full interactive group-hover:scale-110 ${item.done ? "bg-accent" : "shadow-[inset_0_0_0_1.5px_var(--info)]"}`}
+              />
+            ))}
+          </button>
+          {(town || facts.length > 0) && (
+            <p className="font-semibold">
+              {[town, ...facts.slice(0, 3)].filter(Boolean).join(" · ")}
+              {facts.length > 3 && <span className="font-normal text-muted-foreground"> · +{facts.length - 3}</span>}
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={editProfile}
+            className={`min-h-9 font-semibold text-accent underline decoration-accent/30 underline-offset-4 interactive hover:decoration-accent ${FOCUS}`}
           >
             {basis ? "Edit profile" : "Add details"}
           </button>
-        </p>
+        </div>
+        {!basis && <p className="mt-1 text-small text-muted-foreground">Add a few details and Legible sorts this page by what touches your life.</p>}
       </header>
 
-      {/* Only a date due today or tomorrow sits above the decisions. */}
-      {urgent.length > 0 && (
-        <section aria-label="Due soon" className="mt-5 space-y-2">
-          {urgent.map((e) => (
-            <UrgentAlert key={e.key} entry={e} {...cardProps} />
-          ))}
-        </section>
-      )}
+      <ComingUp entries={attention} {...cardProps} onOpenProfile={onOpenProfile} />
 
       {/* Only what relates to this person. Everything else is on Explore. */}
-      <section aria-labelledby="h-foryou" className="mt-7">
+      <section aria-labelledby="h-foryou" className="mt-section">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 id="h-foryou" className={H2}>
+          <h2 id="h-foryou" className="text-body font-bold">
             Decisions for you
           </h2>
-          {decisions > 0 && <p className="text-small text-muted-foreground">Closest to your life first</p>}
+          {featured && <p className="text-small text-muted-foreground">Closest to your life first</p>}
         </div>
-        {decisions > 0 ? (
-          <ul className="mt-3 space-y-3">
-            {ballotItem &&
-              touching.map((c) => <BallotQuestionCard key={c.measure.id} card={c} ballot={ballotItem} onOpenMeasure={onOpenMeasure} onOpenProfile={onOpenProfile} />)}
-            {affect.map((e) => (
-              <BriefCard key={e.key} entry={e} {...cardProps} />
-            ))}
-            {ballotItem &&
-              listed.map((c) => <BallotQuestionCard key={c.measure.id} card={c} ballot={ballotItem} onOpenMeasure={onOpenMeasure} onOpenProfile={onOpenProfile} />)}
-          </ul>
+        {featured ? (
+          <>
+            <div className="mt-3">
+              <FeaturedDecision d={featured} onOpenProfile={onOpenProfile} />
+            </div>
+            {rest.length > 0 && (
+              <ul className="mt-4 divide-y divide-border">
+                {rest.map((d) => (
+                  <DecisionRow key={d.key} d={d} onOpenProfile={onOpenProfile} />
+                ))}
+              </ul>
+            )}
+          </>
         ) : (
           <p className="mt-2 text-small text-muted-foreground">
             Nothing matches your answers yet.{" "}
-            <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={`font-semibold text-foreground underline underline-offset-4 ${FOCUS}`}>
+            <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={`font-semibold text-accent underline decoration-accent/30 underline-offset-4 ${FOCUS}`}>
               Add details to your profile
             </button>{" "}
             and the decisions that reach your life will show here first.
@@ -125,27 +153,16 @@ export function Home({
         )}
       </section>
 
-      {/* Other dates in their own panel, so a deadline never reads as a recommendation. */}
-      {comingUp.length > 0 && (
-        <section aria-labelledby="h-coming" className="mt-10">
-          <div className="flex items-baseline justify-between gap-3">
-            <h2 id="h-coming" className={H2}>
-              Coming up
-            </h2>
-            <p className="text-small text-muted-foreground">Dates from official sources</p>
-          </div>
-          <ul className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border/60 bg-surface shadow-card">
-            {comingUp.map((e) => (
-              <DeadlineRow key={e.key} entry={e} {...cardProps} />
-            ))}
-          </ul>
-        </section>
-      )}
-
-      <button type="button" onClick={onExplore} className={`mt-8 text-left max-sm:mr-[4.5rem] ${SECONDARY}`}>
+      <button
+        type="button"
+        onClick={onExplore}
+        className={`group mt-10 inline-flex min-h-11 items-center gap-2 text-left text-body font-semibold underline decoration-border underline-offset-4 interactive hover:decoration-foreground max-sm:mr-[4.5rem] ${FOCUS}`}
+      >
         Explore everything happening near you
         <span aria-hidden="true" className="-rotate-90">
-          <Glyph name="chevron" size={14} />
+          <span className="nudge block">
+            <Glyph name="chevron" size={14} />
+          </span>
         </span>
       </button>
     </div>

@@ -1,24 +1,25 @@
 "use client";
 
-// Home's feed pieces. Two shapes, so dates and decisions never blur together:
-// - DeadlineRow: a compact row in the "Coming up" panel. Date tile, headline,
-//   when, one line on who it is for (only when Legible knows), one action.
-// - BriefCard: a decision card. Subject and number with a status, a headline,
-//   two lines on what is proposed, the relevance line (why it is here), and one
-//   primary action into the detail page with the official source beside it.
-// The relevance line is the same pattern everywhere: a mark, a label, and the
-// sentence from relevanceOf, with "Why you're seeing this" one tap away.
-// On a mouse, the cursor "Read more" pill opens the detail page from empty space.
-import { useState } from "react";
+// Home's decisions, in the Notebook direction. Two shapes from one view model:
+// - FeaturedDecision: the first decision, on the page's one raised surface, with
+//   an editorial headline. Its relevance note is emphasised (plum) only when the
+//   matching data supports it (a direct or potential match); a followed subject
+//   gets a quieter lilac note; an open question or no match stays plain text.
+// - DecisionRow: every other decision as a compact row in a hairline list. The
+//   whole row opens the detail page; "Add details", "Why", and the official
+//   source keep their own clicks.
+// Every word of relevance comes from relevanceOf (or the ballot card's own
+// match); nothing here adds a fact. On a mouse, the cursor "Read more" pill
+// opens the featured decision from empty space.
+import { useState, type ReactNode } from "react";
 import { docWhat, type TimelineEntry } from "@/lib/engine/timeline";
-import { actionsFor, cardHeader, civicRelevance, dateLine, explanation, headline, keyDate, relevanceOf, type Action, type Relevance, type RelevanceKind } from "@/lib/engine/home-copy";
+import { actionsFor, cardHeader, explanation, headline, relevanceOf, dateLine, type Action, type Relevance, type RelevanceKind } from "@/lib/engine/home-copy";
 import { DOC_TYPE_LABEL, shortDate } from "@/lib/engine/decide-by";
 import type { FeedItem } from "@/lib/engine/feed";
 import type { Card } from "@/lib/engine/types";
 import { questionBecause } from "@/lib/engine/update-copy";
 import type { CivicCard } from "@/lib/engine/civic";
 import { LIFE_AREAS, type LifeAreaId, type TopicId } from "@/lib/vocab";
-import { CivicTile } from "./CivicRow";
 import { useCursorCta } from "./CursorCta";
 import { Glyph, Part } from "./icons";
 import type { SheetView } from "./ProfileSheet";
@@ -32,7 +33,7 @@ const KIND_EXPLAINED: Record<RelevanceKind, string> = {
   open: "Depends on something you haven't told Legible yet.",
 };
 
-/** The relevance line's label, by how the item connects to the person. */
+/** The relevance label, by how the item connects to the person. */
 const KIND_LABEL: Record<RelevanceKind, string> = {
   direct: "Relevant to you",
   potential: "Relevant to you",
@@ -40,13 +41,12 @@ const KIND_LABEL: Record<RelevanceKind, string> = {
   open: "Might apply",
 };
 
-// The chat dock's orb is fixed bottom-right (56px + 16px inset). On phones, action
-// rows keep clear of that strip so a primary button is never under it.
-const CLEAR_ORB = "max-sm:pr-[4.5rem]";
-const BUTTON = `inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full bg-primary px-4 text-small font-semibold text-primary-foreground transition-opacity duration-(--duration) ease-legible hover:opacity-90 ${FOCUS}`;
-const LINK = `inline-flex min-h-11 items-center gap-1 text-small font-semibold text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground hover:decoration-foreground ${FOCUS}`;
-const ROW_ACTION = `inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-surface px-3.5 text-small font-semibold transition-colors duration-(--duration) ease-legible hover:border-foreground sm:min-h-9 ${FOCUS}`;
-const CARD = `relative rounded-lg border border-border/60 bg-surface shadow-card transition-[transform,box-shadow] duration-(--duration) ease-legible [@media(hover:hover)]:hover:-translate-y-0.5 [@media(hover:hover)]:hover:shadow-[0_2px_4px_rgb(17_17_17/0.05),0_16px_40px_rgb(17_17_17/0.10)]`;
+/** Supported by the matching data: the only relevance that gets the plum accent. */
+const supported = (r: Relevance | null): r is Relevance => r?.kind === "direct" || r?.kind === "potential";
+
+const LINK = `group inline-flex min-h-11 items-center gap-1.5 text-small font-semibold text-muted-foreground underline decoration-border underline-offset-4 interactive hover:text-foreground hover:decoration-foreground ${FOCUS}`;
+const BUTTON = `group inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-4.5 text-body font-semibold text-primary-foreground interactive press hover:bg-primary-hover ${FOCUS}`;
+const ADD = `relative z-10 font-semibold text-accent underline decoration-accent/30 underline-offset-4 interactive hover:decoration-accent ${FOCUS}`;
 
 /** Subject pictograms: shape, not colour, tells decision types apart. */
 const TOPIC_PART: Partial<Record<TopicId, string>> = {
@@ -61,15 +61,9 @@ const TOPIC_PART: Partial<Record<TopicId, string>> = {
 };
 const KIND_PART: Record<CivicCard["item"]["kind"], string> = { deadline: "ballot", window: "ballot_box", election: "ballot_box", meeting: "town_hall", bill: "book" };
 
-function partFor(e: TimelineEntry): string {
-  if (e.kind === "doc") return "ballot";
-  const i = e.card.item;
-  return i.topics.map((t) => TOPIC_PART[t]).find(Boolean) ?? KIND_PART[i.kind];
-}
-
-function Spark({ className = "text-accent" }: { className?: string }) {
+export function Spark({ className = "text-accent" }: { className?: string }) {
   return (
-    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className={`shrink-0 ${className}`}>
+    <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" className={`shrink-0 ${className}`}>
       <path d="M12 2.5l1.9 6.1 6.1 1.9-6.1 1.9-1.9 6.1-1.9-6.1-6.1-1.9 6.1-1.9z" />
     </svg>
   );
@@ -78,322 +72,330 @@ function Spark({ className = "text-accent" }: { className?: string }) {
 /** A small clock for dated items, a half-filled circle for proposals still under review. */
 function StatusMark({ dated }: { dated: boolean }) {
   return (
-    <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="shrink-0">
+    <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="shrink-0">
       <circle cx="12" cy="12" r="9" />
       {dated ? <path d="M12 7v5l3 2" /> : <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none" />}
     </svg>
   );
 }
 
-/**
- * Why this is on the page: mark, label, the matching sentence, and the basis on
- * request. Every word comes from relevanceOf; nothing here adds a fact.
- */
-function RelevanceLine({
-  relevance,
-  openArea,
-  place,
-  compact = false,
-  onOpenProfile,
-}: {
-  relevance: Relevance | null;
-  openArea?: LifeAreaId;
-  /** Where the item happens, for the "not from your answers" label. */
-  place?: string;
-  compact?: boolean;
-  onOpenProfile: (v: SheetView) => void;
-}) {
-  const [why, setWhy] = useState(false);
-  const addDetails = (
-    <button
-      type="button"
-      onClick={() => onOpenProfile(openArea ? { kind: "area", id: openArea } : { kind: "list" })}
-      className={`font-semibold text-foreground underline underline-offset-4 ${FOCUS}`}
-    >
-      Add details
-    </button>
-  );
-
-  if (!relevance) {
-    if (compact || !place) return null;
-    return (
-      <p className="mt-3 text-small text-muted-foreground">
-        <span className="font-semibold text-foreground">Happening in {place}.</span> Not based on your answers.
-      </p>
-    );
-  }
-
-  if (relevance.kind === "open") {
-    return (
-      <p className={`${compact ? "mt-1" : "mt-3"} text-small text-muted-foreground`}>
-        {!compact && <span className="font-semibold text-foreground">{KIND_LABEL.open}. </span>}
-        {relevance.text} {addDetails}
-      </p>
-    );
-  }
-
-  const personal = relevance.kind !== "interest";
-  return (
-    <div className={`${compact ? "mt-1.5" : "mt-3"} border-l-2 ${personal ? "border-accent" : "border-info"} pl-3`}>
-      <div className="flex items-start justify-between gap-2">
-        <p className="text-small">
-          {/* Full cards stack the label over the sentence; rows keep it inline. */}
-          <span className={`items-center gap-1 font-semibold ${compact ? "mr-1.5 inline-flex align-[-2px]" : "flex"}`}>
-            <Spark className={personal ? "text-accent" : "text-muted-foreground"} />
-            {KIND_LABEL[relevance.kind]}
-          </span>
-          <span className={compact ? "text-muted-foreground" : "mt-0.5 block"}>{relevance.text}</span>
-        </p>
-        <button
-          type="button"
-          onClick={() => setWhy(!why)}
-          aria-expanded={why}
-          aria-label="Why you're seeing this"
-          title="Why you're seeing this"
-          className={`-my-1.5 flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-surface-muted hover:text-foreground ${FOCUS}`}
-        >
-          <span aria-hidden="true" className="flex size-4 items-center justify-center rounded-full border border-current text-[10px] font-bold leading-none">
-            i
-          </span>
-        </button>
-      </div>
-      {why && (
-        <div className="mt-2 animate-fade-in space-y-1 text-small text-muted-foreground">
-          <p className="font-semibold text-foreground">Why you&apos;re seeing this</p>
-          {relevance.basis.map((b) => (
-            <p key={b}>{b}</p>
-          ))}
-          <p>{KIND_EXPLAINED[relevance.kind]}</p>
-          <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={`min-h-9 font-semibold text-foreground underline underline-offset-4 ${FOCUS}`}>
-            Update your profile
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/** Shared wiring: where the card opens, its actions, and the profile area for "Add details". */
-function useEntry(e: TimelineEntry, onOpenItem: (id: string) => void, onOpenDoc: (id: string) => void) {
-  const civic = e.kind === "civic" ? e.card : null;
-  const docId = e.kind === "doc" ? e.item.doc.id : e.ballot?.doc.id;
-  const openDetail = () => (civic ? onOpenItem(civic.item.id) : docId && onOpenDoc(docId));
-  const go = (a: Action) => {
-    if ("href" in a.to) return;
-    if (a.to.open === "doc" && docId) onOpenDoc(docId);
-    else openDetail();
-  };
-  const openArea = LIFE_AREAS.find((a) => civic?.open.some((o) => a.facts.includes(o.fact)))?.id;
-  return { civic, openDetail, go, openArea, ...actionsFor(e), relevance: relevanceOf(e) };
-}
-
 const arrow = (
-  <span aria-hidden="true" className="-rotate-90 transition-transform duration-(--duration) ease-legible group-hover:translate-y-0.5">
-    <Glyph name="chevron" size={14} />
+  <span aria-hidden="true" className="-rotate-90">
+    <span className="nudge block">
+      <Glyph name="chevron" size={14} />
+    </span>
   </span>
 );
 
-function ActionLink({ a, main, go, className }: { a: Action; main: boolean; go: (a: Action) => void; className?: string }) {
-  const cls = `group ${className ?? (main ? BUTTON : LINK)}`;
+/* ------------------------------------------------------------- view model */
+
+/** One decision, whatever it came from: a civic item, a document, or a ballot question. */
+type Decision = {
+  key: string;
+  part: string;
+  meta: string;
+  status?: string;
+  dated: boolean;
+  title: string;
+  what: string;
+  relevance: Relevance | null;
+  /** Where the item happens, for the "not based on your answers" line. */
+  place?: string;
+  openArea?: LifeAreaId;
+  open: () => void;
+  primary: Action;
+  secondary?: Action;
+  go: (a: Action) => void;
+  /** Both actions leave the app, so the detail page needs its own way in. */
+  noDetail: boolean;
+};
+
+function fromEntry(e: TimelineEntry, today: string, onOpenItem: (id: string) => void, onOpenDoc: (id: string) => void): Decision {
+  const civic = e.kind === "civic" ? e.card : null;
+  const docId = e.kind === "doc" ? e.item.doc.id : e.ballot?.doc.id;
+  const open = () => (civic ? onOpenItem(civic.item.id) : docId && onOpenDoc(docId));
+  const go = (a: Action) => {
+    if ("href" in a.to) return;
+    if (a.to.open === "doc" && docId) onOpenDoc(docId);
+    else open();
+  };
+  const head = civic ? cardHeader(civic) : { meta: DOC_TYPE_LABEL[e.kind === "doc" ? e.item.doc.docType : "other"], status: dateLine(e, today) || undefined };
+  const { primary, secondary } = actionsFor(e);
+  return {
+    key: e.key,
+    part: civic ? (civic.item.topics.map((t) => TOPIC_PART[t]).find(Boolean) ?? KIND_PART[civic.item.kind]) : "ballot",
+    meta: head.meta,
+    status: head.status,
+    dated: !civic || civic.item.kind !== "bill",
+    title: civic ? headline(civic) : e.kind === "doc" ? e.item.doc.title : "",
+    what: civic ? explanation(civic) : e.kind === "doc" ? docWhat(e.item) : "",
+    relevance: relevanceOf(e),
+    place: civic?.item.place.name,
+    openArea: LIFE_AREAS.find((a) => civic?.open.some((o) => a.facts.includes(o.fact)))?.id,
+    open,
+    primary,
+    secondary,
+    go,
+    noDetail: "href" in primary.to && (!secondary || "href" in secondary.to),
+  };
+}
+
+/**
+ * A ballot question that touches the person, or is on their list. Why it is here
+ * comes from the card's own match (questionBecause) and its first verified "why"
+ * sentence; it opens the question's existing page.
+ */
+function fromBallotCard(c: Card, ballot: FeedItem, onOpenMeasure: (docId: string, measureId: string) => void): Decision {
+  const m = c.measure;
+  const open = () => onOpenMeasure(ballot.doc.id, m.id);
+  const touches = c.relevance === "touches";
+  const because = questionBecause(c);
+  const d = ballot.doc.decideBy;
+  return {
+    key: m.id,
+    part: m.topics.map((t) => TOPIC_PART[t]).find(Boolean) ?? "ballot",
+    meta: `Ballot question ${m.number}`,
+    status: d ? `Voters decide ${shortDate(d.date)}` : undefined,
+    dated: true,
+    title: m.title,
+    what: m.overview[0]?.text ?? "",
+    relevance: because
+      ? {
+          kind: touches ? "direct" : "interest",
+          text: [`${because}.`, touches ? c.why[0]?.text : null].filter(Boolean).join(" "),
+          basis: [`${because}.`, "Your ballot page lists this question first."],
+        }
+      : null,
+    open,
+    primary: { label: "Understand this decision", to: { open: "item" } },
+    secondary: m.sourceUrl ? { label: "Read official text", to: { href: m.sourceUrl } } : undefined,
+    go: open,
+    noDetail: false,
+  };
+}
+
+/** Every decision for Home, in the order given: ballot questions that touch, then the ranked entries, then listed questions. */
+export function decisionsFor({
+  touching,
+  affect,
+  listed,
+  ballot,
+  today,
+  onOpenItem,
+  onOpenDoc,
+  onOpenMeasure,
+}: { touching: Card[]; affect: TimelineEntry[]; listed: Card[]; ballot?: FeedItem } & CardProps): Decision[] {
+  return [
+    ...(ballot ? touching.map((c) => fromBallotCard(c, ballot, onOpenMeasure)) : []),
+    ...affect.map((e) => fromEntry(e, today, onOpenItem, onOpenDoc)),
+    ...(ballot ? listed.map((c) => fromBallotCard(c, ballot, onOpenMeasure)) : []),
+  ];
+}
+
+/* ---------------------------------------------------------------- pieces */
+
+function ActionLink({ a, main, go }: { a: Action; main: boolean; go: (a: Action) => void }) {
+  const cls = main ? BUTTON : LINK;
   if ("href" in a.to)
     return (
-      <a href={a.to.href} target="_blank" rel="noreferrer" className={cls}>
+      <a href={a.to.href} target="_blank" rel="noreferrer" className={`relative z-10 ${cls}`}>
         {a.label}
-        {/* Every primary ends in the same chevron; the external mark is for the secondary link. */}
         {main ? arrow : <Glyph name="external" size={13} />}
         <span className="sr-only">(opens the official site)</span>
       </a>
     );
   return (
-    <button type="button" onClick={() => go(a)} className={cls}>
+    <button type="button" onClick={() => go(a)} className={`relative z-10 ${cls}`}>
       {a.label}
       {main && arrow}
     </button>
   );
 }
 
-/** One date in the "Coming up" panel. Urgency comes only from the verified date. */
-export function DeadlineRow({ entry: e, today, onOpenItem, onOpenDoc, onOpenProfile }: { entry: TimelineEntry; onOpenProfile: (v: SheetView) => void } & CardProps) {
-  const { civic, openDetail, go, openArea, primary } = useEntry(e, onOpenItem, onOpenDoc);
-  const cta = useCursorCta(openDetail);
-  if (!civic) return null;
-  // The item's own relevance only: the ballot's questions have their own cards above.
-  const relevance = civicRelevance(civic);
-  const head = cardHeader(civic);
-  const soon = civic.timing === "today" || (civic.days !== undefined && civic.days <= 3);
-
+function AddDetails({ area, onOpenProfile }: { area?: LifeAreaId; onOpenProfile: (v: SheetView) => void }) {
   return (
-    <li {...cta.handlers} className={`relative flex flex-wrap items-center gap-x-3.5 gap-y-2 px-4 py-3 sm:flex-nowrap sm:gap-x-4 sm:px-5 ${cta.cursorClass}`}>
-      {cta.pill}
-      <span className="self-start">
-        {/* An open window shows its closing day: the date a person acts by. */}
-        <CivicTile card={civic} size={48} at={keyDate(civic)} />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-small text-muted-foreground">
-          {head.status && (
-            <span className={`inline-flex items-center gap-1 rounded-sm px-1.5 font-semibold text-foreground ${soon ? "bg-attention-soft" : ""}`}>
-              <StatusMark dated />
-              {head.status}
-            </span>
-          )}
-          <span>{head.meta}</span>
-        </p>
-        <h3 className="mt-0.5 text-body font-semibold leading-snug">
-          <button type="button" onClick={openDetail} className={`text-left hover:underline hover:underline-offset-4 ${FOCUS}`}>
-            {headline(civic)}
-          </button>
-        </h3>
-        {relevance ? (
-          <RelevanceLine relevance={relevance} openArea={openArea} compact onOpenProfile={onOpenProfile} />
-        ) : (
-          <p className="mt-0.5 line-clamp-1 text-small text-muted-foreground">{explanation(civic)}</p>
-        )}
-      </div>
-      <div className={`w-full min-[360px]:pl-[3.875rem] sm:w-auto sm:shrink-0 sm:pl-0 ${CLEAR_ORB}`}>
-        <ActionLink a={primary} main go={go} className={ROW_ACTION} />
-      </div>
-      <span className="sr-only">{dateLine(e, today)}</span>
-    </li>
+    <button type="button" onClick={() => onOpenProfile(area ? { kind: "area", id: area } : { kind: "list" })} className={ADD}>
+      Add details
+    </button>
   );
 }
 
-/**
- * A date due today or tomorrow, above the decisions. One compact bar: when, what,
- * who it is for (the relevance line keeps "May be relevant if" when Legible
- * does not know), and one action. Never shown for a date further out.
- */
-export function UrgentAlert({ entry: e, onOpenItem, onOpenDoc, onOpenProfile }: { entry: TimelineEntry; onOpenProfile: (v: SheetView) => void } & CardProps) {
-  const { civic, openDetail, go, openArea, primary, relevance } = useEntry(e, onOpenItem, onOpenDoc);
-  if (!civic) return null;
-  const head = cardHeader(civic);
+/** "Why you're seeing this": the basis lines, the kind of match, and a way to change it. */
+function WhyToggle({ open, onToggle, compact = false }: { open: boolean; onToggle: () => void; compact?: boolean }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-attention/40 bg-attention-soft px-4 py-3 sm:flex-nowrap sm:px-5">
-      <div className="min-w-0 flex-1">
-        <p className="flex flex-wrap items-center gap-x-2 text-small">
-          <span className="inline-flex items-center gap-1 font-bold">
-            <StatusMark dated />
-            {head.status}
-          </span>
-          <span className="text-muted-foreground">{head.meta}</span>
-        </p>
-        <p className="mt-0.5 text-body font-semibold leading-snug">
-          <button type="button" onClick={openDetail} className={`text-left hover:underline hover:underline-offset-4 ${FOCUS}`}>
-            {headline(civic)}
-          </button>
-        </p>
-        <RelevanceLine relevance={relevance} openArea={openArea} compact onOpenProfile={onOpenProfile} />
-      </div>
-      <div className={`w-full sm:w-auto sm:shrink-0 ${CLEAR_ORB}`}>
-        <ActionLink a={primary} main go={go} className={BUTTON} />
-      </div>
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-expanded={open}
+      className={`relative z-10 inline-flex items-center gap-1 text-small font-semibold text-accent interactive hover:text-primary-hover ${compact ? "min-h-6 align-middle" : "min-h-9"} ${FOCUS}`}
+    >
+      {compact ? "Why" : "Why you're seeing this"}
+      <span aria-hidden="true" className={`transition-transform duration-(--dur-base) ease-legible ${open ? "rotate-180" : ""}`}>
+        <Glyph name="chevron" size={13} />
+      </span>
+    </button>
+  );
+}
+
+function WhyBox({ relevance, onOpenProfile }: { relevance: Relevance; onOpenProfile: (v: SheetView) => void }) {
+  return (
+    <div className="mt-2 animate-fade-in space-y-1 text-small text-muted-foreground">
+      {relevance.basis.map((b) => (
+        <p key={b}>{b}</p>
+      ))}
+      <p>{KIND_EXPLAINED[relevance.kind]}</p>
+      <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={`relative z-10 min-h-9 ${ADD}`}>
+        Update your profile
+      </button>
     </div>
   );
 }
 
-/** One decision in the For you feed. */
-export function BriefCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenProfile }: { entry: TimelineEntry; onOpenProfile: (v: SheetView) => void } & CardProps) {
-  const { civic, openDetail, go, openArea, primary, secondary, relevance } = useEntry(e, onOpenItem, onOpenDoc);
-  const head = civic ? cardHeader(civic) : { meta: DOC_TYPE_LABEL[e.kind === "doc" ? e.item.doc.docType : "other"], status: dateLine(e, today) || undefined };
-  const title = civic ? headline(civic) : e.kind === "doc" ? e.item.doc.title : "";
-  const what = civic ? explanation(civic) : e.kind === "doc" ? docWhat(e.item) : "";
-  // Phones have no cursor pill; if both actions leave the app, add an in-app way in.
-  const noDetail = "href" in primary.to && (!secondary || "href" in secondary.to);
-  const cta = useCursorCta(openDetail);
+/* ------------------------------------------------------------- featured */
 
+/**
+ * The relevance note on the featured decision. Plum and a serif voice only for a
+ * supported match; lilac for a followed subject; plain text otherwise.
+ */
+function FeaturedNote({ d, onOpenProfile }: { d: Decision; onOpenProfile: (v: SheetView) => void }) {
+  const [why, setWhy] = useState(false);
+  const r = d.relevance;
+  if (!r) {
+    return d.place ? (
+      <p className="mt-5 text-small text-muted-foreground">
+        <span className="font-semibold text-foreground">Happening in {d.place}.</span> Not based on your answers.
+      </p>
+    ) : null;
+  }
+  if (r.kind === "open") {
+    return (
+      <p className="mt-5 text-small text-muted-foreground">
+        <span className="font-semibold text-foreground">{KIND_LABEL.open}.</span> {r.text} <AddDetails area={d.openArea} onOpenProfile={onOpenProfile} />
+      </p>
+    );
+  }
+  const strong = supported(r);
   return (
-    <li {...cta.handlers} className={`${CARD} p-4 sm:p-5 ${cta.cursorClass}`}>
+    <div className={`mt-5 rounded-md px-4 py-3.5 sm:px-5 ${strong ? "bg-accent-soft" : "bg-info-soft"}`}>
+      <div className="flex items-center justify-between gap-3">
+        <p className={`inline-flex items-center gap-1.5 text-small font-semibold ${strong ? "text-accent" : "text-foreground"}`}>
+          {strong && <Spark />}
+          {KIND_LABEL[r.kind]}
+        </p>
+        <WhyToggle open={why} onToggle={() => setWhy(!why)} compact />
+      </div>
+      <p className={`mt-1 ${strong ? "font-display text-[1.0625rem] italic leading-normal sm:text-lg" : "text-body"}`}>{r.text}</p>
+      {why && <WhyBox relevance={r} onOpenProfile={onOpenProfile} />}
+    </div>
+  );
+}
+
+/** The first decision: the page's one raised surface, with an editorial headline. */
+export function FeaturedDecision({ d, onOpenProfile }: { d: Decision; onOpenProfile: (v: SheetView) => void }) {
+  const cta = useCursorCta(d.open);
+  return (
+    <article {...cta.handlers} className={`relative -mx-1 rounded-lg bg-surface px-5 pb-6 pt-6 shadow-card sm:mx-0 sm:px-8 sm:pt-7 ${cta.cursorClass}`}>
       {cta.pill}
       <div className="flex items-center justify-between gap-3">
-        <p className="flex min-w-0 items-center gap-2 text-small font-semibold text-muted-foreground">
-          <span aria-hidden="true" className="flex size-7 shrink-0 items-center justify-center rounded-sm bg-surface-muted text-foreground">
-            <Part name={partFor(e)} size={17} strokeWidth={1.8} />
+        <p className="flex min-w-0 items-center gap-2.5 text-small font-semibold text-muted-foreground">
+          <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground shadow-[inset_0_0_0_1.5px_var(--foreground)]">
+            <Part name={d.part} size={18} strokeWidth={1.8} />
           </span>
-          <span className="truncate">{head.meta}</span>
+          <span className="truncate">{d.meta}</span>
         </p>
-        {head.status && (
+        {d.status && (
           <span className="inline-flex shrink-0 items-center gap-1 text-small font-medium text-muted-foreground">
-            <StatusMark dated={!civic || civic.item.kind !== "bill"} />
-            {head.status}
+            <StatusMark dated={d.dated} />
+            {d.status}
           </span>
         )}
       </div>
 
-      <h3 className="mt-2.5 text-title">{title}</h3>
-      <p className="mt-1.5 line-clamp-2 text-body text-muted-foreground">{what}</p>
+      <h3 className="mt-4 font-display text-feature text-balance">{d.title}</h3>
+      <p className="mt-3 max-w-[36em] text-body text-muted-foreground">{d.what}</p>
 
-      <RelevanceLine relevance={relevance} openArea={openArea} place={civic?.item.place.name} onOpenProfile={onOpenProfile} />
+      <FeaturedNote d={d} onOpenProfile={onOpenProfile} />
 
-      <div className={`mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 ${CLEAR_ORB}`}>
-        <ActionLink a={primary} main go={go} />
-        {secondary && <ActionLink a={secondary} main={false} go={go} />}
-        {noDetail && (
-          <button type="button" onClick={openDetail} className={`[@media(hover:hover)_and_(pointer:fine)]:hidden ${LINK}`}>
+      <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-1">
+        <ActionLink a={d.primary} main go={d.go} />
+        {d.secondary && <ActionLink a={d.secondary} main={false} go={d.go} />}
+        {d.noDetail && (
+          <button type="button" onClick={d.open} className={`[@media(hover:hover)_and_(pointer:fine)]:hidden ${LINK}`}>
             Read more
           </button>
         )}
       </div>
-    </li>
+    </article>
   );
 }
 
-/**
- * A ballot question that touches the person, or is on their list, as a decision
- * card. Why it is here comes from the card's own match (questionBecause) and its
- * first verified "why" sentence; it opens the question's existing page.
- */
-export function BallotQuestionCard({
-  card: c,
-  ballot,
-  onOpenMeasure,
-  onOpenProfile,
-}: {
-  card: Card;
-  ballot: FeedItem;
-  onOpenMeasure: (docId: string, measureId: string) => void;
-  onOpenProfile: (v: SheetView) => void;
-}) {
-  const m = c.measure;
-  const open = () => onOpenMeasure(ballot.doc.id, m.id);
-  const cta = useCursorCta(open);
-  const touches = c.relevance === "touches";
-  const because = questionBecause(c);
-  const relevance: Relevance | null = because
-    ? {
-        kind: touches ? "direct" : "interest",
-        text: [`${because}.`, touches ? c.why[0]?.text : null].filter(Boolean).join(" "),
-        basis: [`${because}.`, "Your ballot page lists this question first."],
-      }
-    : null;
-  const d = ballot.doc.decideBy;
-  const part = m.topics.map((t) => TOPIC_PART[t]).find(Boolean) ?? "ballot";
+/* ------------------------------------------------------------------ rows */
+
+/** One line of relevance for a row: label and sentence, or "Might apply" with Add details. */
+function RowRelevance({ d, why, onWhy, onOpenProfile }: { d: Decision; why: boolean; onWhy: () => void; onOpenProfile: (v: SheetView) => void }) {
+  const r = d.relevance;
+  if (!r) return <p className="mt-1 line-clamp-1 text-small text-muted-foreground">{d.what}</p>;
+  if (r.kind === "open")
+    return (
+      <p className="mt-1 text-small text-muted-foreground">
+        {KIND_LABEL.open}. {r.text} <AddDetails area={d.openArea} onOpenProfile={onOpenProfile} />
+      </p>
+    );
+  return (
+    <p className="mt-1 text-small text-muted-foreground">
+      <span className={`font-semibold ${supported(r) ? "text-accent" : "text-foreground"}`}>{KIND_LABEL[r.kind]}.</span> {r.text}{" "}
+      <span className="whitespace-nowrap">
+        <WhyToggle open={why} onToggle={onWhy} compact />
+      </span>
+    </p>
+  );
+}
+
+/** A decision as a compact row. The headline is the row's link; it covers the row. */
+export function DecisionRow({ d, onOpenProfile }: { d: Decision; onOpenProfile: (v: SheetView) => void }) {
+  const [why, setWhy] = useState(false);
+  const external = d.noDetail && "href" in d.primary.to ? d.primary.to.href : undefined;
+  const stretch = "text-left after:absolute after:inset-0 after:rounded-md after:content-['']";
+  const title: ReactNode = external ? (
+    <a href={external} target="_blank" rel="noreferrer" className={`${stretch} ${FOCUS}`}>
+      {d.title}
+      <span className="sr-only"> (opens the official site)</span>
+    </a>
+  ) : (
+    <button type="button" onClick={d.open} className={`${stretch} ${FOCUS}`}>
+      {d.title}
+    </button>
+  );
+  const source = d.secondary && "href" in d.secondary.to ? d.secondary : undefined;
 
   return (
-    <li {...cta.handlers} className={`${CARD} p-4 sm:p-5 ${cta.cursorClass}`}>
-      {cta.pill}
-      <div className="flex items-center justify-between gap-3">
-        <p className="flex min-w-0 items-center gap-2 text-small font-semibold text-muted-foreground">
-          <span aria-hidden="true" className="flex size-7 shrink-0 items-center justify-center rounded-sm bg-surface-muted text-foreground">
-            <Part name={part} size={17} strokeWidth={1.8} />
-          </span>
-          <span className="truncate">Ballot question {m.number}</span>
+    <li className="relative -mx-3 grid grid-cols-[2.25rem_1fr] gap-x-3.5 rounded-md px-3 py-4 interactive hover:bg-surface sm:grid-cols-[2.5rem_1fr]">
+      <span
+        aria-hidden="true"
+        className={`mt-0.5 flex size-9 items-center justify-center rounded-full sm:size-10 ${supported(d.relevance) ? "bg-accent-soft text-accent" : "bg-surface text-foreground shadow-hairline"}`}
+      >
+        <Part name={d.part} size={18} strokeWidth={1.8} />
+      </span>
+      <div className="min-w-0">
+        <p className="flex flex-wrap items-center gap-x-2 text-small text-muted-foreground">
+          <span className="font-semibold">{d.meta}</span>
+          {d.status && (
+            <span className="inline-flex items-center gap-1">
+              <StatusMark dated={d.dated} />
+              {d.status}
+            </span>
+          )}
         </p>
-        {d && (
-          <span className="inline-flex shrink-0 items-center gap-1 text-small font-medium text-muted-foreground">
-            <StatusMark dated />
-            Voters decide {shortDate(d.date)}
-          </span>
+        <h3 className="mt-0.5 text-[1.0625rem] font-semibold leading-snug sm:text-lg">{title}</h3>
+        <RowRelevance d={d} why={why} onWhy={() => setWhy(!why)} onOpenProfile={onOpenProfile} />
+        {why && d.relevance && <WhyBox relevance={d.relevance} onOpenProfile={onOpenProfile} />}
+        {source && (
+          <a href={(source.to as { href: string }).href} target="_blank" rel="noreferrer" className={`relative z-10 ${LINK} min-h-9`}>
+            {source.label}
+            <Glyph name="external" size={12} />
+            <span className="sr-only">(opens the official site)</span>
+          </a>
         )}
-      </div>
-
-      <h3 className="mt-2.5 text-title">{m.title}</h3>
-      {m.overview[0] && <p className="mt-1.5 line-clamp-2 text-body text-muted-foreground">{m.overview[0].text}</p>}
-
-      <RelevanceLine relevance={relevance} onOpenProfile={onOpenProfile} />
-
-      <div className={`mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 ${CLEAR_ORB}`}>
-        <ActionLink a={{ label: "Understand this decision", to: { open: "item" } }} main go={open} />
-        {m.sourceUrl && <ActionLink a={{ label: "Read official text", to: { href: m.sourceUrl } }} main={false} go={open} />}
       </div>
     </li>
   );

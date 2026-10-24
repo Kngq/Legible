@@ -142,11 +142,12 @@
   --font-display: var(--font-fraunces), "Iowan Old Style", Georgia, serif;
   /* Official words (quotes, bill text, the booklet) keep Source Serif through
      the --font-serif variable set in layout.tsx. */
-  --font-wordmark: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
+  --font-wordmark: var(--font-fraunces), "Iowan Old Style", Georgia, serif;
   --font-mono: var(--font-geist-mono);
 
   /* Type scale. Four interface sizes plus one editorial headline size, set in
-     Fraunces at weight 400 for the featured decision and page titles. */
+     Fraunces at weight 400: headline for page titles, feature for the
+     featured decision. */
   --text-display: clamp(2.5rem, 6vw + 1rem, 4.5rem);
   --text-display--line-height: 1.02;
   --text-display--letter-spacing: -0.03em;
@@ -155,6 +156,10 @@
   --text-headline--line-height: 1.1;
   --text-headline--letter-spacing: -0.02em;
   --text-headline--font-weight: 400;
+  --text-feature: clamp(1.75rem, 2.6vw + 1rem, 2.625rem); /* the featured decision */
+  --text-feature--line-height: 1.1;
+  --text-feature--letter-spacing: -0.02em;
+  --text-feature--font-weight: 400;
   --text-title: 1.5rem;
   --text-title--line-height: 1.2;
   --text-title--letter-spacing: -0.01em;
@@ -268,4 +273,9 @@ body {
     animation-duration: 0ms !important;
     transition-duration: 0ms !important;
   }
+}
+
+/* Fraunces at its display optical size: higher contrast for editorial headlines. */
+.font-display {
+  font-variation-settings: "opsz" 144;
 }
