@@ -131,3 +131,20 @@ export function buildTimeline(docs: FeedItem[], civic: CivicCard[], today: strin
     .map(scored)
     .sort((a, b) => b.score - a.score || (a.days ?? Infinity) - (b.days ?? Infinity) || a.key.localeCompare(b.key));
 }
+
+/** How many "applies to everyone" entries For you adds after the personal ones. */
+export const EVERYONE_SHOWN = 3;
+
+/**
+ * Home's For you, in two groups: entries that touch the person or are on their
+ * list, then the most pressing entries that apply to everyone, so the section
+ * is never empty for someone who skipped the questions. Order is kept from
+ * `timeline`, which buildTimeline already ranks.
+ */
+export function forYouGroups(timeline: TimelineEntry[]): { personal: TimelineEntry[]; everyone: TimelineEntry[] } {
+  const isPersonal = (e: TimelineEntry) => e.touches || e.relevance >= relevanceScore("list");
+  return {
+    personal: timeline.filter(isPersonal),
+    everyone: timeline.filter((e) => !isPersonal(e)).slice(0, EVERYONE_SHOWN),
+  };
+}

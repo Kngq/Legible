@@ -7,10 +7,9 @@ import type { CivicCard } from "@/lib/engine/civic";
 import type { Feed } from "@/lib/engine/feed";
 import { personalization } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
-import { buildTimeline } from "@/lib/engine/timeline";
+import { buildTimeline, forYouGroups } from "@/lib/engine/timeline";
 import type { LifeAreaId } from "@/lib/vocab";
 import { Glyph, Part } from "./icons";
-import { FetchPhotosButton } from "./photos";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { FOCUS } from "./ui";
@@ -48,7 +47,7 @@ export function Home({
   const town = townName(profile.townId);
   const meter = personalization(profile);
   const done = new Set(meter.items.flatMap((i) => (i.kind === "area" && i.done ? [i.id] : [])));
-  const forYou = buildTimeline(feed.items, civic, today).filter((e) => e.touches || e.relevance >= 0.6);
+  const { personal, everyone } = forYouGroups(buildTimeline(feed.items, civic, today));
   const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure };
 
   return (
@@ -115,19 +114,33 @@ export function Home({
         <h2 id="h-foryou" className={H2}>
           For you
         </h2>
-        {forYou.length > 0 ? (
+        {personal.length > 0 ? (
           <>
             <p className="mt-1 text-small text-muted-foreground">Updates that match your answers, most likely to affect you first.</p>
             <ul className="mt-4 space-y-4">
-              {forYou.map((e) => (
+              {personal.map((e) => (
                 <UpdateCard key={e.key} entry={e} {...cardProps} />
               ))}
             </ul>
           </>
         ) : (
-          <p className="mt-1 text-small text-muted-foreground">As you add details above, updates that may affect you will show up here.</p>
+          <p className="mt-1 text-small text-muted-foreground">
+            Nothing matches your answers yet. Add details above and the updates that reach your life will show here first.
+          </p>
         )}
-        <FetchPhotosButton />
+
+        {/* Never empty: the most pressing things that apply to everyone come next. */}
+        {everyone.length > 0 && (
+          <>
+            <p className={`${personal.length > 0 ? "mt-8" : "mt-5"} text-body font-bold`}>For everyone</p>
+            <p className="text-small text-muted-foreground">These apply to every voter or resident, not only you. Soonest first.</p>
+            <ul className="mt-4 space-y-4">
+              {everyone.map((e) => (
+                <UpdateCard key={e.key} entry={e} {...cardProps} />
+              ))}
+            </ul>
+          </>
+        )}
         <button type="button" onClick={onExplore} className={`mt-5 ${SECONDARY}`}>
           Explore everything happening near you
           <span aria-hidden="true" className="-rotate-90">

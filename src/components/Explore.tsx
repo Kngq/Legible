@@ -12,6 +12,7 @@ import { Glyph } from "./icons";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { FOCUS } from "./ui";
+import { FetchPhotosButton } from "./photos";
 import { FeedRow, HowItWorks, SECONDARY, TopBar, UpdateCard } from "./updates";
 
 const SHOWN = 8;
@@ -94,6 +95,12 @@ export function Explore({
       )}
 
       <HowItWorks onOpenProfile={onOpenProfile} />
+
+      {/* Maintenance: fills card thumbnails for items that have none. */}
+      <section aria-label="Card photos" className="mt-8 border-t border-border pt-4">
+        <p className="text-small text-muted-foreground">Card photos come from Pixabay. Items that already have one are skipped.</p>
+        <FetchPhotosButton />
+      </section>
     </div>
   );
 }

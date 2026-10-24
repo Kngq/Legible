@@ -5,7 +5,7 @@ import { findBannedWords } from "@/lib/vocab";
 import { civicFeed, type CivicItem } from "./civic";
 import { buildFeed } from "./feed";
 import { answerFact, emptyProfile, type Profile } from "./profile";
-import { buildTimeline, relevanceScore, urgencyScore, WEIGHTS } from "./timeline";
+import { buildTimeline, EVERYONE_SHOWN, forYouGroups, relevanceScore, urgencyScore, WEIGHTS } from "./timeline";
 import type { DocumentData } from "./types";
 
 const t0 = "2026-10-24T14:00:00.000Z";
@@ -86,5 +86,29 @@ describe("buildTimeline", () => {
     for (const p of [emptyProfile(t0), withFacts({ rents: true, registered_here: false, kids_in_schools: true }, "cambridge")]) {
       for (const e of timelineFor(p)) expect(findBannedWords(e.forYou), e.forYou).toEqual([]);
     }
+  });
+});
+
+describe("forYouGroups", () => {
+  it("is never empty for someone who skipped the questions", () => {
+    const { personal, everyone } = forYouGroups(timelineFor(emptyProfile(t0)));
+    expect(personal).toHaveLength(0);
+    expect(everyone.length).toBeGreaterThan(0);
+    expect(everyone.length).toBeLessThanOrEqual(EVERYONE_SHOWN);
+  });
+
+  it("puts what touches the person first, then everyone items, with no overlap", () => {
+    const t = timelineFor(withFacts({ registered_here: false }, "cambridge"));
+    const { personal, everyone } = forYouGroups(t);
+    expect(personal.some((e) => e.key === "c:ma-2026-registration-deadline")).toBe(true);
+    expect(personal.every((e) => e.touches || e.relevance >= 0.6)).toBe(true);
+    expect(everyone.every((e) => !e.touches && e.relevance < 0.6)).toBe(true);
+    expect(everyone.some((e) => personal.includes(e))).toBe(false);
+  });
+
+  it("keeps the timeline's order within each group", () => {
+    const t = timelineFor(emptyProfile(t0));
+    const { everyone } = forYouGroups(t);
+    expect(everyone.map((e) => e.key)).toEqual(t.filter((e) => everyone.includes(e)).map((e) => e.key));
   });
 });
