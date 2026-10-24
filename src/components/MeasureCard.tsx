@@ -8,6 +8,7 @@ import { answerFact, canAskInCard, clearFact, declineFact, skipFact, type Profil
 import type { Card, Measure, Quote, WhySentence } from "@/lib/engine/types";
 import { DIRECTION_DEFS, FACT_DEFS, SENSITIVE_FACTS, TOPIC_DEFS, type FactId } from "@/lib/vocab";
 import { DirectionMark, Glyph } from "./icons";
+import { areaOf, type SheetView } from "./ProfileSheet";
 import { Button, FOCUS, Tag } from "./ui";
 
 export function cardDomId(m: Measure) {
@@ -20,12 +21,14 @@ export function MeasureCard({
   profile,
   update,
   townName,
+  onOpenProfile,
 }: {
   card: Card;
   documentId: string;
   profile: Profile;
   update: (p: Profile) => void;
   townName?: string;
+  onOpenProfile: (v: SheetView) => void;
 }) {
   const m = card.measure;
   const [open, setOpen] = useState<"none" | "text" | "draft">("none");
@@ -73,16 +76,26 @@ export function MeasureCard({
               <button
                 key={b.id}
                 type="button"
-                onClick={() => setEditing(editing === b.id ? null : b.id)}
+                onClick={() => {
+                  // Life-area facts open the profile sheet on that row; card-only facts edit here.
+                  const area = areaOf(b.id);
+                  if (area) onOpenProfile({ kind: "area", id: area });
+                  else setEditing(editing === b.id ? null : b.id);
+                }}
                 aria-expanded={editing === b.id}
                 className={`min-h-9 rounded-md border border-border px-3 py-1.5 text-left text-small font-semibold hover:bg-surface-muted ${FOCUS}`}
               >
                 Because {b.value ? FACT_DEFS[b.id].because.yes : FACT_DEFS[b.id].because.no}
               </button>
             ) : (
-              <span key={b.id} className="inline-flex min-h-9 items-center rounded-full bg-surface-muted px-3 text-small font-semibold">
+              <button
+                key={b.id}
+                type="button"
+                onClick={() => onOpenProfile({ kind: "topics" })}
+                className={`inline-flex min-h-9 items-center rounded-md bg-surface-muted px-3 py-1.5 text-left text-small font-semibold hover:bg-border ${FOCUS}`}
+              >
                 You follow {TOPIC_DEFS[b.id].label.toLowerCase()}
-              </span>
+              </button>
             ),
           )}
         </div>

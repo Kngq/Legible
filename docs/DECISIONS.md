@@ -65,3 +65,11 @@ Smallest choices made where the spec was silent. Revisit any of them freely.
 7. **Scope switch.** All, Statewide, {town}: a filter in the browser only.
 8. **Because chips** open an inline Yes/No/Remove editor on the card instead of reopening onboarding at that screen.
 9. **Re-sort animation** uses the View Transitions API when present and motion is allowed; otherwise the list jumps.
+
+## Oct 24: first run and the profile sheet (tasks 16.1, 16.5)
+1. **Town picker stands in for ZIP** on the second first-run screen until task 16.6. Skip there continues with no town (requirement 1.3).
+2. **Nudge copy** is built from the area's heading and `why` line: "Add {heading, lowercased} to sort {why without 'depend on this'}." The town and subjects items use fixed lines. Session-only dismissal.
+3. **Because chips** for life-area facts open the sheet on that area; card-only facts (sensitive or narrow) keep the inline editor on the card. Topic chips and topic badges open Subjects.
+4. **Ring fill** uses the Web Animations API, reading `--duration` and `--ease` from the theme, instead of a CSS transition. A transition needs one painted frame at the old value, which was unreliable when the save and re-render happen in the same click.
+5. **Sheet saves record `{ kind: "edit" }`** as the answer source, since the sheet is the profile page in the AnswerSource list.
+6. **Remember prompt** shows after the first Save of an area or Subjects in the session, and only when storage works. Keep and Not now both hide it for the session; the meter never counts it.

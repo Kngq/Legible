@@ -99,7 +99,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
 - [ ] 16. Onboarding (B)
   - [x] 16.0 Profile schema with answer sources, skip counts, topic provenance, storage parsing, and tests (`src/lib/engine/profile.ts`)
     - _Requirements: 1.5, 1.6, 10.4_
-  - [ ] 16.1 Build first-run onboarding (hello, ZIP) and the profile sheet (avatar ring, checklist, life area and subjects screens, remember prompt)
+  - [x] 16.1 Build first-run onboarding (hello, ZIP) and the profile sheet (avatar ring, checklist, life area and subjects screens, remember prompt)
     - _Requirements: 1.2, 1.4, 1.5_
   - [ ] 16.6 Bundle the Massachusetts ZIP-to-town table from the Census ZCTA relationship file, with a lookup and tests
     - _Requirements: 1.1_
@@ -109,7 +109,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 1.6_
   - [x] 16.4 Personalization meter logic: life areas, Prefer not to say, topics confirmation, and tests (`src/lib/engine/personalization.ts`)
     - _Requirements: 1.5, 1.9_
-  - [ ] 16.5 Build the avatar ring in the feed header and profile sheet, and the single nudge card for `nextItem`
+  - [x] 16.5 Build the avatar ring in the feed header and profile sheet, and the single nudge card for `nextItem`
     - _Requirements: 1.9_
   - [ ] 16.3 Make the profile editable from the feed header, because chips, and avatar badges
     - _Requirements: 1.7, 6.2_

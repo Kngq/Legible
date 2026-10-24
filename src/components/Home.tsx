@@ -7,14 +7,15 @@ import { flushSync } from "react-dom";
 import { avatarParts } from "@/lib/engine/avatar";
 import { buildCards, touchCount } from "@/lib/engine/cards";
 import { localReach } from "@/lib/engine/next-steps";
-import { personalization } from "@/lib/engine/personalization";
+import { nextItem, personalization, type ChecklistItem } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
 import type { Card, DocumentData } from "@/lib/engine/types";
-import { Avatar } from "./Avatar";
+import { LIFE_AREAS } from "@/lib/vocab";
+import { AvatarRing } from "./AvatarRing";
 import { Glyph } from "./icons";
 import { cardDomId, MeasureCard } from "./MeasureCard";
-import { Meter } from "./Meter";
-import { townName } from "./Onboarding";
+import { itemView, viewForPart, type SheetView } from "./ProfileSheet";
+import { townName } from "./profile-steps";
 import { Button, FOCUS } from "./ui";
 
 type Scope = "all" | "state" | "town";
@@ -41,19 +42,19 @@ export function Home({
   profile,
   setProfile,
   remember,
-  canStore,
-  onRemember,
-  onEdit,
+  onOpenProfile,
   onForget,
+  nudgeDismissed,
+  onDismissNudge,
 }: {
   doc: DocumentData;
   profile: Profile;
   setProfile: (p: Profile) => void;
   remember: boolean;
-  canStore: boolean;
-  onRemember: () => void;
-  onEdit: () => void;
+  onOpenProfile: (v: SheetView) => void;
   onForget: () => void;
+  nudgeDismissed: boolean;
+  onDismissNudge: () => void;
 }) {
   const [scope, setScope] = useState<Scope>("all");
   const cards = useMemo(() => buildCards(doc, profile), [doc, profile]);
@@ -62,6 +63,8 @@ export function Home({
   const localCards = cards.filter((c) => localReach(c.measure.id));
   const meter = personalization(profile);
   const parts = avatarParts(profile);
+  const nudge = nudgeDismissed ? null : nextItem(profile);
+  const openList = () => onOpenProfile({ kind: "list" });
   const days = doc.date ? daysUntil(doc.date) : undefined;
   const update = (p: Profile) => withTransition(() => setProfile(p));
 
@@ -75,27 +78,21 @@ export function Home({
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 pt-4 sm:px-6 lg:grid lg:grid-cols-[300px_1fr] lg:gap-8 lg:pt-8">
-      {/* Profile: compact header on mobile, sticky panel on desktop */}
+      {/* Profile: avatar ring. Compact header on mobile, sticky panel on desktop. */}
       <aside className="lg:sticky lg:top-8 lg:self-start">
-        <div className="flex items-center gap-4 rounded-xl bg-surface p-4 shadow-card lg:flex-col lg:items-stretch lg:p-6">
+        <div className="flex items-center gap-4 rounded-xl bg-surface p-4 shadow-card lg:flex-col lg:p-6 lg:text-center">
           <div className="lg:hidden">
-            <Avatar parts={parts} size={104} />
+            <AvatarRing parts={parts} percent={meter.percent} size={104} onFigure={openList} onPart={(p) => onOpenProfile(viewForPart(p))} />
           </div>
-          <div className="hidden justify-center lg:flex">
-            <Avatar parts={parts} size={200} />
+          <div className="hidden lg:block">
+            <AvatarRing parts={parts} percent={meter.percent} size={200} onFigure={openList} onPart={(p) => onOpenProfile(viewForPart(p))} />
           </div>
-          <div className="min-w-0 flex-1 space-y-3">
-            <p className="text-body font-semibold lg:text-title">{town ? `Here is your ballot, ${town}.` : "Here is your ballot."}</p>
-            <Meter m={meter} compact />
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
-              <button type="button" onClick={onEdit} className={`min-h-10 rounded-sm text-small font-semibold underline decoration-border underline-offset-4 hover:decoration-foreground ${FOCUS}`}>
-                Edit your profile
+          <div className="min-w-0 flex-1 space-y-2">
+            <p className="text-body font-semibold lg:text-title">{town ? `Here is what ${town} is deciding.` : "Here is what is being decided."}</p>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 lg:justify-center">
+              <button type="button" onClick={openList} className={`min-h-10 rounded-sm text-small font-semibold underline decoration-border underline-offset-4 hover:decoration-foreground ${FOCUS}`}>
+                Your profile
               </button>
-              {canStore && !remember && (
-                <button type="button" onClick={onRemember} className={`min-h-10 rounded-sm text-small font-semibold text-muted-foreground hover:text-foreground ${FOCUS}`}>
-                  Remember on this device
-                </button>
-              )}
               {remember && (
                 <button type="button" onClick={onForget} className={`min-h-10 rounded-sm text-small font-semibold text-muted-foreground hover:text-foreground ${FOCUS}`}>
                   Forget me
@@ -136,6 +133,8 @@ export function Home({
           ))}
         </div>
 
+        {nudge && <Nudge item={nudge} onOpen={() => onOpenProfile(itemView(nudge))} onDismiss={onDismissNudge} />}
+
         {/* The event */}
         <section aria-label="The event" className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-[1.4fr_1fr]">
           <div className="col-span-2 rounded-xl bg-accent p-6 text-accent-foreground md:col-span-1 md:row-span-2">
@@ -164,7 +163,7 @@ export function Home({
           />
         </section>
 
-        {scope !== "state" && <TownBlock town={town} cards={localCards} onAddTown={onEdit} />}
+        {scope !== "state" && <TownBlock town={town} cards={localCards} onAddTown={() => onOpenProfile({ kind: "town" })} />}
 
         {groups.map(
           (g) =>
@@ -178,7 +177,7 @@ export function Home({
                 </div>
                 <div className="space-y-4">
                   {g.cards.map((c) => (
-                    <MeasureCard key={c.measure.id} card={c} documentId={doc.id} profile={profile} update={update} townName={town} />
+                    <MeasureCard key={c.measure.id} card={c} documentId={doc.id} profile={profile} update={update} townName={town} onOpenProfile={onOpenProfile} />
                   ))}
                 </div>
               </section>
@@ -198,7 +197,7 @@ export function Home({
             <p className="mt-3 px-1 text-small text-muted-foreground">Nothing in your answers points at these. They are still on your ballot.</p>
             <div className="mt-3 space-y-4">
               {quiet.map((c) => (
-                <MeasureCard key={c.measure.id} card={c} documentId={doc.id} profile={profile} update={update} townName={town} />
+                <MeasureCard key={c.measure.id} card={c} documentId={doc.id} profile={profile} update={update} townName={town} onOpenProfile={onOpenProfile} />
               ))}
             </div>
           </details>
@@ -302,5 +301,36 @@ function TownBlock({ town, cards, onAddTown }: { town?: string; cards: Card[]; o
         </div>
       )}
     </section>
+  );
+}
+
+/** "Decisions about zoning, rent, and property tax depend on this." -> "decisions about zoning, rent, and property tax" */
+function decisionsPhrase(why: string): string {
+  const t = why.replace(/ depend on this\.$/, "");
+  return t.charAt(0).toLowerCase() + t.slice(1);
+}
+
+export function nudgeCopy(item: ChecklistItem): string {
+  if (item.kind === "town") return "Add your town to see what it is deciding.";
+  if (item.kind === "topics") return "Pick the subjects you follow to tag them On your list.";
+  const a = LIFE_AREAS.find((x) => x.id === item.id)!;
+  return `Add ${a.heading.charAt(0).toLowerCase() + a.heading.slice(1)} to sort ${decisionsPhrase(a.why)}.`;
+}
+
+/** The single nudge card. Never names a document; never more than one. */
+function Nudge({ item, onOpen, onDismiss }: { item: ChecklistItem; onOpen: () => void; onDismiss: () => void }) {
+  return (
+    <div className="mt-4 flex items-start gap-3 rounded-lg bg-surface p-4 shadow-card">
+      <span aria-hidden="true" className="mt-1 size-2.5 shrink-0 rounded-full bg-accent" />
+      <div className="min-w-0 flex-1">
+        <p className="text-body">{nudgeCopy(item)}</p>
+        <Button variant="secondary" className="mt-3 min-h-10! px-4" onClick={onOpen}>
+          Add
+        </Button>
+      </div>
+      <button type="button" onClick={onDismiss} aria-label="Dismiss" className={`-m-2 flex size-12 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-surface-muted ${FOCUS}`}>
+        <Glyph name="close" size={18} />
+      </button>
+    </div>
   );
 }
