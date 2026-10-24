@@ -238,7 +238,49 @@ Visual system lives in CSS custom properties: paper background, ink text, highli
 
 ## Onboarding
 
-Three screens, each with a Skip link, then the feed. Town uses the TownPicker. Facts are six chips in a grid, each a three-way control (Yes, No, skip) with the question in plain words from `FACT_DEFS`. Topics are the fixed chips plus a text box that runs `matchTopics` locally and adds the matched chip; the typed text is discarded. A final toggle "Remember on this device" defaults to off. Skipped facts go to `profile.skipped`. The profile is held in a client component and written to storage only when the toggle is on. Onboarding can be reopened from the feed header and from any because chip.
+Goal: a life profile in under a minute, then the feed. Four screens, each with a Skip link top right and a progress line "1 of 3" (the last screen is not counted). Mobile first at 375 px, one column, controls at least 44 px tall.
+
+| Screen | Heading | Controls | On skip |
+|---|---|---|---|
+| 1 Town | "Where do you live?" with the line "Your town decides which documents you see." | TownPicker type-ahead, 351 municipalities with aliases. Continue, or "I don't see my town" which continues with no town. | State documents only. |
+| 2 Everyday facts | "A few facts about your life" with the line "Each one sorts the decisions below. Nothing here leaves your browser." | Six rows, one per `ONBOARDING_FACTS` entry, each a three-way chip group: Yes, No, Skip. Under the list, a live line "Your answers so far sort N of M measures," computed from the catalog's `askFacts`. | Every unanswered row is recorded as skipped once. |
+| 3 Subjects you follow | "Subjects you follow" with the line "These mark measures as on your list. They never affect which ones touch you." | The fixed topic chips, plus a text box. Typing runs `matchTopics` locally and lights the matching chip; the text is discarded on blur. | No topics. |
+| 4 Memory | "Keep this on this device?" | A single toggle, default off, with the line "Off means a refresh clears everything. On stores your profile in this browser only. Forget me removes it at any time." Button: "Show my decisions." | Not skippable; it is one toggle. |
+
+Rules:
+
+- Rent and own are both asked. Both can be true and the engine names both.
+- Sensitive facts (`SENSITIVE_FACTS`) never appear here. They are asked inside the card that depends on them, with the reason visible.
+- Every answer is written with its source (`{ kind: "onboarding" }`) and timestamp, so the UI can later say "you answered this during setup" on a because chip.
+- A fact skipped here may be asked once more, inside a card. Declined there, it is never asked again (`MAX_SKIP_TIMES`).
+- Onboarding can be reopened from the feed header ("Edit your profile"), from any because chip, and from any avatar badge, landing on the relevant screen.
+- Persona profiles bypass onboarding entirely and are never written to storage.
+- Copy never uses the banned words and never says "political." The phrase is "life profile."
+
+## Information gathered
+
+Everything Nine gathers, where it comes from, where it lives, and what it is for. Nothing in this table is ever sent to a server. The authoritative types are in `src/lib/engine/profile.ts`.
+
+| Field | Gathered by | Stored | Used for |
+|---|---|---|---|
+| `townId` | onboarding screen 1, or feed header | profile | filtering the catalog in the browser; town context on cards later |
+| `facts[id].value` | onboarding, a card, open questions, or an edit | profile | firing rules: "Touches you," direction, why sentences |
+| `facts[id].source`, `.at` | set automatically with each answer | profile | explaining where an answer came from; tests for ask-once rules |
+| `skipped[id].times`, `.source`, `.at` | set automatically on each skip | profile | never re-asking past the limit |
+| `topics[id].via`, `.at` | onboarding screen 3 or a chip | profile | "On your list"; the typed text is never stored |
+| `source` | set by the persona switcher | profile | keeping persona views out of storage |
+| `createdAt`, `updatedAt` | automatic | profile | "Forget me" confirmation, migrations |
+| `preferences.remember` | onboarding screen 4 or header | preferences | whether anything is written to storage at all |
+| `preferences.onboardingDone` | end of onboarding | preferences | skipping onboarding on return visits |
+| `session.openedDocuments` | opening a document or expanding a card | memory, storage only if remember is on | restoring the view; feed ordering tiebreak |
+| `session.dismissedOpenQuestions` | dismissing an open question on the feed | memory, storage only if remember is on | not nagging |
+| `session.activePersonaId` | persona switcher | memory only | restoring the self profile when the persona view closes |
+
+Never gathered: name, email, phone, age, party, income, address beyond the town, free text about the person, typed topic text, IP address, device fingerprint, analytics events. Reduced-motion comes from the operating system setting at render time and is not stored.
+
+Derived, never stored: sorted cards, touch counts, avatar parts, because chips. All recomputed by `buildCards` whenever the profile changes.
+
+Storage: one `localStorage` key, `nine.profile.v1`, holding `{ profile, preferences, session }` as JSON, written only when `remember` is on, read through `parseProfile`, which drops unknown ids and rejects other versions. "Forget me" deletes the key and resets the in-memory profile. Storage access is wrapped in try/catch; if it throws, the remember toggle is disabled with a note and the app runs in memory.
 
 ## Home feed and catalog
 

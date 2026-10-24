@@ -62,11 +62,7 @@ export interface DocumentData {
   pages?: string[]; // page text, kept in memory for uploads only
 }
 
-export interface Profile {
-  townId?: string;
-  facts: Partial<Record<FactId, boolean>>;
-  topics: TopicId[];
-}
+export type { Profile } from "./profile";
 
 export type Relevance = "touches" | "everyone" | "probably_not";
 

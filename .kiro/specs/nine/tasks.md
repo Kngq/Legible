@@ -11,7 +11,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 7.3, 13.2, 15.3_
   - [x] 1.4 Add the bundled list of 351 municipalities with aliases
     - _Requirements: 1.1_
-  - [ ] 1.5 Extend the vocab with town facts (kids_in_schools, runs_business_here) and topics (schools, roads_transit), and mark which facts onboarding asks
+  - [x] 1.5 Extend the vocab with town facts (kids_in_schools, runs_business_here) and topics (schools, roads_transit), and mark which facts onboarding asks
     - _Requirements: 1.5, 4.1_
 
 - [ ] 2. Reviewed ballot data (A)
@@ -97,6 +97,8 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 15.1, 15.2, 15.3_
 
 - [ ] 16. Onboarding (B)
+  - [x] 16.0 Profile schema with answer sources, skip counts, topic provenance, storage parsing, and tests (`src/lib/engine/profile.ts`)
+    - _Requirements: 1.5, 1.6, 10.4_
   - [ ] 16.1 Build the three-step skippable onboarding with town, everyday fact chips, topic chips, and the remember toggle
     - _Requirements: 1.2, 1.4, 1.5_
   - [ ] 16.2 Store skipped facts and enforce ask-once-more inside cards

@@ -58,8 +58,27 @@ export const FACT_IDS = [
   "wants_single_family",
   "buys_cannabis",
   "owns_firearm",
+  "kids_in_schools",
+  "runs_business_here",
 ] as const;
 export type FactId = (typeof FACT_IDS)[number];
+
+/** Everyday facts asked during onboarding. Every other fact is asked only inside the card that depends on it. */
+export const ONBOARDING_FACTS: readonly FactId[] = [
+  "rents",
+  "owns",
+  "registered_here",
+  "kids_in_schools",
+  "runs_business_here",
+  "state_employee",
+];
+
+/** Facts never asked cold. They appear only on a card, with the reason visible. */
+export const SENSITIVE_FACTS: readonly FactId[] = [
+  "owns_firearm",
+  "buys_cannabis",
+  "public_defender_contact",
+];
 
 export interface FactDef {
   id: FactId;
@@ -143,6 +162,18 @@ export const FACT_DEFS: Record<FactId, FactDef> = {
     avatarPart: "target",
     because: { yes: "you own a firearm", no: "you do not own a firearm" },
   },
+  kids_in_schools: {
+    id: "kids_in_schools",
+    question: "Do you have kids in the public schools?",
+    avatarPart: "backpack",
+    because: { yes: "you have kids in the public schools", no: "you have no kids in the public schools" },
+  },
+  runs_business_here: {
+    id: "runs_business_here",
+    question: "Do you run a business in town?",
+    avatarPart: "storefront",
+    because: { yes: "you run a business in town", no: "you do not run a business in town" },
+  },
 };
 
 export const TOPIC_IDS = [
@@ -158,6 +189,8 @@ export const TOPIC_IDS = [
   "gun_policy",
   "public_safety",
   "local_control",
+  "schools",
+  "roads_transit",
 ] as const;
 export type TopicId = (typeof TOPIC_IDS)[number];
 
@@ -240,6 +273,18 @@ export const TOPIC_DEFS: Record<TopicId, TopicDef> = {
     label: "Local control",
     avatarPart: "town_hall",
     words: ["local control", "town meeting", "home rule", "city council", "select board", "zoning board", "my town", "municipal"],
+  },
+  schools: {
+    id: "schools",
+    label: "Schools",
+    avatarPart: "book",
+    words: ["school", "schools", "school budget", "teachers", "students", "school building", "education", "classroom"],
+  },
+  roads_transit: {
+    id: "roads_transit",
+    label: "Roads and transit",
+    avatarPart: "road",
+    words: ["roads", "road", "transit", "bus", "train", "mbta", "commute", "traffic", "sidewalks", "bike lanes", "parking", "potholes"],
   },
 };
 
