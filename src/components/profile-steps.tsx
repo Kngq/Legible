@@ -137,7 +137,16 @@ export function PreferNot({ onClick }: { onClick: () => void }) {
   );
 }
 
-export function TownStep({ profile, setProfile }: { profile: Profile; setProfile: (p: Profile) => void }) {
+export function TownStep({
+  profile,
+  setProfile,
+  hideHeading = false,
+}: {
+  profile: Profile;
+  setProfile: (p: Profile) => void;
+  /** First run asks the question in the mascot's speech bubble instead. */
+  hideHeading?: boolean;
+}) {
   const [q, setQ] = useState(() => townName(profile.townId) ?? "");
   const query = q.trim().toLowerCase();
   const matches = useMemo(() => {
@@ -158,10 +167,12 @@ export function TownStep({ profile, setProfile }: { profile: Profile; setProfile
 
   return (
     <div className="space-y-6">
-      <div className="space-y-3">
-        <h1 className="text-title">What city or town do you live in?</h1>
-        <p className="text-body text-muted-foreground">Stays in your browser.</p>
-      </div>
+      {!hideHeading && (
+        <div className="space-y-3">
+          <h1 className="text-title">What city or town do you live in?</h1>
+          <p className="text-body text-muted-foreground">Stays in your browser.</p>
+        </div>
+      )}
       <div className="space-y-3">
         <label htmlFor="town" className="sr-only">
           City, town, or neighborhood
