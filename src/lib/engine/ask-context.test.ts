@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import ballot from "@/data/ballot-2026.json";
-import { publicExcerpt } from "./ask-context";
+import { officialExcerpt, publicExcerpt } from "./ask-context";
 import type { DocumentData } from "./types";
 
 const doc = ballot as unknown as DocumentData;
@@ -27,5 +27,13 @@ describe("publicExcerpt", () => {
   it("finds wording from another question even when scoped", () => {
     const words = doc.measures[0].quotes.find((q) => q.id === "q1-c1")!.text.slice(0, 50);
     expect(publicExcerpt(words, doc, "ballot-2026-q7")?.measureId).toBe(doc.measures[0].id);
+  });
+});
+
+describe("officialExcerpt", () => {
+  it("normalizes, ignores tiny selections, and caps long ones", () => {
+    expect(officialExcerpt("  SECTION 1.\n Chapter 69  ")).toBe("SECTION 1. Chapter 69");
+    expect(officialExcerpt("the")).toBeNull();
+    expect(officialExcerpt("word ".repeat(100))!.length).toBeLessThanOrEqual(241);
   });
 });

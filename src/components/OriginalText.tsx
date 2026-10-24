@@ -101,6 +101,8 @@ function BillReader({ file, original }: { file: string; original: CivicOriginal 
             </>
           }
           onClose={() => setOpen(false)}
+          askLabel={`Bill ${copy.bill}`}
+          official
           footer={
             <section aria-labelledby="bill-history-h">
               <h2 id="bill-history-h" className="text-body font-bold">

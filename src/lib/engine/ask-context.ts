@@ -26,6 +26,13 @@ function quotesOf(doc: DocumentData, measureId?: string): { measureId: string; q
   );
 }
 
+/** Official text from a container that holds only official words (a bill, the full law): trimmed and capped. */
+export function officialExcerpt(selection: string): string | null {
+  const sel = normalizeSelection(selection);
+  if (sel.length < MIN_CHARS) return null;
+  return sel.length > MAX_CHARS ? `${sel.slice(0, MAX_CHARS).replace(/\s+\S*$/, "")}…` : sel;
+}
+
 /**
  * The highlighted text if it is official wording (trimmed to MAX_CHARS), with the
  * measure it came from; null when it is too short or not in any official quote.

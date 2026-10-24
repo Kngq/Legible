@@ -7,7 +7,7 @@
 // highlighted text found word for word in an official quote are sent; text that
 // exists because of the person's answers never is.
 import { createContext, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { publicExcerpt } from "@/lib/engine/ask-context";
+import { officialExcerpt, publicExcerpt } from "@/lib/engine/ask-context";
 import { ASK_SUGGESTIONS, BALLOT_SUGGESTIONS } from "@/lib/engine/ask-suggestions";
 import type { DocumentData } from "@/lib/engine/types";
 import { asksHowToVote, VOTE_FIXED_RESPONSE } from "@/lib/vocab";
@@ -34,6 +34,8 @@ interface AskTarget {
   measureId?: string;
   excerpt?: string;
   personal?: boolean;
+  /** Scope label for text outside the ballot, like "Bill S2836". */
+  label?: string;
 }
 
 const SERIF = "font-[family-name:var(--font-serif)]";
@@ -44,46 +46,45 @@ const AskContext = createContext<(t?: AskTarget) => void>(() => {});
 
 export function AskProvider({ doc, scopeMeasureId, children }: { doc: DocumentData; scopeMeasureId?: string; children: ReactNode }) {
   const [target, setTarget] = useState<AskTarget | null>(null);
-  const [chip, setChip] = useState<{ x: number; y: number; target: AskTarget } | null>(null);
+  const targetRef = useRef<AskTarget | null>(null);
+  useEffect(() => {
+    targetRef.current = target;
+  }, [target]);
   const open = (t: AskTarget = { measureId: scopeMeasureId }) => {
-    setChip(null);
     window.getSelection()?.removeAllRanges();
     setTarget(t);
   };
 
-  // Highlight anything on the page: offer "Ask about this" just under the selection.
+  // Highlight anything and the sheet comes up with it, like a reading app.
   useEffect(() => {
-    const check = () =>
-      window.setTimeout(() => {
+    let timer = 0;
+    const check = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        if (targetRef.current) return;
         const sel = window.getSelection();
         const text = sel?.toString() ?? "";
-        if (!sel || sel.isCollapsed || sel.rangeCount === 0 || text.trim().length < 3) return setChip(null);
+        if (!sel || sel.isCollapsed || sel.rangeCount === 0 || text.trim().length < 3) return;
         const node = sel.anchorNode;
         const el = node instanceof Element ? node : node?.parentElement;
-        if (!el || el.closest("[data-ask-ignore], input, textarea")) return setChip(null);
+        if (!el || el.closest("[data-ask-ignore], input, textarea, button, a")) return;
         const measureId = el.closest("[data-ask-measure]")?.getAttribute("data-ask-measure") ?? scopeMeasureId;
+        const container = el.closest("[data-ask-official]");
+        const label = container?.getAttribute("data-ask-label") ?? undefined;
+        if (container) {
+          const ex = officialExcerpt(text);
+          if (ex) return setTarget({ measureId: label ? undefined : measureId, excerpt: ex, label });
+        }
         const pub = publicExcerpt(text, doc, measureId);
-        const r = sel.getRangeAt(0).getBoundingClientRect();
-        setChip({
-          x: Math.min(Math.max(r.left + r.width / 2, 90), window.innerWidth - 90),
-          y: Math.min(r.bottom + 10, window.innerHeight - 64),
-          target: pub ? { measureId: pub.measureId, excerpt: pub.text } : { measureId, personal: true },
-        });
-      }, 0);
-    const clear = () => {
-      if (window.getSelection()?.isCollapsed) setChip(null);
+        setTarget(pub ? { measureId: pub.measureId, excerpt: pub.text } : { measureId, personal: true });
+      }, 350);
     };
     document.addEventListener("mouseup", check);
     document.addEventListener("touchend", check);
-    document.addEventListener("keyup", check);
-    document.addEventListener("selectionchange", clear);
-    window.addEventListener("scroll", clear, { passive: true });
     return () => {
+      window.clearTimeout(timer);
       document.removeEventListener("mouseup", check);
       document.removeEventListener("touchend", check);
-      document.removeEventListener("keyup", check);
-      document.removeEventListener("selectionchange", clear);
-      window.removeEventListener("scroll", clear);
     };
   }, [doc, scopeMeasureId]);
 
@@ -91,29 +92,13 @@ export function AskProvider({ doc, scopeMeasureId, children }: { doc: DocumentDa
     <AskContext.Provider value={open}>
       {children}
 
-      {chip && !target && (
-        <button
-          type="button"
-          data-ask-ignore
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => open(chip.target)}
-          style={{ left: chip.x, top: chip.y }}
-          className={`fixed z-40 inline-flex min-h-11 -translate-x-1/2 animate-fade-in items-center gap-2 rounded-full bg-primary px-4 text-small font-semibold text-primary-foreground shadow-card ${FOCUS}`}
-        >
-          <span aria-hidden="true" className={`${ORB} size-6`}>
-            <Glyph name="quote" size={12} />
-          </span>
-          Ask about this
-        </button>
-      )}
-
       {!target && (
         <button
           type="button"
           data-ask-ignore
           onClick={() => open()}
           aria-label={scopeMeasureId ? "Ask about this question" : "Ask about the ballot"}
-          className={`${ORB} fixed bottom-5 right-5 z-30 size-14 shadow-card transition-transform duration-(--duration) ease-legible hover:scale-105 ${FOCUS}`}
+          className={`${ORB} fixed bottom-5 right-5 z-[65] size-14 animate-float shadow-card transition-transform duration-(--duration) ease-legible hover:scale-105 ${FOCUS}`}
         >
           <Glyph name="quote" size={22} />
         </button>
@@ -164,7 +149,7 @@ function AskSheet({ doc, target, onClose }: { doc: DocumentData; target: AskTarg
   const listRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const onCloseRef = useRef(onClose);
-  const scope = measure ? `Question ${measure.number}` : "the ballot";
+  const scope = target.label ?? (measure ? `Question ${measure.number}` : "the ballot");
   const suggestions = target.excerpt
     ? ["What does this part mean?", "What would change under YES?", "What does a NO vote keep?"]
     : measure
@@ -225,7 +210,7 @@ function AskSheet({ doc, target, onClose }: { doc: DocumentData; target: AskTarg
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center" data-ask-ignore>
+    <div className="fixed inset-0 z-[70] flex items-end justify-center" data-ask-ignore>
       <button type="button" aria-label="Close" tabIndex={-1} onClick={onClose} className="absolute inset-0 bg-foreground/30" />
       <section
         role="dialog"
@@ -254,6 +239,11 @@ function AskSheet({ doc, target, onClose }: { doc: DocumentData; target: AskTarg
                 <mark className="bg-accent-soft text-foreground">{target.excerpt}</mark>
               </blockquote>
             </figure>
+          )}
+          {target.label && (
+            <p className="rounded-md bg-surface-muted px-3 py-2 text-small">
+              Legible&apos;s answers cover the 2026 ballot&apos;s official text for now, so a question about {target.label} may come back unanswered.
+            </p>
           )}
           {target.personal && (
             <p className="rounded-md bg-surface-muted px-3 py-2 text-small">
@@ -334,6 +324,7 @@ function AskSheet({ doc, target, onClose }: { doc: DocumentData; target: AskTarg
             title={messages[reading - 1]?.text ?? "Your question"}
             meta={<p>{messages[reading].sent}</p>}
             onClose={() => setReading(null)}
+            askIgnore
           >
             {messages[reading].sentences!.map((s, j) => (
               <div key={j}>

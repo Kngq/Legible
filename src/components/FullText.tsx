@@ -111,6 +111,8 @@ export function FullText({ measure, source }: { measure: Measure; source?: Docum
             </>
           }
           onClose={() => setOpen(false)}
+          askMeasureId={measure.id}
+          official
           footer={
             <a href={`${f.pdf}#page=${f.pages[0]}`} target="_blank" rel="noreferrer" className={`inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 text-small font-semibold text-primary-foreground ${FOCUS}`}>
               See the original layout in the PDF

@@ -533,9 +533,9 @@ The civic build fails if any item has no original record.
 
 Three ways in, one bottom sheet (`AskSheet.tsx`, mounted once by `AskProvider` in `LegibleApp`), which leaves the page visible above it and is titled with its scope ("Ask about Question 7" and the short title):
 
-1. **The floating button,** a light purple orb bottom right on every page after first run, scoped to the open question on a measure page and to the whole ballot elsewhere.
+1. **The floating button,** a light purple orb bottom right on every page after first run, floating gently (`animate-float`, off under reduced motion) and above the full-screen reader, scoped to the open question on a measure page and to the whole ballot elsewhere.
 2. **"Ask about this question"** on every ballot guide card and the measure page, and **"Ask about the ballot"** under the ballot page header.
-3. **Highlighting text** anywhere shows an "Ask about this" chip under the selection. Cards and the measure page carry `data-ask-measure`, so the sheet is scoped to the question the text sits in.
+3. **Highlighting text** anywhere, including in the full-screen reader, opens the sheet directly once the selection settles (350 ms after the mouse or finger lifts), with the highlight shown. Cards, the measure page, and the reader carry `data-ask-measure`, so the sheet is scoped to the question the text sits in. Containers that hold only official words (the full law, a bill) carry `data-ask-official`, so a highlight there is sent as official text; a bill also carries `data-ask-label` ("Bill S2836"), and the sheet says answers cover the ballot for now.
 
 **What a highlight may send.** Pages mix official words with lines that exist only because of the person's answers ("If you rent", "Where you rent, …"), so a highlight could reveal a life fact. `publicExcerpt` (`src/lib/engine/ask-context.ts`) sends the highlighted text only when it is found word for word in an official quote, capped at 240 characters; the sheet then shows it under "You highlighted official text" with three follow-ups (what this part means, what changes under YES, what a NO vote keeps). Anything else is never sent: the sheet says "That part is about your own answers, so Legible won't send it anywhere" and offers the question's starter questions.
 
