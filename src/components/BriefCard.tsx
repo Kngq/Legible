@@ -9,8 +9,8 @@
 //   whole row opens the detail page; "Add details", "Why", and the official
 //   source keep their own clicks.
 // Every word of relevance comes from relevanceOf (or the ballot card's own
-// match); nothing here adds a fact. On a mouse, the cursor "Read more" pill
-// opens the featured decision from empty space.
+// match); nothing here adds a fact. On a mouse, the Legible magnifying glass
+// follows the cursor over a decision, and a click on empty space opens it.
 import { useState, type ReactNode } from "react";
 import { docWhat, type TimelineEntry } from "@/lib/engine/timeline";
 import { actionsFor, cardHeader, explanation, headline, relevanceOf, dateLine, type Action, type Relevance, type RelevanceKind } from "@/lib/engine/home-copy";
@@ -296,7 +296,7 @@ export function FeaturedDecision({ d, onOpenProfile }: { d: Decision; onOpenProf
   const cta = useCursorCta(d.open);
   return (
     <article {...cta.handlers} className={`relative -mx-1 rounded-lg bg-surface px-5 pb-6 pt-6 shadow-card sm:mx-0 sm:px-8 sm:pt-7 ${cta.cursorClass}`}>
-      {cta.pill}
+      {cta.mark}
       <div className="flex items-center justify-between gap-3">
         <p className="flex min-w-0 items-center gap-2.5 text-small font-semibold text-muted-foreground">
           <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground shadow-[inset_0_0_0_1.5px_var(--foreground)]">
@@ -352,25 +352,28 @@ function RowRelevance({ d, why, onWhy, onOpenProfile }: { d: Decision; why: bool
   );
 }
 
-/** A decision as a compact row. The headline is the row's link; it covers the row. */
+/** A decision as a compact row. The headline is the row's link; it covers the row,
+ * and the cursor mark treats it as the row's surface. */
 export function DecisionRow({ d, onOpenProfile }: { d: Decision; onOpenProfile: (v: SheetView) => void }) {
   const [why, setWhy] = useState(false);
+  const cta = useCursorCta();
   const external = d.noDetail && "href" in d.primary.to ? d.primary.to.href : undefined;
   const stretch = "text-left after:absolute after:inset-0 after:rounded-md after:content-['']";
   const title: ReactNode = external ? (
-    <a href={external} target="_blank" rel="noreferrer" className={`${stretch} ${FOCUS}`}>
+    <a href={external} target="_blank" rel="noreferrer" data-cursor-surface className={`${stretch} ${FOCUS}`}>
       {d.title}
       <span className="sr-only"> (opens the official site)</span>
     </a>
   ) : (
-    <button type="button" onClick={d.open} className={`${stretch} ${FOCUS}`}>
+    <button type="button" onClick={d.open} data-cursor-surface className={`${stretch} ${FOCUS}`}>
       {d.title}
     </button>
   );
   const source = d.secondary && "href" in d.secondary.to ? d.secondary : undefined;
 
   return (
-    <li className="relative -mx-3 grid grid-cols-[2.25rem_1fr] gap-x-3.5 rounded-md px-3 py-4 interactive hover:bg-surface sm:grid-cols-[2.5rem_1fr]">
+    <li {...cta.handlers} className="relative -mx-3 grid grid-cols-[2.25rem_1fr] gap-x-3.5 rounded-md px-3 py-4 interactive hover:bg-surface sm:grid-cols-[2.5rem_1fr]">
+      {cta.mark}
       <span
         aria-hidden="true"
         className={`mt-0.5 flex size-9 items-center justify-center rounded-full sm:size-10 ${relevant(d.relevance) ? "bg-accent-soft text-accent" : "bg-surface text-foreground shadow-hairline"}`}

@@ -21,7 +21,7 @@ export const PRIMARY = `inline-flex min-h-11 items-center justify-center gap-2 r
 export const SECONDARY = `inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-surface-muted px-5 text-small font-semibold hover:bg-border ${FOCUS}`;
 
 // A hovering mouse or trackpad. Without one, cards show "Read more" in place of the
-// cursor pill. Written out in full so Tailwind finds them.
+// cursor mark. Written out in full so Tailwind finds them.
 const TOUCH_HIDDEN = "[@media(hover:hover)_and_(pointer:fine)]:hidden";
 const FINE_SHOWN = "[@media(hover:hover)_and_(pointer:fine)]:inline";
 
@@ -169,7 +169,7 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
         )}
         {ballot && links[0] && <ExternalAction label={links[0].label} url={links[0].url!} primary={false} />}
         <button type="button" onClick={() => onOpenItem(i.id)} className={`min-h-11 px-2 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
-          {/* Phones have no cursor pill, so this link is the card's one "Read more". */}
+          {/* Phones have no cursor mark, so this link is the card's one "Read more". */}
           <span className={TOUCH_HIDDEN}>Read more</span>
           <span className={`hidden ${FINE_SHOWN}`}>Details and source</span>
         </button>
@@ -193,7 +193,7 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
 
   return (
     <li {...cta.handlers} className={`relative rounded-lg bg-surface p-5 shadow-card ${cta.cursorClass}`}>
-      {cta.pill}
+      {cta.mark}
       <div className="flex items-start justify-between gap-3">
         <p className="text-small font-semibold uppercase tracking-wider text-muted-foreground">{kind}</p>
         {e.touches ? <Tag pop="accent">May affect you</Tag> : e.level === "list" ? <Tag pop="info">You follow this</Tag> : e.level === "maybe" ? <Tag>Might apply</Tag> : null}
