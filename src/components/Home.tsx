@@ -10,7 +10,7 @@ import { decidedLine, decideByLine, decideByRelative, DOC_TYPE_LABEL, shortDate 
 import type { CivicCard } from "@/lib/engine/civic";
 import { dateTime, timingTag } from "@/lib/engine/civic-copy";
 import type { Feed, FeedItem } from "@/lib/engine/feed";
-import { nextItem, personalization, type ChecklistItem } from "@/lib/engine/personalization";
+import { personalization } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
 import { buildTimeline, docWhat, type TimelineEntry } from "@/lib/engine/timeline";
 import type { Card, Provenance } from "@/lib/engine/types";
@@ -18,9 +18,9 @@ import { LIFE_AREAS } from "@/lib/vocab";
 import { AvatarRing } from "./AvatarRing";
 import { Cover, DocTile } from "./covers";
 import { Glyph, Part } from "./icons";
-import { itemView, viewForPart, type SheetView } from "./ProfileSheet";
+import { viewForPart, type SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
-import { Button, FOCUS, Tag } from "./ui";
+import { FOCUS, Tag } from "./ui";
 
 const SERIF = "font-[family-name:var(--font-serif)]";
 const PILL = `inline-flex min-h-9 shrink-0 items-center rounded-full bg-surface-muted px-4 text-small font-semibold hover:bg-border ${FOCUS}`;
@@ -51,7 +51,6 @@ export function Home({
   onForget,
   nudgeDismissed,
   onDismissNudge,
-  onUpload,
   civic,
   onOpenItem,
 }: {
@@ -74,7 +73,14 @@ export function Home({
   const town = townName(profile.townId);
   const meter = personalization(profile);
   const parts = avatarParts(profile);
-  const nudge = nudgeDismissed ? null : nextItem(profile);
+  // Profile prompts live inside For you: the town first if missing, then life areas with open questions.
+  const prompts: Prompt[] = [
+    ...(town ? [] : [{ key: "town", title: "Your town", why: "Town meetings, budgets, and local votes depend on this.", view: { kind: "town" } as SheetView }]),
+    ...feed.openAreas.map((id) => {
+      const a = LIFE_AREAS.find((x) => x.id === id)!;
+      return { key: id, title: a.heading, why: a.why, view: { kind: "area", id } as SheetView };
+    }),
+  ];
   const decided = feed.items.filter((i) => i.status === "decided");
   const timeline = buildTimeline(feed.items, civic, today);
   const forYou = timeline.filter((e) => tierOf(e) === "touches");
@@ -107,8 +113,6 @@ export function Home({
         </div>
       </header>
 
-      {nudge && forYou.length > 0 && <Nudge item={nudge} onOpen={() => onOpenProfile(itemView(nudge))} onDismiss={onDismissNudge} />}
-
       <h1 className="sr-only">Your timeline</h1>
 
       {/* For you always comes first: its top item as the hero, or a prompt when nothing matches yet. */}
@@ -121,20 +125,17 @@ export function Home({
           <>
             <Hero entry={forYou[0]} today={today} onOpen={() => open(forYou[0])} onOpenMeasure={onOpenMeasure} />
             <Rows entries={forYou.slice(1)} today={today} open={open} onOpenMeasure={onOpenMeasure} />
+            {!nudgeDismissed && <Sharpen prompts={prompts} compact onOpenProfile={onOpenProfile} onDismiss={onDismissNudge} />}
           </>
         ) : (
           <div className="mt-4 rounded-lg border border-border p-5">
             <p className={`text-body font-semibold ${SERIF}`}>Nothing matches your answers yet.</p>
             <p className="mt-1 text-small text-muted-foreground">
-              Answer a few questions about your home, work, and voting, and what touches you shows up here first. Your answers stay in this browser.
+              {prompts.length
+                ? "Answer one of these and what touches you shows up here first. Your answers stay in this browser."
+                : "Nothing in your answers points to what is being decided right now."}
             </p>
-            <button
-              type="button"
-              onClick={() => onOpenProfile(nudge ? itemView(nudge) : { kind: "list" })}
-              className={`mt-3 inline-flex min-h-10 items-center rounded-md bg-primary px-4 text-small font-semibold text-primary-foreground ${FOCUS}`}
-            >
-              Answer questions
-            </button>
+            <Sharpen prompts={prompts} onOpenProfile={onOpenProfile} />
           </div>
         )}
       </section>
@@ -151,45 +152,6 @@ export function Home({
           </Section>
         ) : null;
       })}
-
-      {!feed.items.some((i) => i.scope === "town") && (
-        <EmptyTown town={town} onAddTown={() => onOpenProfile({ kind: "town" })} onUpload={onUpload} />
-      )}
-
-      {feed.openAreas.length > 0 && (
-        <section aria-labelledby="h-open" className="mt-10">
-          <div className="flex items-center justify-between gap-3">
-            <h2 id="h-open" className="text-title font-bold tracking-tight">
-              Sharpen your timeline
-            </h2>
-            <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={PILL}>
-              Your profile
-            </button>
-          </div>
-          <ul className="mt-4 space-y-3">
-            {feed.openAreas.map((id) => {
-              const a = LIFE_AREAS.find((x) => x.id === id)!;
-              return (
-                <li key={id}>
-                  <button
-                    type="button"
-                    onClick={() => onOpenProfile({ kind: "area", id })}
-                    className={`flex w-full items-start gap-3 rounded-md border border-border bg-surface p-4 text-left hover:bg-surface-muted/60 ${FOCUS}`}
-                  >
-                    <span className="min-w-0 flex-1">
-                      <span className={`block text-body font-semibold ${SERIF}`}>{a.heading}</span>
-                      <span className="mt-1 block text-small text-muted-foreground">{a.why} Your answers stay in this browser.</span>
-                    </span>
-                    <span aria-hidden="true" className="flex size-7 shrink-0 -rotate-90 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                      <Glyph name="chevron" size={14} />
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      )}
 
       {decided.length > 0 && (
         <details className="group mt-10">
@@ -211,7 +173,10 @@ export function Home({
         </details>
       )}
 
-      <p className="mt-12 text-small text-muted-foreground">Most relevant to you first, then soonest. Your answers and your town stay in this browser. Legible sorts the official text; it never says how to vote.</p>
+      <footer className="mt-12 space-y-2 text-small text-muted-foreground">
+        {town && !feed.items.some((i) => i.scope === "town") && <p>Legible has no documents for {town} yet. State decisions still show here.</p>}
+        <p>Most relevant to you first, then soonest. Your answers and your town stay in this browser. Legible sorts the official text; it never says how to vote.</p>
+      </footer>
     </div>
   );
 }
@@ -436,61 +401,62 @@ function FeedRow({ item, today, onOpen }: { item: FeedItem; today: string; onOpe
   );
 }
 
-function EmptyTown({ town, onAddTown, onUpload }: { town?: string; onAddTown: () => void; onUpload?: () => void }) {
-  return (
-    <div className="mt-8 rounded-lg border border-border p-5">
-      {town ? (
-        <>
-          <p className="text-body font-semibold">Legible does not have documents for {town} yet.</p>
-          <p className="mt-1 text-small text-muted-foreground">Town Meeting warrants, budgets, and hearing notices help. State decisions still show here.</p>
-          <Button variant="secondary" className="mt-3" onClick={onUpload} disabled={!onUpload} title={onUpload ? undefined : "Upload arrives with the upload panel"}>
-            Upload a town document
-          </Button>
-        </>
-      ) : (
-        <>
-          <p className="text-body font-semibold">Add your town to see what it is deciding.</p>
-          <p className="mt-1 text-small text-muted-foreground">It stays in this browser. State decisions show either way.</p>
-          <Button variant="secondary" className="mt-3" onClick={onAddTown}>
-            Add your town
-          </Button>
-        </>
-      )}
-    </div>
-  );
-}
+type Prompt = { key: string; title: string; why: string; view: SheetView };
 
-/** "Decisions about zoning, rent, and property tax depend on this." -> "decisions about zoning, rent, and property tax" */
-function decisionsPhrase(why: string): string {
-  const t = why.replace(/ depend on this\.$/, "");
-  return t.charAt(0).toLowerCase() + t.slice(1);
-}
-
-export function nudgeCopy(item: ChecklistItem): string {
-  if (item.kind === "town") return "Add your town to see what it is deciding.";
-  if (item.kind === "topics") return "Pick the subjects you follow to tag them On your list.";
-  const a = LIFE_AREAS.find((x) => x.id === item.id)!;
-  return `Add ${a.heading.charAt(0).toLowerCase() + a.heading.slice(1)} to sort ${decisionsPhrase(a.why)}.`;
-}
-
-/** The single nudge card, styled as a promo block: text, a black pill, an illustration. */
-function Nudge({ item, onOpen, onDismiss }: { item: ChecklistItem; onOpen: () => void; onDismiss: () => void }) {
-  const art = item.kind === "town" ? "town_hall" : item.kind === "topics" ? "magnifier" : "key";
-  return (
-    <div className="relative mt-6 flex items-center gap-4 overflow-hidden rounded-lg bg-surface-muted p-5">
-      <div className="min-w-0 flex-1">
-        <p className="text-small text-muted-foreground">Sharpen your timeline</p>
-        <p className="mt-1 text-body font-semibold">{nudgeCopy(item)}</p>
-        <button type="button" onClick={onOpen} className={`mt-3 inline-flex min-h-10 items-center rounded-md bg-primary px-4 text-small font-semibold text-primary-foreground ${FOCUS}`}>
-          Add now
-        </button>
+/** Profile prompts inside For you: full cards when nothing matches yet, a pill row once something does. */
+function Sharpen({
+  prompts,
+  compact = false,
+  onOpenProfile,
+  onDismiss,
+}: {
+  prompts: Prompt[];
+  compact?: boolean;
+  onOpenProfile: (v: SheetView) => void;
+  onDismiss?: () => void;
+}) {
+  if (!prompts.length) return null;
+  if (compact) {
+    return (
+      <div className="relative mt-4 rounded-md bg-surface-muted p-4 pr-12">
+        <p className="text-small text-muted-foreground">Sharpen For you. Your answers stay in this browser.</p>
+        {onDismiss && (
+          <button type="button" onClick={onDismiss} aria-label="Dismiss" className={`absolute right-1 top-1 flex size-11 items-center justify-center rounded-md text-muted-foreground hover:bg-border ${FOCUS}`}>
+            <Glyph name="close" size={16} />
+          </button>
+        )}
+        <div className="mt-2 flex flex-wrap gap-2">
+          {prompts.map((p) => (
+            <button key={p.key} type="button" onClick={() => onOpenProfile(p.view)} className={`inline-flex min-h-10 items-center gap-1.5 rounded-full bg-surface px-4 text-small font-semibold hover:bg-border ${FOCUS}`}>
+              {p.title}
+              <span aria-hidden="true" className="-rotate-90">
+                <Glyph name="chevron" size={14} />
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
-      <span aria-hidden="true" className="shrink-0 text-foreground/70">
-        <Part name={art} size={72} strokeWidth={1.2} />
-      </span>
-      <button type="button" onClick={onDismiss} aria-label="Dismiss" className={`absolute right-1 top-1 flex size-11 items-center justify-center rounded-md text-muted-foreground hover:bg-border ${FOCUS}`}>
-        <Glyph name="close" size={16} />
-      </button>
-    </div>
+    );
+  }
+  return (
+    <ul className="mt-4 space-y-3">
+      {prompts.map((p) => (
+        <li key={p.key}>
+          <button
+            type="button"
+            onClick={() => onOpenProfile(p.view)}
+            className={`flex w-full items-start gap-3 rounded-md border border-border bg-surface p-4 text-left hover:bg-surface-muted/60 ${FOCUS}`}
+          >
+            <span className="min-w-0 flex-1">
+              <span className={`block text-body font-semibold ${SERIF}`}>{p.title}</span>
+              <span className="mt-1 block text-small text-muted-foreground">{p.why}</span>
+            </span>
+            <span aria-hidden="true" className="flex size-7 shrink-0 -rotate-90 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <Glyph name="chevron" size={14} />
+            </span>
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 }

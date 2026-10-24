@@ -109,7 +109,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 1.6_
   - [x] 16.4 Personalization meter logic: life areas, Prefer not to say, topics confirmation, and tests (`src/lib/engine/personalization.ts`)
     - _Requirements: 1.5, 1.9_
-  - [x] 16.5 Build the avatar ring in the feed header and profile sheet, and the single nudge card for `nextItem`
+  - [x] 16.5 Build the avatar ring in the feed header and profile sheet, and the profile prompts (now inside For you, task 17.11)
     - _Requirements: 1.9_
   - [ ] 16.3 Make the profile editable from the feed header, because chips, and avatar badges
     - _Requirements: 1.7, 6.2_
@@ -130,6 +130,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 17.8 Render civic cards in the feed and let Up next consider them
   - [x] 17.9 Replace the feed sections (Up next, scope switch, carousels, Coming up, Documents) with one timeline: name, due, what it is, how it reaches you; ballot folded into Election Day
   - [x] 17.10 Rank the timeline by relevance and time together (`score = 0.65 relevance + 0.35 urgency`), with tests
+  - [x] 17.11 Move the profile prompts into For you (cards when nothing matches, a dismissible pill row after), drop the upload card from Home, and keep the empty-town notice as one footer line
     - _Requirements: 20.5, 20.9_
   - [ ] 17.6 Add uploaded and sample documents to the feed in memory, tagged by town
     - _Requirements: 20.8_
