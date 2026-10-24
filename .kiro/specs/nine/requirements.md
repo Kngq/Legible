@@ -34,11 +34,12 @@ Out of scope for this build: any 3D map; accounts or server-side storage of prof
 1. WHEN the user types in the town field THE SYSTEM SHALL suggest matches from all 351 Massachusetts municipalities, including common aliases such as "Manchester-by-the-Sea" and "North Attleborough."
 2. WHEN the user completes or skips onboarding THE SYSTEM SHALL show the home feed immediately, with no further form.
 3. IF the user cannot find their town THEN THE SYSTEM SHALL let them continue without one and show state documents only.
-4. THE SYSTEM SHALL run onboarding in three skippable steps: town; everyday facts as Yes, No, or skip chips; topics as chips plus a type-to-match box; followed by a "Remember on this device" toggle that defaults to off.
-5. THE SYSTEM SHALL ask only everyday facts in onboarding: rents, owns, registered_here, kids_in_schools, runs_business_here, state_employee. Sensitive facts (owns_firearm, buys_cannabis, public_defender_contact) SHALL be asked only inside the card that depends on them.
+4. THE SYSTEM SHALL run onboarding in three skippable steps: town; everyday facts as Yes, No, or Prefer not to say chips; topics as chips plus a type-to-match box; followed by a "Remember on this device" toggle that defaults to off.
+5. THE SYSTEM SHALL ask only everyday facts in onboarding, and only those that at least one document in the user's feed reads. Sensitive facts (owns_firearm, buys_cannabis, public_defender_contact) SHALL be asked only inside the card that depends on them.
 6. THE SYSTEM SHALL record skipped facts so that a fact skipped in onboarding is asked at most once more, inside a card, and a fact declined there is not asked again.
 7. THE SYSTEM SHALL let the user reopen and edit the profile from the home feed and from any because chip or avatar badge.
 8. THE SYSTEM SHALL name this a life profile in all copy and SHALL NOT collect name, email, age, party, income, or free text about the person.
+9. THE SYSTEM SHALL show a personalization meter counting the town, the topics step, and each fact a feed document reads, with all items weighted equally. A fact answered Yes, No, or Prefer not to say SHALL count as done; the remember toggle SHALL NOT count.
 
 ### Requirement 2: Reviewed ballot content
 

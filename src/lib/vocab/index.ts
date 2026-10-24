@@ -63,14 +63,21 @@ export const FACT_IDS = [
 ] as const;
 export type FactId = (typeof FACT_IDS)[number];
 
-/** Everyday facts asked during onboarding. Every other fact is asked only inside the card that depends on it. */
+/**
+ * Everyday facts onboarding may ask. Onboarding shows only the ones some document
+ * in the person's feed uses (see onboardingFacts in engine/personalization), so it
+ * never asks for something nothing reads.
+ */
 export const ONBOARDING_FACTS: readonly FactId[] = [
   "rents",
   "owns",
+  "wants_single_family",
   "registered_here",
+  "votes_in_primaries",
+  "state_employee",
   "kids_in_schools",
   "runs_business_here",
-  "state_employee",
+  "lives_with_family",
 ];
 
 /** Facts never asked cold. They appear only on a card, with the reason visible. */

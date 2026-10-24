@@ -56,7 +56,7 @@ type TopicId =
   | "cannabis_policy" | "gun_policy" | "public_safety" | "local_control"
   | "schools" | "roads_transit";                 // added for town documents
 
-// Onboarding asks only: rents, owns, registered_here, kids_in_schools, runs_business_here, state_employee.
+// Onboarding asks the ONBOARDING_FACTS that some feed document reads (onboardingFacts in engine/personalization).
 // Every other fact is asked inline on the card that depends on it.
 
 // src/lib/engine
@@ -243,12 +243,14 @@ Goal: a life profile in under a minute, then the feed. Four screens, each with a
 | Screen | Heading | Controls | On skip |
 |---|---|---|---|
 | 1 Town | "Where do you live?" with the line "Your town decides which documents you see." | TownPicker type-ahead, 351 municipalities with aliases. Continue, or "I don't see my town" which continues with no town. | State documents only. |
-| 2 Everyday facts | "A few facts about your life" with the line "Each one sorts the decisions below. Nothing here leaves your browser." | Six rows, one per `ONBOARDING_FACTS` entry, each a three-way chip group: Yes, No, Skip. Under the list, a live line "Your answers so far sort N of M measures," computed from the catalog's `askFacts`. | Every unanswered row is recorded as skipped once. |
-| 3 Subjects you follow | "Subjects you follow" with the line "These mark measures as on your list. They never affect which ones touch you." | The fixed topic chips, plus a text box. Typing runs `matchTopics` locally and lights the matching chip; the text is discarded on blur. | No topics. |
+| 2 Everyday facts | "A few facts about your life" with the line "Each one sorts the decisions below. Nothing here leaves your browser." | One row per `onboardingFacts(feedDocs)`: the everyday facts some document in the feed actually reads (six for the 2026 ballot alone). Each row is a three-way chip group: Yes, No, Prefer not to say. Under the list, a live line "Your answers so far sort N of M measures." | Every row left blank is recorded as skipped once ("Skip for now"). |
+| 3 Subjects you follow | "Subjects you follow" with the line "These mark measures as on your list. They never affect which ones touch you." | The fixed topic chips, plus a text box. Typing runs `matchTopics` locally and lights the matching chip; the text is discarded on blur. Continue sets `topicsConfirmedAt`, even with no chips on. | No topics, `topicsConfirmedAt` unset. |
 | 4 Memory | "Keep this on this device?" | A single toggle, default off, with the line "Off means a refresh clears everything. On stores your profile in this browser only. Forget me removes it at any time." Button: "Show my decisions." | Not skippable; it is one toggle. |
 
 Rules:
 
+- Onboarding asks only facts some feed document reads, so the town is picked first and the fact list is computed from the feed. `lives_with_family`, `kids_in_schools`, and `runs_business_here` appear only once a town document uses them.
+- "Prefer not to say" settles a fact for good (`declineFact`, skip count set to `MAX_SKIP_TIMES`). The Skip link skips for now: the fact may be asked once more on its card.
 - Rent and own are both asked. Both can be true and the engine names both.
 - Sensitive facts (`SENSITIVE_FACTS`) never appear here. They are asked inside the card that depends on them, with the reason visible.
 - Every answer is written with its source (`{ kind: "onboarding" }`) and timestamp, so the UI can later say "you answered this during setup" on a because chip.
@@ -256,6 +258,42 @@ Rules:
 - Onboarding can be reopened from the feed header ("Edit your profile"), from any because chip, and from any avatar badge, landing on the relevant screen.
 - Persona profiles bypass onboarding entirely and are never written to storage.
 - Copy never uses the banned words and never says "political." The phrase is "life profile."
+
+## Personalization meter
+
+A small bar with a count, "Your feed is 72% sorted for you," shown on the onboarding screens, in the feed header next to "Edit your profile," and in the profile panel. It answers one question: how many of the things that change this person's feed has Nine heard about? It never measures how much the person has disclosed. Logic: `src/lib/engine/personalization.ts`.
+
+**What counts.** One item per thing that changes the feed, all weighted the same:
+
+| Item | Done when | Asked in |
+|---|---|---|
+| Town | `townId` is set | onboarding screen 1 |
+| Subjects you follow | at least one topic on, or Continue on screen 3 with none | onboarding screen 3 |
+| Each fact some feed document reads | answered Yes or No, or "Prefer not to say" | onboarding screen 2 for everyday facts; the card that uses it for sensitive facts |
+
+`percent = floor(done / total * 100)`, so 100 appears only when every item is done.
+
+**The 2026 ballot alone (no town document):** 11 items.
+
+| Step | Items | Running total |
+|---|---|---|
+| Screen 1 town | town | 1 of 11, 9% |
+| Screen 2 everyday facts | rents, owns, wants_single_family (Q7); registered_here (Q4); votes_in_primaries (Q3); state_employee (Q2) | 7 of 11, 63% |
+| Screen 3 subjects | topics | 8 of 11, 72% |
+| Cards | buys_cannabis (Q8), public_defender_contact (Q2), owns_firearm (Q9) | 11 of 11, 100% |
+
+A town document adds the facts it reads (for example `kids_in_schools`, `runs_business_here`) to the denominator. When that happens the meter says "2 new questions from Town Meeting warrant" instead of silently dropping.
+
+**Rules.**
+
+- "Prefer not to say" counts as done. Without this, the meter would pressure people to disclose firearm ownership, cannabis purchases, or court contact to reach 100%. A plain Skip for now does not count.
+- Yes and No count the same. The meter never treats one answer as more complete.
+- Facts no feed document reads are never in the denominator and never asked. 100% is reachable without answering anything Nine would not use.
+- Not counted: the remember toggle (storage stays opt-in; the meter never nudges it), opened documents, chat use.
+- Onboarding alone tops out below 100% whenever a feed document reads a sensitive fact. The remaining items are listed by measure, "3 left, each asked on the card it affects: Q2, Q8, Q9," and tapping one scrolls to that card's inline question.
+- At 100%: "Every decision in your feed is sorted for you." No confetti, no streaks, no badge.
+- Persona views hide the meter.
+- Copy avoids the banned words and the word "complete profile"; the meter is about the feed, not the person.
 
 ## Information gathered
 
@@ -268,6 +306,7 @@ Everything Nine gathers, where it comes from, where it lives, and what it is for
 | `facts[id].source`, `.at` | set automatically with each answer | profile | explaining where an answer came from; tests for ask-once rules |
 | `skipped[id].times`, `.source`, `.at` | set automatically on each skip | profile | never re-asking past the limit |
 | `topics[id].via`, `.at` | onboarding screen 3 or a chip | profile | "On your list"; the typed text is never stored |
+| `topicsConfirmedAt` | Continue on onboarding screen 3 | profile | the personalization meter's topics item |
 | `source` | set by the persona switcher | profile | keeping persona views out of storage |
 | `createdAt`, `updatedAt` | automatic | profile | "Forget me" confirmation, migrations |
 | `preferences.remember` | onboarding screen 4 or header | preferences | whether anything is written to storage at all |

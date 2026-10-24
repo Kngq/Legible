@@ -103,6 +103,10 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 1.2, 1.4, 1.5_
   - [ ] 16.2 Store skipped facts and enforce ask-once-more inside cards
     - _Requirements: 1.6_
+  - [x] 16.4 Personalization meter logic: feed-derived fact list, Prefer not to say, topics confirmation, and tests (`src/lib/engine/personalization.ts`)
+    - _Requirements: 1.5, 1.9_
+  - [ ] 16.5 Build the meter bar in onboarding, the feed header, and the profile panel, with the "N left, asked on cards" list
+    - _Requirements: 1.9_
   - [ ] 16.3 Make the profile editable from the feed header, because chips, and avatar badges
     - _Requirements: 1.7, 6.2_
 

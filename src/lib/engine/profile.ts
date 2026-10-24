@@ -37,6 +37,8 @@ export interface Profile {
   facts: Partial<Record<FactId, FactAnswer>>;
   skipped: Partial<Record<FactId, FactSkip>>;
   topics: Partial<Record<TopicId, TopicChoice>>;
+  /** Set when the person leaves the topics screen with Continue, even with no chips on. Skip leaves it unset. */
+  topicsConfirmedAt?: string;
   source: "self" | "persona";
   createdAt: string;
   updatedAt: string;
@@ -86,6 +88,22 @@ export function skipFact(p: Profile, id: FactId, source: AnswerSource, now = new
   return { ...p, skipped: { ...p.skipped, [id]: { source, at: now, times: (prev?.times ?? 0) + 1 } }, updatedAt: now };
 }
 
+/** "Prefer not to say": settled for good. Never asked again, and counts toward the personalization meter. */
+export function declineFact(p: Profile, id: FactId, source: AnswerSource, now = new Date().toISOString()): Profile {
+  const facts = { ...p.facts };
+  delete facts[id];
+  return { ...p, facts, skipped: { ...p.skipped, [id]: { source, at: now, times: MAX_SKIP_TIMES } }, updatedAt: now };
+}
+
+/** Answered either way, or declined for good. A plain "Skip for now" is not settled. */
+export function isFactSettled(p: Profile, id: FactId): boolean {
+  return Boolean(p.facts[id]) || (p.skipped[id]?.times ?? 0) >= MAX_SKIP_TIMES;
+}
+
+export function confirmTopics(p: Profile, now = new Date().toISOString()): Profile {
+  return { ...p, topicsConfirmedAt: now, updatedAt: now };
+}
+
 export function clearFact(p: Profile, id: FactId, now = new Date().toISOString()): Profile {
   const facts = { ...p.facts };
   delete facts[id];
@@ -118,6 +136,7 @@ export function parseProfile(raw: unknown): Profile | null {
   const now = new Date().toISOString();
   const out = emptyProfile(typeof r.createdAt === "string" ? r.createdAt : now);
   if (typeof r.townId === "string") out.townId = r.townId;
+  if (typeof r.topicsConfirmedAt === "string") out.topicsConfirmedAt = r.topicsConfirmedAt;
   if (r.source === "persona") out.source = "persona";
   if (typeof r.updatedAt === "string") out.updatedAt = r.updatedAt;
   const facts = (r.facts ?? {}) as Record<string, Partial<FactAnswer>>;
