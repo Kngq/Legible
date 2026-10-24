@@ -151,6 +151,10 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 21.5_
   - [ ] 18.4 Verify chat answer citations and banned words in the browser before render
     - _Requirements: 21.3, 21.6, 22.3_
+  - [ ] 18.5 Rebuild MeasureView per design "Measure page": For you card with If YES / If NO / When / Based on rows, evidence in place under each sentence, trust summary
+    - _Requirements: 21.5_
+  - [ ] 18.6 Add `outcomeLines`, `takesEffect`, and `notAnswered` to `Measure` and author them for the ballot, cited and linted by `npm run data:build`
+    - _Requirements: 21.1_
 
 - [ ] 19. Chat dock (B, using A's ask route)
   - [ ] 19.1 Build the ChatDock with document and measure scoping, suggested questions, and the "Sent" chip

@@ -422,6 +422,50 @@ Source data: `data/legible_ma_seed.json` (the team's Supabase seed) is rebuilt b
 
 Copy rule: the feed heading is "Where your life meets what is being decided." Never "what you ought to care about." Deadlines are stated as facts ("Town Meeting votes May 4"), never as urgency ("Act now").
 
+## Measure page
+
+Opened from a measure card. It answers five questions in order: does this touch me, how exactly and when, why believe it, is this based on what I said, what can I do (civic actions only, never a vote). Screens and a clickable prototype are on the design canvas "Nine measure page" (Experience page: one path through the ballot; Screens page: each state in detail).
+
+**Two kinds of reliability, shown differently.** *Source*: did the state say this? Every Nine sentence carries its source line and opens its verbatim quote in place. *Fit*: does this apply to me? The page names the answers that triggered it and lets the person change them there. The trust summary counts both: "3 lines, 3 quotes. Each found word for word. Human review pending."
+
+**Two voices.** Nine's words are Figtree with the caption "In Nine's words." The state's words are the serif face (`--font-serif`) under "Official text, word for word." Nothing else uses the serif.
+
+### Layout, top to bottom
+
+1. **Nav.** Back (48 px circle), share, open the official page.
+2. **Header.** Kicker ("Massachusetts ballot · Question 4"), short title, decide-by line ("Voters decide Nov 3 · in 10 days"), and a positive-soft tag "Every quote found word for word" (or "Reviewed by name, date").
+3. **Referendum banner** (referendums only). "This law is already in effect. YES keeps it. NO repeals it."
+4. **For you card.** Relevance tag (accent fill "Touches you", info-soft "On your list", surface-muted "Applies to everyone" or "Probably not for you"); direction pictogram and label; then rows split by hairlines:
+   - **If YES passes** and **If NO passes**: one cited sentence each, always both, same weight. Referendum labels add "· the law stays" and "· the law ends".
+   - **When it would reach you**: date chip ("Jan 1 2028", or "In effect now") and one cited sentence.
+   - **Based on what you told Nine**: because chips ("Because you rent"); fact chips edit the answer in place and re-sort, topic chips only explain "On your list".
+   - **Inline fact question** when an unanswered fact decides relevance: accent-soft panel, "One answer decides whether this touches you", Yes / No, "Not now", "Prefer not to say". Sensitive facts say why they are asked here.
+   - **Trust summary**: positive-soft box with line and quote counts and review state. AI drafts use attention-soft and "AI draft, quotes verified, not human reviewed".
+5. **Next step.** One civic action from `nextSteps` (registration lookup, black pill).
+6. **In {town}.** `localReach` sentence with its source line.
+7. **What YES and NO do, word for word.** Two equal white cards, YES first, serif text, locator and status under each.
+8. **What the official text doesn't say.** One reviewed line, then "Ask about the official text" (chat dock, `ai` orb).
+9. **Full summary and fiscal effect.** Collapsed, verbatim.
+10. **Source footer.** Source name, quotes found out of total, review state, file fingerprint, "How do we know this?"
+
+### Evidence in place
+
+Under every Nine sentence sits a source line: a check mark, the locator and page ("AG summary, page 12"), and "Show the words". Tapping it opens a surface-muted panel directly below the sentence with the quote in serif, the cited words marked with `accent-soft` and an accent underline, the status tag, and "How do we know this?". The person never leaves the page to check a claim. "How do we know this?" opens ChainView as a bottom sheet: sentence, quote, page (opens SourceView), official file with fingerprint, then two boxes kept apart: "Machine check: passed" and "Human review: pending" or reviewer and date.
+
+### States
+
+Touches you; applies to everyone; probably not for you (still shows what reaches the town); empty profile (overview sentence plus "Add your home" nudge); answer declined (no follow-up, "Nine won't ask again"); AI draft; referendum; offline (official link only). Flagged measures never get a page.
+
+### Content this needs
+
+New optional `Measure` fields, hand-authored in `scripts/ballot-2026.content.ts`, every sentence cited and linted:
+
+- `outcomeLines?: { yes: WhySentence; no: WhySentence }` per rule, so personal lines exist for both outcomes;
+- `takesEffect?: { label: string; why: WhySentence }` ("Jan 1 2028");
+- `notAnswered?: string[]`: questions the official text leaves open, checked by a person against the booklet.
+
+When a field is missing the row is left out; the page never fills it with generated text.
+
 ## Content pipeline
 
 Nothing in the browser crawls the web. The team runs an ingest script that turns public documents into catalog entries, with the same model, schema, and quote verification as the analyze route.
