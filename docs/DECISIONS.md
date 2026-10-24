@@ -73,3 +73,11 @@ Smallest choices made where the spec was silent. Revisit any of them freely.
 4. **Ring fill** uses the Web Animations API, reading `--duration` and `--ease` from the theme, instead of a CSS transition. A transition needs one painted frame at the old value, which was unreliable when the save and re-render happen in the same click.
 5. **Sheet saves record `{ kind: "edit" }`** as the answer source, since the sheet is the profile page in the AnswerSource list.
 6. **Remember prompt** shows after the first Save of an area or Subjects in the session, and only when storage works. Keep and Not now both hide it for the session; the meter never counts it.
+
+## Oct 24: Home as a feed of decisions (tasks 17.1, 17.3-17.5)
+1. **17.3 is checked off for the pure part only.** `buildFeed` filters, counts touches, picks the preview, sets status, orders, and picks Up next, with tests. Fetching the catalog through `apiFetch` belongs with 17.2; until then `NineApp` passes `DOCS = [bundled ballot]`, and the catalog replaces that one constant.
+2. **Open questions use life areas.** The feed lists the life areas that hold an unsettled `askFacts` fact and opens the same Pick-all screen in the profile sheet. Sensitive and narrow facts stay on their cards, so they never appear cold in the feed.
+3. **Decide-by wording** lives in `src/lib/engine/decide-by.ts` with tests: people "decide" ("Voters decide Nov 3"), a body "votes" ("Town Meeting votes May 4"), comment periods "close". Relative form for Up next: "in N days", "tomorrow", "today". No urgency words.
+4. **Upload button is disabled** in the empty-town card until the upload panel (task 9.4) exists; `Home` takes an optional `onUpload` and enables it when passed.
+5. **Scope switch filters the list and Decided group**; Up next stays the most pressing item overall. The empty-town card shows under All and the town tab, never under State.
+6. **DocumentView** keeps the countdown hero, stat cards, "Decided statewide, felt in {town}", and the card groups. Back restores the feed's scroll position. No URL change yet; deep links can come with the catalog.

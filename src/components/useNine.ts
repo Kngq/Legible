@@ -3,6 +3,7 @@
 // App state: the life profile and device preferences. Lives in memory; written to
 // localStorage only when "Remember on this device" is on. Never sent anywhere.
 import { useCallback, useEffect, useState } from "react";
+import { localISODate } from "@/lib/engine/feed";
 import { emptyProfile, parseProfile, PROFILE_STORAGE_KEY, type Preferences, type Profile } from "@/lib/engine/profile";
 
 interface Stored {
@@ -43,6 +44,8 @@ export function useNine() {
   const [profile, setProfile] = useState<Profile>(() => emptyProfile(PRERENDER_AT));
   const [preferences, setPreferences] = useState<Preferences>(DEFAULT_PREFS);
   const [canStore, setCanStore] = useState(true);
+  // Device date, read after mount so the prerender never depends on the clock.
+  const [today, setToday] = useState(PRERENDER_AT.slice(0, 10));
 
   useEffect(() => {
     // Storage exists only in the browser, so it is read after the first render.
@@ -53,6 +56,7 @@ export function useNine() {
       setPreferences(stored.preferences);
     } else setProfile(emptyProfile());
     setCanStore(storageWorks());
+    setToday(localISODate(new Date()));
     setLoaded(true);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
@@ -74,5 +78,5 @@ export function useNine() {
     setPreferences(DEFAULT_PREFS);
   }, []);
 
-  return { loaded, profile, setProfile, preferences, setPreferences, canStore, forget };
+  return { loaded, today, profile, setProfile, preferences, setPreferences, canStore, forget };
 }

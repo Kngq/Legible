@@ -115,15 +115,15 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 1.7, 6.2_
 
 - [ ] 17. Catalog and home feed (A builds catalog and counts, B builds the screen)
-  - [ ] 17.1 Add `docType` and `decideBy` to the document and catalog types; set them on the 2026 ballot (Voters, vote, 2026-11-03)
+  - [x] 17.1 Add `docType` and `decideBy` to the document and catalog types; set them on the 2026 ballot (Voters, vote, 2026-11-03)
     - _Requirements: 20.1_
   - [ ] 17.2 Write the catalog builder that regenerates `public/catalog/ma.json` from `public/docs/` and the bundled ballot
     - _Requirements: 20.1, 23.5_
-  - [ ] 17.3 Fetch the catalog whole through `apiFetch`, filter by state and town in the browser, and compute touches, preview, status, and order, with tests
+  - [x] 17.3 Fetch the catalog whole through `apiFetch`, filter by state and town in the browser, and compute touches, preview, status, and order, with tests
     - _Requirements: 20.2, 20.4_
-  - [ ] 17.4 Rebuild Home as the decisions feed: header with ring, nudge, Up next card, scope switch, feed cards, open questions, Decided group, empty-town state
+  - [x] 17.4 Rebuild Home as the decisions feed: header with ring, nudge, Up next card, scope switch, feed cards, open questions, Decided group, empty-town state
     - _Requirements: 20.3, 20.5, 20.6, 20.7, 20.9_
-  - [ ] 17.5 Move the current ballot page into a DocumentView opened from a feed card
+  - [x] 17.5 Move the current ballot page into a DocumentView opened from a feed card
     - _Requirements: 20.3_
   - [ ] 17.6 Add uploaded and sample documents to the feed in memory, tagged by town
     - _Requirements: 20.8_
