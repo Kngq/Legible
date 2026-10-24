@@ -1,37 +1,65 @@
 @import "tailwindcss";
 
 /*
- * Theme tokens. Minimal and friendly: every word is ink or grey, never coloured.
- * Colour appears only as a small fill behind a tag, a bar, or a highlight, with
- * ink text on top, so a few things pop out of an otherwise monochrome page.
- * Three pops, each with one job: accent (touches you), attention (new or needs
- * a look), positive (checked). Product rules: no red or blue, no gradients, at
- * most four type sizes.
+ * Theme tokens. Minimal and friendly: grey page, white cards, black pills, and
+ * every word ink or grey. Colour comes from a small palette sampled from the
+ * chosen reference: violet, periwinkle, coral, green, and a magenta orb for AI.
+ * Strong shades carry white text on large cards; soft tints carry ink text on
+ * tags. Product rule: colour never encodes a side, a vote, YES or NO, or a
+ * direction (directions use pictograms). No gradients; at most four type sizes.
  */
 :root {
+  /* Palette (raw). Use the semantic tokens below in components. */
+  --violet-50: #f0eaf8;
+  --violet-200: #c3aee0;
+  --violet-400: #9271b3;
+  --violet-600: #72558e;
+  --violet-800: #4c386a;
+  --periwinkle-50: #e8effc;
+  --periwinkle-200: #b1d7f8;
+  --periwinkle-400: #8ca5df;
+  --periwinkle-600: #5f6fbf;
+  --coral-50: #fde8e7;
+  --coral-200: #f6b3b2;
+  --coral-400: #f19492;
+  --coral-600: #bd4544;
+  --green-50: #e2f1ea;
+  --green-600: #3c7e66;
+  --magenta-400: #e866bc;
+
   /* Surfaces */
-  --background: #f6f6f3; /* paper: the page behind everything */
-  --foreground: #16161a; /* ink */
-  --surface: #ffffff; /* cards, panels, the onboarding sheet */
-  --surface-muted: #efefec; /* secondary buttons, chips, inputs */
-  --border: #e6e6e1; /* hairline dividers */
-  --muted-foreground: #6b6b70; /* body copy under headings, captions */
+  --background: #ebebeb; /* page grey */
+  --foreground: #111111; /* ink */
+  --surface: #ffffff; /* cards, panels, segmented track */
+  --surface-muted: #f3f3f3; /* secondary buttons, chips, inputs */
+  --border: #e0e0e0; /* hairline dividers */
+  --muted-foreground: #666666; /* captions, "this month", "net this month" */
 
-  /* Pops: fills only, never text colour. Text on any pop is --on-pop. */
-  --accent: #e4f45a; /* lime highlighter: "Touches you" tag, the meter fill */
-  --accent-soft: #f4fac4; /* highlighted sentence inside a quote */
-  --attention: #ff9f5a; /* tangerine: "New" tag, active tab bar, "3 left", AI draft, flagged */
-  --positive: #a6e8c0; /* mint: "Reviewed" and "Found word for word" badges */
-  --on-pop: #16161a;
-  --accent-foreground: var(--on-pop);
+  /* Semantic colour. Text on a strong fill is white; text on a soft tint is ink. */
+  --accent: var(--violet-600); /* "Touches you", the meter fill, the feature card */
+  --accent-soft: var(--violet-50); /* touches-you tag, highlighted sentence in a quote */
+  --on-strong: #ffffff; /* text on any strong fill: accent, info, attention, positive */
+  --accent-foreground: var(--on-strong);
+  --on-pop: var(--on-strong); /* earlier name, still used by components */
+  --info: var(--periwinkle-600); /* secondary feature card, "On your list" */
+  --info-soft: var(--periwinkle-50);
+  --attention: var(--coral-600); /* "New", AI draft, flagged */
+  --attention-soft: var(--coral-50);
+  --positive: var(--green-600); /* reviewed, found word for word */
+  --positive-soft: var(--green-50);
+  --ai: var(--magenta-400); /* the chat dock orb: marks what the model wrote */
 
-  /* Primary action: ink button, paper text */
-  --primary: #16161a;
+  /* Data marks, for budgets and money charts only */
+  --data-in: var(--green-600);
+  --data-out: var(--coral-600);
+
+  /* Primary action: black pill, white text (segmented "Month", "Ask Pulse") */
+  --primary: #171719;
   --primary-foreground: #ffffff;
 
-  --ring: #16161a;
+  --ring: #171719;
 
-  --card-shadow: 0 1px 2px rgb(22 22 26 / 0.04), 0 8px 24px rgb(22 22 26 / 0.06);
+  --card-shadow: 0 1px 2px rgb(17 17 17 / 0.04), 0 10px 30px rgb(17 17 17 / 0.08);
 
   /* Motion: one curve */
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -40,22 +68,29 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #111113;
-    --foreground: #f2f2ee;
+    --background: #0f0f11;
+    --foreground: #f2f2f2;
     --surface: #1a1a1d;
-    --surface-muted: #26262a;
+    --surface-muted: #252529;
     --border: #2e2e33;
-    --muted-foreground: #a1a1a6;
+    --muted-foreground: #a0a0a5;
 
-    /* Pops keep their brightness in dark mode; text on them stays ink. */
-    --accent-soft: #33361a;
+    --accent: var(--violet-400);
+    --accent-soft: #2c2240;
+    --info: var(--periwinkle-400);
+    --info-soft: #1f2640;
+    --attention: var(--coral-400);
+    --attention-soft: #3d1f1f;
+    --positive: #5fae8e;
+    --positive-soft: #18302a;
+    --on-strong: #111111;
 
-    --primary: #f2f2ee;
-    --primary-foreground: #111113;
+    --primary: #f2f2f2;
+    --primary-foreground: #111111;
 
-    --ring: #f2f2ee;
+    --ring: #f2f2f2;
 
-    --card-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.25);
+    --card-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px rgb(0 0 0 / 0.3);
   }
 }
 
@@ -69,11 +104,19 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-accent-foreground: var(--accent-foreground);
-  --color-attention: var(--attention);
+  --color-on-strong: var(--on-strong);
   --color-on-pop: var(--on-pop);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-attention: var(--attention);
+  --color-attention-soft: var(--attention-soft);
+  --color-positive: var(--positive);
+  --color-positive-soft: var(--positive-soft);
+  --color-ai: var(--ai);
+  --color-data-in: var(--data-in);
+  --color-data-out: var(--data-out);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  --color-positive: var(--positive);
   --color-ring: var(--ring);
 
   --font-sans: var(--font-figtree);
@@ -116,5 +159,43 @@ body {
 @media (prefers-reduced-motion: reduce) {
   :root {
     --duration: 0ms;
+  }
+}
+
+/* Motion. Everything uses the one curve and drops to instant under reduced motion. */
+@theme {
+  --animate-part-in: part-in var(--duration) var(--ease) both;
+  --animate-slide-next: slide-next var(--duration) var(--ease) both;
+  --animate-slide-back: slide-back var(--duration) var(--ease) both;
+  --animate-fade-in: fade-in var(--duration) var(--ease) both;
+
+  @keyframes part-in {
+    from { opacity: 0; transform: scale(0.6); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes slide-next {
+    from { opacity: 0; transform: translateX(32px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slide-back {
+    from { opacity: 0; transform: translateX(-32px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* Card re-sort uses the View Transitions API where available. */
+::view-transition-group(*) {
+  animation-duration: var(--duration);
+  animation-timing-function: var(--ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::view-transition-group(*) {
+    animation-duration: 0ms !important;
+    transition-duration: 0ms !important;
   }
 }
