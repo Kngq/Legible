@@ -11,10 +11,11 @@ import { localReach } from "@/lib/engine/next-steps";
 import { canAskInCard, type Profile } from "@/lib/engine/profile";
 import { docWhat } from "@/lib/engine/timeline";
 import { buildGuide, guideTopics, topicLabel, type GuideEntry, type GuideFilter, type GuideSort } from "@/lib/engine/ballot-guide";
-import { DIRECTION_DEFS, type TopicId } from "@/lib/vocab";
+import type { TopicId } from "@/lib/vocab";
 import { AskButton } from "./AskSheet";
 import { FullTextLink } from "./FullText";
-import { DirectionMark, Glyph } from "./icons";
+import { Cost, OpenDetails, Outcomes, PersonalSummary, WhatItDoes } from "./MeasureParts";
+import { Glyph } from "./icons";
 import { FOCUS, Tag } from "./ui";
 import { SECONDARY } from "./updates";
 
@@ -206,73 +207,18 @@ function GuideCard({
             </button>
           </h3>
           <p className="mt-1 text-small text-muted-foreground">{origin}</p>
-          <span aria-hidden="true" className="mt-2 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-small font-semibold text-primary-foreground">
-            Read the question
-            <span className="-rotate-90">
-              <Glyph name="chevron" size={12} />
-            </span>
-          </span>
         </div>
       </div>
 
-      {e.plain && <p className="mt-4 text-body">{e.plain.text}</p>}
+      <WhatItDoes card={c} />
+      <Outcomes card={c} />
+      <Cost measure={m} />
+      <PersonalSummary card={c} asks={asks} local={local?.text} town={town} />
 
-      <p className="mt-3 flex items-center gap-2 text-small font-semibold">
-        <DirectionMark direction={c.direction} size={24} />
-        {DIRECTION_DEFS[c.direction].label}
-      </p>
-
-      <p className="mt-4 text-small text-muted-foreground">What YES and NO do, in the official words:</p>
-      <div className="mt-2 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-md border border-border p-4">
-          <p className="flex items-center gap-2 text-small font-bold uppercase tracking-wider">
-            <span aria-hidden="true" className="size-2 rounded-full bg-accent" />
-            If YES wins{referendum ? " · law stays" : ""}
-          </p>
-          {e.passes && <p className="mt-1.5 font-[family-name:var(--font-serif)] text-body">{e.passes.text}</p>}
-        </div>
-        <div className="rounded-md border border-border p-4">
-          <p className="flex items-center gap-2 text-small font-bold uppercase tracking-wider">
-            <span aria-hidden="true" className="size-2 rounded-full bg-muted-foreground" />
-            If NO wins{referendum ? " · law ends" : ""}
-          </p>
-          {e.fails && <p className="mt-1.5 font-[family-name:var(--font-serif)] text-body">{e.fails.text}</p>}
-        </div>
-      </div>
-
-      {e.cost && (
-        <p className="mt-3 text-small">
-          <span className="mr-2 font-bold uppercase tracking-wider text-muted-foreground">Cost</span>
-          {e.cost} <span className="text-muted-foreground">(official fiscal statement)</span>
-        </p>
-      )}
-
-      <div className={`mt-4 rounded-md p-4 ${touches ? "bg-accent-soft" : "bg-surface-muted"}`}>
-        <p className="text-small font-bold uppercase tracking-wider">{e.ifYou ?? (c.relevance === "probably_not" ? "Probably not you" : "If you live in Massachusetts")}</p>
-        {touches ? (
-          c.why.map((s) => (
-            <p key={s.text} className="mt-1.5 text-body">
-              {s.text}
-            </p>
-          ))
-        ) : (
-          <p className="mt-1.5 text-body">
-            {c.relevance === "probably_not" ? "Nothing in your answers points to this question." : "It applies to everyone; nothing in your answers points to it directly."}
-            {asks && " One quick question on its page tells you if it reaches you."}
-          </p>
-        )}
-        {local && <p className="mt-2 text-small text-muted-foreground">In {town ?? "your city or town"}: {local.text}</p>}
-      </div>
-
-      <div className="mt-3 flex flex-wrap items-center gap-x-5">
+      <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1">
+        <OpenDetails onOpen={onOpen} asks={asks} />
         <AskButton measureId={m.id} />
         <FullTextLink measure={m} />
-        <button type="button" onClick={onOpen} className={`inline-flex min-h-11 items-center gap-1.5 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
-          {asks ? "Answer one question and read more" : "Read more and check the official text"}
-          <span aria-hidden="true" className="-rotate-90">
-            <Glyph name="chevron" size={14} />
-          </span>
-        </button>
       </div>
     </li>
   );

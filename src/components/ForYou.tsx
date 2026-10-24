@@ -4,13 +4,14 @@
 // passes, when, and which answers put it here. Every line opens its official
 // words in place, and "How do we know this?" walks the chain to the source file.
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { excerpt, pageLines, quoteFor, trustSummary, yesLines, type PageSentence } from "@/lib/engine/measure-page";
+import { excerpt, pageLines, quoteFor, trustSummary, type PageSentence } from "@/lib/engine/measure-page";
 import { answerFact, canAskInCard, clearFact, declineFact, skipFact, type Profile } from "@/lib/engine/profile";
 import type { Card, DocumentData, Measure } from "@/lib/engine/types";
-import { DIRECTION_DEFS, FACT_DEFS, SENSITIVE_FACTS, TOPIC_DEFS, type FactId } from "@/lib/vocab";
-import { DirectionMark, Glyph } from "./icons";
+import { FACT_DEFS, SENSITIVE_FACTS, TOPIC_DEFS, type FactId } from "@/lib/vocab";
+import { Glyph } from "./icons";
 import { Fingerprint } from "./FullText";
 import { FactQuestion } from "./MeasureCard";
+import { PartLabel, personalHeading } from "./MeasureParts";
 import { areaOf, type SheetView } from "./ProfileSheet";
 import { FOCUS, Tag } from "./ui";
 
@@ -210,54 +211,34 @@ export function ForYou({
   const lines = pageLines(m.id);
   const askable = card.pendingQuestions.filter((f) => canAskInCard(profile, f));
   const source = { kind: "card", documentId: doc.id, measureId: m.id } as const;
-  const referendum = m.kind === "referendum";
-  const yes = yesLines(card, lines);
-  const shown = [...yes, ...(lines ? [lines.no, ...(lines.takesEffect ? [lines.takesEffect.why] : [])] : [])];
+  const touches = card.relevance === "touches";
+  const personal: PageSentence[] = touches ? card.why : [];
+  const shown = [...personal, ...(lines?.takesEffect ? [lines.takesEffect.why] : [])];
   const trust = trustSummary(m, doc, shown);
   const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
   const line = (s: PageSentence) => <CitedLine key={s.text} s={s} measure={m} doc={doc} onChain={setChain} />;
 
   return (
-    <section className="mt-5 rounded-lg bg-surface p-5 shadow-card" aria-labelledby="foryou-h">
+    <section className={`mt-5 rounded-lg p-5 ${touches ? "bg-accent-soft" : "bg-surface shadow-card"}`} aria-labelledby="foryou-h">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="foryou-h" className="text-body font-bold">
-          How could this affect you?
-        </h2>
+        <PartLabel n={4} id="foryou-h">
+          {personalHeading(card)}
+        </PartLabel>
         <div className="flex flex-wrap gap-1.5">
-          {card.relevance === "touches" && (
-            <span className="rounded-sm bg-accent px-2.5 py-1 text-small font-semibold text-accent-foreground">Touches you</span>
-          )}
+          {touches && <span className="rounded-sm bg-accent px-2.5 py-1 text-small font-semibold text-accent-foreground">Touches you</span>}
           {card.onYourList && <Tag pop="info">On your list</Tag>}
-          {card.relevance === "everyone" && <Tag>Applies to everyone</Tag>}
-          {card.relevance === "probably_not" && <Tag>Probably not for you</Tag>}
         </div>
       </div>
 
-      {referendum && (
-        <p className="mt-3 rounded-md border border-border px-3.5 py-2.5 text-small">
-          <strong>Referendum.</strong> This law is already in effect. YES keeps it. NO repeals it.
+      {touches ? (
+        <>
+          <p className="mt-2 text-small text-muted-foreground">What could change for you, in plain words. Each line opens the official words it comes from.</p>
+          {personal.map(line)}
+        </>
+      ) : (
+        <p className="mt-2 text-body">
+          {card.relevance === "probably_not" ? "Nothing in your answers points to this question." : "It applies to everyone; nothing in your answers points to it directly."}
         </p>
-      )}
-
-      <p className="mt-3.5 flex items-center gap-3 text-body font-semibold">
-        <DirectionMark direction={card.direction} size={36} />
-        {DIRECTION_DEFS[card.direction].label}
-      </p>
-      {card.relevance === "probably_not" && <p className="mt-2 text-body">Nothing in your answers points to this measure directly.</p>}
-      <p className="mt-3 text-small text-muted-foreground">
-        Possible effects in plain words, if it passes or fails. Each line opens the official text it comes from, so you can check it.
-      </p>
-
-      <div className={ROW}>
-        <p className={LABEL}>If YES passes{referendum ? " · the law stays" : ""}</p>
-        {yes.map(line)}
-      </div>
-
-      {lines && (
-        <div className={ROW}>
-          <p className={LABEL}>If NO passes{referendum ? " · the law ends" : ""}</p>
-          {line(lines.no)}
-        </div>
       )}
 
       {lines?.takesEffect && (
@@ -340,21 +321,23 @@ export function ForYou({
         </div>
       )}
 
+      {trust.lines > 0 && (
       <p className={`mt-4 flex items-start gap-2.5 rounded-md px-3.5 py-3 text-small ${trust.aiDraft ? "bg-attention-soft" : "bg-positive-soft"}`}>
-        <span className="mt-0.5 shrink-0">
-          <Glyph name="check" size={16} />
-        </span>
-        <span>
-          <strong>
-            {plural(trust.lines, "line")}, {plural(trust.quotes, "quote")}.
-          </strong>{" "}
-          {trust.aiDraft
-            ? "AI draft, quotes verified, not human reviewed."
-            : trust.allReviewed
-              ? "Each one found word for word and reviewed by a person."
-              : "Each one found word for word in the official text. Human review pending."}
-        </span>
-      </p>
+          <span className="mt-0.5 shrink-0">
+            <Glyph name="check" size={16} />
+          </span>
+          <span>
+            <strong>
+              {plural(trust.lines, "line")}, {plural(trust.quotes, "quote")}.
+            </strong>{" "}
+            {trust.aiDraft
+              ? "AI draft, quotes verified, not human reviewed."
+              : trust.allReviewed
+                ? "Each one found word for word and reviewed by a person."
+                : "Each one found word for word in the official text. Human review pending."}
+          </span>
+        </p>
+      )}
 
       {chain && <ChainSheet s={chain} measure={m} doc={doc} onClose={() => setChain(null)} />}
     </section>

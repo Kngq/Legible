@@ -15,13 +15,13 @@ import { CivicRow } from "./CivicRow";
 import { Cover, DocTile } from "./covers";
 import { AskButton } from "./AskSheet";
 import { ForYou } from "./ForYou";
+import { Cost, Outcomes, WhatItDoes } from "./MeasureParts";
 import { FullText } from "./FullText";
 import { Glyph } from "./icons";
-import { Draft, OfficialText, Sentences } from "./MeasureCard";
+import { Draft, Sentences } from "./MeasureCard";
 import type { SheetView } from "./ProfileSheet";
-import { Button, FOCUS, Tag } from "./ui";
+import { Button, FOCUS } from "./ui";
 
-const SERIF = "font-[family-name:var(--font-serif)]";
 
 function withTransition(fn: () => void) {
   type Transition = { ready: Promise<void>; finished: Promise<void> };
@@ -128,6 +128,13 @@ export function MeasureView({
 
       <Cover measure={m} label={`${isBallot ? "Q" : "#"}${m.number}`} size={48} className="mt-5 aspect-[16/5] rounded-lg" />
 
+      {/* The same four parts as the ballot card, in the same order, each in full. */}
+      <section aria-label="What it does, what YES and NO do, and the cost" className="mt-5 rounded-lg bg-surface p-5 pt-1 shadow-card">
+        <WhatItDoes card={card} detailed />
+        <Outcomes card={card} detailed />
+        <Cost measure={m} detailed />
+      </section>
+
       <ForYou card={card} doc={doc} profile={profile} update={update} onOpenProfile={onOpenProfile} />
 
       <div className="mt-3">
@@ -157,34 +164,6 @@ export function MeasureView({
             In {town ?? "your city or town"}
           </h2>
           <Sentences sentences={[local]} measure={m} />
-        </section>
-      )}
-
-      {/* The official text, verbatim */}
-      <section className="mt-10" aria-labelledby="official-h">
-        <h2 id="official-h" className="text-small font-semibold uppercase tracking-wider text-muted-foreground">
-          The official summary, word for word
-        </h2>
-        <p className={`mt-3 text-body leading-relaxed ${SERIF}`}>{m.summary.text}</p>
-        <p className="mt-3 flex flex-wrap items-center gap-2 text-small text-muted-foreground">
-          {m.summary.locator}
-          {m.summary.page ? `, page ${m.summary.page}` : ""}
-          {m.summary.status !== "failed" && <Tag pop="positive">{m.summary.status === "reviewed" ? "Reviewed" : "Found word for word"}</Tag>}
-        </p>
-      </section>
-
-      <OfficialText measure={m} />
-
-      {m.fiscal && (
-        <section className="mt-8" aria-labelledby="fiscal-h">
-          <h2 id="fiscal-h" className="text-small font-semibold uppercase tracking-wider text-muted-foreground">
-            Fiscal effect, word for word
-          </h2>
-          <p className={`mt-3 text-body leading-relaxed ${SERIF}`}>{m.fiscal.text}</p>
-          <p className="mt-2 text-small text-muted-foreground">
-            {m.fiscal.locator}
-            {m.fiscal.page ? `, page ${m.fiscal.page}` : ""}
-          </p>
         </section>
       )}
 
