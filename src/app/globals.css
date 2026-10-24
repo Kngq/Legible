@@ -122,6 +122,7 @@
 
   --font-sans: var(--font-figtree);
   --font-display: var(--font-figtree);
+  --font-wordmark: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
 
   /* The four type sizes. Display is bold and tight, like the reference hero. */

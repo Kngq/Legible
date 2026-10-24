@@ -4,12 +4,12 @@
 // one-question screens that fill them. Opens from the avatar, because chips, and
 // avatar badges. Everything stays in the browser.
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { avatarParts, type AvatarPart } from "@/lib/engine/avatar";
+import { type AvatarPart } from "@/lib/engine/avatar";
 import { nextItem, personalization, type ChecklistItem } from "@/lib/engine/personalization";
 import { answerArea, confirmTopics, declineArea, type Profile } from "@/lib/engine/profile";
 import { LIFE_AREAS, TOPIC_DEFS, TOPIC_IDS, type FactId, type LifeAreaId } from "@/lib/vocab";
 import { AvatarRing } from "./AvatarRing";
-import { Glyph } from "./icons";
+import { Glyph, Part } from "./icons";
 import { AreaStep, FACT_SHORT, TopicsStep, TownStep, townName } from "./profile-steps";
 import { Button, FOCUS } from "./ui";
 
@@ -109,18 +109,15 @@ export function ProfileSheet({
 
   let body: ReactNode;
   if (view.kind === "list") {
-    const parts = avatarParts(profile);
     body = (
       <>
         <div className="flex flex-col items-center pt-2 text-center">
           <AvatarRing
             key={lastSave?.at ?? 0}
-            parts={parts}
+            parts={[]}
             percent={m.percent}
             from={lastSave?.from}
-            newest={lastSave?.part}
             size={184}
-            onPart={(p) => open(viewForPart(p))}
           />
           <p className="mt-2 text-body text-muted-foreground">
             {m.percent === 100 ? "Your profile is filled in." : `${m.done} of ${m.total} filled in. It all stays in this browser.`}
@@ -146,8 +143,62 @@ export function ProfileSheet({
             </Button>
           )}
         </div>
+
+        {/* Name: used for the greeting on Home. Browser-only, like every answer. */}
+        <section aria-labelledby="name-h" className="mt-4 rounded-lg bg-surface p-4 shadow-card">
+          <label id="name-h" htmlFor="profile-name" className="block text-body font-semibold">
+            Your name
+          </label>
+          <p className="mt-1 text-small text-muted-foreground">
+            For a friendly hello on your home screen. It stays in this browser.
+          </p>
+          <input
+            id="profile-name"
+            type="text"
+            value={profile.name ?? ""}
+            onChange={(e) => setProfile({ ...profile, name: e.target.value.slice(0, 40) || undefined })}
+            maxLength={40}
+            autoComplete="given-name"
+            placeholder="Your first name or nickname"
+            className={`mt-3 h-11 w-full rounded-md bg-surface-muted px-4 text-body placeholder:text-muted-foreground ${FOCUS}`}
+          />
+        </section>
+
+        {/* Interests: the subjects a person follows. Editable here directly. */}
+        {(() => {
+          const chosen = TOPIC_IDS.filter((t) => profile.topics[t]);
+          return (
+            <section aria-labelledby="interests-h" className="mt-4 rounded-lg bg-surface p-4 shadow-card">
+              <div className="flex items-center justify-between gap-3">
+                <h3 id="interests-h" className="text-body font-semibold">
+                  Your interests
+                </h3>
+                <Button variant="text" className="min-h-10!" onClick={() => open({ kind: "topics" })}>
+                  {chosen.length ? "Edit interests" : "Add interests"}
+                </Button>
+              </div>
+              {chosen.length ? (
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {chosen.map((id) => (
+                    <li key={id}>
+                      <span className="inline-flex min-h-9 items-center gap-2 rounded-full border-2 border-foreground bg-surface px-3 text-small font-semibold">
+                        <Part name={TOPIC_DEFS[id].avatarPart} size={16} />
+                        {TOPIC_DEFS[id].label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-1 text-small text-muted-foreground">
+                  Pick the subjects you follow to add an On your list tag to decisions about them.
+                </p>
+              )}
+            </section>
+          );
+        })()}
+
         <ul className="mt-4 overflow-hidden rounded-lg bg-surface shadow-card">
-          {m.items.map((item) => {
+          {m.items.filter((item) => item.kind !== "topics").map((item) => {
             const key = item.kind === "area" ? item.id : item.kind;
             return (
               <li key={key} className="border-b border-border last:border-0">

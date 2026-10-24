@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
-import { Figtree, Geist_Mono, Source_Serif_4 } from "next/font/google";
+import { Figtree, Geist_Mono, Raleway, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { ChatDockGate } from "@/components/ChatDockGate";
 
 const figtree = Figtree({
   variable: "--font-figtree",
+  subsets: ["latin"],
+});
+
+// Display face for the Legible wordmark.
+const raleway = Raleway({
+  variable: "--font-raleway",
   subsets: ["latin"],
 });
 
@@ -29,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${figtree.variable} ${serif.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${figtree.variable} ${raleway.variable} ${serif.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}

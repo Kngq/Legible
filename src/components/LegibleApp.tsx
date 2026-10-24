@@ -21,6 +21,7 @@ import { Explore } from "./Explore";
 import { Home } from "./Home";
 import { MeasureView } from "./MeasureView";
 import { ProfileSheet, type SheetView } from "./ProfileSheet";
+import { SiteHeader } from "./SiteHeader";
 import { townName } from "./profile-steps";
 import { useLegible } from "./useLegible";
 
@@ -209,6 +210,9 @@ export function LegibleApp() {
 
   return (
     <HighlightAskProvider personalFor={personalFor}>
+      <div className="sticky top-0 z-30">
+        <SiteHeader />
+      </div>
       {page}
       {sheet && (
         <ProfileSheet

@@ -46,7 +46,7 @@ export function Explore({
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-16 sm:px-6">
-      <TopBar active="explore" profile={profile} onHome={onHome} onExplore={() => window.scrollTo({ top: 0 })} onOpenProfile={onOpenProfile} />
+      <TopBar active="explore" needsInterests={!profile.topicsConfirmedAt && Object.keys(profile.topics).length === 0} onHome={onHome} onExplore={() => window.scrollTo({ top: 0 })} onOpenProfile={onOpenProfile} />
 
       <header className="pt-6">
         <h1 className="text-display">Explore</h1>
