@@ -7,10 +7,13 @@
 // rest as compact rows, ranked by how they connect to the person. Dates and
 // decisions never mix. Everything else is on Explore, one link away. Order comes
 // from buildTimeline and homeSections. Runs in the browser.
+import { motion, useReducedMotion } from "motion/react";
+import { useState } from "react";
 import type { CivicCard } from "@/lib/engine/civic";
 import type { Feed } from "@/lib/engine/feed";
 import { homeSections, profileBasis } from "@/lib/engine/home-copy";
 import { personalization } from "@/lib/engine/personalization";
+import { DURATION, EASE } from "@/lib/motion";
 import type { Profile } from "@/lib/engine/profile";
 import { buildTimeline } from "@/lib/engine/timeline";
 import { FACT_DEFS, LIFE_AREAS } from "@/lib/vocab";
@@ -20,7 +23,6 @@ import { Glyph } from "./icons";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { FOCUS } from "./ui";
-import { TopBar } from "./updates";
 
 /** The answers that sort the page, as short phrases: "You rent". Life-area facts only. */
 function answeredFacts(p: Profile): string[] {
@@ -69,6 +71,15 @@ export function Home({
   const list = decisionsFor({ touching, affect, listed, ballot: ballotItem, ...cardProps });
   const [featured, ...rest] = list;
   const meter = personalization(profile);
+  // A dot that fills in after a save pulses once, so the change shows on the page.
+  const doneKey = meter.items.map((i) => (i.done ? 1 : 0)).join("");
+  const [seen, setSeen] = useState(doneKey);
+  const [pulse, setPulse] = useState<{ at: number; dots: number[] }>({ at: 0, dots: [] });
+  if (seen !== doneKey) {
+    setPulse({ at: pulse.at + 1, dots: meter.items.flatMap((i, n) => (i.done && seen[n] !== "1" ? [n] : [])) });
+    setSeen(doneKey);
+  }
+  const reduce = useReducedMotion() ?? false;
   const facts = answeredFacts(profile);
   // Interests are "decided" once the person confirms the topics screen or picks any.
   const needsInterests = !profile.topicsConfirmedAt && Object.keys(profile.topics).length === 0;
@@ -76,9 +87,7 @@ export function Home({
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-28 sm:px-6">
-      <TopBar active="home" needsInterests={needsInterests} onHome={() => window.scrollTo({ top: 0 })} onExplore={onExplore} onOpenProfile={onOpenProfile} />
-
-      <header className="pt-5 sm:pt-8">
+      <header className="pt-6 sm:pt-10">
         {profile.name && (
           <p className="font-display text-lg italic text-muted-foreground">
             {greeting}, {profile.name}.
@@ -95,10 +104,12 @@ export function Home({
             className={`group inline-flex min-h-9 items-center gap-1.5 rounded-sm ${FOCUS}`}
           >
             {meter.items.map((item, i) => (
-              <span
-                key={i}
+              <motion.span
+                key={pulse.dots.includes(i) ? `${i}-${pulse.at}` : i}
                 aria-hidden="true"
-                className={`size-2.5 rounded-full interactive group-hover:scale-110 ${item.done ? "bg-accent" : "shadow-[inset_0_0_0_1.5px_var(--info)]"}`}
+                animate={pulse.dots.includes(i) && !reduce ? { scale: [1, 1.8, 1] } : { scale: 1 }}
+                transition={{ duration: DURATION.slow * 2, ease: EASE }}
+                className={`size-2.5 rounded-full ${item.done ? "bg-accent" : "shadow-[inset_0_0_0_1.5px_var(--info)]"}`}
               />
             ))}
           </button>

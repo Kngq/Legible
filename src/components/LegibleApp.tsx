@@ -21,6 +21,7 @@ import { Explore } from "./Explore";
 import { Home } from "./Home";
 import { MeasureView } from "./MeasureView";
 import { ProfileSheet, type SheetView } from "./ProfileSheet";
+import { ScreenIn } from "./ScreenIn";
 import { SiteHeader } from "./SiteHeader";
 import { townName } from "./profile-steps";
 import { useLegible } from "./useLegible";
@@ -210,12 +211,23 @@ export function LegibleApp() {
     );
   }
 
+  const tab = route.kind === "explore" ? "explore" : route.kind === "feed" ? "home" : undefined;
+  const toHome = () => (route.kind === "feed" ? window.scrollTo({ top: 0, behavior: "smooth" }) : go({ kind: "feed" }));
+  const toExplore = () => (route.kind === "explore" ? window.scrollTo({ top: 0, behavior: "smooth" }) : go({ kind: "explore" }));
+
   return (
     <HighlightAskProvider personalFor={personalFor}>
       <div className="sticky top-0 z-30">
-        <SiteHeader />
+        <SiteHeader
+          active={tab}
+          name={profile.name}
+          needsInterests={!profile.topicsConfirmedAt && Object.keys(profile.topics).length === 0}
+          onHome={toHome}
+          onExplore={toExplore}
+          onOpenProfile={setSheet}
+        />
       </div>
-      {page}
+      <ScreenIn key={hash || "#/"}>{page}</ScreenIn>
       {sheet && (
         <ProfileSheet
           key={JSON.stringify(sheet)}

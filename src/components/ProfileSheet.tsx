@@ -9,6 +9,7 @@ import { nextItem, personalization, type ChecklistItem } from "@/lib/engine/pers
 import { answerArea, confirmTopics, declineArea, type Profile } from "@/lib/engine/profile";
 import { LIFE_AREAS, TOPIC_DEFS, TOPIC_IDS, type FactId, type LifeAreaId } from "@/lib/vocab";
 import { AvatarRing } from "./AvatarRing";
+import { SavedNote } from "./SavedNote";
 import { Glyph, Part } from "./icons";
 import { AreaStep, FACT_SHORT, TopicsStep, TownStep, townName } from "./profile-steps";
 import { Button, FOCUS } from "./ui";
@@ -122,6 +123,7 @@ export function ProfileSheet({
           <p className="mt-2 text-body text-muted-foreground">
             {m.percent === 100 ? "Your profile is filled in." : `${m.done} of ${m.total} filled in. It all stays in this browser.`}
           </p>
+          {lastSave && <SavedNote key={lastSave.at} />}
           {rememberPrompt && (
             <div className="mt-3 w-full animate-fade-in rounded-md bg-surface-muted p-3 text-left">
               <p className="text-small">

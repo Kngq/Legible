@@ -12,7 +12,7 @@ import { Glyph } from "./icons";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { FOCUS } from "./ui";
-import { FeedRow, HowItWorks, SECONDARY, TopBar, UpdateCard } from "./updates";
+import { FeedRow, HowItWorks, SECONDARY, UpdateCard } from "./updates";
 
 const SHOWN = 8;
 
@@ -21,7 +21,6 @@ export function Explore({
   civic,
   today,
   profile,
-  onHome,
   onOpenDoc,
   onOpenMeasure,
   onOpenItem,
@@ -31,7 +30,8 @@ export function Explore({
   civic: CivicCard[];
   today: string;
   profile: Profile;
-  onHome: () => void;
+  /** Kept for callers; the site header now owns the For you tab. */
+  onHome?: () => void;
   onOpenDoc: (id: string) => void;
   onOpenMeasure: (docId: string, measureId: string) => void;
   onOpenItem: (id: string) => void;
@@ -46,10 +46,8 @@ export function Explore({
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-16 sm:px-6">
-      <TopBar active="explore" needsInterests={!profile.topicsConfirmedAt && Object.keys(profile.topics).length === 0} onHome={onHome} onExplore={() => window.scrollTo({ top: 0 })} onOpenProfile={onOpenProfile} />
-
-      <header className="pt-6">
-        <h1 className="text-display">Explore</h1>
+      <header className="pt-6 sm:pt-10">
+        <h1 className="font-display text-headline">Explore</h1>
         <p className="mt-3 text-body text-muted-foreground">
           Deadlines, meetings, and proposals in {town ?? "your area"} and across Massachusetts. Updates that may affect you come first, then the soonest.
         </p>
