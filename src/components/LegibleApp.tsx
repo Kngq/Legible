@@ -49,7 +49,6 @@ export function LegibleApp() {
   const scrolls = useRef<Record<string, number>>({});
   const restoreNext = useRef(false);
   // Session-only flags: never stored, never counted by the meter.
-  const [nudgeDismissed, setNudgeDismissed] = useState(false);
   const [savedBeyondTown, setSavedBeyondTown] = useState(false);
   const [rememberNotNow, setRememberNotNow] = useState(false);
   const closeSheet = useCallback(() => setSheet(null), []);
@@ -168,14 +167,10 @@ export function LegibleApp() {
         civic={civic}
         today={today}
         profile={profile}
-        remember={preferences.remember}
         onOpenDoc={(docId) => go({ kind: "doc", docId })}
         onOpenMeasure={openMeasure}
         onOpenItem={openItem}
         onOpenProfile={setSheet}
-        onForget={clearAll}
-        nudgeDismissed={nudgeDismissed}
-        onDismissNudge={() => setNudgeDismissed(true)}
       />
     );
   }

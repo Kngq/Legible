@@ -59,16 +59,9 @@ export function Home({
   feed: Feed;
   today: string;
   profile: Profile;
-  remember: boolean;
   onOpenDoc: (id: string) => void;
   onOpenMeasure: (docId: string, measureId: string) => void;
   onOpenProfile: (v: SheetView) => void;
-  /** Kept for the call site; clearing now lives in the profile sheet as "Clear my information". */
-  onForget: () => void;
-  nudgeDismissed: boolean;
-  onDismissNudge: () => void;
-  /** Opens the upload panel. Not offered on Home. */
-  onUpload?: () => void;
 }) {
   const town = townName(profile.townId);
   const place = town ?? "Massachusetts";
