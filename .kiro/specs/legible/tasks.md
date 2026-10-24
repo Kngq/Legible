@@ -147,13 +147,13 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 21.1_
   - [ ] 18.2 Build the TrustPanel per document
     - _Requirements: 21.4_
-  - [ ] 18.3 Build the ChainView opened from "How do we know this?" on each card
+  - [x] 18.3 Build the ChainView opened from "How do we know this?" on each card (measure page: `ChainSheet` in `ForYou.tsx`)
     - _Requirements: 21.5_
   - [ ] 18.4 Verify chat answer citations and banned words in the browser before render
     - _Requirements: 21.3, 21.6, 22.3_
-  - [ ] 18.5 Rebuild MeasureView per design "Measure page": For you card with If YES / If NO / When / Based on rows, evidence in place under each sentence, trust summary
+  - [x] 18.5 Rebuild MeasureView per design "Measure page": For you card with If YES / If NO / When / Based on rows, evidence in place under each sentence, trust summary
     - _Requirements: 21.5_
-  - [ ] 18.6 Add `outcomeLines`, `takesEffect`, and `notAnswered` to `Measure` and author them for the ballot, cited and linted by `npm run data:build`
+  - [ ] 18.6 Move the ballot lines in `PAGE_LINES` (`src/lib/engine/measure-page.ts`, tested now) into `Measure` fields (`outcomeLines`, `takesEffect`, `notAnswered`) so uploads can carry them, cited and linted by `npm run data:build`
     - _Requirements: 21.1_
 
 - [ ] 19. Chat dock (B, using A's ask route)

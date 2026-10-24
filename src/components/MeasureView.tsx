@@ -1,30 +1,36 @@
 "use client";
 
 // One measure as a page to read, like an article: kicker, title, meta, cover,
-// why it reaches you, then the official text verbatim in a reading face.
+// the For you card (what changes for this person, cited line by line), then the
+// official text verbatim in a reading face.
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { shortDate } from "@/lib/engine/decide-by";
 import type { FeedItem } from "@/lib/engine/feed";
 import { localReach, nextSteps } from "@/lib/engine/next-steps";
-import { answerFact, canAskInCard, clearFact, declineFact, skipFact, type Profile } from "@/lib/engine/profile";
+import type { Profile } from "@/lib/engine/profile";
 import type { Card, Quote } from "@/lib/engine/types";
-import { DIRECTION_DEFS, FACT_DEFS, SENSITIVE_FACTS, TOPIC_DEFS, type FactId } from "@/lib/vocab";
 import type { CivicCard } from "@/lib/engine/civic";
 import { CivicRow } from "./CivicRow";
 import { Cover, DocTile } from "./covers";
-import { DirectionMark, Glyph } from "./icons";
-import { Draft, FactQuestion, OfficialText, Sentences } from "./MeasureCard";
-import { areaOf, type SheetView } from "./ProfileSheet";
+import { ForYou } from "./ForYou";
+import { Glyph } from "./icons";
+import { Draft, OfficialText, Sentences } from "./MeasureCard";
+import type { SheetView } from "./ProfileSheet";
 import { Button, FOCUS, Tag } from "./ui";
 
 const SERIF = "font-[family-name:var(--font-serif)]";
 
 function withTransition(fn: () => void) {
-  const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
+  type Transition = { ready: Promise<void>; finished: Promise<void> };
+  const doc = document as Document & { startViewTransition?: (cb: () => void) => Transition };
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (doc.startViewTransition && !reduce) doc.startViewTransition(() => flushSync(fn));
-  else fn();
+  if (doc.startViewTransition && !reduce) {
+    const t = doc.startViewTransition(() => flushSync(fn));
+    // A transition aborted by a hidden tab or a resize still applies the update; ignore it.
+    t.ready.catch(() => {});
+    t.finished.catch(() => {});
+  } else fn();
 }
 
 function readingMinutes(quotes: (Quote | undefined)[]): number {
@@ -59,11 +65,8 @@ export function MeasureView({
   const m = card.measure;
   const { doc } = item;
   const [drafting, setDrafting] = useState(false);
-  const [editing, setEditing] = useState<FactId | null>(null);
   const [shared, setShared] = useState(false);
   const update = (p: Profile) => withTransition(() => setProfile(p));
-  const source = { kind: "card", documentId: doc.id, measureId: m.id } as const;
-  const askable = card.pendingQuestions.filter((f) => canAskInCard(profile, f));
   const registration = nextSteps(card, profile).find((s) => s.kind === "registration");
   const local = localReach(m.id, town);
   const isBallot = doc.docType === "ballot";
@@ -121,98 +124,26 @@ export function MeasureView({
         <hr className="mt-4 border-border" />
       </header>
 
-      <Cover measure={m} label={`${isBallot ? "Q" : "#"}${m.number}`} size={72} className="mt-5 aspect-[16/9] rounded-lg" />
+      <Cover measure={m} label={`${isBallot ? "Q" : "#"}${m.number}`} size={48} className="mt-5 aspect-[16/5] rounded-lg" />
 
-      {/* Why it reaches you */}
-      <section className="mt-6" aria-labelledby="why-h">
-        <div className="flex flex-wrap items-center gap-2">
-          {card.relevance === "touches" && <Tag pop="accent">Touches you</Tag>}
-          {card.onYourList && <Tag>On your list</Tag>}
-          {card.relevance === "everyone" && <Tag>Applies to everyone</Tag>}
-          {m.kind === "referendum" && <Tag>Referendum</Tag>}
-        </div>
-        <h2 id="why-h" className="mt-3 flex items-center gap-2 text-body font-semibold">
-          <DirectionMark direction={card.direction} size={26} />
-          {DIRECTION_DEFS[card.direction].label}
-        </h2>
-        <Sentences sentences={card.why} measure={m} />
+      <ForYou card={card} doc={doc} profile={profile} update={update} onOpenProfile={onOpenProfile} />
 
-        {card.because.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {card.because.map((b) =>
-              b.kind === "fact" ? (
-                <button
-                  key={b.id}
-                  type="button"
-                  onClick={() => {
-                    const area = areaOf(b.id);
-                    if (area) onOpenProfile({ kind: "area", id: area });
-                    else setEditing(editing === b.id ? null : b.id);
-                  }}
-                  className={`min-h-9 rounded-md border border-border px-3 py-1.5 text-left text-small font-semibold hover:bg-surface-muted ${FOCUS}`}
-                >
-                  Because {b.value ? FACT_DEFS[b.id].because.yes : FACT_DEFS[b.id].because.no}
-                </button>
-              ) : (
-                <button
-                  key={b.id}
-                  type="button"
-                  onClick={() => onOpenProfile({ kind: "topics" })}
-                  className={`min-h-9 rounded-md bg-surface-muted px-3 py-1.5 text-left text-small font-semibold hover:bg-border ${FOCUS}`}
-                >
-                  You follow {TOPIC_DEFS[b.id].label.toLowerCase()}
-                </button>
-              ),
-            )}
-          </div>
-        )}
-        {editing && (
-          <FactQuestion
-            fact={editing}
-            intro="Change this answer. Everything re-sorts right away."
-            current={profile.facts[editing]?.value}
-            onAnswer={(v) => {
-              setEditing(null);
-              update(answerFact(profile, editing, v, { kind: "edit" }));
-            }}
-            onClear={() => {
-              setEditing(null);
-              update(clearFact(profile, editing));
-            }}
-          />
-        )}
-
-        {askable[0] && (
-          <div className="mt-5 rounded-lg bg-surface p-4 shadow-card">
-            <FactQuestion
-              fact={askable[0]}
-              intro={
-                SENSITIVE_FACTS.includes(askable[0])
-                  ? "Asked only here, because this decision depends on it. Your answer stays in this browser."
-                  : "One answer sorts this. It stays in this browser."
-              }
-              onAnswer={(v) => update(answerFact(profile, askable[0], v, source))}
-              onSkip={() => update(skipFact(profile, askable[0], source))}
-              onDecline={() => update(declineFact(profile, askable[0], source))}
-            />
-          </div>
-        )}
-
-        {registration?.kind === "registration" && (
-          <div className="mt-5 rounded-lg bg-surface p-4 shadow-card">
-            <p className="text-body font-semibold">{registration.label}</p>
-            <p className="text-small text-muted-foreground">{registration.detail}</p>
-            <a
-              href={registration.href}
-              target="_blank"
-              rel="noreferrer"
-              className={`mt-3 inline-flex min-h-12 items-center gap-2 rounded-md bg-primary px-5 font-semibold text-primary-foreground ${FOCUS}`}
-            >
-              Open the state lookup <Glyph name="external" size={18} />
-            </a>
-          </div>
-        )}
-      </section>
+      {registration?.kind === "registration" && (
+        <section className="mt-4 rounded-lg bg-surface p-5 shadow-card" aria-labelledby="next-h">
+          <h2 id="next-h" className="text-body font-semibold">
+            {registration.label}
+          </h2>
+          <p className="text-small text-muted-foreground">{registration.detail}</p>
+          <a
+            href={registration.href}
+            target="_blank"
+            rel="noreferrer"
+            className={`mt-3 inline-flex min-h-12 items-center gap-2 rounded-full bg-primary px-5 font-semibold text-primary-foreground ${FOCUS}`}
+          >
+            Open the state lookup <Glyph name="external" size={18} />
+          </a>
+        </section>
+      )}
 
       {local && (
         <section className="mt-8" aria-labelledby="local-h">
