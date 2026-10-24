@@ -18,7 +18,6 @@ import { AskProvider } from "./AskSheet";
 import { Explore } from "./Explore";
 import { Home } from "./Home";
 import { MeasureView } from "./MeasureView";
-import { PhotosProvider } from "./photos";
 import { ProfileSheet, type SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { useLegible } from "./useLegible";
@@ -198,7 +197,7 @@ export function LegibleApp() {
 
   return (
     <AskProvider doc={DOCS[0]} scopeMeasureId={route.kind === "measure" ? route.measureId : undefined}>
-      <PhotosProvider>{page}</PhotosProvider>
+      {page}
       {sheet && (
         <ProfileSheet
           key={JSON.stringify(sheet)}

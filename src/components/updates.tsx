@@ -16,7 +16,6 @@ import { AvatarRing } from "./AvatarRing";
 import { DocTile } from "./covers";
 import { Glyph } from "./icons";
 import { OriginalLine } from "./OriginalText";
-import { PhotoCredit, PhotoThumb, useEntryPhoto } from "./photos";
 import { viewForPart, type SheetView } from "./ProfileSheet";
 import { FOCUS, Tag } from "./ui";
 
@@ -177,7 +176,6 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
   }
 
   const touching = ballot ? ballot.cards.filter((c) => c.relevance === "touches") : [];
-  const thumb = useEntryPhoto(e.key);
 
   return (
     <li className="rounded-lg bg-surface p-5 shadow-card">
@@ -185,15 +183,10 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
         <p className="text-small font-semibold uppercase tracking-wider text-muted-foreground">{kind}</p>
         {e.touches ? <Tag pop="accent">May affect you</Tag> : e.level === "list" ? <Tag pop="info">You follow this</Tag> : e.level === "maybe" ? <Tag>Might apply</Tag> : null}
       </div>
-      <div className="mt-2 flex items-start gap-3">
-        {thumb.photo && <PhotoThumb photo={thumb.photo} onError={thumb.onError} />}
-        <div className="min-w-0 flex-1">
-          <h3 className="text-title">{title}</h3>
-          {when && <p className="mt-1 text-body font-semibold">{when}</p>}
-        </div>
-      </div>
+      <h3 className="mt-2 text-title">{title}</h3>
+      {when && <p className="mt-1 text-body font-semibold">{when}</p>}
       <p className="mt-2 text-body text-muted-foreground">{explain}</p>
-      {thumb.photo && <PhotoCredit photo={thumb.photo} />}
+
       {why && (
         <p className="mt-3 rounded-md bg-accent-soft px-3 py-2 text-small">
           <span className="font-semibold">Why you&apos;re seeing this: </span>
