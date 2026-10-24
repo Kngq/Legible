@@ -1,0 +1,240 @@
+{
+  "fetchedOn": "2026-10-24",
+  "source": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2836",
+  "document": {
+    "Title": "An Act to promote yes in my back yard",
+    "BillNumber": "S2836",
+    "DocketNumber": null,
+    "GeneralCourtNumber": 194,
+    "PrimarySponsor": {
+      "Id": "J28",
+      "Name": "Joint Committee on Housing",
+      "Type": 2,
+      "Details": "https://malegislature.gov/api/GeneralCourts/194/Committees/J28",
+      "ResponseDate": "2025-12-03T14:52:43.047"
+    },
+    "Cosponsors": [
+      {
+        "Id": "BPC0",
+        "Name": "Brendan P. Crighton",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/BPC0",
+        "ResponseDate": "2025-01-17T09:45:58.0233333"
+      },
+      {
+        "Id": "M_C3",
+        "Name": "Manny Cruz",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/M_C3",
+        "ResponseDate": "2025-02-28T12:28:33.3133333"
+      },
+      {
+        "Id": "M_C1",
+        "Name": "Mike Connolly",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/M_C1",
+        "ResponseDate": "2025-02-28T12:28:33.3133333"
+      },
+      {
+        "Id": "SND0",
+        "Name": "Sal N. DiDomenico",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/SND0",
+        "ResponseDate": "2025-02-28T12:28:33.3133333"
+      },
+      {
+        "Id": "V_H1",
+        "Name": "Vanna Howard",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/V_H1",
+        "ResponseDate": "2025-03-08T00:34:29.3533333"
+      },
+      {
+        "Id": "MJB0",
+        "Name": "Michael J. Barrett",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/MJB0",
+        "ResponseDate": "2025-03-21T16:27:20.2533333"
+      },
+      {
+        "Id": "RLR0",
+        "Name": "Rebecca L. Rausch",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/RLR0",
+        "ResponseDate": "2025-04-04T09:59:50.8533333"
+      },
+      {
+        "Id": "JBE0",
+        "Name": "James B. Eldridge",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JBE0",
+        "ResponseDate": "2025-06-13T11:57:04.43"
+      }
+    ],
+    "JointSponsor": null,
+    "BillHistory": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2836/DocumentHistoryActions",
+    "LegislationTypeName": "Bill",
+    "Pinslip": "Senate, December 11, 2025 -- The committee on Housing to whom was referred the petition (accompanied by bill, Senate, No. 962) of Brendan P. Crighton, Manny Cruz, Mike Connolly, Sal N. DiDomenico and others for legislation to promote Yes in My Back Yard, report the accompanying bill (Senate, No. 2836).",
+    "DocumentText": "\tSECTION 1. Section 34 of Chapter 7C of the General Laws, as appearing in the 2024 Official Edition, is hereby amended by inserting the following paragraph:-\r\n\t(c) Prior to disposition of publicly owned real property of the commonwealth pursuant to chapter 7C, the commissioner of capital asset management and maintenance in coordination with the secretary of the executive office of housing and livable communities shall determine whether such real property shall be made available for low or moderate income housing under this chapter. In making such determination, the commissioner and the secretary shall consider the following factors: (1) existing zoning that limits the siting of low or moderate income housing in the municipality in which the publicly owned real property is located; (2) financial or other deterrents to the production of low or moderate income housing in the municipality in which the real property is located; and (3) the equitable distribution of real property for disposition under this chapter to all regions of the commonwealth, including gateway municipalities as defined under section 1 of chapter 40V, rural areas, seasonal communities designated pursuant to section 32 of chapter 23B and suburban areas.\r\n\tUpon making the determination that publicly owned real property shall be made available for disposition under this chapter, the commissioner and the secretary shall, notwithstanding chapter 7C or any other law to the contrary, declare the property available for development of low or moderate income housing in accordance with this chapter.\r\n\tSECTION 2. Section 1A of Chapter 40A of the General Laws, as so appearing, is amended by inserting the following definitions:\r\n\t“Bus Station”, a building located at the intersection of two or more bus lines, within which services are available to bus passengers; provided that a bus station does not include a shelter or other structure without walls and a foundation.\r\n\t“Duplex”, 2 dwelling units on the same parcel or lot in attached, detached, or semi-detached arrangements that are designed for residential occupancy by not more than 2 households living independently from each other.\r\n\t“Triplex”, 3 dwelling units on the same parcel or lot in attached, detached, or semi-detached arrangements that are designed for residential occupancy by not more than 3 households living independently from each other.\r\n\t“Quadplex”, 4 dwelling units on the same parcel or lot in attached, detached, or semi-detached arrangements that are designed for residential occupancy by not more than 4 households living independently from each other.\r\n\t“Townhome”, dwelling units that are constructed in a row of 2 or more attached units in which each dwelling unit shares at least 1 common wall with an adjacent unit and that are accessed by separate outdoor entrances\r\n\tSECTION 3. Said section 1A of said Chapter 40A, as so appearing, is further amended by striking out the definition “multi-family housing” and inserting in place thereof the following definition:-\r\n\t“Multi-family housing”, a building with 3 or more residential dwelling units or 2 or more buildings on the same lot with more than 1 residential dwelling unit in each building, inclusive of but not limited to triplexes, quadplexes and townhomes.\r\n\tSECTION 4. Section 3 of said Chapter 40A, as so appearing, is amended by inserting the following paragraphs:-\r\n\tNo zoning ordinance or by-law in areas or for parcels connected to a municipal or centrally managed water and sewer system shall prohibit the use of duplexes or multi-family housing, as those terms are defined in Section 1A, containing up to 5 dwelling units on lots zoned for residential use as of right; provided, that the use of land or structures for duplexes and multi-family housing containing up to 5 dwelling units may be subject to reasonable regulations, including, but not limited to, 310 CMR 15.000 et seq., if applicable, site plan review and regulations concerning dimensional setbacks and the bulk and height of structures; provided, that regulations concerning the height of a duplex or multi-family housing does not limit height to less than 3 stories; provided further, that municipalities may establish uniform design guidelines for projects under this section. Said regulations either individually or cumulatively shall not render the development of land for duplexes and multi-family housing infeasible and may impose restrictions and prohibitions on short-term rentals, as defined in section 1 of chapter 64G.\r\n\tNo zoning ordinance or by-law in an area or for parcels not connected to a municipal or centrally managed water and sewer system shall prohibit the use of duplexes or multi-family housing, as those terms are defined in Section 1A, containing up to 3 dwelling units on lots zoned for residential use as of right; provided, that the use of land or structures for duplexes and multi-family housing containing up to 3 dwelling units may be subject to reasonable regulations, including, but not limited to, 310 CMR 15.000 et seq., if applicable, site plan review and regulations concerning dimensional setbacks and the bulk and height of structures; provided, that regulations concerning the height of a duplex or multi-family housing does not limit height to less than 3 stories; provided further, that municipalities may establish unform design guidelines for projects built under this section. Said regulations either individually or cumulatively shall not render the development of land for duplexes and multi-family housing infeasible and may impose restrictions and prohibitions on short-term rentals, as defined in section 1 of chapter 64G.\r\n\tNo zoning ordinance or by-law shall impose a minimum lot size on new residential developments. No zoning ordinance or by-law shall impose minimum automobile parking requirements on new residential developments, including developments built under section 3C of chapter 40A, that are located not more than .5 miles from a commuter rail station, ferry terminal or bus station and no more than 1 parking space per unit shall be required for new residential units, including but not limited to multifamily housing, developed on land that is more than .5 miles from a commuter rail station, ferry terminal or bus station; provided, that no minimum parking requirements shall be imposed on residential facilities primarily serving seniors, including assisted living communities and nursing homes.\t\r\n\tSECTION 5. Section 3 of said Chapter 40A, as so appearing, is hereby amended by adding, to the end of the first sentence, the following words:- “; provided further, that no zoning ordinance or by-law may prohibit the use of accessory dwelling units as of right on lots where the principal dwelling contains more than 1 dwelling unit”\r\n\tSECTION 6. Said Chapter 40A of the General Laws is hereby amended by inserting after section 3B the following three sections:-\r\n\tSection 3C. Housing on land owned by a religious sect or denomination \r\n\t(a) For the purposes of this section: (1) “religious sect or denomination” shall mean, without limitation, any organization organized predominantly for religious purposes, whether incorporated or unincorporated, including without limitation an organization recognized by the Internal Revenue Service as exempt from taxation under section 501(c)(3) of the Internal Revenue Code of 1986, as amended, based on its status as a religious or apostolic association or corporation, or an organization recognized by the department of revenue as a religious organization exempt from taxation pursuant to section 5 of chapter 59, as amended, or any other organization that would qualify as a religious sect or denomination for purposes of section 3 of chapter 40A, or any affiliated organization; and (2) “land owned by a religious sect or denomination” shall mean land, buildings or structures owned by or held in trust for the use of a religious sect or denomination for at least 3 years prior to the issuance of a building permit for multifamily housing allowed under this section.\r\n\t(b) No zoning ordinance or by-law shall prohibit, unreasonably restrict or require a special permit or other discretionary zoning approval for the use of land owned by a religious sect or denomination for multi-family housing; provided, that 20 per cent of housing units built under this section shall be used as affordable housing, as defined in section 1 of chapter 60.\r\n\t(c) Multi-family housing shall be allowed as of right on land owned by a religious sect or denomination; provided, that the density permitted shall be constrained only by section 40 of chapter 131, title 5 of the state environmental code established pursuant to section 13 of chapter 21A and the state sanitary code; provided further, that the maximum setback required shall not be greater than 15 feet. \r\n\t(d) All multi-family housing developed on land owned by a religious sect or denomination under this section shall comply with state water resources regulations and standards established by the department of environmental protection.\r\n\t(e) No local occupancy preference shall be permitted in excess of 20 per cent of the market rate multifamily housing units developed on land owned by a religious sect or denomination under this section. Any local preference shall comply with all applicable federal and state fair housing laws, and shall include current residents, employees of the municipality and local businesses, including persons hired to work in the municipality, and households with children attending public schools in the municipality or public schools within the school district in which the municipality is located.\r\n\t(f) Up to 2 housing units or 5 per cent of the total multi-family housing units developed under this section, whichever is less, may be set aside for occupancy by employees of the religious sect or denomination owning the land.\r\n\t(g) Multi-family housing constructed pursuant to this section shall not be subject to any municipal ordinances, bylaws or regulations, or other municipal development standards or conditions of approval, that exceed applicable requirements of state law or regulation.\r\n\tSection 3D. Local Option Property Tax Exemption\r\n\tA city or town that accepts this section may grant an exemption of up to the full amount of the taxable valuation of multi-family housing developed on land owned by a religious sect or denomination under Section 3C.  The city or town that accepts this section shall adopt an ordinance or by-law specifying the method for negotiating and approving exemptions under this section.  This section shall take effect in any city or town only upon its acceptance by such city or town.\r\n\tSection 3E. Housing production plans; zoning alignment\r\n\t(a) Each municipality in the commonwealth shall, every 5 years, establish and submit to the executive office of housing and livable communities a housing production plan that sets forth the municipality’s strategy to meet its affordable housing needs in a manner consistent with chapter 40B and related regulations. Said housing production plan shall indicate whether current zoning ordinances or bylaws in the municipality permit the construction or development of affordable housing to meet the municipality’s needs under such plan; provided, that if current zoning ordinances or bylaws do not permit such affordable housing, the municipality’s housing production plan must include proposed zoning changes that would permit such construction or development. \r\n\t(b) The executive office shall approve or deny a municipality’s housing production plan submitted under this section within 120 days of submission. A municipality must resubmit an amended housing production plan within the time frame provided by the executive office when the executive office denies a plan under this section. \r\n\t(b) If the municipality’s zoning ordinances or bylaws do not permit the construction or development of affordable housing to meet the municipality’s needs, within 2 years of receiving an approved housing production plan under this section, each municipality shall adopt or update zoning ordinances and bylaws in order to comply with the approved housing production plan. \r\n\tSECTION 7. Section 5 of Chapter 40A of the General Laws, as appearing in the 2024 Official Edition, is hereby amended by inserting in paragraph 5 the following after “in accordance with section 3 of chapter 40R.”:-\r\n\t(5) an inclusionary zoning ordinance or bylaw. As used in this paragraph the term “inclusionary zoning” shall refer to zoning ordinances or by-laws enacted principally to ensure some provision of affordable housing in any residential subdivision or multi-unit residential project of a size to be determined by the municipality; provided, that a certain percentage of such subdivision or project’s dwelling units or net floor area, as determined by the municipality, shall be reserved for the construction of dwelling units permanently affordable for occupancy to persons whose household income does not exceed a municipally determined per cent of such municipality’s area median income as such income is determined by the United States Department of Housing and Urban Development.\r\n\tSECTION 8. Section 9 of Chapter 40A, as so appearing, is hereby amended by striking subsection (c)\r\n\tSECTION 9. Chapter 40A of the General Laws is hereby amended by adding the following section:\r\n\tSection 19. Mixed-use development and multifamily housing; zoning regulations\r\n\t(a) Any zoning regulations adopted pursuant to Chapter 40A shall allow, as of right and with no minimum parking requirements for dwelling units, mixed-use development or multifamily housing with a minimum gross density of 15 units per acre, subject to any further limitations imposed by section 40 of chapter 131 and title 5 of the state environmental code established pursuant to section 13 of chapter 21A, for parcels located not more than 0.5 miles from a commuter rail station, subway station, ferry terminal or bus station, if applicable.\r\n\t(b) Any zoning regulations adopted pursuant to Chapter 40A shall allow, as of right and with no minimum parking requirements for dwelling units, multifamily housing with a minimum gross density of 15 units per acre, subject to any further limitations imposed by section 40 of chapter 131 and title 5 of the state environmental code established pursuant to section 13 of chapter 21A, for parcels located not more than 0.25 miles from an eligible location.\r\n\t(c) Any development permitted pursuant to subsections (a) or (b) that includes 10 or more residential units shall set aside a minimum of 15 per cent of the residential units to households earning at or below 80 per cent of the area median income or a minimum of 10 per cent of the residential units to households earning at or below 50 per cent of the area median income as determined by the United States Department of Housing and Urban Development.\r\n\t(d) If a municipality fails to adopt new ordinances or by-laws or amend existing ordinances or by-laws to comply with the provisions this section by January 1, 2028, any noncompliant existing regulation shall become null and void and such municipality shall approve or deny applications in accordance with the requirements for regulations set forth in the provisions of this section until such municipality adopts or amends a regulation in compliance with this section.\r\n\t(e) A municipality shall not use or impose standards to discourage through unreasonable costs or delays the development of housing described in this section.\r\n\tSECTION 10. Section 81L of  Chapter 41, as appearing in the 2024 Official Edition, is hereby amended by inserting the following definition -\r\n\t“By-Right Subdivision” in accordance with section 81HH, the division of a lot, tract or parcel of land into 2 or more lots, tracts or parcels where, at the time of division, every lot within the divided lot, tract or parcel has frontage on: (a) a public way or a way which the clerk of the city or town certifies is maintained and used as a public way; (b) a way shown on a plan approved and endorsed in accordance with the subdivision control law; or (c) a way in existence when the subdivision control law became effective in the city or town in which the land lies having, in the opinion of the planning board, sufficient width, suitable grades and adequate construction to provide for the needs of vehicular traffic in relation to the proposed use of the land; provided, that any lot, tract or parcel of land shall allow for the installation of municipal services to serve the land and the buildings to be erected thereon; provided further, that the frontage for each created parcel shall be of at least 20 feet, but with a maximum of 50 feet;  provided further, that the maximum lot size for each newly created lot shall not be greater than 10,000 square feet; provided further, that the use of the lots shall be exclusively for residential purposes.\r\n\tSECTION 11. Section 81P of said chapter 41, as so appearing, is hereby amended by inserting after the last paragraph the following paragraph:-\r\n\tPersons wishing to convert a divisible lot into a by-right subdivision may submit their plan to divide said lot to the planning board of the city of town in which the lot is located pursuant to section 81T; provided, that said lot is located in a city or town in which the subdivision control law is in effect pursuant to section 81N of Chapter 41.  If the plan meets criteria for a by-right subdivision, the board shall, without a public hearing, approve such plan. If the board determines that the plan requires approval under section 81N of chapter 41, said board shall, within 21 days of such submittal, give written notice of its determination to the clerk of the city or town and the person submitting the plan, and such person may submit their plan for approval.\r\n\tIf the board to which a plan to create a by-right subdivision fails to act upon such a plan or fails to notify the required parties within 21 days after its submission, the plan shall be approved as a by-right subdivision. A municipality shall not require additional approval from boards other than the planning board in order to receive approval for a by-right housing subdivision required under this section. \r\n\tSECTION 12. Section 81T of said chapter 41, as so appearing, is hereby amended by inserting, in line 2, after the words “approval is not required” the following words:- “or a by-right subdivision”\r\n\tSECTION 13. Said chapter 41 is hereby further amended by inserting after section 81GG the following section:-\r\n\tSection 81HH. By-right subdivision\r\n\t(a) No application for a by-right subdivision shall be: (1) subject to a public hearing if every tract or parcel within the lot meets the frontage, lot and access way requirements established in Section81L; (2) subject to the requirements of section 81S; and (3) subject to a procedural or substantive requirement more stringent than those specified in this chapter or contained in a city or town’s local rules and regulations otherwise applicable to subdivisions under section 81N of Chapter 41. Applications for by-right housing subdivisions under this chapter shall be approved based on a determination by a simple majority of the planning board that an application meets all criteria under this chapter. \r\n\t(c) For a by-right subdivision on an existing way, the planning board shall take final action and file with the city or town clerk a certificate of such action within 60 days. Failure to take final action and file with the city or town clerk a certificate of such action within 60 days shall be deemed an approval of a by-right subdivision on an existing way.\r\n\t(d) For a by-right subdivision on a new way, the planning board shall take final action and file with the city or town clerk a certificate of such final action within 90 days. Failure to take final action and file such certificate within 90 days shall be deemed an approval of a minor subdivision on a new way.\r\n\tSECTION 14. Section 31 of Chapter 111, as appearing in the 2024 Official Edition, is hereby amended by striking the first paragraph and inserting in place thereof the following paragraph:-\r\n\tBoards of health may make reasonable health regulations; provided, that no regulation or amendment thereto that relates to the minimum requirements for subsurface disposal of sanitary sewage shall exceed the requirements of the state environmental code for the purposes of residential housing development or construction. A summary describing any regulation made by a board of health under this chapter shall be published once in a printed or on-line version of a newspaper of general circulation in the city or town, and such publication shall constitute notice to all persons. Whoever, themself or by their servant or agent, or as the servant or agent of any other person or any firm or corporation, violates any reasonable health regulation made under authority of this section shall be punished by a fine of not more than 1,000 dollars.\r\n\tSECTION 15. Section 40 of chapter 131, as so appearing, is hereby amended by adding the following at the end of said section:\r\n\tNo city or town may enforce an ordinance or bylaw restricting the construction or development of housing or other work that is primarily residential in nature that exceeds the requirements of this section or of regulations promulgated by the department of environmental protection pursuant to this section; provided, that the proposed work shall be considered primarily residential in nature if half or more of the total project area is used to create 1 or more new units of housing.\r\n\tSECTION 16. Section 3A of chapter 185 of the General Laws, as so appearing, is hereby amended by striking the fourth paragraph in its entirety and inserting in place thereof the following: \r\n\tNotwithstanding any other general or special law to the contrary, any action not commenced in the permit session and not claiming a valid right to a jury trial, but within the jurisdiction of the permit session as provided in this section, shall be transferred to the permit session upon the filing by any party of a notice demonstrating compliance with the jurisdictional requirements of this section filed with the court where the action was originally commenced with a copy to the permit session, both within 30 days after the date of service of the complaint on the last served defendant. Such notice of transfer shall be signed pursuant to Rule 11 of the Massachusetts Rules of Civil Procedure, shall contain a short and plain statement of (a) the grounds for permit session jurisdiction and (b) the absence of a valid claim for a jury trial. Copies of all process, pleadings and orders appearing in the case file as of the filing of the notice of transfer shall be attached to the copy of the notice given to the permit session. The party filing the notice of transfer shall within 7 days send a copy of the notice by certified mail to all other parties and file with both the court where the action was originally commenced and the permit session an affidavit that such copy was sent to all other parties. Upon the filing of such notice of transfer with the court where the action was originally commenced, all times for filing responsive pleadings shall be automatically suspended, and the court where the action was originally commenced shall proceed no further with the action unless and until the case is remanded to it, and the matter shall be heard and decided in the land court permit session, subject to a remand order. Within 30 days of the filing of the notice of transfer or unless the court for good cause allows a longer time, a party may file a motion with the land court to remand the matter back to the original court, such motion setting forth the grounds for remand with particularity. Alternatively, a judge of the land court may sua sponte issue an order to show cause why such matter should not be remanded back to the original court. An order of remand may be issued only upon good cause and for reasons articulated in a ruling by a land court judge. If a party to an action commenced in or transferred to the permit session claims a valid right to a jury trial, then the action shall be transferred to the superior court for a jury trial. Nothing herein shall be interpreted to abrogate any of the supervisory powers of the chief justice of the trial court under section 9 of chapter 211B. \r\n\tSECTION 17. The secretary of housing and livable communities, secretary of energy and environmental affairs, the secretary of transportation, and the executive director of the Massachusetts development finance agency shall jointly submit a report to the joint committee on housing identifying greyfields sites across the commonwealth, options for redevelopment or reuse that may include housing, public use or facilities, mixed use development, or natural restoration and open space, and identify programs within the appropriate state and quasi-public agencies that can be used to support communities in repurposing underutilized land.\r\n\tFor the purposes of this act, the term greyfields may include, but is not limited to, land with development that is outdated, underutilized, failing, or vacant, including commercial, residential and industrial properties. This term may also include land that is owned by the commonwealth, its agencies or its political subdivisions.\r\n\tSECTION 18. The executive office of housing and livable communities may develop a model zoning code to assist municipalities and shall issue guidelines or promulgate regulations pursuant to Section 3 of Chapter 40A, as inserted by sections 4 and 5.\r\n\tSECTION 19. The executive office of housing and livable communities may promulgate regulations or guidelines pursuant to sections 3C, 3D and 3E of chapter 40A, as inserted by section 6. \r\n\tSECTION 20. The executive office of housing and livable communities may issue guidelines or promulgate regulations pursuant to section 5 of chapter 40A, as modified by section 7, including to ensure that ordinances and by-laws shall not unduly constrain the production of housing.\r\n\tSECTION 21. The executive office of housing and livable communities shall promulgate regulations or guidelines for the by-right subdivision program pursuant to sections 81L, 81P, 81T and 81HH of Chapter 41, as inserted by sections 11, 12 and 13 of this act. \r\n\tSECTION 22. Section 4 shall take effect one year after the effective date of this act \r\n\tSECTION 23. Section 13 shall take effect one year after the effective date of this act.\r\n",
+    "EmergencyPreamble": null,
+    "RollCalls": [],
+    "Attachments": [],
+    "CommitteeRecommendations": [
+      {
+        "Action": "Redraft",
+        "FiscalAmounts": [],
+        "Committee": {
+          "CommitteeCode": "J28",
+          "GeneralCourtNumber": 194,
+          "Details": "https://malegislature.gov/api/GeneralCourts/194/Committees/J28"
+        },
+        "Votes": [
+          {
+            "Question": "Ought to pass – by substitution of a New Draft",
+            "Bill": {
+              "BillNumber": "S2836",
+              "DocketNumber": null,
+              "Title": "An Act to promote yes in my back yard",
+              "PrimarySponsor": {
+                "Id": "J28",
+                "Name": "Joint Committee on Housing",
+                "Type": 2,
+                "Details": "https://malegislature.gov/api/GeneralCourts/194/Committees/J28",
+                "ResponseDate": "2025-12-03T14:52:43.0466667"
+              },
+              "Cosponsors": [
+                {
+                  "Id": "BPC0",
+                  "Name": "Brendan P. Crighton",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/BPC0",
+                  "ResponseDate": "2025-01-17T09:45:58.0233333"
+                },
+                {
+                  "Id": "M_C3",
+                  "Name": "Manny Cruz",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/M_C3",
+                  "ResponseDate": "2025-02-28T12:28:33.3133333"
+                },
+                {
+                  "Id": "M_C1",
+                  "Name": "Mike Connolly",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/M_C1",
+                  "ResponseDate": "2025-02-28T12:28:33.3133333"
+                },
+                {
+                  "Id": "SND0",
+                  "Name": "Sal N. DiDomenico",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/SND0",
+                  "ResponseDate": "2025-02-28T12:28:33.3133333"
+                },
+                {
+                  "Id": "V_H1",
+                  "Name": "Vanna Howard",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/V_H1",
+                  "ResponseDate": "2025-03-08T00:34:29.3533333"
+                },
+                {
+                  "Id": "MJB0",
+                  "Name": "Michael J. Barrett",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/MJB0",
+                  "ResponseDate": "2025-03-21T16:27:20.2533333"
+                },
+                {
+                  "Id": "RLR0",
+                  "Name": "Rebecca L. Rausch",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/RLR0",
+                  "ResponseDate": "2025-04-04T09:59:50.8533333"
+                },
+                {
+                  "Id": "JBE0",
+                  "Name": "James B. Eldridge",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JBE0",
+                  "ResponseDate": "2025-06-13T11:57:04.43"
+                }
+              ],
+              "JointSponsor": null,
+              "GeneralCourtNumber": 194,
+              "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2836",
+              "IsDocketBookOnly": false
+            },
+            "Committee": {
+              "CommitteeCode": "J28",
+              "GeneralCourtNumber": 194,
+              "Details": "https://malegislature.gov/api/GeneralCourts/194/Committees/J28"
+            },
+            "Date": "2025-12-03T16:30:00",
+            "Vote": [
+              {
+                "Favorable": [
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "WNB0",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/WNB0"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "JAC0",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JAC0"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "LME0",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/LME0"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "PRF0",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/PRF0"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "BRF0",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/BRF0"
+                  }
+                ],
+                "Adverse": [],
+                "ReserveRight": [
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "PMO",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/PMO"
+                  }
+                ],
+                "NoVoteRecorded": []
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Amendments": []
+  },
+  "history": [
+    {
+      "Date": "2025-12-11T00:00:00",
+      "Branch": "Senate",
+      "Action": "Reported from the committee on Housing",
+      "IsStricken": false
+    },
+    {
+      "Date": "2025-12-11T00:00:00",
+      "Branch": "Senate",
+      "Action": "New draft of S962",
+      "IsStricken": false
+    },
+    {
+      "Date": "2025-12-11T11:28:05.81",
+      "Branch": "Senate",
+      "Action": "Bill reported favorably by committee and referred to the committee on Senate Ways and Means",
+      "IsStricken": false
+    }
+  ]
+}

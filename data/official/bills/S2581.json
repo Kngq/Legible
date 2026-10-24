@@ -1,0 +1,866 @@
+{
+  "fetchedOn": "2026-10-24",
+  "source": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581",
+  "document": {
+    "Title": "An Act to promote student learning and mental health ",
+    "BillNumber": "S2581",
+    "DocketNumber": null,
+    "GeneralCourtNumber": 194,
+    "PrimarySponsor": null,
+    "Cosponsors": [
+      {
+        "Id": "JAC0",
+        "Name": "Julian Cyr",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JAC0",
+        "ResponseDate": "2025-01-14T13:09:32.9466667"
+      },
+      {
+        "Id": "BPC0",
+        "Name": "Brendan P. Crighton",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/BPC0",
+        "ResponseDate": "2025-01-16T16:53:46.1566667"
+      },
+      {
+        "Id": "JJC0",
+        "Name": "John J. Cronin",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JJC0",
+        "ResponseDate": "2025-01-17T15:27:44.9"
+      },
+      {
+        "Id": "JFK0",
+        "Name": "John F. Keenan",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JFK0",
+        "ResponseDate": "2025-01-06T14:51:29.9766667"
+      },
+      {
+        "Id": "PMO",
+        "Name": "Patrick M. O'Connor",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/PMO",
+        "ResponseDate": "2025-01-15T17:26:02.9766667"
+      },
+      {
+        "Id": "JCV0",
+        "Name": "John C. Velis",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JCV0",
+        "ResponseDate": "2025-01-16T12:02:09.14"
+      },
+      {
+        "Id": "A G7",
+        "Name": "Andrea Joy Campbell",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/A G7",
+        "ResponseDate": "2025-01-14T13:09:32.96"
+      },
+      {
+        "Id": "MCM0",
+        "Name": "Mark C. Montigny",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/MCM0",
+        "ResponseDate": "2025-02-28T12:32:23.7533333"
+      },
+      {
+        "Id": "CLG1",
+        "Name": "Carmine Lawrence Gentile",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/CLG1",
+        "ResponseDate": "2025-01-31T16:22:45.6166667"
+      },
+      {
+        "Id": "N_C0",
+        "Name": "Nick Collins",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/N_C0",
+        "ResponseDate": "2025-01-28T11:00:38.4833333"
+      },
+      {
+        "Id": "DRB1",
+        "Name": "Donald R. Berthiaume, Jr.",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/DRB1",
+        "ResponseDate": "2025-02-03T09:19:53.9066667"
+      },
+      {
+        "Id": "JCD1",
+        "Name": "James C. Arena-DeRosa",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JCD1",
+        "ResponseDate": "2025-02-11T16:03:16.22"
+      },
+      {
+        "Id": "BRF0",
+        "Name": "Barry R. Finegold",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/BRF0",
+        "ResponseDate": "2025-02-13T14:43:05.17"
+      },
+      {
+        "Id": "PRF0",
+        "Name": "Paul R. Feeney",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/PRF0",
+        "ResponseDate": "2025-02-20T15:04:19.1566667"
+      },
+      {
+        "Id": "M_C1",
+        "Name": "Mike Connolly",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/M_C1",
+        "ResponseDate": "2025-06-20T11:32:16.55"
+      },
+      {
+        "Id": "L_S1",
+        "Name": "Lindsay N. Sabadosa",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/L_S1",
+        "ResponseDate": "2025-02-28T15:17:24.53"
+      },
+      {
+        "Id": "JMC0",
+        "Name": "Joanne M. Comerford",
+        "Type": 1,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JMC0",
+        "ResponseDate": "2025-03-14T14:08:26.2833333"
+      }
+    ],
+    "JointSponsor": null,
+    "BillHistory": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/DocumentHistoryActions",
+    "LegislationTypeName": "Bill",
+    "Pinslip": "Senate, July 31, 2025 -- Text of the Senate Bill to promote student learning and mental health (Senate, No. 2581) (being the text of Senate document numbered 2561, printed as amended)",
+    "DocumentText": "\tSECTION 1. Chapter 69 of the General Laws is hereby amended by adding the following section:- \r\n\tSection 40. (a) For the purposes of this section, “personal electronic device” shall mean any portable electronic device that: (i) is capable of providing voice communication, text messaging or other data communication between 2 or more parties or devices; or (ii) is capable of connecting to a smartphone or other personal electronic device, the internet or a cellular or Wi-Fi network, including, but not limited to, mobile phones, tablets, laptops, smartwatches and bluetooth enabled devices; provided, however personal electronic device shall not include school issued or sanctioned devices that are used for a legitimate educational purpose.\r\n\t(b)(1) The department shall provide guidance, recommendations and a model policy to assist schools and districts with developing and implementing effective policies regarding the prohibition of the use of personal electronic devices on school grounds during the school day and during school-sponsored activities during the school day as required under section 102 of chapter 71. Such guidance, recommendations and model policy, shall include, but not be limited to: \r\n\t(i) provisions preventing student use of school-issued or school-sanctioned devices for personal use;\r\n\t(ii) options for secure storage of personal electronic devices during the school day, including best practices on removing physical access to personal electronic devices; and \r\n\t(iii) effective enforcement provisions to ensure compliance with the policy; provided, however, that such enforcement provisions shall contain practical safeguards to prevent inequitable discipline; and provided further, that discipline for noncompliance shall not include the expulsion or suspension of a student.   \r\n\t(2) In developing the model policy, the department may include, upon a finding of compelling need, case-specific or targeted exemptions to the prohibition; provided, however, that prior to authorizing an exemption, the department shall assess any reasonable alternative that may achieve the same objective.\r\n\t(3) Prior to finalizing recommendations, guidance and model policy, the department shall solicit public input and hold at least 1 public hearing.\r\n\t(c) The guidance and recommendations issued pursuant to this section, including model policy, shall be made publicly available on the department's website. \r\n\t(d) The department shall annually review and update the guidance, recommendations and model policy issued under this subsection to reflect applicable research, best practices and any technological advances, including technology that may render a personal electronic device inoperable on school grounds as determined by the commissioner. \r\n\t(e) Each public school or district shall annually file its personal electronic device use policy not later than September 1 with the department of elementary and secondary education in a manner and form determined by the department. \r\n\tSECTION 2. Chapter 71 of the General Laws is hereby amended by adding the following section:- \r\n\tSection 102. (a) Each public school or district shall adopt a policy regarding the prohibition of student use of a personal electronic device, as defined in section 40of chapter 69, on school grounds during the school day and during school-sponsored activities during the school day. The policy shall include, but not be limited to:\r\n\t(i) a prohibition on the use and actual possession, strictly on their person, of a personal electronic device by a student during the school day, which shall include, but not be limited to, recess, a lunch period and time in between classes.\r\n\t(ii) at least 1 method for parents and guardians of students to contact students during the school day, including policies for emergency situations when it is urgent, or for a student to contact their parent or caregiver during the school day; and \r\n\t(iii) effective enforcement provisions to ensure compliance with the policy by students; provided, however, that enforcement shall ensure the prevention of inequitable discipline; and provided further, that the discipline for noncompliance outlined in the provisions shall not include the expulsion or suspension of a student.   \r\n\t(b) Notwithstanding subsection (a), a student may be permitted to use and possess a personal electronic device, in accordance with district policy, if:\r\n\t(i) used in accordance with an individualized education program or an education plan implemented pursuant to section 504 of the Rehabilitation Act of 1973, 29 U.S.C. § 701 et seq.;\r\n\t(ii) necessary under any accommodations under state or federal law, including, but not limited to, title II of the Americans with Disabilities Act, 42 U.S.C. sections 12131 et seq.;\r\n\t(iii) for time spent off school grounds travelling to or from other learning opportunities, including, but not limited to, early college, dual enrolment or vocational learning sites;\r\n\t(iv) a healthcare provider provides in writing that the possession or use of a personal electronic device is necessary to treat a health condition of a student; or \r\n\t(v) permitted under the department’s model policy pursuant to clause 2 of paragraph (b) of section 40 of chapter 69 and included in the district policy. \r\n\t(d) A school or district policy may include variations that align with the developmental level of students and the structure of the school day in each grade level and school; provided, however, that nothing shall allow student use and actual possession of a personal electronic device, unless clearly authorized under subsection (b). \r\n\t(e) Annually, not later than September 1, each public school shall notify students and the parents or guardians of students attending the school of the policy and make the policy publicly available on its website. \r\n\t(f) The policy and any standards and rules enforcing the policy shall be prescribed by the school or district and approved by the school committee, board or other appropriate governing body prior to taking effect; provided, however, that prior to approval, such local governing body shall solicit public input; and provided further, that if no policy is approved by the school committee, board or other appropriate governing body by September 1, the department’s model policy shall go into effect until such time as a local policy is approved.\r\n\t(g) Nothing in this section shall limit a district from setting restrictions or standards for use of personal electronic devices on school grounds or during school-sanctioned activities beyond the school day.\r\n\tSECTION 3. Each public school or district shall adopt a policy regarding the use of personal electronic devices as required by section 102 of chapter 71 of the General Laws before the start of the 2026-2027 school year. \r\n\tSECTION 4. Not later than December 31, 2027, the department of elementary and secondary education shall report to the senate and house committees on ways and means and the joint committee on education on the implementation of the personal electronic device use policies in schools pursuant to section 102 of chapter 71 of the General Laws.\r\n\tSECTION 5. The department of elementary and secondary education shall provide recommendations, guidance and a model policy on the use of personal electronic devices to facilitate implementation of this act within 180 days of the effective date of this act.\r\n",
+    "EmergencyPreamble": null,
+    "RollCalls": [
+      {
+        "GeneralCourtNumber": 194,
+        "Branch": "Senate",
+        "RollCallNumber": 66,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Branches/Senate/RollCalls/66"
+      }
+    ],
+    "Attachments": [],
+    "CommitteeRecommendations": [
+      {
+        "Action": "Favorable with Amendment",
+        "FiscalAmounts": [],
+        "Committee": {
+          "CommitteeCode": "H34",
+          "GeneralCourtNumber": 194,
+          "Details": "https://malegislature.gov/api/GeneralCourts/194/Committees/H34"
+        },
+        "Votes": [
+          {
+            "Question": "S.2581 “An Act to promote student learning and mental health” as amended",
+            "Bill": {
+              "BillNumber": "S2581",
+              "DocketNumber": null,
+              "Title": "An Act to promote student learning and mental health ",
+              "PrimarySponsor": null,
+              "Cosponsors": [
+                {
+                  "Id": "JAC0",
+                  "Name": "Julian Cyr",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JAC0",
+                  "ResponseDate": "2025-01-14T13:09:32.9466667"
+                },
+                {
+                  "Id": "BPC0",
+                  "Name": "Brendan P. Crighton",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/BPC0",
+                  "ResponseDate": "2025-01-16T16:53:46.1566667"
+                },
+                {
+                  "Id": "JJC0",
+                  "Name": "John J. Cronin",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JJC0",
+                  "ResponseDate": "2025-01-17T15:27:44.9"
+                },
+                {
+                  "Id": "JFK0",
+                  "Name": "John F. Keenan",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JFK0",
+                  "ResponseDate": "2025-01-06T14:51:29.9766667"
+                },
+                {
+                  "Id": "PMO",
+                  "Name": "Patrick M. O'Connor",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/PMO",
+                  "ResponseDate": "2025-01-15T17:26:02.9766667"
+                },
+                {
+                  "Id": "JCV0",
+                  "Name": "John C. Velis",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JCV0",
+                  "ResponseDate": "2025-01-16T12:02:09.14"
+                },
+                {
+                  "Id": "A G7",
+                  "Name": "Andrea Joy Campbell",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/A G7",
+                  "ResponseDate": "2025-01-14T13:09:32.96"
+                },
+                {
+                  "Id": "MCM0",
+                  "Name": "Mark C. Montigny",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/MCM0",
+                  "ResponseDate": "2025-02-28T12:32:23.7533333"
+                },
+                {
+                  "Id": "CLG1",
+                  "Name": "Carmine Lawrence Gentile",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/CLG1",
+                  "ResponseDate": "2025-01-31T16:22:45.6166667"
+                },
+                {
+                  "Id": "N_C0",
+                  "Name": "Nick Collins",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/N_C0",
+                  "ResponseDate": "2025-01-28T11:00:38.4833333"
+                },
+                {
+                  "Id": "DRB1",
+                  "Name": "Donald R. Berthiaume, Jr.",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/DRB1",
+                  "ResponseDate": "2025-02-03T09:19:53.9066667"
+                },
+                {
+                  "Id": "JCD1",
+                  "Name": "James C. Arena-DeRosa",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JCD1",
+                  "ResponseDate": "2025-02-11T16:03:16.22"
+                },
+                {
+                  "Id": "BRF0",
+                  "Name": "Barry R. Finegold",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/BRF0",
+                  "ResponseDate": "2025-02-13T14:43:05.17"
+                },
+                {
+                  "Id": "PRF0",
+                  "Name": "Paul R. Feeney",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/PRF0",
+                  "ResponseDate": "2025-02-20T15:04:19.1566667"
+                },
+                {
+                  "Id": "M_C1",
+                  "Name": "Mike Connolly",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/M_C1",
+                  "ResponseDate": "2025-06-20T11:32:16.55"
+                },
+                {
+                  "Id": "L_S1",
+                  "Name": "Lindsay N. Sabadosa",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/L_S1",
+                  "ResponseDate": "2025-02-28T15:17:24.53"
+                },
+                {
+                  "Id": "JMC0",
+                  "Name": "Joanne M. Comerford",
+                  "Type": 1,
+                  "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JMC0",
+                  "ResponseDate": "2025-03-14T14:08:26.2833333"
+                }
+              ],
+              "JointSponsor": null,
+              "GeneralCourtNumber": 194,
+              "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581",
+              "IsDocketBookOnly": false
+            },
+            "Committee": {
+              "CommitteeCode": "H34",
+              "GeneralCourtNumber": 194,
+              "Details": "https://malegislature.gov/api/GeneralCourts/194/Committees/H34"
+            },
+            "Date": "2026-04-07T10:45:00",
+            "Vote": [
+              {
+                "Favorable": [
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "SBA1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/SBA1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "D_B1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/D_B1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "M_C3",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/M_C3"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "KAD1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/KAD1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "PAD1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/PAD1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "RME1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/RME1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "JAG2",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JAG2"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "RMH2",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/RMH2"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "JKH1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JKH1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "REH1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/REH1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "K_K2",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/K_K2"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "SPK1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/SPK1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "M_K1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/M_K1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "AMM1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/AMM1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "JFM1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JFM1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "SCO1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/SCO1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "O_R1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/O_R1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "L_S1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/L_S1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "MRS1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/MRS1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "PSS1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/PSS1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "C_T1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/C_T1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "MSV1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/MSV1"
+                  }
+                ],
+                "Adverse": [],
+                "ReserveRight": [
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "MSC1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/MSC1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "JJM1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JJM1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "JDM1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/JDM1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "KWP1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/KWP1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "TMS2",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/TMS2"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "AMS2",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/AMS2"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "SGX1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/SGX1"
+                  }
+                ],
+                "NoVoteRecorded": [
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "N_H1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/N_H1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "PJK1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/PJK1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "RAM1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/RAM1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "S_M1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/S_M1"
+                  },
+                  {
+                    "GeneralCourtNumber": 194,
+                    "MemberCode": "A_S1",
+                    "Details": "https://malegislature.gov/api/GeneralCourts/194/LegislativeMembers/A_S1"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "Action": "Place in OD",
+        "FiscalAmounts": [],
+        "Committee": {
+          "CommitteeCode": "H52",
+          "GeneralCourtNumber": 194,
+          "Details": "https://malegislature.gov/api/GeneralCourts/194/Committees/H52"
+        },
+        "Votes": []
+      },
+      {
+        "Action": "Correctly Drawn",
+        "FiscalAmounts": [],
+        "Committee": {
+          "CommitteeCode": "H36",
+          "GeneralCourtNumber": 194,
+          "Details": "https://malegislature.gov/api/GeneralCourts/194/Committees/H36"
+        },
+        "Votes": []
+      }
+    ],
+    "Amendments": [
+      {
+        "AmendmentNumber": "A",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/A/"
+      },
+      {
+        "AmendmentNumber": "B",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/B/"
+      },
+      {
+        "AmendmentNumber": "2",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/2/"
+      },
+      {
+        "AmendmentNumber": "3",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/3/"
+      },
+      {
+        "AmendmentNumber": "4",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/4/"
+      },
+      {
+        "AmendmentNumber": "5",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/5/"
+      },
+      {
+        "AmendmentNumber": "6",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/6/"
+      },
+      {
+        "AmendmentNumber": "7",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/7/"
+      },
+      {
+        "AmendmentNumber": "8",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/8/"
+      },
+      {
+        "AmendmentNumber": "9",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/9/"
+      },
+      {
+        "AmendmentNumber": "10",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/10/"
+      },
+      {
+        "AmendmentNumber": "11",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/11/"
+      },
+      {
+        "AmendmentNumber": "12",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/12/"
+      },
+      {
+        "AmendmentNumber": "13",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/13/"
+      },
+      {
+        "AmendmentNumber": "14",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/14/"
+      },
+      {
+        "AmendmentNumber": "15",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/15/"
+      },
+      {
+        "AmendmentNumber": "16",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/16/"
+      },
+      {
+        "AmendmentNumber": "17",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/17/"
+      },
+      {
+        "AmendmentNumber": "18",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/18/"
+      },
+      {
+        "AmendmentNumber": "19",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/19/"
+      },
+      {
+        "AmendmentNumber": "20",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/20/"
+      },
+      {
+        "AmendmentNumber": "21",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/21/"
+      },
+      {
+        "AmendmentNumber": "22",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/22/"
+      },
+      {
+        "AmendmentNumber": "23",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/23/"
+      },
+      {
+        "AmendmentNumber": "24",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/24/"
+      },
+      {
+        "AmendmentNumber": "25",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/25/"
+      },
+      {
+        "AmendmentNumber": "26",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/26/"
+      },
+      {
+        "AmendmentNumber": "27",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/27/"
+      },
+      {
+        "AmendmentNumber": "28",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/28/"
+      },
+      {
+        "AmendmentNumber": "29",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/29/"
+      },
+      {
+        "AmendmentNumber": "30",
+        "ParentBillNumber": "S2581",
+        "Branch": "House",
+        "GeneralCourtNumber": 194,
+        "Details": "https://malegislature.gov/api/GeneralCourts/194/Documents/S2581/Branches/House/Amendments/30/"
+      }
+    ]
+  },
+  "history": [
+    {
+      "Date": "2025-07-31T00:00:00",
+      "Branch": "Senate",
+      "Action": "S2561, reprinted as amended",
+      "IsStricken": false
+    },
+    {
+      "Date": "2025-07-31T00:00:00",
+      "Branch": "Senate",
+      "Action": "Passed to be engrossed -see Roll Call #66 (Yeas 38 to Nays 2)",
+      "IsStricken": false
+    },
+    {
+      "Date": "2025-08-04T00:00:00",
+      "Branch": "House",
+      "Action": "Read; and referred to the committee on House Ways and Means",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "Committee recommended ought to pass with an amendment, striking out all after the enacting clause and inserting the text of H5349, and referred to the committee on House Steering, Policy and Scheduling",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "Committee reported that the matter be placed in the Orders of the Day for the next sitting with the amendment pending",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "Rules suspended   ",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "Read second, amended (as recommended by the committee on\r\nHouse Ways and Means)",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "Ordered to a third reading",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "Rules suspended",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "Read third",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T16:25:16.3033333",
+      "Branch": "House",
+      "Action": "Amendment 7 rejected",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "Amendment 15 rejected - 27 YEAS to 128 NAYS (See YEA and NAY No. 152)",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "Consolidated amendment A adopted - 155 YEAS to 0 NAYS (See YEA and NAY No. 153)",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "Consolidated amendment B pending",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "Quorum Roll Call - 154 YEAS to 0 NAYS (See YEA and NAY No. 154)",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "Consolidated amendment B adopted - 144 YEAS to 10 NAYS (See YEA and NAY No. 155)",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "For the text of House amendments, see H5366",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-04-08T00:00:00",
+      "Branch": "House",
+      "Action": "Passed to be engrossed - 129 YEAS to 25 NAYS (See YEA and NAY No. 156)",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-05-07T11:07:12.7366667",
+      "Branch": "Senate",
+      "Action": "Rules suspended",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-05-07T11:07:12.7366667",
+      "Branch": "Senate",
+      "Action": "Senate NON-concurred in the House amendment",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-05-07T00:00:00",
+      "Branch": "Senate",
+      "Action": "Committee of conference appointed (Crighton-Rodrigues-Durant)",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-05-20T00:00:00",
+      "Branch": "House",
+      "Action": "Rules suspended",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-05-20T00:00:00",
+      "Branch": "House",
+      "Action": "House insisted on its amendment",
+      "IsStricken": false
+    },
+    {
+      "Date": "2026-05-20T00:00:00",
+      "Branch": "House",
+      "Action": "Committee of conference appointed - (Peisch-F. Moran-Vieira), in concurrence",
+      "IsStricken": false
+    }
+  ]
+}

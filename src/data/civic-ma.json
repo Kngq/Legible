@@ -206,7 +206,7 @@
     "status": "In conference committee",
     "lastAction": {
       "date": "2026-05-20",
-      "text": "House: Committee of conference appointed"
+      "text": "House: Committee of conference appointed - (Peisch-F. Moran-Vieira), in concurrence"
     },
     "source": {
       "name": "Massachusetts Legislature, S.2581",
@@ -235,6 +235,15 @@
     "check": {
       "kind": "page",
       "checkedOn": "2026-10-24"
+    },
+    "original": {
+      "kind": "bill",
+      "label": "Bill text and history from the Legislature, saved 2026-10-24",
+      "file": "/official/bills/S2581.json",
+      "url": "https://malegislature.gov/Bills/194/S2581",
+      "hash": "87e0c98607df5cef8ccdfd87fe5720d3f58582d9389db5e2a4cd68a9465b0a68",
+      "savedOn": "2026-10-24",
+      "note": "1,132 words of bill text and 24 official actions."
     }
   },
   {
@@ -250,7 +259,7 @@
     "status": "In Senate Ways and Means",
     "lastAction": {
       "date": "2025-12-11",
-      "text": "Senate: Reported favorably and referred to Senate Ways and Means"
+      "text": "Senate: Bill reported favorably by committee and referred to the committee on Senate Ways and Means"
     },
     "source": {
       "name": "Massachusetts Legislature, S.2836",
@@ -284,6 +293,15 @@
     "check": {
       "kind": "page",
       "checkedOn": "2026-10-24"
+    },
+    "original": {
+      "kind": "bill",
+      "label": "Bill text and history from the Legislature, saved 2026-10-24",
+      "file": "/official/bills/S2836.json",
+      "url": "https://malegislature.gov/Bills/194/S2836",
+      "hash": "d886ec57196e31944110c6469e6a25270aa4ac7c0b46f274ba378e0b196a1c10",
+      "savedOn": "2026-10-24",
+      "note": "4,297 words of bill text and 3 official actions."
     }
   },
   {
@@ -299,7 +317,7 @@
     "status": "In House Ways and Means",
     "lastAction": {
       "date": "2025-11-06",
-      "text": "House: Reported favorably and referred to House Ways and Means"
+      "text": "House: Bill reported favorably by committee and referred to the committee on House Ways and Means"
     },
     "source": {
       "name": "Massachusetts Legislature, H.4699",
@@ -324,6 +342,15 @@
     "check": {
       "kind": "page",
       "checkedOn": "2026-10-24"
+    },
+    "original": {
+      "kind": "bill",
+      "label": "Bill text and history from the Legislature, saved 2026-10-24",
+      "file": "/official/bills/H4699.json",
+      "url": "https://malegislature.gov/Bills/194/H4699",
+      "hash": "a089aa3f24aefd9ba2af9dadc51ab42a325ca3c8188f08f4d23a2b7a27ae1f64",
+      "savedOn": "2026-10-24",
+      "note": "334 words of bill text and 3 official actions."
     }
   },
   {
@@ -339,7 +366,7 @@
     "status": "In House Ways and Means",
     "lastAction": {
       "date": "2025-11-06",
-      "text": "House: Reported favorably and referred to House Ways and Means"
+      "text": "House: Bill reported favorably by committee and referred to the committee on House Ways and Means"
     },
     "source": {
       "name": "Massachusetts Legislature, H.1482",
@@ -368,6 +395,15 @@
     "check": {
       "kind": "page",
       "checkedOn": "2026-10-24"
+    },
+    "original": {
+      "kind": "bill",
+      "label": "Bill text and history from the Legislature, saved 2026-10-24",
+      "file": "/official/bills/H1482.json",
+      "url": "https://malegislature.gov/Bills/194/H1482",
+      "hash": "1cdf8189450379a9bf0f0540cb683299d80f1e2ba52e9201dec936f0d75f20dd",
+      "savedOn": "2026-10-24",
+      "note": "551 words of bill text and 5 official actions."
     }
   },
   {

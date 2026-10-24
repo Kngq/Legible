@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "lint:words": "tsx scripts/lint-words.ts",
     "data:build": "tsx scripts/build-ballot.ts",
-    "data:civic": "tsx scripts/build-civic.ts"
+    "data:civic": "tsx scripts/build-civic.ts",
+    "data:bills": "tsx scripts/fetch-bills.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",

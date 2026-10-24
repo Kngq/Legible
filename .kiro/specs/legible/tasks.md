@@ -156,7 +156,7 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 21.1 Ballot: page range and label of each question's full law in the booklet (build checks every page's heading), the official PDF served at /official/, per-question page text loaded on demand, "The full law, word for word" on the measure page and a "Full law" link on ballot cards
   - [ ] 21.2 Fingerprints: SHA-256 of each source file and page text, and the saved date. Ballot done (source.hash, pagesHash, savedOn; shown on the full law and in How do we know this?); civic items come with 21.3–21.5
   - [x] 21.3 Election dates: CivicItem.original (kind, label, verbatim text, saved file, official url, hash, savedOn) built from the booklet quote; "Official text" section on the item page (OriginalText)
-  - [ ] 21.4 Bills: save bill text and history snapshots from malegislature.gov with fetch date and fingerprint
+  - [x] 21.4 Bills: npm run data:bills saves each bill from the Legislature API (full text, pinslip, history) to data/official/bills/ with its fetch date; build-civic fingerprints it, takes lastAction from the official history, warns when status may be stale, and publishes a reader copy; "Read the bill text" on the item page
   - [ ] 21.5 Meetings: save posted agendas when they exist; otherwise state that no agenda is posted
   - [ ] 21.6 Official text section on every Home and Explore item's detail page
 

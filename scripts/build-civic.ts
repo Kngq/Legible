@@ -2,6 +2,7 @@
 // Fails when a booklet quote is not found word for word, a source is not an
 // official domain, app-written text uses a banned word, or a seed item is
 // neither used nor listed as excluded.
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import type { CivicItem } from "@/lib/engine/civic";
@@ -25,6 +26,58 @@ const official = (url: string) => {
     return false;
   }
 };
+
+const warnings: string[] = [];
+const BILLS_SAVED = path.join(root, "data/official/bills");
+const BILLS_PUBLIC = path.join(root, "public/official/bills");
+
+interface BillSnapshot {
+  fetchedOn: string;
+  source: string;
+  document: { Title?: string; Pinslip?: string | null; DocumentText?: string | null };
+  history: { Date: string; Branch: string; Action: string; IsStricken?: boolean }[];
+}
+
+/** A bill's saved original: read the snapshot from npm run data:bills, publish a reader copy. */
+function billOriginal(c: (typeof CIVIC)[number]): Pick<CivicItem, "original" | "lastAction"> {
+  const bill = c.source.url.match(/Bills\/\d+\/([HS]\d+)/)?.[1];
+  const file = bill && path.join(BILLS_SAVED, `${bill}.json`);
+  if (!bill || !file || !fs.existsSync(file)) {
+    errors.push(`${c.id}: no saved bill snapshot; run npm run data:bills`);
+    return {};
+  }
+  const raw = fs.readFileSync(file);
+  const snap = JSON.parse(raw.toString("utf8")) as BillSnapshot;
+  const text = (snap.document.DocumentText ?? "").replace(/\r\n/g, "\n").replace(/\t/g, "").trim();
+  if (!text) errors.push(`${c.id}: the saved snapshot has no bill text`);
+  const history = snap.history
+    .filter((h) => !h.IsStricken)
+    .map((h) => ({ date: h.Date.slice(0, 10), branch: h.Branch, action: h.Action }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const latest = history[history.length - 1];
+  if (latest && c.lastAction && latest.date !== c.lastAction.date) {
+    warnings.push(`${c.id}: official history's latest action is ${latest.date}, the content says ${c.lastAction.date}; check "status"`);
+  }
+  fs.mkdirSync(BILLS_PUBLIC, { recursive: true });
+  fs.writeFileSync(
+    path.join(BILLS_PUBLIC, `${bill}.json`),
+    JSON.stringify({ bill, title: snap.document.Title?.trim(), pinslip: snap.document.Pinslip ?? null, text, history, fetchedOn: snap.fetchedOn, source: snap.source }) + "\n",
+  );
+  const words = text.split(/\s+/).length;
+  return {
+    // The official history is the truth for the latest action.
+    lastAction: latest ? { date: latest.date, text: `${latest.branch}: ${latest.action}` } : c.lastAction,
+    original: {
+      kind: "bill",
+      label: `Bill text and history from the Legislature, saved ${snap.fetchedOn}`,
+      file: `/official/bills/${bill}.json`,
+      url: c.source.url,
+      hash: crypto.createHash("sha256").update(raw).digest("hex"),
+      savedOn: snap.fetchedOn,
+      note: `${words.toLocaleString("en-US")} words of bill text and ${history.length} official actions.`,
+    },
+  };
+}
 
 const items: CivicItem[] = CIVIC.map((c) => {
   const { seedId: _seedId, check, ...rest } = c;
@@ -55,6 +108,7 @@ const items: CivicItem[] = CIVIC.map((c) => {
       },
     };
   }
+  if (c.kind === "bill") return { ...rest, check, ...billOriginal(c) };
   return { ...rest, check };
 });
 
@@ -70,6 +124,7 @@ if (errors.length) {
   process.exit(1);
 }
 
+for (const w of warnings) console.warn(`warning: ${w}`);
 const out = path.join(root, "src/data/civic-ma.json");
 fs.writeFileSync(out, JSON.stringify(items, null, 2) + "\n");
 console.log(`wrote ${items.length} civic items to src/data/civic-ma.json`);
