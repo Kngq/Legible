@@ -24,7 +24,7 @@ scripts/                  Content builds (data:build, data:bills, data:civic, da
 data/                     Raw sources, saved official text, model drafts, reviews (not shipped)
 docs/                     Original spec, decisions log, accounts review, pitch, README screenshots
 .kiro/steering/           Product, tech, structure, and development rules (always included)
-.kiro/specs/legible/      Requirements, design, tasks (source of truth for scope)
+.kiro/specs/legible/      Requirements, design, tasks (source of truth for scope), features.md (as built)
 .kiro/specs/ballot-wrapped/  Ballot, Wrapped share feature: requirements, design, tasks
 ```
 

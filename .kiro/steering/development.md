@@ -4,7 +4,7 @@ inclusion: always
 
 # Development
 
-How to set up, run, and change Legible. Scope lives in `.kiro/specs/legible/` (requirements, design, tasks) and in the other steering files; they supersede `docs/spec.md` and the earlier parts of `docs/DECISIONS.md`.
+How to set up, run, and change Legible. Scope lives in `.kiro/specs/legible/` (requirements, design, tasks, and `features.md`, the as-built specification of every feature) and in the other steering files; they supersede `docs/spec.md` and the earlier parts of `docs/DECISIONS.md`.
 
 ## Setup
 

@@ -1,6 +1,6 @@
 # Legible: user journey and features
 
-This page walks through Legible the way a resident uses it, then lists every feature by area. Scope and acceptance criteria live in [`.kiro/specs/legible/`](../.kiro/specs/legible/); this is the plain-language tour.
+This page walks through Legible the way a resident uses it, then lists every feature by area. Scope lives in [`.kiro/specs/legible/`](../.kiro/specs/legible/), and the acceptance criteria for every feature as built are in [`features.md`](../.kiro/specs/legible/features.md); this is the plain-language tour.
 
 Features marked **(dev only)** run in `npm run dev` builds behind a flag and are not yet in production.
 
