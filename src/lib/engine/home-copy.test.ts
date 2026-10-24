@@ -82,14 +82,13 @@ describe("actions", () => {
 });
 
 describe("homeSections", () => {
-  it("puts dated items that apply first, keeps every section distinct, and leaves room to explore", () => {
+  it("puts dated items that apply first, keeps every section distinct", () => {
     const s = sections(withFacts({ registered_here: false, rents: true }, "cambridge"));
-    const keys = [...s.attention, ...s.affect, ...s.explore].map((e) => e.key);
+    const keys = [...s.attention, ...s.affect].map((e) => e.key);
     expect(new Set(keys).size).toBe(keys.length);
     expect(s.attention.map((e) => e.key)).toContain("c:ma-2026-registration-deadline");
     expect(s.attention.every((e) => e.days !== undefined)).toBe(true);
     expect(s.affect.map((e) => e.key)).toContain("c:ma-194-s2836");
-    expect(s.explore.length).toBeGreaterThan(0);
   });
 
   it("leaves out a deadline that is for people in another situation", () => {
@@ -108,7 +107,7 @@ describe("homeSections", () => {
 it("all Home copy passes the word lint and never asks how to vote", () => {
   const p = withFacts({ registered_here: false, rents: true, kids_in_schools: true, state_employee: true }, "cambridge");
   const s = sections(p);
-  for (const e of [...s.attention, ...s.affect, ...s.explore]) {
+  for (const e of [...s.attention, ...s.affect]) {
     const texts = [e.kind === "civic" ? headline(e.card) : "", e.kind === "civic" ? explanation(e.card) : "", relevanceOf(e)?.text ?? "", ...(relevanceOf(e)?.basis ?? []), actionsFor(e).primary.label, actionsFor(e).secondary?.label ?? ""];
     for (const t of texts) {
       expect(findBannedWords(t), t).toEqual([]);

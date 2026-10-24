@@ -1,9 +1,9 @@
 "use client";
 
-// Home after onboarding: a welcome, "What matters to you?" first, then three
-// sections from homeSections: Needs your attention (dates coming up soon),
-// Decisions that could affect you (from the person's answers and interests), and
-// Explore more (a few other things nearby; Explore holds the full list). Order
+// Home after onboarding: a welcome, "What matters to you?" first, then two
+// sections from homeSections: Needs your attention (dates coming up soon) and
+// Decisions that could affect you (from the person's answers and interests).
+// Everything else is on Explore, one button away. Order
 // comes from buildTimeline, and which areas Home asks about comes from the facts
 // upcoming items depend on, so nothing is tied to fixed onboarding questions.
 import type { CivicCard } from "@/lib/engine/civic";
@@ -47,7 +47,7 @@ export function Home({
   const meter = personalization(profile);
   const done = new Set(meter.items.flatMap((i) => (i.kind === "area" && i.done ? [i.id] : [])));
   const all = buildTimeline(feed.items, civic, today, { includeOthers: true });
-  const { attention, affect, explore } = homeSections(buildTimeline(feed.items, civic, today), all);
+  const { attention, affect } = homeSections(buildTimeline(feed.items, civic, today), all);
   const areas = areasThatMatter(all);
   const topics = topicIds(profile).map((id) => TOPIC_DEFS[id].label);
   const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure, onOpenProfile };
@@ -142,7 +142,6 @@ export function Home({
           </section>
         )}
 
-      {explore.length > 0 && section("h-explore", "Explore more", "Other decisions happening in your community.", explore, false)}
       <button type="button" onClick={onExplore} className={`mt-5 ${SECONDARY}`}>
         Explore everything happening near you
         <span aria-hidden="true" className="-rotate-90">

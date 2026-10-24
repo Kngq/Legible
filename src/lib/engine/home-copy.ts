@@ -218,7 +218,6 @@ export function actionsFor(e: TimelineEntry): { primary: Action; secondary?: Act
 
 const ATTENTION_DAYS = 14;
 const MEETING_DAYS = 7;
-const EXPLORE_SHOWN = 3;
 const KIND_ORDER: Record<RelevanceKind, number> = { direct: 0, potential: 1, interest: 2, open: 3 };
 
 /** Time-sensitive: deadlines, voting periods, the election, and meetings this week. */
@@ -233,8 +232,8 @@ export function isTimeSensitive(e: TimelineEntry): boolean {
  * `all` adds everything else nearby. Needs your attention: time-sensitive items
  * that apply to them, soonest first (a deadline for people in another situation
  * is left out). Decisions that could affect you: the rest that relates to them,
- * direct before potential before interests before open questions. Explore more:
- * a few of everything else; Explore holds the full list.
+ * direct before potential before interests before open questions. Everything
+ * else lives on Explore.
  */
 export function homeSections(ranked: TimelineEntry[], all: TimelineEntry[]) {
   const attention = all
@@ -247,7 +246,5 @@ export function homeSections(ranked: TimelineEntry[], all: TimelineEntry[]) {
     .map((e) => ({ e, r: relevanceOf(e) }))
     .sort((a, b) => KIND_ORDER[a.r?.kind ?? "open"] - KIND_ORDER[b.r?.kind ?? "open"] || b.e.score - a.e.score)
     .map(({ e }) => e);
-  affect.forEach((e) => taken.add(e.key));
-  const explore = all.filter((e) => !taken.has(e.key)).slice(0, EXPLORE_SHOWN);
-  return { attention, affect, explore };
+  return { attention, affect };
 }
