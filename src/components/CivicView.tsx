@@ -60,8 +60,8 @@ export function CivicView({
   };
 
   return (
-    <article className="mx-auto w-full max-w-2xl px-4 pb-20 sm:px-6" aria-labelledby="civic-title">
-      <nav className="sticky top-0 z-20 -mx-4 flex h-16 items-center justify-between bg-background/95 px-3 backdrop-blur sm:-mx-6 sm:px-5">
+    <article className={`mx-auto w-full px-4 pb-20 sm:px-6 ${e ? "max-w-2xl lg:max-w-5xl" : "max-w-2xl"}`} aria-labelledby="civic-title">
+      <nav className="sticky top-16 z-20 -mx-4 flex h-16 items-center justify-between bg-background/95 px-3 backdrop-blur sm:-mx-6 sm:px-5">
         <button
           type="button"
           onClick={onBack}
@@ -80,9 +80,9 @@ export function CivicView({
         </div>
       </nav>
 
-      <header className="mt-4">
+      <header className="mt-4 max-w-3xl">
         <p className="text-small font-semibold uppercase tracking-wider text-muted-foreground">{kicker}</p>
-        <h1 id="civic-title" className="mt-2 text-title">
+        <h1 id="civic-title" className={`mt-2 text-balance ${e ? "font-display text-headline" : "text-title"}`}>
           {i.title}
         </h1>
         <div className="mt-3 flex items-center gap-2 text-small text-muted-foreground">

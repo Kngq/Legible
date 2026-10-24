@@ -50,10 +50,44 @@ export function OfficialWords({ src, s }: { src: CiteSource; s: PageSentence }) 
   );
 }
 
-/** One of Legible's sentences, its source line, and the official words opened in place. */
-export function CitedLine({ s, src, onChain }: { s: PageSentence; src: CiteSource; onChain: (s: PageSentence) => void }) {
+/**
+ * One of Legible's sentences, its source line, and the official words opened in
+ * place. With `pane` (the annotated reader on wide screens) the source line
+ * selects the sentence instead, and the words show in the pane beside it.
+ */
+export function CitedLine({
+  s,
+  src,
+  onChain,
+  pane,
+}: {
+  s: PageSentence;
+  src: CiteSource;
+  onChain: (s: PageSentence) => void;
+  pane?: { selected: boolean; onSelect: () => void };
+}) {
   const [open, setOpen] = useState(false);
   const q = src.quote(s.quoteId);
+  if (pane) {
+    return (
+      <div className={`-mx-3 mt-1 rounded-r-md border-l-2 px-3 py-1 interactive ${pane.selected ? "border-accent bg-surface" : "border-transparent hover:bg-surface"}`}>
+        <p className="text-body">{s.text}</p>
+        {q && (
+          <button
+            type="button"
+            onClick={pane.onSelect}
+            aria-pressed={pane.selected}
+            className={`inline-flex min-h-10 items-center gap-1.5 rounded-sm text-small font-semibold interactive ${pane.selected ? "text-accent" : "hover:text-accent"} ${FOCUS}`}
+          >
+            <Glyph name="check" size={14} />
+            {q.locator}
+            {q.page ? `, page ${q.page}` : ""}
+            <span className="font-normal text-muted-foreground">{pane.selected ? "Shown beside" : "Show the words"}</span>
+          </button>
+        )}
+      </div>
+    );
+  }
   return (
     <div>
       <p className="mt-1 text-body">{s.text}</p>

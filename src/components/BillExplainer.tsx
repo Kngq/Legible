@@ -5,7 +5,11 @@
 // Who it could affect (with the person's own lines, direct apart from possible),
 // and Where it stands. Every line comes from an Explainer the build verified
 // against the saved bill text. Nothing here says the bill is law.
-import { useState } from "react";
+// On wide screens it reads as an annotated reader: selecting a line's source
+// shows the bill's own words in a pane beside it. Narrow screens keep "Show the
+// words" in place under each line.
+import { motion, useReducedMotion } from "motion/react";
+import { useState, useSyncExternalStore } from "react";
 import type { CivicCard } from "@/lib/engine/civic";
 import { localISODate } from "@/lib/engine/feed";
 import type { PageSentence } from "@/lib/engine/measure-page";
@@ -14,14 +18,32 @@ import { personalView } from "@/lib/explain/personal";
 import type { CitedLine as Line, Explainer, PersonalRule } from "@/lib/explain/types";
 import { allLines } from "@/lib/explain/verify";
 import { FACT_DEFS, SENSITIVE_FACTS, type FactId } from "@/lib/vocab";
-import { ChainSheet, CitedLine, TrustLine, type CiteSource } from "./Citation";
+import { transition } from "@/lib/motion";
+import { ChainSheet, CitedLine, OfficialWords, TrustLine, type CiteSource } from "./Citation";
 import { Glyph } from "./icons";
 import { FactQuestion } from "./MeasureCard";
 import { PartLabel } from "./MeasureParts";
 import { areaOf, type SheetView } from "./ProfileSheet";
+import { Reveal } from "./Reveal";
 import { FOCUS, Tag } from "./ui";
 
 const LABEL = "text-small font-semibold text-muted-foreground";
+/** One part of the explainer: a hairline and air, not a card. */
+const PART = "mt-8 border-t border-border pt-6";
+
+/** The annotated reader needs room for the pane: 1024px and up. */
+const WIDE = "(min-width: 1024px)";
+function useWide() {
+  return useSyncExternalStore(
+    (cb) => {
+      const m = window.matchMedia(WIDE);
+      m.addEventListener("change", cb);
+      return () => m.removeEventListener("change", cb);
+    },
+    () => window.matchMedia(WIDE).matches,
+    () => false,
+  );
+}
 const ROW = "border-t border-border pt-3 mt-3";
 /** How many change groups show before "Show all changes". */
 const FIRST_GROUPS = 2;
@@ -59,9 +81,13 @@ export function BillExplainer({
   const [chain, setChain] = useState<PageSentence | null>(null);
   const [allChanges, setAllChanges] = useState(false);
   const [allHistory, setAllHistory] = useState(false);
+  const wide = useWide();
+  const [active, setActive] = useState<Line | undefined>(e.proposes[0]);
   const src = billCiteSource(e);
   // Keys include the position: a model's draft can repeat a sentence or a label.
-  const line = (s: Line, k: number) => <CitedLine key={`${k}-${s.quoteId}`} s={s} src={src} onChain={setChain} />;
+  const line = (s: Line, k: number) => (
+    <CitedLine key={`${k}-${s.quoteId}`} s={s} src={src} onChain={setChain} pane={wide ? { selected: active === s, onSelect: () => setActive(s) } : undefined} />
+  );
   const { matched, open } = personalView(e, profile);
   const askable = open.filter((f) => canAskInCard(profile, f));
   const direct = matched.filter((r) => r.effect === "direct");
@@ -69,7 +95,12 @@ export function BillExplainer({
   const touches = matched.length > 0;
   const lines = allLines(e);
   const quoteCount = new Set(lines.map((l) => l.quoteId)).size;
-  const groups = allChanges ? e.changes : e.changes.slice(0, FIRST_GROUPS);
+  const group = (g: Explainer["changes"][number], k: number) => (
+    <div key={`${k}-${g.heading}`} className={ROW}>
+      <h4 className={LABEL}>{g.heading}</h4>
+      {g.lines.map(line)}
+    </div>
+  );
   const hidden = e.changes.slice(FIRST_GROUPS).reduce((n, g) => n + g.lines.length, 0);
   const history = [...e.history].reverse();
   const shownHistory = allHistory ? history : history.slice(0, FIRST_HISTORY);
@@ -91,10 +122,11 @@ export function BillExplainer({
   const heading = touches ? `If ${[...new Set(matched.map(because))].join(" and ")}` : none ? "Not tied to your answers" : open.length ? "Could this reach you?" : "Probably not you";
 
   return (
-    <>
+    <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start lg:gap-12">
+      <div className="min-w-0">
       {/* 1 and 2: what the bill would do, cited line by line. */}
-      <section aria-label="What it proposes and what would change" className="mt-5 rounded-lg bg-surface p-5 pt-1 shadow-card">
-        <section className="mt-5">
+      <section aria-label="What it proposes and what would change" className="mt-6">
+        <section>
           <PartLabel n={1}>What it proposes</PartLabel>
           {e.proposes.map(line)}
         </section>
@@ -103,12 +135,8 @@ export function BillExplainer({
           <PartLabel n={2}>What would change</PartLabel>
           <p className="mt-1 text-small text-muted-foreground">If it became law. Each line opens the words in the bill it comes from.</p>
           {notes}
-          {groups.map((g, k) => (
-            <div key={`${k}-${g.heading}`} className={ROW}>
-              <h4 className={LABEL}>{g.heading}</h4>
-              {g.lines.map(line)}
-            </div>
-          ))}
+          {e.changes.slice(0, FIRST_GROUPS).map(group)}
+          <Reveal open={allChanges}>{e.changes.slice(FIRST_GROUPS).map((g, k) => group(g, k + FIRST_GROUPS))}</Reveal>
           {hidden > 0 && (
             <button
               type="button"
@@ -123,7 +151,7 @@ export function BillExplainer({
       </section>
 
       {/* 3: who it names, then this person's lines, direct apart from possible. */}
-      <section className="mt-5 rounded-lg bg-surface p-5 shadow-card" aria-labelledby="affects-h">
+      <section className={PART} aria-labelledby="affects-h">
         <PartLabel n={3} id="affects-h">
           Who it could affect
         </PartLabel>
@@ -219,7 +247,7 @@ export function BillExplainer({
       </section>
 
       {/* 4: the official record, verbatim. */}
-      <section className="mt-5 rounded-lg bg-surface p-5 shadow-card" aria-labelledby="stands-h">
+      <section className={PART} aria-labelledby="stands-h">
         <PartLabel n={4} id="stands-h">
           Where it stands
         </PartLabel>
@@ -245,8 +273,64 @@ export function BillExplainer({
         <p className="mt-2 text-small text-muted-foreground">From the Legislature, saved {e.source.savedOn}. Words as the Legislature records them.</p>
       </section>
 
+      </div>
+
+      {wide && <SourcePane line={active} src={src} onChain={setChain} />}
+
       {chain && <ChainSheet s={chain} src={src} onClose={() => setChain(null)} />}
-    </>
+    </div>
+  );
+}
+
+/**
+ * The annotated reader's pane: the selected line's words from the saved bill,
+ * marked where the line comes from, with how it was checked and the chain of
+ * custody one click away. Sticky beside the explainer on wide screens.
+ */
+function SourcePane({ line, src, onChain }: { line?: Line; src: CiteSource; onChain: (s: PageSentence) => void }) {
+  const reduce = useReducedMotion() ?? false;
+  const q = line ? src.quote(line.quoteId) : undefined;
+  return (
+    <aside aria-label="The bill's words" className="sticky top-24 mt-6 rounded-lg bg-surface p-5 shadow-hairline">
+      <div className="flex items-baseline justify-between gap-3">
+        <p className={LABEL}>The bill&apos;s words</p>
+        {q && (
+          <p className="text-small font-semibold text-accent">
+            {q.locator}
+            {q.page ? `, page ${q.page}` : ""}
+          </p>
+        )}
+      </div>
+      <div aria-live="polite">
+        {line && q ? (
+          <motion.div key={`${line.quoteId}-${line.text}`} initial={reduce ? false : { opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0, transition: transition("base", reduce) }}>
+            <OfficialWords src={src} s={line} />
+            <p className="mt-4 flex items-start gap-1.5 border-t border-border pt-3 text-small text-muted-foreground">
+              <span className="mt-0.5 shrink-0 text-foreground" aria-hidden="true">
+                <Glyph name="check" size={14} />
+              </span>
+              <span>
+                {q.status === "reviewed" ? "Reviewed by a person and found" : "Found"} word for word in {src.checkedAgainst}.
+              </span>
+            </p>
+          </motion.div>
+        ) : (
+          <p className="mt-2 text-small text-muted-foreground">Select a line&apos;s source to read the bill&apos;s own words here.</p>
+        )}
+      </div>
+      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+        {line && q && (
+          <button type="button" onClick={() => onChain(line)} className={`min-h-10 text-small font-semibold underline decoration-border underline-offset-4 interactive hover:decoration-foreground ${FOCUS}`}>
+            How do we know this?
+          </button>
+        )}
+        <a href={src.url} target="_blank" rel="noreferrer" className={`inline-flex min-h-10 items-center gap-1 text-small font-semibold text-muted-foreground underline decoration-border underline-offset-4 interactive hover:text-foreground hover:decoration-foreground ${FOCUS}`}>
+          Official page
+          <Glyph name="external" size={12} />
+          <span className="sr-only">(opens the official site)</span>
+        </a>
+      </div>
+    </aside>
   );
 }
 

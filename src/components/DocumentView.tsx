@@ -48,7 +48,7 @@ export function DocumentView({
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-16 sm:px-6">
-      <nav className="sticky top-0 z-20 -mx-4 flex h-14 items-center bg-background/95 px-2 backdrop-blur sm:-mx-6 sm:px-4">
+      <nav className="sticky top-16 z-20 -mx-4 flex h-14 items-center bg-background/95 px-2 backdrop-blur sm:-mx-6 sm:px-4">
         <button
           type="button"
           onClick={onBack}

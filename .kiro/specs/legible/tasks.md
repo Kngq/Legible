@@ -191,7 +191,8 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 22.2 For you: featured decision (relevance emphasis only when supported), compact secondary decisions, Coming up as a time ribbon
   - [x] 22.3 Review desktop and phone screenshots before continuing
   - [x] 22.4 Expandable sections with Motion (`Reveal`): why you're seeing this, citations ("Show the words"), official summary, YES and NO text, the legislator draft. The bill page's "Show N more changes" waits for BillExplainer to be free
-  - [ ] 22.5 Later, separately: route transitions, profile feedback, detail page as an annotated reader, unified header (after the header's owner agrees)
+  - [x] 22.5 Route transitions (`ScreenIn`), profile save feedback (`SavedNote`, the For you dot pulse), the bill page as an annotated reader (the bill's words in a pane beside each line on wide screens, inline on phones), and one header (`SiteHeader`; placeholder links and accounts kept behind `SHOW_PLACEHOLDERS`)
+  - [ ] 22.6 Next: the ballot question page as an annotated reader, Explore in the Notebook style, dark mode pass
 
 - [ ] 12. Acceptance and demo
   - [ ] 12.1 Run lint, lint:words, tests, and build; fix failures

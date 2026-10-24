@@ -91,7 +91,7 @@ export function MeasureView({
 
   return (
     <article data-ask-measure={m.id} data-ask-title={`Question ${m.number}: ${m.title}`} data-ask-url={m.sourceUrl} className="mx-auto w-full max-w-2xl px-4 pb-20 sm:px-6" aria-labelledby="measure-title">
-      <nav className="sticky top-0 z-20 -mx-4 flex h-16 items-center justify-between bg-background/95 px-3 backdrop-blur sm:-mx-6 sm:px-5">
+      <nav className="sticky top-16 z-20 -mx-4 flex h-16 items-center justify-between bg-background/95 px-3 backdrop-blur sm:-mx-6 sm:px-5">
         <button
           type="button"
           onClick={onBack}
