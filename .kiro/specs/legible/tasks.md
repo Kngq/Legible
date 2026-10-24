@@ -225,6 +225,13 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
   - [x] 25.2 Design approved after the second iteration (closing slide shows the real share image; town and topics opt-in)
   - [ ] 25.3 Turn `WRAPPED_ENABLED` on in production (not approved yet)
 
+- [x] 26. Ballot questions first (personal impact as the main journey)
+  - [x] 26.1 `ballotPicks` and `ballotReason` (`src/lib/engine/ballot-picks.ts`, tested): every ballot question ranked from buildCards with two tie-breaks, one shared reason per question, `nextPick`; no question pinned
+  - [x] 26.2 For you: "Your ballot" as the main section (`BallotForYou`), featured and rows for put-forward questions, compact rows for the others, a link to the ballot guide; Coming up after it; "Also near you" without bills
+  - [x] 26.3 Explore: proposed bills in their own "Proposed legislation" section
+  - [x] 26.4 Measure page reordered: summary, 1 How could this affect you? (reason, Direct impact, Possible indirect impact, What's uncertain), 2 What would change?, 3 What happens if YES or NO wins?, 4 How do we know? (on demand), 5 Ask Kiro; Next and All your ballot questions at the end
+  - [x] 26.5 `PAGE_LINES.indirect` and `PAGE_LINES.uncertain`, cited to the fiscal statements with marked words, checked by the PAGE_LINES tests; `impactFor`
+
 - [ ] 12. Acceptance and demo
   - [ ] 12.1 Run lint, lint:words, tests, and build; fix failures
   - [ ] 12.2 Do a keyboard pass and a 375 px pass

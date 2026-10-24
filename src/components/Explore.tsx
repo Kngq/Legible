@@ -1,8 +1,9 @@
 "use client";
 
 // Explore: everything coming up near the person and across Massachusetts, for
-// browsing. Same ranked order as Home (buildTimeline with includeOthers), plus
-// decided items and the one note on how Legible works. Runs in the browser.
+// browsing. Same ranked order as Home (buildTimeline with includeOthers), with
+// proposed bills in a secondary section of their own, plus decided items and the
+// one note on how Legible works. Runs in the browser.
 import { useState } from "react";
 import type { CivicCard } from "@/lib/engine/civic";
 import type { Feed } from "@/lib/engine/feed";
@@ -39,7 +40,11 @@ export function Explore({
 }) {
   const [all, setAll] = useState(false);
   const town = townName(profile.townId);
-  const entries = buildTimeline(feed.items, civic, today, { includeOthers: true });
+  const timeline = buildTimeline(feed.items, civic, today, { includeOthers: true });
+  // Proposed bills get their own section after everything else: not law, and secondary to the ballot.
+  const isBill = (e: (typeof timeline)[number]) => e.kind === "civic" && e.card.item.kind === "bill";
+  const entries = timeline.filter((e) => !isBill(e));
+  const bills = timeline.filter(isBill);
   const decided = feed.items.filter((i) => i.status === "decided");
   const noTownDocs = town !== undefined && !feed.items.some((i) => i.scope === "town");
   const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure };
@@ -62,6 +67,20 @@ export function Explore({
         <button type="button" onClick={() => setAll(!all)} aria-expanded={all} className={`mt-4 ${SECONDARY}`}>
           {all ? "Show fewer" : `Show all ${entries.length} updates`}
         </button>
+      )}
+
+      {bills.length > 0 && (
+        <section aria-labelledby="h-bills" className="mt-section">
+          <h2 id="h-bills" className="text-body font-bold">
+            Proposed legislation <span className="font-normal text-muted-foreground">{bills.length}</span>
+          </h2>
+          <p className="mt-1 text-small text-muted-foreground">Bills the Legislature is considering. None of them is law. Ones that relate to your answers come first.</p>
+          <ul className="mt-4 space-y-4">
+            {bills.map((e) => (
+              <UpdateCard key={e.key} entry={e} {...cardProps} />
+            ))}
+          </ul>
+        </section>
       )}
 
       {noTownDocs && (

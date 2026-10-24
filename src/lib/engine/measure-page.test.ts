@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import ballot from "@/data/ballot-2026.json";
 import { findBannedWords } from "@/lib/vocab";
 import { buildCards } from "./cards";
-import { excerpt, PAGE_LINES, pageLines, quoteFor, trustSummary, yesLines } from "./measure-page";
+import { excerpt, impactFor, PAGE_LINES, pageLines, quoteFor, trustSummary, yesLines } from "./measure-page";
 import { answerFact, emptyProfile } from "./profile";
 import type { DocumentData } from "./types";
 
@@ -16,7 +16,7 @@ describe("PAGE_LINES", () => {
 
   for (const [id, lines] of Object.entries(PAGE_LINES)) {
     const m = doc.measures.find((x) => x.id === id)!;
-    const sentences = [lines.no, ...(lines.yes ? [lines.yes] : []), ...(lines.takesEffect ? [lines.takesEffect.why] : [])];
+    const sentences = [lines.no, ...(lines.yes ? [lines.yes] : []), ...(lines.takesEffect ? [lines.takesEffect.why] : []), ...(lines.indirect ?? []), ...(lines.uncertain ?? [])];
 
     it(`${id}: every line cites a real quote and passes the word lint`, () => {
       for (const s of sentences) {
@@ -72,5 +72,38 @@ describe("trustSummary", () => {
     expect(t.quotes).toBe(3); // q4-c1, q4-c2, q4-no
     expect(t.allFound).toBe(true);
     expect(t.aiDraft).toBe(false);
+  });
+});
+
+describe("impactFor", () => {
+  const cardFor = (n: string, facts: Record<string, boolean> = {}) => {
+    let p = emptyProfile(t0);
+    for (const [k, v] of Object.entries(facts)) p = answerFact(p, k as never, v, { kind: "onboarding" }, t0);
+    return buildCards(doc, p).find((c) => c.measure.number === n)!;
+  };
+
+  it("direct lines only when an answer touches the question", () => {
+    expect(impactFor(cardFor("7")).direct).toEqual([]);
+    const touched = cardFor("7", { rents: true });
+    expect(impactFor(touched).direct).toEqual(touched.why);
+  });
+
+  it("indirect lines start with the town line, named for the person's town", () => {
+    const i = impactFor(cardFor("7"), "Somerville");
+    expect(i.indirect[0].text).toMatch(/^Somerville would keep/);
+    expect(i.indirect.map((s) => s.quoteId)).toEqual(["q7-c3", "q7-fiscal"]);
+  });
+
+  it("uncertainty only where the official text states it", () => {
+    const withDoubt = doc.measures.filter((m) => impactFor(cardFor(m.number)).uncertain.length).map((m) => m.number);
+    expect(withDoubt).toEqual(["2", "5", "6", "7"]);
+  });
+
+  it("Q1 and Q3 have no indirect or uncertain lines to show", () => {
+    for (const n of ["1", "3"]) {
+      const i = impactFor(cardFor(n));
+      expect(i.indirect).toEqual([]);
+      expect(i.uncertain).toEqual([]);
+    }
   });
 });

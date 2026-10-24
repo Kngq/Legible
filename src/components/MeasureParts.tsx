@@ -4,7 +4,7 @@
 // headings on the ballot card and on the question's page, so the page reads as
 // the card opened up: What it does, What YES and NO do, Cost, and If you ….
 // The card passes detailed={false}; the page shows the fuller version.
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { firstSentence } from "@/lib/engine/ballot-guide";
 import { pageLines } from "@/lib/engine/measure-page";
 import type { Card, Measure } from "@/lib/engine/types";
@@ -37,13 +37,13 @@ export function personalHeading(card: Card): string {
 }
 
 /** 1. What it does: one plain cited line and the kind of change; the page adds the official summary. */
-export function WhatItDoes({ card, detailed = false }: { card: Card; detailed?: boolean }) {
+export function WhatItDoes({ card, detailed = false, n = 1, title = "What it does", plain }: { card: Card; detailed?: boolean; n?: number; title?: string; plain?: ReactNode }) {
   const m = card.measure;
   const [open, setOpen] = useState(false);
   return (
     <section className="mt-5">
-      <PartLabel n={1}>What it does</PartLabel>
-      {m.overview[0] && <p className="mt-2 text-body">{m.overview[0].text}</p>}
+      <PartLabel n={n}>{title}</PartLabel>
+      {plain ?? (m.overview[0] && <p className="mt-2 text-body">{m.overview[0].text}</p>)}
       <p className="mt-2 flex items-center gap-2 text-small font-semibold">
         <DirectionMark direction={card.direction} size={24} />
         {DIRECTION_DEFS[card.direction].label}
@@ -71,7 +71,7 @@ export function WhatItDoes({ card, detailed = false }: { card: Card; detailed?: 
 }
 
 /** 2. What YES and NO do: the official statements side by side; the page adds the plain line under each. */
-export function Outcomes({ card, detailed = false }: { card: Card; detailed?: boolean }) {
+export function Outcomes({ card, detailed = false, n = 2, title = "What YES and NO do", note }: { card: Card; detailed?: boolean; n?: number; title?: string; note?: string }) {
   const m = card.measure;
   const referendum = m.kind === "referendum";
   const lines = pageLines(m.id);
@@ -108,7 +108,8 @@ export function Outcomes({ card, detailed = false }: { card: Card; detailed?: bo
   };
   return (
     <section className="mt-5">
-      <PartLabel n={2}>What YES and NO do</PartLabel>
+      <PartLabel n={n}>{title}</PartLabel>
+      {note && <p className="mt-2 text-small text-muted-foreground">{note}</p>}
       <div className="mt-2 grid gap-3 sm:grid-cols-2">
         {box(true)}
         {box(false)}
@@ -118,11 +119,11 @@ export function Outcomes({ card, detailed = false }: { card: Card; detailed?: bo
 }
 
 /** 3. Cost: the official fiscal statement, first sentence on the card, in full on the page. */
-export function Cost({ measure: m, detailed = false }: { measure: Measure; detailed?: boolean }) {
+export function Cost({ measure: m, detailed = false, n = 3 }: { measure: Measure; detailed?: boolean; n?: number }) {
   if (!m.fiscal) return null;
   return (
     <section className="mt-5">
-      <PartLabel n={3}>Cost</PartLabel>
+      <PartLabel n={n}>Cost</PartLabel>
       <p data-ask-official data-ask-locator={m.fiscal.locator} data-ask-page={m.fiscal.page} className={`mt-2 ${detailed ? `text-body leading-relaxed ${SERIF}` : "text-small"}`}>
         {detailed ? m.fiscal.text : firstSentence(m.fiscal.text)}
       </p>

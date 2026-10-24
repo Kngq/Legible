@@ -386,6 +386,8 @@ Storage: one `localStorage` key, `legible.profile.v1` (a profile under the pre-r
 
 ## Home feed and catalog
 
+**For you leads with the ballot (task 26).** The upcoming ballot is For you's main content, under the header: all its questions, ranked by `ballotPicks` (`src/lib/engine/ballot-picks.ts`). Questions an answer touches come first, then questions on a followed subject; ties go to a question that is both, then to more matching answers, then ballot order. Nothing is pinned: with no profile, nothing is put forward and all questions show in ballot order. The first put-forward question is the featured decision; the rest are rows; the others follow as compact rows with where each stands. Then Coming up, then "Also near you" (other decisions, without bills). Proposed bills sit on Explore in a "Proposed legislation" section; For you only counts the ones an answer or a followed subject connects to.
+
 Home is a feed of decisions, not a ballot page. Each item is one document: the state ballot, a Town Meeting warrant, a school budget, a zoning hearing. The 2026 ballot is one item among them. Opening an item shows its measures as cards (the document view: Touches you, On your list, Applies to everyone).
 
 ### How the feed is fetched, privately
@@ -410,65 +412,23 @@ Source data: `data/legible_ma_seed.json` (the team's Supabase seed) is rebuilt b
 
 ### Layout, top to bottom
 
-Home is one timeline (`buildTimeline` in `src/lib/engine/timeline.ts`). There is no Up next card, no scope switch, and no "N of M touch you" count: people read "0 of 9" as an error.
-
-Home answers three questions in order: what is happening near me, how could it affect me, and what can I do. Plain words, one obvious action per card, and a button only where a real destination exists (the item's official link, the ballot page, or the item's detail).
-
-Two pages share a top bar: "Legible", **Home · Explore** tabs (black pill on the active one), and the avatar ring that opens the profile ("Clear my information" lives there, with a confirm step).
-
-**Home** stays short:
-1. **Welcome.** "What's happening in Cambridge?" (Massachusetts with no town) and "Understand local decisions, see how they could affect you, and find ways to have your say."
-2. **What matters to you?** first. "Tell us a little about your life and interests. We'll highlight the local decisions that may matter most to you. Your answers stay in this browser." Cards for the life areas upcoming items depend on (Your housing situation, Your household, Your voting information), each opening its profile step; answered ones show "Added" and "Edit". "Add your city or town" appears only without a town; a "Your interests" link (listing followed subjects) opens the rest of the profile.
-3. **For you.** One list, "Dates coming up soon first, then decisions based on your profile and interests." First the time-sensitive items that apply to the person (deadlines, voting periods, and the election within 14 days, meetings within 7; soonest first, at most four), then the rest that relates to them: direct, then potential, then interests, then items that depend on an unanswered question.
-4. **Explore everything happening near you.** One button to Explore; Home does not repeat Explore's cards.
-
-   **Home card** (`BriefCard.tsx`, copy in `src/lib/engine/home-copy.ts`), built around what's proposed, why it may matter, and what to do: a compact header with the subject and bill number or category and date ("Housing · H.1482", "Deadline · October 27") and a neutral status chip ("Proposal under review", "In 3 days"); a conversational headline, the strongest element; one or two sentences, with committee history left to the detail page; "✦ Why this may matter to you" in a small lavender box only when an answer or followed subject supports it ("You mentioned that you rent. This proposal could influence housing options in your community over time."), with an ⓘ that opens "Why you're seeing this" and "Update your interests"; when it depends on an unanswered question, one grey line instead ("May be relevant if you own your home. Add details", opening that profile step); otherwise nothing personal. One black primary button with a chevron (Explore proposal, Check your registration, Explore your ballot) and one secondary link (Read original bill ↗). Owning is never inferred from renting. On a mouse, the cursor "Read more" pill opens the detail page.
-
-**Explore** (`#/explore`) is for browsing: "Explore" and a line on what it holds, every update ranked (`buildTimeline` with `includeOthers`, so local meetings and state bills appear), eight shown then "Show all N updates", the quiet empty-town note ("More Cambridge updates are coming…", never saying the town has no public decisions), "Already decided" collapsed, and "How Legible works" said once.
-
-An **update card** shows: what kind it is ("Deadline", "Voting", "Election", "Public meeting", "Proposed bill · In House Ways and Means"); a "May affect you" or "You follow this" tag when it applies; the title; the date in plain form ("October 27 · 5 PM · In 3 days", "October 17–30", "No vote scheduled yet"); the official summary; "Why you're seeing this: You told us you rent." when an answer matched; for the election with the ballot folded in, "How could this affect you?" listing each matching question with its first cited line and a link to its page; then the actions: "Explore what's on the ballot", the item's first official link ("Apply to vote by mail", "Sign up for public comment", "Read the bill and its history") opening the official site, and "Details and source". Wording helpers live in `src/lib/engine/update-copy.ts`.
-
-   **Ranking.** Each entry gets `score = 0.65 × relevance + 0.35 × urgency`, highest first; ties go to the sooner date.
-
-   | Relevance | Value |
-   |---|---|
-   | Touches the person (a life fact matches, or a document has touching measures) | 1.0, plus 0.05 per extra match, capped at 1.2 |
-   | On their list (a followed subject) | 0.6 |
-   | Applies to everyone | 0.35 |
-   | Nothing matched, shown on Home with `includeOthers` (local meetings, state bills) | 0.15 |
-
-   Urgency is `1 / (1 + days / 7)` to the day it is due (the closing day for an open window): today 1.0, a week 0.5, a month about 0.19. Undated bills get 0.1. With these weights, anything that touches the person outranks anything that only applies to everyone, even when that item is due today, and a followed subject due within a few days outranks an everyone item due today. The weights live in `WEIGHTS` in `src/lib/engine/timeline.ts`; tests pin these orderings. Everything runs in the browser.
-**Uploaded documents** join the feed in memory, tagged with the profile's town and labeled AI draft, until the page is closed.
-
-Copy rule: the home heading is "What's happening in {town}?" Never "what you ought to care about." Deadlines are stated as facts ("Town Meeting votes May 4"), never as urgency ("Act now").
-
-## Measure page
-
-Opened from a measure card. It answers five questions in order: does this touch me, how exactly and when, why believe it, is this based on what I said, what can I do (civic actions only, never a vote). Screens and a clickable prototype are on the design canvas "Legible measure page" (Experience page: one path through the ballot; Screens page: each state in detail).
-
-**Card and page share four parts.** The ballot card and the question page show the same numbered parts, in the same order, with the same headings (`MeasureParts.tsx`): **1 What it does** (plain cited line and direction; the page adds the official summary), **2 What YES and NO do** (official statements side by side; the page adds page numbers and "In plain words"), **3 Cost** (first sentence of the fiscal statement; the page shows it in full), **4 If you rent / If you live in Massachusetts / Probably not you** (the person's lines; on the page this is the For you card with evidence, when it takes effect, the answers it rests on, and the one question). The card opens its page from the question's number and title. Page-only extras follow part 4: the registration step, Ask, the town line, the full law, and asking a legislator.
-
-**Two kinds of reliability, shown differently.** *Source*: did the state say this? Every Legible sentence carries its source line and opens its verbatim quote in place. *Fit*: does this apply to me? The page names the answers that triggered it and lets the person change them there. The trust summary counts both: "3 lines, 3 quotes. Each found word for word. Human review pending."
-
-**Two voices.** Legible's words are Figtree with the caption "In Legible's words." The state's words are the serif face (`--font-serif`) under "Official text, word for word." Nothing else uses the serif.
-
-### Layout, top to bottom
+The page leads with personal impact (task 26). Opened from For you, it lands at the top and opens with the same reason For you gave, so it reads as the recommendation continued. `ballotReason` (`src/lib/engine/ballot-picks.ts`) gives both screens the same words.
 
 1. **Nav.** Back (48 px circle), share, open the official page.
-2. **Header.** Kicker ("Massachusetts ballot · Question 4"), short title, decide-by line ("Voters decide Nov 3 · in 10 days"), and a positive-soft tag "Every quote found word for word" (or "Reviewed by name, date").
-3. **Referendum banner** (referendums only). "This law is already in effect. YES keeps it. NO repeals it."
-4. **For you card.** Relevance tag (accent fill "Touches you", info-soft "On your list", surface-muted "Applies to everyone" or "Probably not for you"); direction pictogram and label; then rows split by hairlines:
-   - **If YES passes** and **If NO passes**: one cited sentence each, always both, same weight. Referendum labels add "· the law stays" and "· the law ends".
-   - **When it would reach you**: date chip ("Jan 1 2028", or "In effect now") and one cited sentence.
-   - **Based on what you told Legible**: because chips ("Because you rent"); fact chips edit the answer in place and re-sort, topic chips only explain "On your list".
-   - **Inline fact question** when an unanswered fact decides relevance: accent-soft panel, "One answer decides whether this touches you", Yes / No, "Not now", "Prefer not to say". Sensitive facts say why they are asked here.
-   - **Trust summary**: positive-soft box with line and quote counts and review state. AI drafts use attention-soft and "AI draft, quotes verified, not human reviewed".
-5. **Next step.** One civic action from `nextSteps` (registration lookup, black pill).
-6. **In {town}.** `localReach` sentence with its source line.
-7. **What YES and NO do, word for word.** Two equal white cards, YES first, serif text, locator and status under each.
-8. **What the official text doesn't say.** One reviewed line, then "Ask about the official text" (chat dock, `ai` orb).
-9. **Full summary and fiscal effect.** Collapsed, verbatim.
-10. **Source footer.** Source name, quotes found out of total, review state, file fingerprint, "How do we know this?"
+2. **Header.** Kicker ("Massachusetts ballot · Question 4"), title in the editorial face, meta line ("AG summary · Voters decide Nov 3 · 2 min read"), and the short summary: the first overview line with its source line.
+3. **1 How could this affect you?** Accent-soft when an answer touches the question, a raised surface otherwise. Groups split by hairlines, each holding only cited lines and left out when empty (`impactFor` in `measure-page.ts`):
+   - **The reason**: "Why this matters to you: You rent." / "On your list: …" / "May apply to you: Applies if …". Left out for "applies to every voter" and no match, which Direct impact already says.
+   - **Direct impact**: the card's own lines, only when an answer touches it; otherwise one plain line saying nothing in the answers points to a change. The inline fact question sits here when an unanswered fact decides relevance (never one already answered or declined twice), then **When it would reach you**.
+   - **Possible indirect impact**: the `localReach` town line, then `PAGE_LINES.indirect` (official fiscal statement: budgets, local aid, revenue).
+   - **What's uncertain**: `PAGE_LINES.uncertain`, only where the official text says something is not known (Q2, Q5, Q6, Q7).
+   - **Based on what you told Legible**, then the trust summary.
+4. **Next step.** One civic action from `nextSteps` (registration lookup).
+5. **2 What would change?** The remaining overview lines, the direction, "Read the official summary" (verbatim, on demand), and the cost: first sentence of the fiscal statement, the rest on demand.
+6. **3 What happens if YES or NO wins?** Official statements side by side, verbatim, a plain line under each, and "Legible explains both and never suggests a vote."
+7. **4 How do we know?** One line on how lines were checked and the review state; "Show sources and checks" reveals the source, the page, what happens on a failed match, and the full law, word for word.
+8. **5 Ask Kiro.** The measure's neutral starter questions, "Ask about your situation" (sharing offered, off until switched on), and a privacy line.
+9. **Ask your legislator**, then **Related near you**.
+10. **The way on.** "Next · Question N" (the next question in For you's order, `nextPick`) and "All your ballot questions" (For you, scrolled to the ballot).
 
 ### Evidence in place
 

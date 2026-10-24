@@ -2,11 +2,12 @@
 
 // Home after onboarding: the For you page, in the Notebook direction. A personal
 // header (greeting, whose town, and one quiet line of where the page's sorting
-// comes from; how much of the profile is filled in lives in the profile sheet); "Coming up" as a time ribbon, with the most urgent
-// date selected; then "Decisions for you": the first as a featured decision, the
-// rest as compact rows, ranked by how they connect to the person. Dates and
-// decisions never mix. Everything else is on Explore, one link away. Order comes
-// from buildTimeline and homeSections. Runs in the browser.
+// comes from; how much of the profile is filled in lives in the profile sheet);
+// then "Your ballot", the main content: the nine questions ranked for this
+// person, each saying why it is here (BallotForYou); then "Coming up" as a time
+// ribbon; then "Also near you", other decisions that relate to them. Proposed
+// bills sit on Explore, one link away. Order comes from ballotPicks,
+// buildTimeline, and homeSections. Runs in the browser.
 import { motion, useReducedMotion } from "motion/react";
 import { useSyncExternalStore } from "react";
 import type { CivicCard } from "@/lib/engine/civic";
@@ -14,8 +15,10 @@ import type { Feed } from "@/lib/engine/feed";
 import { homeSections } from "@/lib/engine/home-copy";
 import { DURATION, EASE } from "@/lib/motion";
 import type { Profile } from "@/lib/engine/profile";
-import { buildTimeline } from "@/lib/engine/timeline";
-import { decisionsFor, DecisionRow, FeaturedDecision } from "./BriefCard";
+import { upcomingBallot } from "@/lib/engine/ballot-picks";
+import { buildTimeline, type TimelineEntry } from "@/lib/engine/timeline";
+import { BallotForYou } from "./BallotForYou";
+import { decisionsFor, DecisionRow } from "./BriefCard";
 import { ComingUp } from "./ComingUp";
 import { Glyph } from "./icons";
 import { HomePlant } from "./plant/HomePlant";
@@ -79,15 +82,13 @@ export function Home({
   const greeting = GREETINGS[(profile.name ?? "").length % GREETINGS.length];
   const all = buildTimeline(feed.items, civic, today, { includeOthers: true });
   const { attention, affect } = homeSections(buildTimeline(feed.items, civic, today), all);
-  // The ballot behind Election Day: its questions that reach this person become
-  // decision cards; the date itself stays in Coming up. A ballot shown as its own
-  // card in the decisions keeps that card instead, so nothing appears twice.
-  const ballotItem = attention.flatMap((e) => (e.kind === "civic" && e.ballot ? [e.ballot] : []))[0];
-  const touching = ballotItem?.cards.filter((c) => c.relevance === "touches") ?? [];
-  const listed = ballotItem?.cards.filter((c) => c.relevance !== "touches" && c.onYourList) ?? [];
+  // The ballot is For you's main content; its questions are not repeated below.
+  const ballot = upcomingBallot(feed.items);
+  const isBill = (e: TimelineEntry) => e.kind === "civic" && e.card.item.kind === "bill";
+  // Proposed bills live on Explore; Home only counts the ones an answer or a followed subject connects to.
+  const bills = affect.filter((e) => isBill(e) && e.level !== "maybe").length;
   const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure };
-  const list = decisionsFor({ touching, affect, listed, ballot: ballotItem, ...cardProps });
-  const [featured, ...rest] = list;
+  const list = decisionsFor({ affect: affect.filter((e) => !isBill(e) && !(e.kind === "doc" && e.item === ballot)), ...cardProps });
   const reduce = useReducedMotion() ?? false;
   const housing = housingLabel(profile);
   // The general profile link opens the overview; contextual "Add details" links open their own editor.
@@ -185,39 +186,35 @@ export function Home({
         )}
       </header>
 
+      {ballot ? (
+        <BallotForYou ballot={ballot} profile={profile} onOpenMeasure={onOpenMeasure} onOpenDoc={onOpenDoc} onOpenProfile={onOpenProfile} />
+      ) : null}
+
       <ComingUp entries={attention} {...cardProps} onOpenProfile={onOpenProfile} />
 
-      {/* Only what relates to this person. Everything else is on Explore. */}
-      <section aria-labelledby="h-foryou" className="mt-section">
-        <div className="flex items-baseline justify-between gap-3">
+      {/* Secondary: other decisions near the person (meetings, deadlines). Bills are on Explore. */}
+      {(list.length > 0 || bills > 0) && (
+        <section aria-labelledby="h-foryou" className="mt-section">
           <h2 id="h-foryou" className="text-body font-bold">
-            Decisions for you
+            Also near you
           </h2>
-          {featured && <p className="text-small text-muted-foreground">Closest to your life first</p>}
-        </div>
-        {featured ? (
-          <>
-            <div className="mt-3">
-              <FeaturedDecision d={featured} onOpenProfile={onOpenProfile} />
-            </div>
-            {rest.length > 0 && (
-              <ul className="mt-4 divide-y divide-border">
-                {rest.map((d) => (
-                  <DecisionRow key={d.key} d={d} onOpenProfile={onOpenProfile} />
-                ))}
-              </ul>
-            )}
-          </>
-        ) : (
-          <p className="mt-2 text-small text-muted-foreground">
-            Nothing matches your answers yet.{" "}
-            <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={`font-semibold text-accent underline decoration-accent/30 underline-offset-4 ${FOCUS}`}>
-              Add details to your profile
-            </button>{" "}
-            and the decisions that reach your life will show here first.
-          </p>
-        )}
-      </section>
+          {list.length > 0 && (
+            <ul className="mt-2 divide-y divide-border">
+              {list.map((d) => (
+                <DecisionRow key={d.key} d={d} onOpenProfile={onOpenProfile} />
+              ))}
+            </ul>
+          )}
+          {bills > 0 && (
+            <p className="mt-3 text-small text-muted-foreground">
+              {bills === 1 ? "One proposed bill relates" : `${bills} proposed bills relate`} to your answers.{" "}
+              <button type="button" onClick={onExplore} className={`font-semibold text-accent underline decoration-accent/30 underline-offset-4 interactive hover:decoration-accent ${FOCUS}`}>
+                See {bills === 1 ? "it" : "them"} in Explore
+              </button>
+            </p>
+          )}
+        </section>
+      )}
 
       {onOpenWrapped && <WrappedInvite onOpen={onOpenWrapped} />}
 

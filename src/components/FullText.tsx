@@ -53,7 +53,7 @@ export function Fingerprint({ source }: { source: Pick<DocumentData["source"], "
   );
 }
 
-export function FullText({ measure, source }: { measure: Measure; source?: DocumentData["source"] }) {
+export function FullText({ measure, source, className = "mt-10" }: { measure: Measure; source?: DocumentData["source"]; className?: string }) {
   const f = measure.fullText;
   const [pages, setPages] = useState<PageText[] | null>(null);
   const [state, setState] = useState<"idle" | "loading" | "error">("idle");
@@ -75,7 +75,7 @@ export function FullText({ measure, source }: { measure: Measure; source?: Docum
   };
 
   return (
-    <section className="mt-10 rounded-lg bg-surface p-5 shadow-card" aria-labelledby="fulltext-h">
+    <section className={`${className} rounded-lg bg-surface p-5 shadow-card`} aria-labelledby="fulltext-h">
       <h2 id="fulltext-h" className="text-body font-bold">
         The full law, word for word
       </h2>

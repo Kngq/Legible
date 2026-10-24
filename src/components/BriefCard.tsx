@@ -16,8 +16,7 @@ import { docWhat, type TimelineEntry } from "@/lib/engine/timeline";
 import { actionsFor, cardHeader, explanation, headline, questionHeadline, questionWhat, relevanceOf, dateLine, RELEVANCE_LABEL, type Action, type Relevance, type RelevanceKind } from "@/lib/engine/home-copy";
 import { DOC_TYPE_LABEL, shortDate } from "@/lib/engine/decide-by";
 import type { FeedItem } from "@/lib/engine/feed";
-import type { Card } from "@/lib/engine/types";
-import { questionBecause } from "@/lib/engine/update-copy";
+import { isRecommended, type BallotPick } from "@/lib/engine/ballot-picks";
 import type { CivicCard } from "@/lib/engine/civic";
 import { LIFE_AREAS, type LifeAreaId, type TopicId } from "@/lib/vocab";
 import { useCursorCta } from "./CursorCta";
@@ -143,16 +142,17 @@ function fromEntry(e: TimelineEntry, today: string, onOpenItem: (id: string) => 
 }
 
 /**
- * A ballot question that touches the person, or is on their list. Why it is here
- * comes from the card's own match (questionBecause) and its first verified "why"
- * sentence; it opens the question's existing page.
+ * A ballot question For you puts forward: an answer touches it, or it is on the
+ * person's list. Why it is here is the pick's own reason (ballotReason, the same
+ * words its page opens with) plus, when it touches them, its first verified "why"
+ * sentence; it opens the question's page.
  */
-function fromBallotCard(c: Card, ballot: FeedItem, onOpenMeasure: (docId: string, measureId: string) => void): Decision {
+export function ballotDecision({ card: c, reason }: BallotPick, ballot: FeedItem, onOpenMeasure: (docId: string, measureId: string) => void): Decision {
   const m = c.measure;
   const open = () => onOpenMeasure(ballot.doc.id, m.id);
-  const touches = c.relevance === "touches";
-  // "Because you rent" -> "You rent".
-  const because = questionBecause(c)?.replace(/^Because you/, "You");
+  const touches = reason.kind === "direct";
+  // "Because you rent." -> "You rent."
+  const because = reason.text.replace(/^Because you/, "You");
   const d = ballot.doc.decideBy;
   return {
     key: m.id,
@@ -162,37 +162,24 @@ function fromBallotCard(c: Card, ballot: FeedItem, onOpenMeasure: (docId: string
     dated: true,
     title: questionHeadline(m),
     what: questionWhat(m),
-    relevance: because
+    relevance: isRecommended(reason)
       ? {
           kind: touches ? "direct" : "interest",
-          text: [`${because}.`, touches ? c.why[0]?.text : null].filter(Boolean).join(" "),
-          basis: [`${because}.`, "Your ballot page lists this question first."],
+          text: [because, touches ? c.why[0]?.text : null].filter(Boolean).join(" "),
+          basis: [because, touches ? "Its page explains what could change for you, line by line." : "Its page explains what it would change."],
         }
       : null,
     open,
-    primary: { label: "Understand this decision", to: { open: "item" } },
+    primary: { label: "See how it could affect you", to: { open: "item" } },
     secondary: m.sourceUrl ? { label: "Read official text", to: { href: m.sourceUrl } } : undefined,
     go: open,
     noDetail: false,
   };
 }
 
-/** Every decision for Home, in the order given: ballot questions that touch, then the ranked entries, then listed questions. */
-export function decisionsFor({
-  touching,
-  affect,
-  listed,
-  ballot,
-  today,
-  onOpenItem,
-  onOpenDoc,
-  onOpenMeasure,
-}: { touching: Card[]; affect: TimelineEntry[]; listed: Card[]; ballot?: FeedItem } & CardProps): Decision[] {
-  return [
-    ...(ballot ? touching.map((c) => fromBallotCard(c, ballot, onOpenMeasure)) : []),
-    ...affect.map((e) => fromEntry(e, today, onOpenItem, onOpenDoc)),
-    ...(ballot ? listed.map((c) => fromBallotCard(c, ballot, onOpenMeasure)) : []),
-  ];
+/** Home's other decisions, in the order given (meetings, deadlines, the election; bills live on Explore). */
+export function decisionsFor({ affect, today, onOpenItem, onOpenDoc }: { affect: TimelineEntry[] } & CardProps): Decision[] {
+  return affect.map((e) => fromEntry(e, today, onOpenItem, onOpenDoc));
 }
 
 /* ---------------------------------------------------------------- pieces */
