@@ -81,3 +81,11 @@ Smallest choices made where the spec was silent. Revisit any of them freely.
 4. **Upload button is disabled** in the empty-town card until the upload panel (task 9.4) exists; `Home` takes an optional `onUpload` and enables it when passed.
 5. **Scope switch filters the list and Decided group**; Up next stays the most pressing item overall. The empty-town card shows under All and the town tab, never under State.
 6. **DocumentView** keeps the countdown hero, stat cards, "Decided statewide, felt in {town}", and the card groups. Back restores the feed's scroll position. No URL change yet; deep links can come with the catalog.
+
+## Oct 24: reading-app layout (carousels, measure reader, profile-style pages)
+Inspired by a reading app's Discover, article, queue, and author screens; not copied.
+1. **Covers instead of photos.** Each decision gets a cover: the subject's line pictogram on a flat token fill with a dot pattern (`src/components/covers.tsx`). Stock photos of real places or people could mislead and carry rights issues; a `cover` image field can come later with the catalog. Fill follows the first topic, never a side.
+2. **Home** after "Where your life meets what is being decided." shows horizontal carousels of decisions (Touches you, On your list; Applies to everyone when neither has any), then documents as reading-list rows with a type tile. The header is centered like a profile page: avatar ring, town, "Your profile".
+3. **Measure reader** (`MeasureView`): tapping a decision opens it as an article: kicker, title, meta with reading time, cover, why it reaches you, inline question, then the AG summary, YES/NO, and fiscal text verbatim in Source Serif 4. Share uses the official page URL. Back returns to where the person came from, with scroll restored.
+4. **DocumentView** lists measures as rows (cover thumbnail, title, first sentence in the serif face, tags) that open the reader; the countdown hero and town reach stay. The old inline `MeasureCard` is no longer rendered; its pieces (sentences, fact question, YES/NO, draft) are reused by the reader.
+5. The serif is loaded in `layout.tsx` as `--font-serif` and used with `font-[family-name:var(--font-serif)]`, so `globals.css` is unchanged. Type stays within the four size tokens.

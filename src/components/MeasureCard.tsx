@@ -197,7 +197,7 @@ function quoteById(m: Measure, id: string): Quote | undefined {
   return m.quotes.find((q) => q.id === id);
 }
 
-function Sentences({ sentences, measure }: { sentences: WhySentence[]; measure: Measure }) {
+export function Sentences({ sentences, measure }: { sentences: WhySentence[]; measure: Measure }) {
   const [shown, setShown] = useState<string | null>(null);
   const q = shown ? quoteById(measure, shown) : undefined;
   return (
@@ -237,7 +237,7 @@ function Sentences({ sentences, measure }: { sentences: WhySentence[]; measure: 
   );
 }
 
-function FactQuestion({
+export function FactQuestion({
   fact,
   intro,
   current,
@@ -292,7 +292,7 @@ function FactQuestion({
   );
 }
 
-function OfficialText({ measure }: { measure: Measure }) {
+export function OfficialText({ measure }: { measure: Measure }) {
   const { yes, no } = measure.outcomes;
   return (
     <div className="mt-4 animate-fade-in space-y-3">
@@ -321,7 +321,7 @@ function Outcome({ label, quote }: { label: string; quote: Quote }) {
   return (
     <div className="rounded-md border border-border p-4">
       <p className="text-small font-semibold text-muted-foreground">{label}</p>
-      <p className="mt-1 text-body">{quote.text}</p>
+      <p className="mt-1 font-[family-name:var(--font-serif)] text-body leading-relaxed">{quote.text}</p>
       <p className="mt-2 text-small text-muted-foreground">
         {quote.locator}
         {quote.page ? `, page ${quote.page}` : ""}, verbatim
@@ -330,7 +330,7 @@ function Outcome({ label, quote }: { label: string; quote: Quote }) {
   );
 }
 
-function Draft({ measure }: { measure: Measure }) {
+export function Draft({ measure }: { measure: Measure }) {
   const [question, setQuestion] = useState<string>(DRAFT_QUESTIONS[0]);
   const [text, setText] = useState(() => draftMessage(measure.number, measure.title, DRAFT_QUESTIONS[0]));
   const [copied, setCopied] = useState(false);

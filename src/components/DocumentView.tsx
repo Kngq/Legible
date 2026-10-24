@@ -2,46 +2,33 @@
 
 // One document, opened from the feed: its measures as cards, sorted for this person.
 // Touches you, On your list, Applies to everyone, then Probably not you.
-import { flushSync } from "react-dom";
 import { DOC_TYPE_LABEL, longDate, measureNoun, verb } from "@/lib/engine/decide-by";
 import { daysBetween, type FeedItem } from "@/lib/engine/feed";
 import { localReach } from "@/lib/engine/next-steps";
-import type { Profile } from "@/lib/engine/profile";
+import { canAskInCard, type Profile } from "@/lib/engine/profile";
 import type { Card } from "@/lib/engine/types";
+import { Cover, DocTile } from "./covers";
 import { Glyph } from "./icons";
-import { cardDomId, MeasureCard } from "./MeasureCard";
-import type { SheetView } from "./ProfileSheet";
 import { FOCUS, Tag } from "./ui";
-
-/** Re-sort with a view transition where the browser has one and motion is allowed. */
-function withTransition(fn: () => void) {
-  const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (doc.startViewTransition && !reduce) doc.startViewTransition(() => flushSync(fn));
-  else fn();
-}
 
 export function DocumentView({
   item,
   today,
   profile,
-  setProfile,
   town,
   onBack,
-  onOpenProfile,
+  onOpenMeasure,
 }: {
   item: FeedItem;
   today: string;
   profile: Profile;
-  setProfile: (p: Profile) => void;
   town?: string;
   onBack: () => void;
-  onOpenProfile: (v: SheetView) => void;
+  onOpenMeasure: (measureId: string) => void;
 }) {
   const { doc, cards, touches, total } = item;
   const noun = measureNoun(doc.docType, total);
   const localCards = doc.place.kind === "state" ? cards.filter((c) => localReach(c.measure.id)) : [];
-  const update = (p: Profile) => withTransition(() => setProfile(p));
   const d = doc.decideBy;
   const days = d ? daysBetween(today, d.date) : undefined;
   const placeLabel = doc.place.kind === "state" ? "State" : doc.place.name;
@@ -52,9 +39,7 @@ export function DocumentView({
     { id: "everyone", title: "Applies to everyone", cards: cards.filter((c) => c.relevance === "everyone" && !c.onYourList) },
   ];
   const quiet = cards.filter((c) => c.relevance === "probably_not" && !c.onYourList);
-  const card = (c: Card) => (
-    <MeasureCard key={c.measure.id} card={c} documentId={doc.id} profile={profile} update={update} townName={town} onOpenProfile={onOpenProfile} />
-  );
+  const card = (c: Card) => <DecisionRow key={c.measure.id} card={c} profile={profile} ballot={doc.docType === "ballot"} onOpen={() => onOpenMeasure(c.measure.id)} />;
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 pb-16 sm:px-6">
@@ -68,13 +53,24 @@ export function DocumentView({
         </button>
       </nav>
 
-      <header className="mt-2">
-        <div className="flex flex-wrap gap-2">
+      <header className="mt-2 flex flex-col items-center text-center">
+        <DocTile docType={doc.docType} size={88} />
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
           <Tag>{placeLabel}</Tag>
           <Tag>{DOC_TYPE_LABEL[doc.docType]}</Tag>
         </div>
         <h1 className="mt-3 text-title">{doc.title}</h1>
         {doc.docType === "ballot" && <p className="mt-1 text-body text-muted-foreground">Here is your ballot, sorted by your answers.</p>}
+        {doc.source.url && (
+          <a
+            href={doc.source.url}
+            target="_blank"
+            rel="noreferrer"
+            className={`mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-surface-muted px-5 text-body font-semibold hover:bg-border ${FOCUS}`}
+          >
+            Official source <Glyph name="external" size={16} />
+          </a>
+        )}
       </header>
 
       {/* The event */}
@@ -111,7 +107,7 @@ export function DocumentView({
         )}
       </section>
 
-      {localCards.length > 0 && <TownReach town={town} cards={localCards} />}
+      {localCards.length > 0 && <TownReach town={town} cards={localCards} onOpen={onOpenMeasure} />}
 
       {groups.map(
         (g) =>
@@ -123,7 +119,7 @@ export function DocumentView({
                 </h2>
                 {g.note && <p className="hidden text-small text-muted-foreground sm:block">{g.note}</p>}
               </div>
-              <div className="space-y-4">{g.cards.map(card)}</div>
+              <ul className="divide-y divide-border">{g.cards.map(card)}</ul>
             </section>
           ),
       )}
@@ -139,7 +135,7 @@ export function DocumentView({
             </span>
           </summary>
           <p className="mt-3 px-1 text-small text-muted-foreground">Nothing in your answers points at these. They are still part of this decision.</p>
-          <div className="mt-3 space-y-4">{quiet.map(card)}</div>
+          <ul className="mt-1 divide-y divide-border">{quiet.map(card)}</ul>
         </details>
       )}
 
@@ -201,7 +197,7 @@ export function MeasureDots({ cards, prefix }: { cards: Card[]; prefix: string }
 }
 
 /** State measures with a town-level effect. Each line is a cited sentence on its card. */
-function TownReach({ town, cards }: { town?: string; cards: Card[] }) {
+function TownReach({ town, cards, onOpen }: { town?: string; cards: Card[]; onOpen: (measureId: string) => void }) {
   return (
     <section aria-labelledby="h-town" className="mt-10 scroll-mt-16">
       <h2 id="h-town" className="text-title">
@@ -210,16 +206,38 @@ function TownReach({ town, cards }: { town?: string; cards: Card[] }) {
       <ul className="mt-3 divide-y divide-border rounded-lg bg-surface px-5 shadow-card">
         {cards.map((c) => (
           <li key={c.measure.id}>
-            <a href={`#${cardDomId(c.measure)}`} className={`flex min-h-12 gap-3 rounded-sm py-3 hover:bg-surface-muted/60 ${FOCUS}`}>
+            <button type="button" onClick={() => onOpen(c.measure.id)} className={`flex min-h-12 w-full gap-3 rounded-sm py-3 text-left hover:bg-surface-muted/60 ${FOCUS}`}>
               <span className="mt-0.5 w-8 shrink-0 font-mono text-small text-muted-foreground">Q{c.measure.number}</span>
               <span className="flex-1">
                 <span className="block text-body font-semibold">{c.measure.title}</span>
                 <span className="block text-small text-muted-foreground">{localReach(c.measure.id, town)!.text}</span>
               </span>
-            </a>
+            </button>
           </li>
         ))}
       </ul>
     </section>
+  );
+}
+
+/** A measure as a list row: cover thumbnail, title, first sentence in the reading face, status. */
+function DecisionRow({ card, profile, ballot, onOpen }: { card: Card; profile: Profile; ballot: boolean; onOpen: () => void }) {
+  const m = card.measure;
+  const asks = card.pendingQuestions.some((f) => canAskInCard(profile, f));
+  return (
+    <li>
+      <button type="button" onClick={onOpen} className={`flex w-full gap-4 rounded-md py-4 text-left hover:bg-surface-muted/60 ${FOCUS}`}>
+        <Cover measure={m} label={`${ballot ? "Q" : "#"}${m.number}`} size={22} className="size-16 shrink-0 rounded-md [&>span]:left-2 [&>span]:top-1 [&>span]:text-body [&>span]:font-semibold" />
+        <span className="min-w-0 flex-1 space-y-1">
+          <span className="block text-body font-semibold">{m.title}</span>
+          {card.why[0] && <span className="line-clamp-2 block font-[family-name:var(--font-serif)] text-small text-muted-foreground">{card.why[0].text}</span>}
+          <span className="flex flex-wrap items-center gap-2 pt-0.5">
+            {card.relevance === "touches" && <Tag pop="accent">Touches you</Tag>}
+            {card.onYourList && <Tag>On your list</Tag>}
+            {asks && <span className="text-small text-muted-foreground">One question sorts this</span>}
+          </span>
+        </span>
+      </button>
+    </li>
   );
 }

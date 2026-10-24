@@ -8,9 +8,10 @@ import { decidedLine, decideByLine, decideByRelative, DOC_TYPE_LABEL, measureNou
 import type { Feed, FeedItem } from "@/lib/engine/feed";
 import { nextItem, personalization, type ChecklistItem } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
-import type { Provenance } from "@/lib/engine/types";
+import type { Card, Provenance } from "@/lib/engine/types";
 import { LIFE_AREAS } from "@/lib/vocab";
 import { AvatarRing } from "./AvatarRing";
+import { Cover, DocTile } from "./covers";
 import { MeasureDots } from "./DocumentView";
 import { Glyph } from "./icons";
 import { itemView, viewForPart, type SheetView } from "./ProfileSheet";
@@ -31,6 +32,7 @@ export function Home({
   profile,
   remember,
   onOpenDoc,
+  onOpenMeasure,
   onOpenProfile,
   onForget,
   nudgeDismissed,
@@ -42,6 +44,7 @@ export function Home({
   profile: Profile;
   remember: boolean;
   onOpenDoc: (id: string) => void;
+  onOpenMeasure: (docId: string, measureId: string) => void;
   onOpenProfile: (v: SheetView) => void;
   onForget: () => void;
   nudgeDismissed: boolean;
@@ -61,26 +64,39 @@ export function Home({
   const hasTownDocs = feed.items.some((i) => i.scope === "town");
   const up = feed.upNext;
 
+  // Decisions, one level below documents: what touches you, then what you follow.
+  const entries = (pick: (c: Card) => boolean) => upcoming.flatMap((item) => item.cards.filter(pick).map((card) => ({ item, card })));
+  const touching = entries((c) => c.relevance === "touches");
+  const listed = entries((c) => c.relevance !== "touches" && c.onYourList);
+  const everyone = touching.length + listed.length === 0 ? entries((c) => c.relevance === "everyone") : [];
+
   return (
     <div className="mx-auto w-full max-w-5xl px-4 pb-16 pt-4 sm:px-6 lg:pt-8">
-      {/* Header: town, line, avatar with its ring */}
-      <header className="flex items-start justify-between gap-4">
-        <div className="min-w-0 pt-2">
-          <p className="text-title">{town ?? "Massachusetts"}</p>
-          <p className="text-body text-muted-foreground">What is being decided near you</p>
+      {/* Header: the person's page. Avatar with its ring, town, profile button. */}
+      <header className="flex flex-col items-center pt-4 text-center">
+        <AvatarRing
+          parts={parts}
+          percent={meter.percent}
+          size={120}
+          onFigure={() => onOpenProfile({ kind: "list" })}
+          onPart={(p) => onOpenProfile(viewForPart(p))}
+        />
+        <p className="mt-2 text-title">{town ?? "Massachusetts"}</p>
+        <p className="text-body text-muted-foreground">What is being decided near you</p>
+        <div className="mt-3 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onOpenProfile({ kind: "list" })}
+            className={`min-h-11 rounded-full bg-surface-muted px-5 text-body font-semibold hover:bg-border ${FOCUS}`}
+          >
+            Your profile
+          </button>
           {remember && (
-            <button type="button" onClick={onForget} className={`mt-1 min-h-10 rounded-sm text-small font-semibold text-muted-foreground hover:text-foreground ${FOCUS}`}>
+            <button type="button" onClick={onForget} className={`min-h-11 rounded-full px-4 text-small font-semibold text-muted-foreground hover:text-foreground ${FOCUS}`}>
               Forget me
             </button>
           )}
         </div>
-        <AvatarRing
-          parts={parts}
-          percent={meter.percent}
-          size={84}
-          onFigure={() => onOpenProfile({ kind: "list" })}
-          onPart={(p) => onOpenProfile(viewForPart(p))}
-        />
       </header>
 
       {nudge && <Nudge item={nudge} onOpen={() => onOpenProfile(itemView(nudge))} onDismiss={onDismissNudge} />}
@@ -112,14 +128,27 @@ export function Home({
         ))}
       </div>
 
+      {touching.length > 0 && (
+        <Carousel title="Touches you" sub="From your answers" entries={touching} onOpen={onOpenMeasure} />
+      )}
+      {listed.length > 0 && <Carousel title="On your list" sub="Subjects you follow" entries={listed} onOpen={onOpenMeasure} />}
+      {everyone.length > 0 && (
+        <Carousel title="Applies to everyone" sub="Answer a few questions to sort these" entries={everyone} onOpen={onOpenMeasure} />
+      )}
+
       {upcoming.length > 0 && (
-        <ul className="mt-4 grid gap-3 md:grid-cols-2">
-          {upcoming.map((i) => (
-            <li key={i.doc.id}>
-              <FeedCard item={i} today={today} onOpen={() => onOpenDoc(i.doc.id)} />
-            </li>
-          ))}
-        </ul>
+        <section aria-labelledby="h-docs" className="mt-10">
+          <h2 id="h-docs" className="text-title">
+            Documents
+          </h2>
+          <ul className="mt-2 divide-y divide-border">
+            {upcoming.map((i) => (
+              <li key={i.doc.id}>
+                <FeedRow item={i} today={today} onOpen={() => onOpenDoc(i.doc.id)} />
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {scope !== "state" && !hasTownDocs && (
@@ -165,10 +194,10 @@ export function Home({
               <Glyph name="chevron" />
             </span>
           </summary>
-          <ul className="mt-3 grid gap-3 md:grid-cols-2">
+          <ul className="mt-2 divide-y divide-border">
             {decided.map((i) => (
               <li key={i.doc.id}>
-                <FeedCard item={i} today={today} onOpen={() => onOpenDoc(i.doc.id)} />
+                <FeedRow item={i} today={today} onOpen={() => onOpenDoc(i.doc.id)} />
               </li>
             ))}
           </ul>
@@ -207,41 +236,84 @@ function UpNext({ item, today, onOpen }: { item: FeedItem; today: string; onOpen
   );
 }
 
-function FeedCard({ item, today, onOpen }: { item: FeedItem; today: string; onOpen: () => void }) {
+/** A document as a reading-list row: tile, title, decide-by meta, touches, preview. */
+function FeedRow({ item, today, onOpen }: { item: FeedItem; today: string; onOpen: () => void }) {
   const { doc } = item;
   const d = doc.decideBy;
   const trust = TRUST[doc.provenance];
+  const meta = [item.scope === "state" ? "State" : doc.place.name, DOC_TYPE_LABEL[doc.docType]];
+  if (d) meta.push(item.status === "decided" ? decidedLine(d) : decideByLine(d) + (d.date === today ? ", today" : ""));
   return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className={`flex h-full w-full flex-col gap-2 rounded-lg bg-surface p-5 text-left shadow-card transition-colors duration-(--duration) ease-nine hover:bg-surface-muted/50 ${FOCUS}`}
-    >
-      <span className="flex flex-wrap gap-2">
-        <Tag>{item.scope === "state" ? "State" : doc.place.name}</Tag>
-        <Tag>{DOC_TYPE_LABEL[doc.docType]}</Tag>
-      </span>
-      <span className="text-body font-semibold">{doc.title}</span>
-      {d && (
-        <span className="text-small text-muted-foreground">
-          {item.status === "decided" ? decidedLine(d) : decideByLine(d)}
-          {item.status === "upcoming" && d.date === today ? ", today" : ""}
+    <button type="button" onClick={onOpen} className={`flex w-full gap-4 rounded-md py-4 text-left hover:bg-surface-muted/60 ${FOCUS}`}>
+      <DocTile docType={doc.docType} />
+      <span className="min-w-0 flex-1 space-y-1">
+        <span className="line-clamp-2 block text-body font-semibold">{doc.title}</span>
+        <span className="block text-small text-muted-foreground">{meta.join(" · ")}</span>
+        {item.topTouching && <span className="line-clamp-1 block font-[family-name:var(--font-serif)] text-small text-muted-foreground">Including: {item.topTouching}</span>}
+        <span className="flex flex-wrap items-center gap-2 pt-1">
+          {item.touches > 0 ? (
+            <Tag pop="accent">
+              {item.touches} of {item.total} touch you
+            </Tag>
+          ) : (
+            <span className="text-small text-muted-foreground">Nothing in your answers points here yet</span>
+          )}
+          <Tag pop={trust.pop}>{trust.label}</Tag>
         </span>
-      )}
-      <span>
-        {item.touches > 0 ? (
-          <Tag pop="accent">
-            {item.touches} of {item.total} touch you
-          </Tag>
-        ) : (
-          <span className="text-small text-muted-foreground">Nothing in your answers points here yet</span>
-        )}
-      </span>
-      {item.topTouching && <span className="text-small">Including: {item.topTouching}</span>}
-      <span className="mt-auto pt-1">
-        <Tag pop={trust.pop}>{trust.label}</Tag>
       </span>
     </button>
+  );
+}
+
+/** A horizontal row of decisions with covers. Snaps card by card; scrolls by touch or keyboard. */
+function Carousel({
+  title,
+  sub,
+  entries,
+  onOpen,
+}: {
+  title: string;
+  sub: string;
+  entries: { item: FeedItem; card: Card }[];
+  onOpen: (docId: string, measureId: string) => void;
+}) {
+  const id = `h-${title.toLowerCase().replace(/\W+/g, "-")}`;
+  return (
+    <section aria-labelledby={id} className="mt-8">
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 id={id} className="text-title">
+          {title}
+        </h2>
+        <span className="text-small text-muted-foreground">{entries.length}</span>
+      </div>
+      <p className="text-small text-muted-foreground">{sub}</p>
+      <ul className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:px-6 [scrollbar-width:none]">
+        {entries.map(({ item, card }) => {
+          const m = card.measure;
+          const ballot = item.doc.docType === "ballot";
+          return (
+            <li key={`${item.doc.id}:${m.id}`} className="w-64 shrink-0 snap-start sm:w-72">
+              <button
+                type="button"
+                onClick={() => onOpen(item.doc.id, m.id)}
+                className={`flex h-full w-full flex-col overflow-hidden rounded-lg bg-surface text-left shadow-card transition-transform duration-(--duration) ease-nine hover:-translate-y-0.5 ${FOCUS}`}
+              >
+                <Cover measure={m} label={`${ballot ? "Q" : "#"}${m.number}`} size={44} className="h-28 w-full" />
+                <span className="flex flex-1 flex-col gap-1 p-4">
+                  <span className="text-small text-muted-foreground">
+                    {item.scope === "state" ? "State" : item.doc.place.name} {DOC_TYPE_LABEL[item.doc.docType].toLowerCase()}
+                  </span>
+                  <span className="line-clamp-2 text-body font-semibold">{m.title}</span>
+                  {card.why[0] && (
+                    <span className="line-clamp-3 font-[family-name:var(--font-serif)] text-small text-muted-foreground">{card.why[0].text}</span>
+                  )}
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
 

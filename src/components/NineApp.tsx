@@ -10,6 +10,7 @@ import type { DocumentData } from "@/lib/engine/types";
 import { DocumentView } from "./DocumentView";
 import { FirstRun } from "./FirstRun";
 import { Home } from "./Home";
+import { MeasureView } from "./MeasureView";
 import { ProfileSheet, type SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { useNine } from "./useNine";
@@ -18,11 +19,16 @@ import { useNine } from "./useNine";
 // (task 17.2) is fetched whole; buildFeed filters by state and town locally.
 const DOCS: DocumentData[] = [ballot as unknown as DocumentData];
 
+type View = { kind: "feed" } | { kind: "doc"; docId: string } | { kind: "measure"; docId: string; measureId: string; from: "feed" | "doc" };
+
+const viewKey = (v: View) => (v.kind === "feed" ? "feed" : v.kind === "doc" ? `doc:${v.docId}` : `m:${v.measureId}`);
+
 export function NineApp() {
   const { loaded, today, profile, setProfile, preferences, setPreferences, canStore, forget } = useNine();
   const [sheet, setSheet] = useState<SheetView | null>(null);
-  const [openDocId, setOpenDocId] = useState<string | null>(null);
-  const feedScroll = useRef(0);
+  // Where the person is: the feed, one document, or one measure read like an article.
+  const [view, setView] = useState<View>({ kind: "feed" });
+  const scrolls = useRef<Record<string, number>>({});
   // Session-only flags: never stored, never counted by the meter.
   const [nudgeDismissed, setNudgeDismissed] = useState(false);
   const [savedBeyondTown, setSavedBeyondTown] = useState(false);
@@ -45,46 +51,69 @@ export function NineApp() {
     );
   }
 
-  const openItem = openDocId ? feed.items.find((i) => i.doc.id === openDocId) : undefined;
+  // Leave a page remembering its scroll; arriving at a new page starts at the top,
+  // returning to an earlier one restores where the person was.
+  const go = (next: View, restore = false) => {
+    scrolls.current[viewKey(view)] = window.scrollY;
+    flushSync(() => setView(next));
+    window.scrollTo({ top: restore ? (scrolls.current[viewKey(next)] ?? 0) : 0 });
+  };
+  const town = townName(profile.townId);
+  const docItem = view.kind !== "feed" ? feed.items.find((i) => i.doc.id === view.docId) : undefined;
+  const card = view.kind === "measure" ? docItem?.cards.find((c) => c.measure.id === view.measureId) : undefined;
+
+  let page;
+  if (view.kind === "measure" && docItem && card) {
+    const back: View = view.from === "doc" ? { kind: "doc", docId: view.docId } : { kind: "feed" };
+    page = (
+      <MeasureView
+        key={view.measureId}
+        item={docItem}
+        card={card}
+        profile={profile}
+        setProfile={setProfile}
+        town={town}
+        backLabel={view.from === "doc" ? "Back to the document" : "Back to all decisions"}
+        onBack={() => go(back, true)}
+        onOpenProfile={setSheet}
+      />
+    );
+  } else if (view.kind === "doc" && docItem) {
+    page = (
+      <DocumentView
+        item={docItem}
+        today={today}
+        profile={profile}
+        town={town}
+        onBack={() => go({ kind: "feed" }, true)}
+        onOpenMeasure={(measureId) => go({ kind: "measure", docId: docItem.doc.id, measureId, from: "doc" })}
+      />
+    );
+  } else {
+    page = (
+      <Home
+        feed={feed}
+        today={today}
+        profile={profile}
+        remember={preferences.remember}
+        onOpenDoc={(docId) => go({ kind: "doc", docId })}
+        onOpenMeasure={(docId, measureId) => go({ kind: "measure", docId, measureId, from: "feed" })}
+        onOpenProfile={setSheet}
+        onForget={() => {
+          forget();
+          setSavedBeyondTown(false);
+          setRememberNotNow(false);
+          setView({ kind: "feed" });
+        }}
+        nudgeDismissed={nudgeDismissed}
+        onDismissNudge={() => setNudgeDismissed(true)}
+      />
+    );
+  }
 
   return (
     <>
-      {openItem ? (
-        <DocumentView
-          item={openItem}
-          today={today}
-          profile={profile}
-          setProfile={setProfile}
-          town={townName(profile.townId)}
-          onOpenProfile={setSheet}
-          onBack={() => {
-            // Render the feed first, then return to where the person was in it.
-            flushSync(() => setOpenDocId(null));
-            window.scrollTo({ top: feedScroll.current });
-          }}
-        />
-      ) : (
-        <Home
-          feed={feed}
-          today={today}
-          profile={profile}
-          remember={preferences.remember}
-          onOpenDoc={(id) => {
-            feedScroll.current = window.scrollY;
-            setOpenDocId(id);
-            window.scrollTo({ top: 0 });
-          }}
-          onOpenProfile={setSheet}
-          onForget={() => {
-            forget();
-            setSavedBeyondTown(false);
-            setRememberNotNow(false);
-            setOpenDocId(null);
-          }}
-          nudgeDismissed={nudgeDismissed}
-          onDismissNudge={() => setNudgeDismissed(true)}
-        />
-      )}
+      {page}
       {sheet && (
         <ProfileSheet
           key={JSON.stringify(sheet)}
