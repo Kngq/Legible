@@ -28,7 +28,7 @@ export function PlantLab() {
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
       <p className="text-small font-semibold uppercase tracking-wide text-muted-foreground">Development preview</p>
-      <h1 className="mt-1 font-display text-headline">Your little plant</h1>
+      <h1 className="mt-1 font-display text-headline">Your civic journey</h1>
       <p className="mt-2 max-w-prose text-body text-muted-foreground">
         Hover to lean, click to tap. Counts here are preview data and never shown in production.
       </p>

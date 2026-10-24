@@ -1,6 +1,6 @@
 "use client";
 
-// "Your growth story": the plant's journey as a short illustrated timeline, one
+// "Your journey" (the Growth Story): the plant's journey as a short illustrated timeline, one
 // entry per stage reached, then a quiet look at the next stage (or a closing
 // note once it blooms). Milestones and totals only: never a list of clicks.
 // Reads the same useGrowth source and stage definitions as the plant itself.
@@ -27,8 +27,12 @@ export function GrowthStory() {
 
   return (
     <div>
-      <h3 className="font-display text-feature">Your growth story</h3>
+      <h3 className="font-display text-feature">Your journey</h3>
       <p className="mt-1 text-body text-muted-foreground">Every little step adds up.</p>
+      {/* Growth counts decisions explored and official sources opened, nothing else. */}
+      <p className="mt-3 text-small text-muted-foreground">
+        Your plant grows as you explore decisions and open official sources. Following issues shapes what you see, but does not grow your plant.
+      </p>
 
       {g.preview && <PreviewControls choice={g.choice} />}
 
@@ -38,7 +42,7 @@ export function GrowthStory() {
       </div>
 
       <p className="mb-16 mt-8 border-t border-border pt-4 text-small text-muted-foreground sm:mb-0">
-        Your growth story is private to you. It notes milestones and totals, never a list of what you clicked, and is never shared.
+        Your journey is private to you. It notes milestones and totals, never a list of what you clicked, and is never shared.
       </p>
     </div>
   );
@@ -88,7 +92,7 @@ function Timeline({ history, stage, enter }: { history: GrowthHistory; stage: Gr
         </motion.li>
       ) : (
         <motion.li {...enter(items.length)} className="mt-1 rounded-lg bg-surface px-4 py-5 text-center shadow-card">
-          <p className="font-display text-[1.25rem] leading-tight">Your little plant is in full bloom.</p>
+          <p className="font-display text-[1.25rem] leading-tight">Your plant is in full bloom.</p>
           <p className="mt-1 text-small text-muted-foreground">Thank you for staying curious about the decisions around you. Your story keeps going whenever you explore.</p>
         </motion.li>
       )}

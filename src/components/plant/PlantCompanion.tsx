@@ -1,6 +1,6 @@
 "use client";
 
-// "Your little plant": the plant at the top of Civic Profile, with its totals and
+// "Your civic journey": the plant at the top of Civic Profile, with its totals and
 // the way into the Growth Story. Stage and totals come from useGrowth, the same
 // source as the header avatar. Counts show only when a history exists; nothing
 // here invents activity.
@@ -44,17 +44,17 @@ export function PlantCompanion({
   return (
     <section aria-labelledby="plant-h" className="-mt-3 flex flex-col items-center text-center">
       <CivicPlant stage={g.stage} size={plantSize} signal={signal} className="cursor-pointer select-none" />
-      <h3 id="plant-h" className="mt-1 font-display text-title font-normal">
-        Your little plant
+      <h3 id="plant-h" className="mt-1 font-display text-[1.25rem] font-normal leading-tight">
+        Your civic journey
       </h3>
-      <p className="mt-0.5 text-small text-muted-foreground">Growing with everything you explore.</p>
+      <p className="mt-1 text-small text-muted-foreground">Every decision you explore helps your plant grow.</p>
       {onSeeGrowth && (
         <button
           type="button"
           onClick={onSeeGrowth}
           className={`mt-1 inline-flex min-h-10 items-center gap-1 rounded-md px-2 text-small font-semibold text-primary underline-offset-4 hover:underline ${FOCUS}`}
         >
-          See your growth <span aria-hidden="true">→</span>
+          See your journey <span aria-hidden="true">→</span>
         </button>
       )}
       {totals && (
