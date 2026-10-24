@@ -17,63 +17,79 @@ import { Button, FOCUS } from "./ui";
 
 /**
  * The onboarding questions, in order. The town is required and first; the rest
- * are optional, each a "pick all that apply" over a small set of life facts that
- * already drive the "Touches you" meter. Each screen maps directly to fact tags
- * on ballot questions and warrant articles — nothing is collected that does not
- * surface an article.
+ * are optional. A screen over several facts is "pick all that apply"; a screen
+ * over one fact is a yes/no pair, with labels here so both answers read the same
+ * way. Labels are display only: answers are stored as fact ids and booleans, so
+ * rewording never touches saved profiles. Each screen maps directly to fact tags
+ * on ballot questions and warrant articles; nothing is collected that does not
+ * surface an article. Hints say what answering gets you, in one sentence.
  */
 const QUESTIONS: (
-  | { kind: "name"; ask: string; hint?: string }
-  | { kind: "town"; ask: string }
-  | { kind: "facts"; ask: string; hint?: string; facts: FactId[] }
+  | { kind: "name"; ask: string; hint: string }
+  | { kind: "town"; ask: string; hint: string }
+  | { kind: "facts"; ask: string; hint: string; facts: FactId[]; yes?: string; no?: string }
 )[] = [
   {
     kind: "name",
     ask: "What can we call you?",
-    hint: "Just for a friendly hello. It stays in this browser and is never sent.",
+    hint: "Just for a friendly hello. Your name never leaves this browser.",
   },
-  { kind: "town", ask: "What's your address or ZIP?" },
+  {
+    kind: "town",
+    ask: "Which city or town do you live in?",
+    hint: "We'll show you what's being decided where you live.",
+  },
   {
     kind: "facts",
-    ask: "Which of these fits your home?",
-    hint: "Decides which property tax, zoning, and housing questions touch you.",
+    ask: "Which of these describe your home?",
+    hint: "We'll point out housing, zoning, and property tax decisions that touch you.",
     facts: ["rents", "owns", "lives_with_family"],
   },
   {
     kind: "facts",
     ask: "Do you have kids in the public schools?",
-    hint: "Surfaces school budget and school building questions.",
+    hint: "We'll point out decisions about school budgets and buildings.",
     facts: ["kids_in_schools"],
+    yes: "Yes, I have kids in public school",
+    no: "No, I don't have kids in public school",
   },
   {
     kind: "facts",
-    ask: "How do you mostly get around?",
-    hint: "Surfaces road, transit, parking, and bike-lane questions.",
+    ask: "How do you get around?",
+    hint: "We'll point out decisions about roads, transit, parking, and bike lanes.",
     facts: ["drives", "rides_transit"],
   },
   {
     kind: "facts",
     ask: "Do you run a business in town?",
-    hint: "Surfaces commercial tax, licensing, and zoning questions.",
+    hint: "We'll point out decisions about business taxes, licenses, and zoning.",
     facts: ["runs_business_here"],
+    yes: "Yes, I run a business in town",
+    no: "No, I don't run a business in town",
   },
   {
     kind: "facts",
     ask: "Do you work for the state?",
-    hint: "Surfaces public-sector pay, labor, and hiring questions.",
+    hint: "We'll point out decisions about public-sector pay and jobs.",
     facts: ["state_employee"],
+    yes: "Yes, I work for the state",
+    no: "No, I don't work for the state",
   },
   {
     kind: "facts",
     ask: "Are you registered to vote at your current address?",
-    hint: "Surfaces registration deadlines and voting-access questions.",
+    hint: "We'll show you voting deadlines and registration information that may be useful to you.",
     facts: ["registered_here"],
+    yes: "Yes, I'm registered at this address",
+    no: "No, I'm not registered at this address",
   },
   {
     kind: "facts",
     ask: "Do you usually vote in state primaries?",
-    hint: "Surfaces primary and election-process questions.",
+    hint: "We'll point out decisions about how primaries and elections run.",
     facts: ["votes_in_primaries"],
+    yes: "Yes, I usually vote in primaries",
+    no: "No, I don't usually vote in primaries",
   },
 ];
 const ONBOARDING = { kind: "onboarding" } as const;
@@ -209,17 +225,12 @@ export function FirstRun({
           Question {screen + 1} of {QUESTIONS.length}
           {q.kind === "facts" || q.kind === "name" ? " · optional" : ""}
         </p>
-        <h1 className="mt-1 text-title">{q.ask}</h1>
-        {q.kind === "name" && q.hint && (
-          <p className="mt-1 text-body text-muted-foreground">{q.hint}</p>
-        )}
-        {factScreen && (
-          <p className="mt-1 text-body text-muted-foreground">
-            {factScreen.facts.length > 1 ? "Pick all that apply. " : ""}
-            {factScreen.hint}
-          </p>
-        )}
-        <div className="mt-6 grid gap-3">
+        <h1 id="question-h" className="mt-1 text-title">{q.ask}</h1>
+        <p className="mt-1 text-body text-muted-foreground">
+          {factScreen && factScreen.facts.length > 1 ? "Pick all that apply. " : ""}
+          {q.hint}
+        </p>
+        <div role={factScreen ? "group" : undefined} aria-labelledby={factScreen ? "question-h" : undefined} className="mt-6 grid gap-3">
           {q.kind === "name" ? (
             <input
               type="text"
@@ -243,14 +254,13 @@ export function FirstRun({
                 {factScreen.facts.map((f) => (
                   <Option
                     key={f}
-                    icon={FACT_DEFS[f].avatarPart}
                     selected={picked.includes(f)}
                     onClick={() => {
                       setNone(false);
                       setPicked((cur) => (cur.includes(f) ? cur.filter((x) => x !== f) : [...cur, f]));
                     }}
                   >
-                    {FACT_DEFS[f].statement}
+                    {factScreen.yes ?? FACT_DEFS[f].statement}
                   </Option>
                 ))}
                 <Option
@@ -260,7 +270,7 @@ export function FirstRun({
                     setNone(!none);
                   }}
                 >
-                  {factScreen.facts.length > 1 ? "None of these" : "No"}
+                  {factScreen.no ?? "None of these"}
                 </Option>
               </>
             )

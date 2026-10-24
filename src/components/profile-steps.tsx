@@ -73,11 +73,11 @@ export function AreaStep({
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-title">{area.heading}</h1>
+        <h1 id="area-h" className="text-title">{area.heading}</h1>
         <p className="text-body font-semibold">Pick all that apply.</p>
         <p className="text-body text-muted-foreground">{area.why}</p>
       </div>
-      <div className="grid gap-3">
+      <div role="group" aria-labelledby="area-h" className="grid gap-3">
         {area.facts.map((f) => (
           <Option key={f} selected={picked.includes(f)} onClick={() => toggle(f)} icon={FACT_DEFS[f].avatarPart}>
             {FACT_DEFS[f].statement}
@@ -103,27 +103,29 @@ export function AreaStep({
   );
 }
 
+// Selection is one hairline plum border, a lavender wash, and a small mark on the
+// right. Keyboard focus keeps its own offset ring (FOCUS), so the two never blur.
 export function Option({ selected, onClick, icon, children }: { selected?: boolean; onClick: () => void; icon?: string; children: ReactNode }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`flex min-h-16 items-center gap-3 rounded-lg border-2 bg-surface px-4 text-left text-body font-semibold shadow-card transition-colors duration-(--duration) ease-legible hover:border-foreground ${FOCUS} ${
-        selected ? "border-foreground" : "border-transparent"
+      className={`flex min-h-14 items-center gap-3 rounded-lg border px-4 py-3 text-left text-body font-semibold transition-colors duration-(--duration) ease-legible ${FOCUS} ${
+        selected ? "border-primary bg-accent-soft" : "border-border bg-surface hover:border-muted-foreground"
       }`}
     >
       {icon && (
-        <span className={`flex size-10 shrink-0 items-center justify-center rounded-full ${selected ? "bg-accent text-accent-foreground" : "bg-surface-muted"}`}>
-          <Part name={icon} size={22} />
+        <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-muted text-muted-foreground">
+          <Part name={icon} size={18} />
         </span>
       )}
-      <span className="flex-1">{children}</span>
+      <span className="min-w-0 flex-1">{children}</span>
       <span
         aria-hidden="true"
-        className={`flex size-6 shrink-0 items-center justify-center rounded-full border-2 ${selected ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}
+        className={`flex size-5 shrink-0 items-center justify-center rounded-full border ${selected ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}
       >
-        {selected && <Glyph name="check" size={14} />}
+        {selected && <Glyph name="check" size={12} />}
       </span>
     </button>
   );
