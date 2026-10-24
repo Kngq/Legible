@@ -115,14 +115,28 @@ Owner hints: A is content and logic, B is screens. Stretch tasks are marked opti
     - _Requirements: 1.7, 6.2_
 
 - [ ] 17. Catalog and home feed (A builds catalog and counts, B builds the screen)
-  - [ ] 17.1 Write `public/catalog/ma.json` and a build step that regenerates it from `src/data` and `public/demo`
+  - [ ] 17.1 Add `docType` and `decideBy` to the document and catalog types; set them on the 2026 ballot (Voters, vote, 2026-11-03)
     - _Requirements: 20.1_
-  - [ ] 17.2 Fetch the catalog whole through `apiFetch` and filter by state and town in the browser
-    - _Requirements: 20.2, 10.1_
-  - [ ] 17.3 Build the feed with touch counts, trust labels, ordering, and the open-questions section
-    - _Requirements: 20.3, 20.4, 20.6_
-  - [ ] 17.4 Add uploaded and sample documents to the feed in memory, tagged by town
-    - _Requirements: 20.5_
+  - [ ] 17.2 Write the catalog builder that regenerates `public/catalog/ma.json` from `public/docs/` and the bundled ballot
+    - _Requirements: 20.1, 23.5_
+  - [ ] 17.3 Fetch the catalog whole through `apiFetch`, filter by state and town in the browser, and compute touches, preview, status, and order, with tests
+    - _Requirements: 20.2, 20.4_
+  - [ ] 17.4 Rebuild Home as the decisions feed: header with ring, nudge, Up next card, scope switch, feed cards, open questions, Decided group, empty-town state
+    - _Requirements: 20.3, 20.5, 20.6, 20.7, 20.9_
+  - [ ] 17.5 Move the current ballot page into a DocumentView opened from a feed card
+    - _Requirements: 20.3_
+  - [ ] 17.6 Add uploaded and sample documents to the feed in memory, tagged by town
+    - _Requirements: 20.8_
+
+- [ ] 20. Content pipeline (A)
+  - [ ] 20.1 Move the analyze prompt, schema, and call into `src/lib/analyze`, shared by the route and the script
+    - _Requirements: 23.2_
+  - [ ] 20.2 Write `scripts/ingest.ts` and `npm run ingest`: download, hash, extract, analyze, verify, write `public/docs/<id>.json`, rebuild the catalog
+    - _Requirements: 23.2, 23.3, 23.4, 23.5_
+  - [ ] 20.3 Pick two or three demo towns with a recent text PDF and an upcoming date; add them to `data/sources/ma.json` and run ingest
+    - _Requirements: 23.1_
+  - [ ] 20.4 Review one ingested document by hand and record it in `data/reviews/`
+    - _Requirements: 23.3_
 
 - [ ] 18. Reliability layer (A builds data and checks, B builds panels)
   - [ ] 18.1 Add `source.hash` and `pagesHash` to shipped and uploaded documents

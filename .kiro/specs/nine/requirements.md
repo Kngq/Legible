@@ -206,18 +206,33 @@ Out of scope for this build: any 3D map; accounts or server-side storage of prof
 2. THE SYSTEM SHALL support keyboard operation for every control, including the avatar badges and citation highlights.
 3. WHEN the user prefers reduced motion THE SYSTEM SHALL re-sort cards without animation.
 
-### Requirement 20: Home feed from a public catalog
+### Requirement 20: Home feed of decisions from a public catalog
 
-**User Story:** As a resident, I want the app to bring me the decisions being made around me, so that I do not have to know which documents exist.
+**User Story:** As a resident, I want my home screen to show what is being decided near me and when, sorted by where it meets my life, so that I can take part before each decision is made.
 
 #### Acceptance Criteria
 
-1. THE SYSTEM SHALL keep a public catalog of documents, each with an id, title, place (state, or one town), date, trust level, and the URL of its document JSON.
+1. THE SYSTEM SHALL keep a public catalog of documents, each with an id, title, place (state, or one town), document type, decide-by date with who decides and how, trust level, and the URL of its document JSON.
 2. WHEN the home feed loads THE SYSTEM SHALL fetch the whole catalog for Massachusetts and filter it in the browser to state documents plus documents whose town matches the profile, so that the chosen town is never sent to a server.
-3. THE SYSTEM SHALL show each feed entry with its title, date, trust level, and a locally computed line such as "3 of 9 touch you," and SHALL order entries by touches, then date.
-4. THE SYSTEM SHALL show an "Open questions for you" section listing facts that any feed document asks and the profile has not answered, answerable in place, and SHALL re-sort the feed when they change.
-5. THE SYSTEM SHALL list uploaded and sample documents in the same feed, tagged by town and labeled AI draft, kept in the browser only.
-6. THE SYSTEM SHALL phrase the feed as where the person's life meets what is being decided, and SHALL NOT phrase it as what the person ought to care about.
+3. THE SYSTEM SHALL show each feed item with its place, document type, title, a decide-by line such as "Town Meeting votes May 4," a locally computed line such as "3 of 14 touch you," a preview of the first touching measure, and its trust level.
+4. THE SYSTEM SHALL order upcoming items before decided ones; within upcoming, items that touch the user first, then the soonest decide-by date. Decided items SHALL be collapsed by default.
+5. THE SYSTEM SHALL feature the most pressing upcoming item in one large card at the top of the feed.
+6. THE SYSTEM SHALL show an "Open questions for you" section listing facts that any feed document asks and the profile has not settled, answerable in place, and SHALL re-sort the feed when they change.
+7. IF the catalog has no documents for the user's town THEN THE SYSTEM SHALL say so plainly and offer to upload a town document.
+8. THE SYSTEM SHALL list uploaded and sample documents in the same feed, tagged by town and labeled AI draft, kept in the browser only.
+9. THE SYSTEM SHALL phrase the feed as where the person's life meets what is being decided, SHALL state deadlines as facts, and SHALL NOT phrase it as what the person ought to care about or create urgency.
+
+### Requirement 23: Content pipeline
+
+**User Story:** As the team, we want to add real town and state documents to the catalog quickly, so that residents see decisions from their own town, each traceable to an official source.
+
+#### Acceptance Criteria
+
+1. THE SYSTEM SHALL build catalog documents only from a curated source list of official document URLs, each with its town, document type, title, and decide-by date.
+2. WHEN ingest runs THE SYSTEM SHALL download each source, record its hash, extract page text, draft measures with the same model, schema, and prompt as the analyze route, and verify every quote word for word.
+3. THE SYSTEM SHALL hide measures with failed quotes or banned words, SHALL NOT list a document with no verified measures, and SHALL label ingested documents AI draft until a person records a review.
+4. WHEN a source's hash changes THE SYSTEM SHALL create a new version and reset its review.
+5. THE SYSTEM SHALL regenerate the catalog from the ingested documents and the bundled ballot, and SHALL NOT send any profile data during ingest.
 
 ### Requirement 21: Trust and traceability
 

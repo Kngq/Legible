@@ -97,10 +97,20 @@ interface Measure {
 
 type TrustLevel = "reviewed" | "verified" | "ai_draft" | "flagged";
 
+type DocType = "ballot" | "warrant" | "budget" | "hearing" | "agenda" | "other";
+
+interface DecideBy {
+  date: string;           // ISO date the decision is made or input closes
+  who: string;            // "Voters", "Town Meeting", "City Council", "School Committee"
+  how: "vote" | "meeting" | "comment";   // ballot vote, body votes at a meeting, public comment closes
+}
+
 interface DocumentData {
   id: string;
   title: string;
   place: { kind: "state" | "town"; name: string; townId?: string };
+  docType: DocType;
+  decideBy?: DecideBy;
   date?: string;
   source: { name: string; url?: string; hash?: string };  // hash: SHA-256 of the source PDF
   pagesHash?: string;     // SHA-256 of the page text snapshot the quotes were checked against
@@ -116,6 +126,8 @@ interface CatalogEntry {
   id: string;
   title: string;
   place: { kind: "state" | "town"; name: string; townId?: string };
+  docType: DocType;
+  decideBy?: DecideBy;
   date?: string;
   trust: TrustLevel;
   url: string;            // document JSON, same origin
@@ -136,7 +148,9 @@ interface Profile {
 interface FeedEntry {
   entry: CatalogEntry;
   touches?: number;       // computed locally once the document JSON is loaded
+  topTouching?: string;   // short title of the first touching measure, for the card preview
   openQuestions: FactId[];
+  status: "upcoming" | "decided";   // from decideBy.date against the device clock
 }
 
 type Relevance = "touches" | "everyone" | "probably_not";
@@ -224,7 +238,7 @@ Pure template in the browser. Inputs are selected measure numbers and one factua
 
 - **Onboarding:** first run is hello and ZIP only. **ProfileSheet:** the avatar ring, the seven-item checklist, and one screen per life area and subjects, opened from the avatar.
 - **TownPicker:** type-ahead over a bundled list of 351 municipalities with aliases.
-- **Feed:** catalog entries for the person's state and town with touch counts, trust labels, and the open-questions section.
+- **Feed (Home):** header with avatar ring, one nudge, Up next card, scope switch, decision cards with place, type, decide-by line, touches, preview, and trust, open questions, and a collapsed Decided group. **DocumentView:** one document's measures as cards.
 - **ChatDock:** bottom-corner button and panel scoped to the open document or measure, citations on every sentence.
 - **TrustPanel and ChainView:** per-document trust summary, and the sentence-to-source chain opened from "How do we know this?"
 - **Ballot header:** avatar, document title, persona switcher, privacy panel button, "Remember on this device" and "Forget me."
@@ -362,11 +376,56 @@ Storage: one `localStorage` key, `nine.profile.v1`, holding `{ profile, preferen
 
 ## Home feed and catalog
 
-`public/catalog/ma.json` lists every document Nine ships, plus the sample town document. The feed fetches it whole through `apiFetch`, which logs "catalog, no profile data." Filtering runs in the browser: `place.kind === "state"` or `place.townId === profile.townId`. For each entry the feed loads the document JSON, runs `buildCards`, and shows the count of `touches` cards. Order: most touches first, then newest date. Uploaded documents are added to the feed in memory, tagged with the profile's town and labeled AI draft.
+Home is a feed of decisions, not a ballot page. Each item is one document: the state ballot, a Town Meeting warrant, a school budget, a zoning hearing. The 2026 ballot is one item among them. Opening an item shows its measures as cards (the document view: Touches you, On your list, Applies to everyone).
 
-"Open questions for you" is the union of `askFacts` across feed entries minus answered and declined facts, shown as the same three-way chips. Answering one re-runs `buildCards` for every loaded document.
+### How the feed is fetched, privately
 
-Copy rule: the feed heading is "Where your life meets what is being decided." Never "what you ought to care about."
+`public/catalog/ma.json` lists every document Nine has, for the whole state. The browser downloads the whole file through `apiFetch` (logged as "catalog, no profile data") and filters it locally: `place.kind === "state"` or `place.townId === profile.townId`. For each kept entry it loads the document JSON and runs `buildCards` locally to get `touches` and `topTouching`. The server never learns the town or any fact. Catalog and documents are static files, cacheable, and work offline after the first load.
+
+### Layout, top to bottom
+
+1. **Header.** Town name ("Somerville") and "What is being decided near you"; the avatar with its completion ring on the right.
+2. **Nudge.** At most one card, for `nextItem(profile)` (see Onboarding).
+3. **Up next.** One large violet card for the most pressing upcoming item: the soonest `decideBy` among items with touches, else the soonest overall. It shows the title, "Town Meeting votes in 12 days", "3 of 14 articles touch you", and the first touching title. Tap opens the document.
+4. **Scope switch.** Black-pill segmented control: All, State, and the town name.
+5. **Feed list.** One card per item:
+   - place tag (State, or the town) and document type ("Warrant", "Budget", "Ballot");
+   - title;
+   - decide-by line built from `decideBy`: "Voters decide Nov 3", "Town Meeting votes May 4", "Comments close Feb 10";
+   - the local touches line, "3 of 14 touch you" in an accent-soft tag, or "Nothing in your answers points here yet" in grey;
+   - preview "Including: Single-family homes on smaller lots" from `topTouching`;
+   - trust label (Reviewed, Verified, AI draft).
+6. **Open questions for you.** Facts that feed documents ask and the profile has not settled, as the same Pick-all screens, generic copy only. Answering re-runs `buildCards` for every loaded document.
+7. **Decided.** Items whose `decideBy.date` has passed, collapsed by default, kept for reference with "Decided May 4".
+
+**Order.** Upcoming before decided. Within upcoming: items with touches first, then soonest `decideBy`, then newest date. Items without `decideBy` sort after dated ones.
+
+**Empty town.** When the catalog has nothing for the town: "Nine does not have documents for Somerville yet." with "Upload a town document" (opens the upload panel) and a line naming the kinds that help: warrants, budgets, hearing notices. State items still show.
+
+**Uploaded documents** join the feed in memory, tagged with the profile's town and labeled AI draft, until the page is closed.
+
+Copy rule: the feed heading is "Where your life meets what is being decided." Never "what you ought to care about." Deadlines are stated as facts ("Town Meeting votes May 4"), never as urgency ("Act now").
+
+## Content pipeline
+
+Nothing in the browser crawls the web. The team runs an ingest script that turns public documents into catalog entries, with the same model, schema, and quote verification as the analyze route.
+
+**Sources.** `data/sources/ma.json` is a hand-curated list, one row per document: `{ id, townId?, docType, url, decideBy, title }`. URLs point to official PDFs on town, city, school, or state sites (clerk warrants, school committee budgets, planning board hearing notices). Curating the list is a person's job; Nine does not scrape arbitrary sites in this build.
+
+**`npm run ingest`** (`scripts/ingest.ts`), for each source:
+
+1. Download the PDF, record `source.hash` (SHA-256). Skip when the hash matches the last run.
+2. Extract page text with `pdfjs-dist` (same code as uploads). Stop with a clear error on a scanned PDF.
+3. Draft measures with the shared analyze module (`src/lib/analyze`, used by both the route and this script): `claude-opus-5`, structured output, untrusted-document system prompt, fixed vocabularies.
+4. Run `verifyMeasures`. Measures with a failed quote or a banned word go to `flagged` and are not shown. A document with zero verified measures is not listed.
+5. Write `public/docs/<id>.json` with `provenance: "ai_draft"`, `pagesHash`, `docType`, and `decideBy`.
+6. Regenerate `public/catalog/ma.json` from every file in `public/docs/` plus the bundled ballot.
+
+**Review.** A person who checks a document's quotes against the PDF adds `data/reviews/<id>.json` with `reviewedBy`. The next ingest flips the document to reviewed. A changed source hash creates a new version and resets review.
+
+**Schedule.** For the event, run once by hand before the demo for the chosen towns, and commit the output. Later, a daily scheduled CI job runs ingest and opens a pull request with the changes, so a person sees every new document before it ships.
+
+**Demo towns.** To be chosen by the team: two or three towns with a recent text PDF (a warrant or budget) and an upcoming date. Open item.
 
 ## Reliability layer
 
@@ -417,4 +476,5 @@ A ChatDock component mounts in the app layout, bottom right. It reads the curren
 
 - Built-in API citations are not used, because they cannot be combined with structured output. Quotes come back as JSON and the app verifies them.
 - Uploads send extracted text rather than PDF bytes, to stay under the request size cap and so that verification uses exactly what the model saw.
+- Documents enter the catalog through a curated source list and a team-run ingest script, not live crawling, so every document has a known official source and a person can see each one before it ships.
 - No 3D map in this build. Town context is a stretch, as a sourced number or a flat map.
