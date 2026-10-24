@@ -51,21 +51,24 @@ export function BriefCard({
     if (a.to.open === "doc") onOpenDoc(e.kind === "doc" ? e.item.doc.id : e.ballot!.doc.id);
     else if (civic) onOpenItem(civic.item.id);
   };
+  // Every primary button looks the same (label and a chevron), wherever it goes;
+  // the external mark is kept for the quieter secondary links.
+  const chevron = (
+    <span aria-hidden="true" className="-rotate-90">
+      <Glyph name="chevron" size={14} />
+    </span>
+  );
   const button = (a: Action, main: boolean) =>
     "href" in a.to ? (
       <a key={a.label} href={a.to.href} target="_blank" rel="noreferrer" className={main ? PRIMARY : `inline-flex min-h-11 items-center gap-1.5 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
         {a.label}
-        <Glyph name="external" size={14} />
+        {main ? chevron : <Glyph name="external" size={14} />}
         <span className="sr-only">(opens the official site)</span>
       </a>
     ) : (
       <button key={a.label} type="button" onClick={() => go(a)} className={main ? PRIMARY : `inline-flex min-h-11 items-center text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
         {a.label}
-        {main && (
-          <span aria-hidden="true" className="-rotate-90">
-            <Glyph name="chevron" size={14} />
-          </span>
-        )}
+        {main && chevron}
       </button>
     );
 
