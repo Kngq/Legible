@@ -29,4 +29,4 @@ Massachusetts residents preparing for an election or a town meeting, with ten mi
 
 ## Visual direction
 
-"Official booklet plus highlighter." Paper-toned background, serif display type, sans body, one highlighter-yellow accent for what touches you, single-line-weight pictograms. One easing curve around 400 ms, at most four type sizes, no gradients, no red or blue.
+"Official booklet plus highlighter," minimal and friendly. Paper background with white cards, bold geometric sans (Figtree) for display and body, soft grey pill buttons, large rounded corners, generous white space. One highlighter-yellow accent for what touches you; muted green and amber appear only on trust badges. Single-line-weight pictograms. One easing curve around 400 ms, at most four type sizes, no gradients, no red or blue. Tokens live in `src/app/globals.css`.

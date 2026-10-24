@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import ballot from "@/data/ballot-2026.json";
 import { onboardingFacts, personalization } from "./personalization";
-import { answerFact, confirmTopics, declineFact, emptyProfile, skipFact } from "./profile";
+import { answerFact, confirmTopics, declineFact, emptyProfile, skipFact, type Profile } from "./profile";
 import type { DocumentData } from "./types";
 
 const t0 = "2026-10-24T14:00:00.000Z";
@@ -20,7 +20,7 @@ describe("personalization meter", () => {
   });
 
   it("reaches 72% from onboarding alone, and 100% only after the three card questions", () => {
-    let p = { ...confirmTopics(emptyProfile(t0), t0), townId: "boston" };
+    let p: Profile = { ...confirmTopics(emptyProfile(t0), t0), townId: "boston" };
     for (const f of onboardingFacts(docs)) p = answerFact(p, f, false, ob, t0);
     expect(personalization(p, docs).percent).toBe(72);
     const card = { kind: "card", documentId: "ballot-2026", measureId: "x" } as const;

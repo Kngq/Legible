@@ -1,26 +1,128 @@
 @import "tailwindcss";
 
+/*
+ * Theme tokens. Minimal and friendly: mostly ink on paper and white cards,
+ * soft grey pills, large rounded corners, one highlighter accent that marks
+ * what touches you. Status colours are used only for trust badges.
+ * Product rules: no red or blue anywhere, no gradients, at most four type sizes.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces */
+  --background: #f6f6f3; /* paper: the page behind everything */
+  --foreground: #16161a; /* ink */
+  --surface: #ffffff; /* cards, panels, the onboarding sheet */
+  --surface-muted: #efefec; /* secondary buttons, chips, inputs */
+  --border: #e6e6e1; /* hairline dividers */
+  --muted-foreground: #6b6b70; /* body copy under headings, captions */
+
+  /* The one pop: highlighter */
+  --accent: #f2e94e; /* "Touches you", the meter fill, the primary highlight */
+  --accent-soft: #fbf7c4; /* highlighted quote background, selected chip */
+  --accent-foreground: #16161a; /* text on the accent: always ink */
+
+  /* Primary action: ink button, paper text */
+  --primary: #16161a;
+  --primary-foreground: #ffffff;
+
+  /* Status, for trust badges only */
+  --positive: #3f8f5a; /* reviewed, verified */
+  --positive-soft: #e3f1e7;
+  --caution: #b7791f; /* AI draft, flagged */
+  --caution-soft: #f8ecd6;
+
+  --ring: #16161a;
+
+  --card-shadow: 0 1px 2px rgb(22 22 26 / 0.04), 0 8px 24px rgb(22 22 26 / 0.06);
+
+  /* Motion: one curve */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --duration: 400ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #111113;
+    --foreground: #f2f2ee;
+    --surface: #1a1a1d;
+    --surface-muted: #26262a;
+    --border: #2e2e33;
+    --muted-foreground: #a1a1a6;
+
+    --accent: #ece35a;
+    --accent-soft: #3a3714;
+    --accent-foreground: #16161a;
+
+    --primary: #f2f2ee;
+    --primary-foreground: #111113;
+
+    --positive: #6fbf88;
+    --positive-soft: #1d3324;
+    --caution: #e0a64a;
+    --caution-soft: #3a2c14;
+
+    --ring: #f2f2ee;
+
+    --card-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.25);
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-positive: var(--positive);
+  --color-positive-soft: var(--positive-soft);
+  --color-caution: var(--caution);
+  --color-caution-soft: var(--caution-soft);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-figtree);
+  --font-display: var(--font-figtree);
   --font-mono: var(--font-geist-mono);
+
+  /* The four type sizes. Display is bold and tight, like the reference hero. */
+  --text-display: clamp(2.5rem, 6vw + 1rem, 4.5rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.03em;
+  --text-display--font-weight: 700;
+  --text-title: 1.5rem;
+  --text-title--line-height: 1.2;
+  --text-title--letter-spacing: -0.01em;
+  --text-title--font-weight: 600;
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.55;
+  --text-small: 0.8125rem;
+  --text-small--line-height: 1.4;
+
+  --shadow-card: var(--card-shadow);
+
+  --ease-nine: var(--ease);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Shape: same in both themes. rounded-sm/md/lg/xl/full. */
+@theme {
+  --radius-sm: 10px; /* chips, badges */
+  --radius-md: 14px; /* buttons, inputs */
+  --radius-lg: 20px; /* cards */
+  --radius-xl: 32px; /* hero panels, the onboarding sheet */
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration: 0ms;
+  }
 }
