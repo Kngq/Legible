@@ -23,6 +23,7 @@ import { LIFE_AREAS, type LifeAreaId, type TopicId } from "@/lib/vocab";
 import { useCursorCta } from "./CursorCta";
 import { Glyph, Part } from "./icons";
 import type { SheetView } from "./ProfileSheet";
+import { Reveal } from "./Reveal";
 import { FOCUS } from "./ui";
 import type { CardProps } from "./updates";
 
@@ -237,9 +238,9 @@ function WhyToggle({ open, onToggle, compact = false }: { open: boolean; onToggl
   );
 }
 
-function WhyBox({ relevance, onOpenProfile }: { relevance: Relevance; onOpenProfile: (v: SheetView) => void }) {
+function WhyBox({ open, relevance, onOpenProfile }: { open: boolean; relevance: Relevance; onOpenProfile: (v: SheetView) => void }) {
   return (
-    <div className="mt-2 animate-fade-in space-y-1 text-small text-muted-foreground">
+    <Reveal open={open} className="space-y-1 pt-2 text-small text-muted-foreground">
       {relevance.basis.map((b) => (
         <p key={b}>{b}</p>
       ))}
@@ -247,7 +248,7 @@ function WhyBox({ relevance, onOpenProfile }: { relevance: Relevance; onOpenProf
       <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={`relative z-10 min-h-9 ${ADD}`}>
         Update your profile
       </button>
-    </div>
+    </Reveal>
   );
 }
 
@@ -285,7 +286,7 @@ function FeaturedNote({ d, onOpenProfile }: { d: Decision; onOpenProfile: (v: Sh
         <WhyToggle open={why} onToggle={() => setWhy(!why)} compact />
       </div>
       <p className={`mt-1 ${strong ? "font-display text-[1.0625rem] italic leading-normal sm:text-lg" : "text-body"}`}>{r.text}</p>
-      {why && <WhyBox relevance={r} onOpenProfile={onOpenProfile} />}
+      <WhyBox open={why} relevance={r} onOpenProfile={onOpenProfile} />
     </div>
   );
 }
@@ -388,7 +389,7 @@ export function DecisionRow({ d, onOpenProfile }: { d: Decision; onOpenProfile: 
         </p>
         <h3 className="mt-0.5 text-[1.0625rem] font-semibold leading-snug sm:text-lg">{title}</h3>
         <RowRelevance d={d} why={why} onWhy={() => setWhy(!why)} onOpenProfile={onOpenProfile} />
-        {why && d.relevance && <WhyBox relevance={d.relevance} onOpenProfile={onOpenProfile} />}
+        {d.relevance && <WhyBox open={why} relevance={d.relevance} onOpenProfile={onOpenProfile} />}
         {source && (
           <a href={(source.to as { href: string }).href} target="_blank" rel="noreferrer" className={`relative z-10 ${LINK} min-h-9`}>
             {source.label}

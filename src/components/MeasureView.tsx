@@ -20,6 +20,7 @@ import { FullText } from "./FullText";
 import { Glyph } from "./icons";
 import { Draft, Sentences } from "./MeasureCard";
 import type { SheetView } from "./ProfileSheet";
+import { Reveal } from "./Reveal";
 import { Button, FOCUS } from "./ui";
 
 
@@ -170,13 +171,14 @@ export function MeasureView({
       <FullText measure={m} source={doc.source} />
 
       <section id="draft" className="mt-10 scroll-mt-20">
-        {drafting ? (
-          <Draft measure={m} />
-        ) : (
+        {!drafting && (
           <Button variant="secondary" onClick={() => setDrafting(true)}>
             Ask your legislator a factual question
           </Button>
         )}
+        <Reveal open={drafting}>
+          <Draft measure={m} />
+        </Reveal>
       </section>
 
       {related && related.length > 0 && onOpenItem && (

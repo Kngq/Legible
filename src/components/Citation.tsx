@@ -11,6 +11,7 @@ import type { Quote } from "@/lib/engine/types";
 import { Fingerprint } from "./FullText";
 import { Glyph } from "./icons";
 import { FOCUS, Tag } from "./ui";
+import { Reveal } from "./Reveal";
 
 const SERIF = "font-[family-name:var(--font-serif)]";
 const LABEL = "text-small font-semibold text-muted-foreground";
@@ -69,8 +70,9 @@ export function CitedLine({ s, src, onChain }: { s: PageSentence; src: CiteSourc
           <span className="font-normal text-muted-foreground">{open ? "Hide" : "Show the words"}</span>
         </button>
       )}
-      {open && q && (
-        <div className="animate-fade-in rounded-md bg-surface-muted px-4 py-3.5">
+      <Reveal open={open && Boolean(q)}>
+        {q && (
+        <div className="rounded-md bg-surface-muted px-4 py-3.5">
           <p className={LABEL}>Official text, word for word</p>
           <OfficialWords src={src} s={s} />
           <div className="mt-2.5 flex flex-wrap items-center gap-2">
@@ -84,7 +86,8 @@ export function CitedLine({ s, src, onChain }: { s: PageSentence; src: CiteSourc
             How do we know this?
           </button>
         </div>
-      )}
+        )}
+      </Reveal>
     </div>
   );
 }

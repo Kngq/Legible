@@ -10,6 +10,7 @@ import { DIRECTION_DEFS, FACT_DEFS, SENSITIVE_FACTS, TOPIC_DEFS, type FactId } f
 import { DirectionMark, Glyph } from "./icons";
 import { areaOf, type SheetView } from "./ProfileSheet";
 import { Button, FOCUS, Tag } from "./ui";
+import { Reveal } from "./Reveal";
 
 export function cardDomId(m: Measure) {
   return `card-${m.id}`;
@@ -174,8 +175,12 @@ export function MeasureCard({
         </div>
       </div>
 
-      {open === "text" && <OfficialText measure={m} />}
-      {open === "draft" && <Draft measure={m} />}
+      <Reveal open={open === "text"}>
+        <OfficialText measure={m} />
+      </Reveal>
+      <Reveal open={open === "draft"}>
+        <Draft measure={m} />
+      </Reveal>
     </article>
   );
 }
@@ -219,8 +224,9 @@ export function Sentences({ sentences, measure }: { sentences: WhySentence[]; me
           </button>
         </p>
       ))}
-      {q && (
-        <figure className="animate-fade-in rounded-md border border-border p-4">
+      <Reveal open={Boolean(q)}>
+        {q && (
+        <figure className="rounded-md border border-border p-4">
           <blockquote className="text-body">
             <mark className="bg-accent-soft text-foreground">&ldquo;{q.text}&rdquo;</mark>
           </blockquote>
@@ -232,7 +238,8 @@ export function Sentences({ sentences, measure }: { sentences: WhySentence[]; me
             {q.status !== "failed" && <Tag pop="positive">{q.status === "reviewed" ? "Reviewed" : "Found word for word"}</Tag>}
           </figcaption>
         </figure>
-      )}
+        )}
+      </Reveal>
     </div>
   );
 }
@@ -295,7 +302,7 @@ export function FactQuestion({
 export function OfficialText({ measure }: { measure: Measure }) {
   const { yes, no } = measure.outcomes;
   return (
-    <div className="mt-4 animate-fade-in space-y-3">
+    <div className="mt-4 space-y-3">
       {measure.kind === "referendum" && (
         <p className="text-small text-muted-foreground">This law is already in effect. A YES vote keeps it in place.</p>
       )}
@@ -336,7 +343,7 @@ export function Draft({ measure }: { measure: Measure }) {
   const [copied, setCopied] = useState(false);
   const words = wordCount(text);
   return (
-    <div className="mt-4 animate-fade-in space-y-3 rounded-md border border-border p-4">
+    <div className="mt-4 space-y-3 rounded-md border border-border p-4">
       <fieldset>
         <legend className="text-small font-semibold text-muted-foreground">Pick a factual question</legend>
         <div className="mt-2 flex flex-wrap gap-2">

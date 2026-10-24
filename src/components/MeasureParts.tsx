@@ -11,6 +11,7 @@ import type { Card, Measure } from "@/lib/engine/types";
 import { DIRECTION_DEFS, FACT_DEFS } from "@/lib/vocab";
 import { DirectionMark } from "./icons";
 import { FOCUS } from "./ui";
+import { Reveal } from "./Reveal";
 
 const SERIF = "font-[family-name:var(--font-serif)]";
 
@@ -52,8 +53,8 @@ export function WhatItDoes({ card, detailed = false }: { card: Card; detailed?: 
           <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className={`mt-1 inline-flex min-h-11 items-center gap-1.5 text-small font-semibold underline underline-offset-4 ${FOCUS}`}>
             {open ? "Hide the official summary" : "Read the official summary"}
           </button>
-          {open && (
-            <div className="mt-1 animate-fade-in rounded-md bg-surface-muted p-4">
+          <Reveal open={open}>
+            <div className="mt-1 rounded-md bg-surface-muted p-4">
               <p data-ask-official data-ask-locator={m.summary.locator} data-ask-page={m.summary.page} className={`text-body leading-relaxed ${SERIF}`}>
                 {m.summary.text}
               </p>
@@ -62,7 +63,7 @@ export function WhatItDoes({ card, detailed = false }: { card: Card; detailed?: 
                 {m.summary.page ? `, page ${m.summary.page}` : ""}, word for word
               </p>
             </div>
-          )}
+          </Reveal>
         </>
       )}
     </section>
