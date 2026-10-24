@@ -10,6 +10,8 @@ import { localReach, nextSteps } from "@/lib/engine/next-steps";
 import { answerFact, canAskInCard, clearFact, declineFact, skipFact, type Profile } from "@/lib/engine/profile";
 import type { Card, Quote } from "@/lib/engine/types";
 import { DIRECTION_DEFS, FACT_DEFS, SENSITIVE_FACTS, TOPIC_DEFS, type FactId } from "@/lib/vocab";
+import type { CivicCard } from "@/lib/engine/civic";
+import { CivicRow } from "./CivicRow";
 import { Cover, DocTile } from "./covers";
 import { DirectionMark, Glyph } from "./icons";
 import { Draft, FactQuestion, OfficialText, Sentences } from "./MeasureCard";
@@ -39,7 +41,12 @@ export function MeasureView({
   backLabel,
   onBack,
   onOpenProfile,
+  related,
+  onOpenItem,
 }: {
+  /** Optional: deadlines, meetings, and bills related to this measure. */
+  related?: CivicCard[];
+  onOpenItem?: (id: string) => void;
   item: FeedItem;
   card: Card;
   profile: Profile;
@@ -253,6 +260,21 @@ export function MeasureView({
           </Button>
         )}
       </section>
+
+      {related && related.length > 0 && onOpenItem && (
+        <section className="mt-10" aria-labelledby="related-h">
+          <h2 id="related-h" className="text-small font-semibold uppercase tracking-wider text-muted-foreground">
+            Related near you
+          </h2>
+          <ul className="mt-1 divide-y divide-border">
+            {related.map((c) => (
+              <li key={c.item.id}>
+                <CivicRow card={c} onOpen={() => onOpenItem(c.item.id)} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <p className="mt-10 text-small text-muted-foreground">Source: {doc.source.name}</p>
     </article>

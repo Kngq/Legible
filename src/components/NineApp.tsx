@@ -1,12 +1,17 @@
 "use client";
 
-// Client shell: first run (Hello, town), then the feed or one document, with the
-// profile sheet on top. The profile never leaves this component tree.
-import { useCallback, useMemo, useRef, useState } from "react";
-import { flushSync } from "react-dom";
+// Client shell: first run (Hello, town), then one screen per hash route (feed,
+// document, measure, civic item), with the profile sheet on top. Routes carry only
+// public ids; the profile never leaves this component tree.
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import ballot from "@/data/ballot-2026.json";
+import civicData from "@/data/civic-ma.json";
+import { civicCard, civicFeed, type CivicItem } from "@/lib/engine/civic";
 import { buildFeed } from "@/lib/engine/feed";
+import { civicUpNext, relatedCivic, relatedMeasures } from "@/lib/engine/related";
 import type { DocumentData } from "@/lib/engine/types";
+import { parentRoute, parseRoute, routeHash, type Route } from "@/lib/nav/route";
+import { CivicView } from "./CivicView";
 import { DocumentView } from "./DocumentView";
 import { FirstRun } from "./FirstRun";
 import { Home } from "./Home";
@@ -18,23 +23,56 @@ import { useNine } from "./useNine";
 // Every document the feed can show. Bundled ballot only until the catalog
 // (task 17.2) is fetched whole; buildFeed filters by state and town locally.
 const DOCS: DocumentData[] = [ballot as unknown as DocumentData];
+// Deadlines, meetings, and bills (npm run data:civic). Filtered by town locally.
+const CIVIC: CivicItem[] = civicData as unknown as CivicItem[];
 
-type View = { kind: "feed" } | { kind: "doc"; docId: string } | { kind: "measure"; docId: string; measureId: string; from: "feed" | "doc" };
-
-const viewKey = (v: View) => (v.kind === "feed" ? "feed" : v.kind === "doc" ? `doc:${v.docId}` : `m:${v.measureId}`);
+// The hash is the source of truth for which screen shows. In-app taps push a
+// history entry (so browser back works); popstate covers back and forward.
+const NAV_EVENT = "nine:route";
+function subscribeHash(cb: () => void) {
+  window.addEventListener("popstate", cb);
+  window.addEventListener(NAV_EVENT, cb);
+  return () => {
+    window.removeEventListener("popstate", cb);
+    window.removeEventListener(NAV_EVENT, cb);
+  };
+}
+const hashSnapshot = () => window.location.hash;
+const serverHash = () => "";
 
 export function NineApp() {
   const { loaded, today, profile, setProfile, preferences, setPreferences, canStore, forget } = useNine();
   const [sheet, setSheet] = useState<SheetView | null>(null);
-  // Where the person is: the feed, one document, or one measure read like an article.
-  const [view, setView] = useState<View>({ kind: "feed" });
+  // Where the person is, read from the URL hash.
+  const hash = useSyncExternalStore(subscribeHash, hashSnapshot, serverHash);
+  const route = parseRoute(hash);
   const scrolls = useRef<Record<string, number>>({});
+  const restoreNext = useRef(false);
   // Session-only flags: never stored, never counted by the meter.
   const [nudgeDismissed, setNudgeDismissed] = useState(false);
   const [savedBeyondTown, setSavedBeyondTown] = useState(false);
   const [rememberNotNow, setRememberNotNow] = useState(false);
   const closeSheet = useCallback(() => setSheet(null), []);
   const feed = useMemo(() => buildFeed(DOCS, profile, today), [profile, today]);
+  const civic = useMemo(() => civicFeed(CIVIC, profile, today), [profile, today]);
+
+  // Remember each screen's scroll as the person scrolls it.
+  useEffect(() => {
+    const onScroll = () => (scrolls.current[window.location.hash || "#/"] = window.scrollY);
+    const onPop = () => (restoreNext.current = true);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("popstate", onPop);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("popstate", onPop);
+    };
+  }, []);
+  // A new screen starts at the top; going back restores where the person was.
+  useLayoutEffect(() => {
+    const top = restoreNext.current ? (scrolls.current[hash || "#/"] ?? 0) : 0;
+    restoreNext.current = false;
+    window.scrollTo({ top });
+  }, [hash]);
 
   if (!loaded) return <div className="min-h-dvh" aria-busy="true" />;
 
@@ -51,59 +89,89 @@ export function NineApp() {
     );
   }
 
-  // Leave a page remembering its scroll; arriving at a new page starts at the top,
-  // returning to an earlier one restores where the person was.
-  const go = (next: View, restore = false) => {
-    scrolls.current[viewKey(view)] = window.scrollY;
-    flushSync(() => setView(next));
-    window.scrollTo({ top: restore ? (scrolls.current[viewKey(next)] ?? 0) : 0 });
+  const go = (next: Route) => {
+    window.history.pushState({ nine: true }, "", routeHash(next));
+    window.dispatchEvent(new Event(NAV_EVENT));
   };
+  // In-page back: step back through history when this session pushed it; from a
+  // pasted link, go up one level instead of leaving the app.
+  const back = () => {
+    if ((window.history.state as { nine?: boolean } | null)?.nine) window.history.back();
+    else {
+      restoreNext.current = true;
+      window.history.replaceState(null, "", routeHash(parentRoute(route)));
+      window.dispatchEvent(new Event(NAV_EVENT));
+    }
+  };
+  const openMeasure = (docId: string, measureId: string) => go({ kind: "measure", docId, measureId });
+  const openItem = (itemId: string) => go({ kind: "item", itemId });
+
   const town = townName(profile.townId);
-  const docItem = view.kind !== "feed" ? feed.items.find((i) => i.doc.id === view.docId) : undefined;
-  const card = view.kind === "measure" ? docItem?.cards.find((c) => c.measure.id === view.measureId) : undefined;
+  const docItem = route.kind === "doc" || route.kind === "measure" ? feed.items.find((i) => i.doc.id === route.docId) : undefined;
+  const card = route.kind === "measure" ? docItem?.cards.find((c) => c.measure.id === route.measureId) : undefined;
+  // Items are public: a pasted link to another town's meeting still opens.
+  const rawItem = route.kind === "item" ? CIVIC.find((i) => i.id === route.itemId) : undefined;
+  const itemCard = rawItem ? (civic.find((c) => c.item.id === rawItem.id) ?? civicCard(rawItem, profile, today)) : undefined;
 
   let page;
-  if (view.kind === "measure" && docItem && card) {
-    const back: View = view.from === "doc" ? { kind: "doc", docId: view.docId } : { kind: "feed" };
+  if (card && docItem) {
     page = (
       <MeasureView
-        key={view.measureId}
+        key={card.measure.id}
         item={docItem}
         card={card}
         profile={profile}
         setProfile={setProfile}
         town={town}
-        backLabel={view.from === "doc" ? "Back to the document" : "Back to all decisions"}
-        onBack={() => go(back, true)}
+        backLabel="Back"
+        onBack={back}
+        onOpenProfile={setSheet}
+        related={relatedCivic(card.measure, civic)}
+        onOpenItem={openItem}
+      />
+    );
+  } else if (itemCard) {
+    page = (
+      <CivicView
+        key={itemCard.item.id}
+        card={itemCard}
+        related={relatedMeasures(itemCard.item, feed.items)}
+        backLabel="Back"
+        onBack={back}
+        onOpenMeasure={openMeasure}
         onOpenProfile={setSheet}
       />
     );
-  } else if (view.kind === "doc" && docItem) {
+  } else if (route.kind === "doc" && docItem) {
     page = (
       <DocumentView
         item={docItem}
         today={today}
         profile={profile}
         town={town}
-        onBack={() => go({ kind: "feed" }, true)}
-        onOpenMeasure={(measureId) => go({ kind: "measure", docId: docItem.doc.id, measureId, from: "doc" })}
+        onBack={back}
+        onOpenMeasure={(measureId) => openMeasure(docItem.doc.id, measureId)}
       />
     );
   } else {
     page = (
       <Home
         feed={feed}
+        civic={civic}
+        civicUp={civicUpNext(feed.upNext, civic, today)}
         today={today}
         profile={profile}
         remember={preferences.remember}
         onOpenDoc={(docId) => go({ kind: "doc", docId })}
-        onOpenMeasure={(docId, measureId) => go({ kind: "measure", docId, measureId, from: "feed" })}
+        onOpenMeasure={openMeasure}
+        onOpenItem={openItem}
         onOpenProfile={setSheet}
         onForget={() => {
           forget();
           setSavedBeyondTown(false);
           setRememberNotNow(false);
-          setView({ kind: "feed" });
+          window.history.replaceState(null, "", routeHash({ kind: "feed" }));
+          window.dispatchEvent(new Event(NAV_EVENT));
         }}
         nudgeDismissed={nudgeDismissed}
         onDismissNudge={() => setNudgeDismissed(true)}

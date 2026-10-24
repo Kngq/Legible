@@ -5,12 +5,15 @@
 import { useState } from "react";
 import { avatarParts } from "@/lib/engine/avatar";
 import { decidedLine, decideByLine, decideByRelative, DOC_TYPE_LABEL, measureNoun } from "@/lib/engine/decide-by";
+import type { CivicCard } from "@/lib/engine/civic";
+import { CIVIC_KIND_LABEL, dateTime, timingTag } from "@/lib/engine/civic-copy";
 import type { Feed, FeedItem } from "@/lib/engine/feed";
 import { nextItem, personalization, type ChecklistItem } from "@/lib/engine/personalization";
 import type { Profile } from "@/lib/engine/profile";
 import type { Card, Provenance } from "@/lib/engine/types";
 import { LIFE_AREAS } from "@/lib/vocab";
 import { AvatarRing } from "./AvatarRing";
+import { CivicRow } from "./CivicRow";
 import { Cover, DocTile } from "./covers";
 import { MeasureDots } from "./DocumentView";
 import { Glyph } from "./icons";
@@ -38,7 +41,15 @@ export function Home({
   nudgeDismissed,
   onDismissNudge,
   onUpload,
+  civic,
+  civicUp,
+  onOpenItem,
 }: {
+  /** Deadlines, meetings, and bills for this person's state and town, in feed order. */
+  civic: CivicCard[];
+  /** A civic item that takes the Up next card, when it touches the person sooner. */
+  civicUp: CivicCard | null;
+  onOpenItem: (id: string) => void;
   feed: Feed;
   today: string;
   profile: Profile;
@@ -63,6 +74,7 @@ export function Home({
   const decided = feed.items.filter((i) => i.status === "decided" && inScope(i));
   const hasTownDocs = feed.items.some((i) => i.scope === "town");
   const up = feed.upNext;
+  const civicShown = civic.filter((c) => scope === "all" || c.item.place.kind === scope);
 
   // Decisions, one level below documents: what touches you, then what you follow.
   const entries = (pick: (c: Card) => boolean) => upcoming.flatMap((item) => item.cards.filter(pick).map((card) => ({ item, card })));
@@ -101,7 +113,11 @@ export function Home({
 
       {nudge && <Nudge item={nudge} onOpen={() => onOpenProfile(itemView(nudge))} onDismiss={onDismissNudge} />}
 
-      {up && <UpNext item={up} today={today} onOpen={() => onOpenDoc(up.doc.id)} />}
+      {civicUp ? (
+        <CivicUpNext card={civicUp} onOpen={() => onOpenItem(civicUp.item.id)} />
+      ) : (
+        up && <UpNext item={up} today={today} onOpen={() => onOpenDoc(up.doc.id)} />
+      )}
 
       <h1 className="mt-10 text-title">Where your life meets what is being decided.</h1>
 
@@ -134,6 +150,22 @@ export function Home({
       {listed.length > 0 && <Carousel title="On your list" sub="Subjects you follow" entries={listed} onOpen={onOpenMeasure} />}
       {everyone.length > 0 && (
         <Carousel title="Applies to everyone" sub="Answer a few questions to sort these" entries={everyone} onOpen={onOpenMeasure} />
+      )}
+
+      {civicShown.length > 0 && (
+        <section aria-labelledby="h-coming" className="mt-10">
+          <h2 id="h-coming" className="text-title">
+            Coming up
+          </h2>
+          <p className="text-small text-muted-foreground">Deadlines, meetings, and bills, from official sources</p>
+          <ul className="mt-2 divide-y divide-border">
+            {civicShown.map((c) => (
+              <li key={c.item.id}>
+                <CivicRow card={c} onOpen={() => onOpenItem(c.item.id)} />
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {upcoming.length > 0 && (
@@ -206,6 +238,34 @@ export function Home({
 
       <p className="mt-12 text-small text-muted-foreground">Your answers and your town stay in this browser. Nine sorts the official text; it never says how to vote.</p>
     </div>
+  );
+}
+
+/** Up next for a deadline or meeting that touches the person sooner than any document. */
+function CivicUpNext({ card, onOpen }: { card: CivicCard; onOpen: () => void }) {
+  const i = card.item;
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className={`mt-4 block w-full rounded-xl bg-accent p-6 text-left text-accent-foreground shadow-card transition-transform duration-(--duration) ease-nine hover:-translate-y-0.5 ${FOCUS}`}
+    >
+      <span className="flex items-center justify-between gap-3 text-small font-semibold opacity-85">
+        <span>
+          Up next · {i.place.kind === "state" ? "State" : i.place.name} {CIVIC_KIND_LABEL[i.kind].toLowerCase()}
+        </span>
+        <span className="flex size-9 rotate-180 items-center justify-center rounded-full bg-accent-foreground/15">
+          <Glyph name="back" size={18} />
+        </span>
+      </span>
+      <span className="mt-3 block text-title">{i.title}</span>
+      <span className="mt-2 block text-body font-semibold">
+        {timingTag(card)}
+        {i.at ? ` · ${dateTime(i.until && card.timing === "open" ? i.until : i.at)}` : ""}
+      </span>
+      <span className="mt-1 block text-body opacity-90">{i.body}</span>
+      <span className="mt-1 block text-small opacity-85">{i.summary}</span>
+    </button>
   );
 }
 
