@@ -172,8 +172,9 @@ export function SiteHeader({
         {onOpenProfile ? (
           <button
             type="button"
-            onClick={() => onOpenProfile({ kind: needsInterests ? "topics" : "list" })}
-            aria-label={needsInterests ? "Your profile — pick the subjects you follow" : "Your profile"}
+            // Always the overview: the avatar is the way home, never straight into a question.
+            onClick={() => onOpenProfile({ kind: "list" })}
+            aria-label="Your profile"
             className={`relative flex size-11 shrink-0 items-center justify-center rounded-full ${growth.enabled ? "bg-surface ring-1 ring-border" : "bg-accent-soft text-accent"} interactive press hover:scale-105 ${FOCUS}`}
           >
             {growth.enabled ? (

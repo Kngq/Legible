@@ -55,9 +55,12 @@ export function AreaStep({
   profile,
   onNext,
   onDecline,
+  onNotNow,
   saveLabel = "Save",
 }: {
   saveLabel?: string;
+  /** Leave without saving (the profile sheet). Absent hides "Not now". */
+  onNotNow?: () => void;
   area: LifeArea;
   profile: Profile;
   onNext: (picked: FactId[]) => void;
@@ -95,9 +98,16 @@ export function AreaStep({
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <PreferNot onClick={onDecline} />
-        <Button disabled={!picked.length && !none} onClick={() => onNext(picked)} className="min-w-32">
-          {saveLabel}
-        </Button>
+        <span className="flex items-center gap-2">
+          {onNotNow && (
+            <Button variant="text" className="min-h-11!" onClick={onNotNow}>
+              Not now
+            </Button>
+          )}
+          <Button disabled={!picked.length && !none} onClick={() => onNext(picked)} className="min-w-32">
+            {saveLabel}
+          </Button>
+        </span>
       </div>
     </div>
   );
@@ -243,8 +253,8 @@ export function TopicsStep({
     <div className="space-y-6">
       {!compact && (
         <div className="space-y-3">
-          <h1 className="text-title">Pick any subjects you follow.</h1>
-          <p className="text-body text-muted-foreground">These add an On your list tag. They never change what touches you.</p>
+          <h1 className="text-title">What interests you?</h1>
+          <p className="text-body text-muted-foreground">Choose topics you&rsquo;d like to see more of. You can change these anytime.</p>
         </div>
       )}
       <div role="group" aria-label="Subjects" className="flex flex-wrap gap-2">
@@ -262,6 +272,15 @@ export function TopicsStep({
             >
               {compact ? on && <Glyph name="check" size={14} /> : <Part name={TOPIC_DEFS[id].avatarPart} size={18} />}
               {TOPIC_DEFS[id].label}
+              {/* Profile editor: a check on the right makes "chosen" unmistakable. */}
+              {!compact && (
+                <span
+                  aria-hidden="true"
+                  className={`-mr-1 flex size-5 items-center justify-center rounded-full transition-colors duration-(--duration) ease-legible ${on ? "bg-primary text-primary-foreground" : "border border-border"}`}
+                >
+                  {on && <Glyph name="check" size={12} />}
+                </span>
+              )}
             </button>
           );
         })}

@@ -112,10 +112,31 @@ export function ProfileSheet({
     panel.current?.scrollTo({ top: 0 });
   };
 
-  // Under the completion line in either layout: save feedback, the keep-on-device
-  // prompt, and the next item to fill in.
+  /** Leave an editor for the overview without saving what was changed there. */
+  const toOverview = () => {
+    setView({ kind: "list" });
+    panel.current?.scrollTo({ top: 0 });
+  };
+
+  // Under the completion line in either layout: an optional invitation, save
+  // feedback, the keep-on-device prompt, and the next item to fill in.
   const afterCompletion = (
     <>
+      {!lastSave && next && (
+        <div className="mt-2 w-full">
+          <p className="text-small">
+            <span className="font-semibold">Make Legible yours.</span>{" "}
+            <span className="text-muted-foreground">Add a few details to help us find decisions that may be relevant to you.</span>
+          </p>
+          <button
+            type="button"
+            onClick={() => open(itemView(next))}
+            className={`mt-1 inline-flex min-h-10 items-center gap-1 rounded-sm text-small font-semibold text-primary underline-offset-4 hover:underline ${FOCUS}`}
+          >
+            Add details <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      )}
       {lastSave && <SavedNote key={lastSave.at} />}
       {rememberPrompt && (
         <div className="mt-3 w-full animate-fade-in rounded-md bg-surface-muted p-3 text-left">
@@ -156,7 +177,7 @@ export function ProfileSheet({
             <div className="mt-5 border-t border-border pt-4">
               <h3 className="text-body font-semibold">Your profile details</h3>
               <p className="text-small text-muted-foreground">
-                {m.percent === 100 ? "All details added." : `${m.done} of ${m.total} details added.`} It all stays in this browser.
+                {m.percent === 100 ? "All details added." : `${m.done} of ${m.total} details added, all optional.`} It all stays in this browser.
               </p>
               {afterCompletion}
             </div>
@@ -171,7 +192,7 @@ export function ProfileSheet({
               size={184}
             />
             <p className="mt-2 text-body text-muted-foreground">
-              {m.percent === 100 ? "Your profile is filled in." : `${m.done} of ${m.total} filled in. It all stays in this browser.`}
+              {m.percent === 100 ? "Your profile is filled in." : `${m.done} of ${m.total} filled in, all optional. It all stays in this browser.`}
             </p>
             {afterCompletion}
           </div>
@@ -305,21 +326,29 @@ export function ProfileSheet({
         profile={profile}
         onNext={(picked) => save(answerArea(profile, area.facts, picked, EDIT), picked.length ? `fact:${picked[picked.length - 1]}` : undefined)}
         onDecline={() => save(declineArea(profile, area.facts, EDIT))}
+        onNotNow={toOverview}
       />
     );
   } else if (view.kind === "topics") {
     body = (
-      <div className="space-y-6">
+      <div>
         <TopicsStep profile={draft} setProfile={(p) => setDraft(p)} />
-        <Button
-          className="w-full"
-          onClick={() => {
-            const added = TOPIC_IDS.filter((t) => draft.topics[t] && !profile.topics[t]);
-            save(confirmTopics(draft), added.length ? `topic:${added[added.length - 1]}` : undefined);
-          }}
-        >
-          Save
-        </Button>
+        {/* Sticky, so the choice never sits at the bottom of a long list. On phones
+            Ask Kiro hides while the sheet is open, so nothing overlaps it. */}
+        <div className="sticky -bottom-8 z-10 -mx-4 -mb-8 mt-6 flex items-center justify-end gap-2 border-t border-border bg-background px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:-mx-6 sm:px-6">
+          <Button variant="text" className="min-h-11!" onClick={toOverview}>
+            Not now
+          </Button>
+          <Button
+            className="min-h-11! px-5"
+            onClick={() => {
+              const added = TOPIC_IDS.filter((t) => draft.topics[t] && !profile.topics[t]);
+              save(confirmTopics(draft), added.length ? `topic:${added[added.length - 1]}` : undefined);
+            }}
+          >
+            Save interests
+          </Button>
+        </div>
       </div>
     );
   } else if (view.kind === "growth") {
@@ -328,9 +357,14 @@ export function ProfileSheet({
     body = (
       <div className="space-y-6">
         <TownStep profile={draft} setProfile={setDraft} />
-        <Button className="w-full" disabled={!draft.townId} onClick={() => save({ ...profile, townId: draft.townId })}>
-          Save
-        </Button>
+        <div className="flex items-center justify-end gap-2">
+          <Button variant="text" className="min-h-11!" onClick={toOverview}>
+            Not now
+          </Button>
+          <Button className="min-w-32" disabled={!draft.townId} onClick={() => save({ ...profile, townId: draft.townId })}>
+            Save
+          </Button>
+        </div>
       </div>
     );
   }
@@ -349,7 +383,7 @@ export function ProfileSheet({
         <div aria-hidden="true" className="mx-auto mb-1 h-1.5 w-10 rounded-full bg-border" />
         <header className="sticky top-0 z-10 -mx-4 flex h-14 items-center gap-2 bg-background px-2 sm:-mx-6 sm:px-4">
           {view.kind !== "list" ? (
-            <button type="button" onClick={() => setView({ kind: "list" })} aria-label="Back to your profile" className={`flex size-12 items-center justify-center rounded-md hover:bg-surface-muted ${FOCUS}`}>
+            <button type="button" onClick={toOverview} aria-label="Back to your profile" className={`flex size-12 items-center justify-center rounded-md hover:bg-surface-muted ${FOCUS}`}>
               <Glyph name="back" />
             </button>
           ) : (

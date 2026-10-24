@@ -68,8 +68,8 @@ export function TopBar({
       <span className="flex items-center gap-1">
         <button
           type="button"
-          onClick={() => onOpenProfile({ kind: needsInterests ? "topics" : "list" })}
-          aria-label={needsInterests ? "Your profile — pick the subjects you follow" : "Your profile"}
+          onClick={() => onOpenProfile({ kind: "list" })}
+          aria-label="Your profile"
           className={`relative flex size-11 items-center justify-center rounded-full bg-surface text-foreground shadow-card transition-colors duration-(--duration) ease-legible hover:bg-surface-muted ${FOCUS}`}
         >
           <Glyph name="person" size={24} />

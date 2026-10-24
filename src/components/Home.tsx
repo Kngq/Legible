@@ -1,22 +1,20 @@
 "use client";
 
 // Home after onboarding: the For you page, in the Notebook direction. A personal
-// header (greeting, whose town, how much of the profile is filled in, and the
-// answers that sort the page); "Coming up" as a time ribbon, with the most urgent
+// header (greeting, whose town, and one quiet line of where the page's sorting
+// comes from; how much of the profile is filled in lives in the profile sheet); "Coming up" as a time ribbon, with the most urgent
 // date selected; then "Decisions for you": the first as a featured decision, the
 // rest as compact rows, ranked by how they connect to the person. Dates and
 // decisions never mix. Everything else is on Explore, one link away. Order comes
 // from buildTimeline and homeSections. Runs in the browser.
 import { motion, useReducedMotion } from "motion/react";
-import { useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import type { CivicCard } from "@/lib/engine/civic";
 import type { Feed } from "@/lib/engine/feed";
-import { homeSections, profileBasis } from "@/lib/engine/home-copy";
-import { personalization } from "@/lib/engine/personalization";
+import { homeSections } from "@/lib/engine/home-copy";
 import { DURATION, EASE } from "@/lib/motion";
 import type { Profile } from "@/lib/engine/profile";
 import { buildTimeline } from "@/lib/engine/timeline";
-import { FACT_DEFS, LIFE_AREAS } from "@/lib/vocab";
 import { decisionsFor, DecisionRow, FeaturedDecision } from "./BriefCard";
 import { ComingUp } from "./ComingUp";
 import { Glyph } from "./icons";
@@ -37,12 +35,16 @@ function useWide() {
   return useSyncExternalStore(subscribeWide, () => window.matchMedia(WIDE).matches, () => false);
 }
 
-/** The answers that sort the page, as short phrases: "You rent". Life-area facts only. */
-function answeredFacts(p: Profile): string[] {
-  return LIFE_AREAS.flatMap((a) => a.facts.filter((f) => p.facts[f]?.value === true)).map((f) => {
-    const t = FACT_DEFS[f].because.yes;
-    return t.charAt(0).toUpperCase() + t.slice(1);
-  });
+/**
+ * The home answer as a short label for the header: tenure first, since renting
+ * and owning rule each other out, then living with family. Only a "yes" names
+ * anything; with no yes there is no label, never a guess.
+ */
+function housingLabel(p: Profile): string | undefined {
+  if (p.facts.rents?.value) return "Renting";
+  if (p.facts.owns?.value) return "Homeowner";
+  if (p.facts.lives_with_family?.value) return "Living with family";
+  return undefined;
 }
 
 export function Home({
@@ -79,24 +81,13 @@ export function Home({
   const ballotItem = attention.flatMap((e) => (e.kind === "civic" && e.ballot ? [e.ballot] : []))[0];
   const touching = ballotItem?.cards.filter((c) => c.relevance === "touches") ?? [];
   const listed = ballotItem?.cards.filter((c) => c.relevance !== "touches" && c.onYourList) ?? [];
-  const basis = profileBasis(profile);
   const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure };
   const list = decisionsFor({ touching, affect, listed, ballot: ballotItem, ...cardProps });
   const [featured, ...rest] = list;
-  const meter = personalization(profile);
-  // A dot that fills in after a save pulses once, so the change shows on the page.
-  const doneKey = meter.items.map((i) => (i.done ? 1 : 0)).join("");
-  const [seen, setSeen] = useState(doneKey);
-  const [pulse, setPulse] = useState<{ at: number; dots: number[] }>({ at: 0, dots: [] });
-  if (seen !== doneKey) {
-    setPulse({ at: pulse.at + 1, dots: meter.items.flatMap((i, n) => (i.done && seen[n] !== "1" ? [n] : [])) });
-    setSeen(doneKey);
-  }
   const reduce = useReducedMotion() ?? false;
-  const facts = answeredFacts(profile);
-  // Interests are "decided" once the person confirms the topics screen or picks any.
-  const needsInterests = !profile.topicsConfirmedAt && Object.keys(profile.topics).length === 0;
-  const editProfile = () => onOpenProfile({ kind: needsInterests ? "topics" : "list" });
+  const housing = housingLabel(profile);
+  // The general profile link opens the overview; contextual "Add details" links open their own editor.
+  const editProfile = () => onOpenProfile({ kind: "list" });
   const growth = useGrowth();
   const wide = useWide();
   // "Your corner of Boston, Rachel." only when it stays short; never an invented place.
@@ -153,38 +144,34 @@ export function Home({
             </h1>
           </>
         )}
-        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-small">
-          <button
-            type="button"
-            onClick={editProfile}
-            aria-label={`Your profile: ${meter.done} of ${meter.total} steps filled in`}
-            className={`group inline-flex min-h-9 items-center gap-1.5 rounded-sm ${FOCUS}`}
-          >
-            {meter.items.map((item, i) => (
-              <motion.span
-                key={pulse.dots.includes(i) ? `${i}-${pulse.at}` : i}
-                aria-hidden="true"
-                animate={pulse.dots.includes(i) && !reduce ? { scale: [1, 1.8, 1] } : { scale: 1 }}
-                transition={{ duration: DURATION.slow * 2, ease: EASE }}
-                className={`size-2.5 rounded-full ${item.done ? "bg-accent" : "shadow-[inset_0_0_0_1.5px_var(--info)]"}`}
-              />
-            ))}
-          </button>
-          {(town || facts.length > 0) && (
-            <p className="font-semibold">
-              {[town, ...facts.slice(0, 3)].filter(Boolean).join(" · ")}
-              {facts.length > 3 && <span className="font-normal text-muted-foreground"> · +{facts.length - 3}</span>}
-            </p>
+        {/* Where the sorting comes from, in one quiet line. No town is never invented:
+            the line offers to add one instead. */}
+        <p className="mt-4 flex flex-wrap items-center gap-x-3 text-small text-muted-foreground">
+          {town ? (
+            <span>{[town, housing].filter(Boolean).join(" · ")}</span>
+          ) : (
+            <>
+              {housing && <span>{housing}</span>}
+              <button
+                type="button"
+                onClick={() => onOpenProfile({ kind: "town" })}
+                className={`inline-flex min-h-11 items-center font-semibold text-accent underline decoration-accent/30 underline-offset-4 interactive hover:decoration-accent ${FOCUS}`}
+              >
+                Add your location
+              </button>
+            </>
           )}
           <button
             type="button"
             onClick={editProfile}
-            className={`min-h-9 font-semibold text-accent underline decoration-accent/30 underline-offset-4 interactive hover:decoration-accent ${FOCUS}`}
+            className={`group inline-flex min-h-11 items-center gap-1 font-semibold text-accent underline decoration-accent/30 underline-offset-4 interactive hover:decoration-accent ${FOCUS}`}
           >
-            {basis ? "Edit profile" : "Add details"}
+            Edit profile
+            <span aria-hidden="true" className="nudge">
+              &rarr;
+            </span>
           </button>
-        </div>
-        {!basis && <p className="mt-1 text-small text-muted-foreground">Add a few details and Legible sorts this page by what touches your life.</p>}
+        </p>
       </header>
 
       <ComingUp entries={attention} {...cardProps} onOpenProfile={onOpenProfile} />

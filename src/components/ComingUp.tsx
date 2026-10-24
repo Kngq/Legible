@@ -12,7 +12,7 @@ import { actionsFor, cardHeader, civicRelevance, headline, isUrgent, RELEVANCE_L
 import type { TimelineEntry } from "@/lib/engine/timeline";
 import { Spark } from "./BriefCard";
 import { Glyph } from "./icons";
-import type { SheetView } from "./ProfileSheet";
+import { areaOf, type SheetView } from "./ProfileSheet";
 import { FOCUS } from "./ui";
 import type { CardProps } from "./updates";
 
@@ -233,7 +233,15 @@ function DatePanel({ entry: e, onOpenItem, onOpenDoc, onOpenProfile }: { entry: 
             {relevance.kind === "open" && (
               <>
                 {" "}
-                <button type="button" onClick={() => onOpenProfile({ kind: "list" })} className={`font-semibold text-accent underline decoration-accent/30 underline-offset-4 ${FOCUS}`}>
+                {/* Straight to the editor for the missing detail (e.g. voting for a registration deadline). */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const area = c.open.map((o) => areaOf(o.fact)).find(Boolean);
+                    onOpenProfile(area ? { kind: "area", id: area } : { kind: "list" });
+                  }}
+                  className={`font-semibold text-accent underline decoration-accent/30 underline-offset-4 ${FOCUS}`}
+                >
                   Add details
                 </button>
               </>
