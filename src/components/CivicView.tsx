@@ -96,6 +96,7 @@ export function CivicView({
         <>
           <div className="mt-5 flex flex-wrap items-center gap-2">
             <Tag pop="attention">Proposed, not law</Tag>
+            {e.provenance === "ai_draft" && <Tag pop="attention">AI draft, not yet reviewed by a person</Tag>}
             {card.onYourList && <Tag>On your list</Tag>}
           </div>
           {/* No uncited summary here: part 1 says what the bill proposes, line by line. */}

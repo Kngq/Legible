@@ -1,0 +1,278 @@
+{
+  "bill": "S2581",
+  "model": "claude-opus-5",
+  "generatedOn": "2026-10-24",
+  "fetchedOn": "2026-10-24",
+  "draft": {
+    "quotes": [
+      {
+        "id": "definition",
+        "text": "“personal electronic device” shall mean any portable electronic device that: (i) is capable of providing voice communication, text messaging or other data communication between 2 or more parties or devices"
+      },
+      {
+        "id": "school-devices-excluded",
+        "text": "personal electronic device shall not include school issued or sanctioned devices that are used for a legitimate educational purpose"
+      },
+      {
+        "id": "model-policy",
+        "text": "The department shall provide guidance, recommendations and a model policy to assist schools and districts with developing and implementing effective policies regarding the prohibition of the use of personal electronic devices on school grounds during the school day"
+      },
+      {
+        "id": "storage",
+        "text": "options for secure storage of personal electronic devices during the school day, including best practices on removing physical access to personal electronic devices"
+      },
+      {
+        "id": "dept-hearing",
+        "text": "Prior to finalizing recommendations, guidance and model policy, the department shall solicit public input and hold at least 1 public hearing."
+      },
+      {
+        "id": "district-policy",
+        "text": "Each public school or district shall adopt a policy regarding the prohibition of student use of a personal electronic device, as defined in section 40of chapter 69, on school grounds during the school day and during school-sponsored activities during the school day."
+      },
+      {
+        "id": "ban-detail",
+        "text": "a prohibition on the use and actual possession, strictly on their person, of a personal electronic device by a student during the school day, which shall include, but not be limited to, recess, a lunch period and time in between classes."
+      },
+      {
+        "id": "parent-contact",
+        "text": "at least 1 method for parents and guardians of students to contact students during the school day, including policies for emergency situations when it is urgent, or for a student to contact their parent or caregiver during the school day"
+      },
+      {
+        "id": "no-suspension",
+        "text": "the discipline for noncompliance outlined in the provisions shall not include the expulsion or suspension of a student"
+      },
+      {
+        "id": "iep-504",
+        "text": "used in accordance with an individualized education program or an education plan implemented pursuant to section 504 of the Rehabilitation Act of 1973"
+      },
+      {
+        "id": "health-note",
+        "text": "a healthcare provider provides in writing that the possession or use of a personal electronic device is necessary to treat a health condition of a student"
+      },
+      {
+        "id": "travel",
+        "text": "for time spent off school grounds travelling to or from other learning opportunities, including, but not limited to, early college, dual enrolment or vocational learning sites"
+      },
+      {
+        "id": "notify-families",
+        "text": "Annually, not later than September 1, each public school shall notify students and the parents or guardians of students attending the school of the policy and make the policy publicly available on its website."
+      },
+      {
+        "id": "local-input",
+        "text": "prior to approval, such local governing body shall solicit public input"
+      },
+      {
+        "id": "default-policy",
+        "text": "if no policy is approved by the school committee, board or other appropriate governing body by September 1, the department’s model policy shall go into effect until such time as a local policy is approved"
+      },
+      {
+        "id": "beyond-day",
+        "text": "Nothing in this section shall limit a district from setting restrictions or standards for use of personal electronic devices on school grounds or during school-sanctioned activities beyond the school day."
+      },
+      {
+        "id": "file-policy",
+        "text": "Each public school or district shall annually file its personal electronic device use policy not later than September 1 with the department of elementary and secondary education"
+      },
+      {
+        "id": "adopt-2026",
+        "text": "Each public school or district shall adopt a policy regarding the use of personal electronic devices as required by section 102 of chapter 71 of the General Laws before the start of the 2026-2027 school year."
+      },
+      {
+        "id": "report-2027",
+        "text": "Not later than December 31, 2027, the department of elementary and secondary education shall report to the senate and house committees on ways and means and the joint committee on education on the implementation of the personal electronic device use policies in schools"
+      },
+      {
+        "id": "guidance-180",
+        "text": "The department of elementary and secondary education shall provide recommendations, guidance and a model policy on the use of personal electronic devices to facilitate implementation of this act within 180 days of the effective date of this act."
+      }
+    ],
+    "proposes": [
+      {
+        "text": "Every public school or district would have to adopt a policy banning student use of personal electronic devices during the school day.",
+        "quote": "district-policy"
+      },
+      {
+        "text": "The state education department would write guidance and a model policy to help schools put such a ban in place.",
+        "quote": "model-policy"
+      }
+    ],
+    "changes": [
+      {
+        "heading": "What students could not have during the day",
+        "lines": [
+          {
+            "text": "The policy would have to bar students from using or even carrying a personal device during the school day, including recess, lunch, and time between classes.",
+            "quote": "ban-detail",
+            "mark": "recess, a lunch period and time in between classes"
+          },
+          {
+            "text": "A personal electronic device would mean a portable device that can make calls, send texts, or share other data.",
+            "quote": "definition"
+          },
+          {
+            "text": "Devices the school hands out or approves for a real educational purpose would not count as personal devices.",
+            "quote": "school-devices-excluded"
+          },
+          {
+            "text": "A district could still set rules for device use on school grounds outside the school day.",
+            "quote": "beyond-day"
+          }
+        ]
+      },
+      {
+        "heading": "Exceptions for students",
+        "lines": [
+          {
+            "text": "A student could use a device if it is part of an individualized education program or a section 504 plan.",
+            "quote": "iep-504"
+          },
+          {
+            "text": "A student could use a device if a healthcare provider writes that it is needed to treat a health condition.",
+            "quote": "health-note"
+          },
+          {
+            "text": "Devices could be used while traveling off school grounds to places like early college, dual enrollment, or vocational sites.",
+            "quote": "travel"
+          }
+        ]
+      },
+      {
+        "heading": "Contacting your child, and discipline",
+        "lines": [
+          {
+            "text": "Each policy would have to include at least one way for parents and guardians to reach a student during the day, including in urgent situations.",
+            "quote": "parent-contact"
+          },
+          {
+            "text": "Punishment for breaking the rule could not include suspending or expelling a student.",
+            "quote": "no-suspension"
+          }
+        ]
+      },
+      {
+        "heading": "How policies would be made and shared",
+        "lines": [
+          {
+            "text": "Before finalizing its guidance and model policy, the department would have to take public comment and hold at least one public hearing.",
+            "quote": "dept-hearing"
+          },
+          {
+            "text": "A local school committee or governing body would have to ask for public input before approving the policy.",
+            "quote": "local-input"
+          },
+          {
+            "text": "If no local policy were approved by September 1, the department's model policy would apply until one is.",
+            "quote": "default-policy"
+          },
+          {
+            "text": "Schools would have to tell students and families about the policy by September 1 each year and post it online.",
+            "quote": "notify-families"
+          }
+        ]
+      },
+      {
+        "heading": "Storage and paperwork",
+        "lines": [
+          {
+            "text": "The model policy would have to cover ways to store devices securely and keep students from reaching them during the day.",
+            "quote": "storage"
+          },
+          {
+            "text": "Each school or district would have to file its device policy with the state by September 1 each year.",
+            "quote": "file-policy"
+          }
+        ]
+      }
+    ],
+    "affects": [
+      {
+        "text": "Public schools and districts would each have to write, approve, and post a device policy.",
+        "quote": "district-policy"
+      },
+      {
+        "text": "Students would be barred from carrying or using their own phones and similar devices during the school day.",
+        "quote": "ban-detail"
+      },
+      {
+        "text": "Parents and guardians would be given at least one way to reach their child during the school day under each policy.",
+        "quote": "parent-contact"
+      }
+    ],
+    "personal": [
+      {
+        "fact": "kids_in_schools",
+        "when": true,
+        "effect": "direct",
+        "lines": [
+          {
+            "text": "Your child's school would have to ban student phones and similar devices during the school day, including recess and lunch.",
+            "quote": "ban-detail"
+          },
+          {
+            "text": "The school's policy would have to give you a way to contact your child during the day, including in urgent situations.",
+            "quote": "parent-contact"
+          }
+        ]
+      },
+      {
+        "fact": "kids_in_schools",
+        "when": false,
+        "effect": "possible",
+        "lines": [
+          {
+            "text": "Your local school committee would have to ask for public input before approving a device policy, so you could comment even without a child in school.",
+            "quote": "local-input"
+          }
+        ],
+        "notStated": {
+          "text": "The bill text does not mention private schools, homeschooling, or college campuses.",
+          "terms": [
+            "private school",
+            "homeschool",
+            "charter school",
+            "college campus"
+          ]
+        }
+      }
+    ],
+    "takesEffect": [
+      {
+        "label": "Before the 2026-2027 school year",
+        "line": {
+          "text": "If it became law, each school or district would have had to adopt its device policy before the 2026-2027 school year started.",
+          "quote": "adopt-2026"
+        },
+        "pastOn": "2026-09-01"
+      },
+      {
+        "label": "180 days after the effective date",
+        "line": {
+          "text": "If it became law, the state department would have 180 days to issue its guidance and model policy.",
+          "quote": "guidance-180"
+        }
+      },
+      {
+        "label": "Dec 31, 2027",
+        "line": {
+          "text": "If it became law, the department would have to report to legislative committees on how the policies are working by this date.",
+          "quote": "report-2027"
+        }
+      }
+    ],
+    "versionNotes": [
+      {
+        "text": "The House passed a different version of this bill, replacing everything after the enacting clause.",
+        "action": "Committee recommended ought to pass with an amendment, striking out all after the enacting clause and inserting the text of H5349, and referred to the committee on House Steering, Policy and Scheduling"
+      },
+      {
+        "text": "The Senate did not agree with the House changes.",
+        "action": "Senate NON-concurred in the House amendment"
+      },
+      {
+        "text": "A conference committee of senators and representatives was named to work out one text.",
+        "action": "Committee of conference appointed (Crighton-Rodrigues-Durant)"
+      }
+    ],
+    "author": "model"
+  }
+}

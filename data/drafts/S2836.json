@@ -1,0 +1,381 @@
+{
+  "bill": "S2836",
+  "model": "claude-opus-5",
+  "generatedOn": "2026-10-24",
+  "fetchedOn": "2026-10-24",
+  "draft": {
+    "quotes": [
+      {
+        "id": "state-land",
+        "text": "Prior to disposition of publicly owned real property of the commonwealth pursuant to chapter 7C, the commissioner of capital asset management and maintenance in coordination with the secretary of the executive office of housing and livable communities shall determine whether such real property shall be made available for low or moderate income housing under this chapter."
+      },
+      {
+        "id": "five-unit",
+        "text": "No zoning ordinance or by-law in areas or for parcels connected to a municipal or centrally managed water and sewer system shall prohibit the use of duplexes or multi-family housing, as those terms are defined in Section 1A, containing up to 5 dwelling units on lots zoned for residential use as of right"
+      },
+      {
+        "id": "three-unit",
+        "text": "No zoning ordinance or by-law in an area or for parcels not connected to a municipal or centrally managed water and sewer system shall prohibit the use of duplexes or multi-family housing, as those terms are defined in Section 1A, containing up to 3 dwelling units on lots zoned for residential use as of right"
+      },
+      {
+        "id": "height",
+        "text": "provided, that regulations concerning the height of a duplex or multi-family housing does not limit height to less than 3 stories"
+      },
+      {
+        "id": "min-lot",
+        "text": "No zoning ordinance or by-law shall impose a minimum lot size on new residential developments."
+      },
+      {
+        "id": "parking",
+        "text": "No zoning ordinance or by-law shall impose minimum automobile parking requirements on new residential developments, including developments built under section 3C of chapter 40A, that are located not more than .5 miles from a commuter rail station, ferry terminal or bus station and no more than 1 parking space per unit shall be required for new residential units"
+      },
+      {
+        "id": "senior-parking",
+        "text": "no minimum parking requirements shall be imposed on residential facilities primarily serving seniors, including assisted living communities and nursing homes"
+      },
+      {
+        "id": "adu",
+        "text": "no zoning ordinance or by-law may prohibit the use of accessory dwelling units as of right on lots where the principal dwelling contains more than 1 dwelling unit"
+      },
+      {
+        "id": "religious",
+        "text": "No zoning ordinance or by-law shall prohibit, unreasonably restrict or require a special permit or other discretionary zoning approval for the use of land owned by a religious sect or denomination for multi-family housing; provided, that 20 per cent of housing units built under this section shall be used as affordable housing"
+      },
+      {
+        "id": "religious-asofright",
+        "text": "Multi-family housing shall be allowed as of right on land owned by a religious sect or denomination"
+      },
+      {
+        "id": "tax-exempt",
+        "text": "A city or town that accepts this section may grant an exemption of up to the full amount of the taxable valuation of multi-family housing developed on land owned by a religious sect or denomination under Section 3C."
+      },
+      {
+        "id": "local-pref-include",
+        "text": "Any local preference shall comply with all applicable federal and state fair housing laws, and shall include current residents, employees of the municipality and local businesses, including persons hired to work in the municipality, and households with children attending public schools in the municipality or public schools within the school district in which the municipality is located."
+      },
+      {
+        "id": "hpp",
+        "text": "Each municipality in the commonwealth shall, every 5 years, establish and submit to the executive office of housing and livable communities a housing production plan that sets forth the municipality’s strategy to meet its affordable housing needs"
+      },
+      {
+        "id": "hpp-zoning",
+        "text": "within 2 years of receiving an approved housing production plan under this section, each municipality shall adopt or update zoning ordinances and bylaws in order to comply with the approved housing production plan."
+      },
+      {
+        "id": "transit-density",
+        "text": "shall allow, as of right and with no minimum parking requirements for dwelling units, mixed-use development or multifamily housing with a minimum gross density of 15 units per acre, subject to any further limitations imposed by section 40 of chapter 131 and title 5 of the state environmental code established pursuant to section 13 of chapter 21A, for parcels located not more than 0.5 miles from a commuter rail station, subway station, ferry terminal or bus station, if applicable."
+      },
+      {
+        "id": "set-aside",
+        "text": "Any development permitted pursuant to subsections (a) or (b) that includes 10 or more residential units shall set aside a minimum of 15 per cent of the residential units to households earning at or below 80 per cent of the area median income or a minimum of 10 per cent of the residential units to households earning at or below 50 per cent of the area median income"
+      },
+      {
+        "id": "deadline-2028",
+        "text": "If a municipality fails to adopt new ordinances or by-laws or amend existing ordinances or by-laws to comply with the provisions this section by January 1, 2028, any noncompliant existing regulation shall become null and void"
+      },
+      {
+        "id": "sub-lot-size",
+        "text": "provided further, that the maximum lot size for each newly created lot shall not be greater than 10,000 square feet; provided further, that the use of the lots shall be exclusively for residential purposes."
+      },
+      {
+        "id": "no-hearing",
+        "text": "If the plan meets criteria for a by-right subdivision, the board shall, without a public hearing, approve such plan."
+      },
+      {
+        "id": "sub-21-days",
+        "text": "If the board to which a plan to create a by-right subdivision fails to act upon such a plan or fails to notify the required parties within 21 days after its submission, the plan shall be approved as a by-right subdivision."
+      },
+      {
+        "id": "septic",
+        "text": "no regulation or amendment thereto that relates to the minimum requirements for subsurface disposal of sanitary sewage shall exceed the requirements of the state environmental code for the purposes of residential housing development or construction"
+      },
+      {
+        "id": "wetlands",
+        "text": "No city or town may enforce an ordinance or bylaw restricting the construction or development of housing or other work that is primarily residential in nature that exceeds the requirements of this section or of regulations promulgated by the department of environmental protection pursuant to this section"
+      },
+      {
+        "id": "inclusionary",
+        "text": "an inclusionary zoning ordinance or bylaw. As used in this paragraph the term “inclusionary zoning” shall refer to zoning ordinances or by-laws enacted principally to ensure some provision of affordable housing in any residential subdivision or multi-unit residential project of a size to be determined by the municipality"
+      },
+      {
+        "id": "greyfields",
+        "text": "shall jointly submit a report to the joint committee on housing identifying greyfields sites across the commonwealth, options for redevelopment or reuse that may include housing"
+      },
+      {
+        "id": "model-code",
+        "text": "The executive office of housing and livable communities may develop a model zoning code to assist municipalities"
+      },
+      {
+        "id": "sec4-effect",
+        "text": "Section 4 shall take effect one year after the effective date of this act"
+      },
+      {
+        "id": "sec13-effect",
+        "text": "Section 13 shall take effect one year after the effective date of this act."
+      }
+    ],
+    "proposes": [
+      {
+        "text": "Cities and towns could not use zoning to block duplexes or small multi-family buildings of up to 5 units on residential lots served by municipal water and sewer.",
+        "quote": "five-unit"
+      },
+      {
+        "text": "Near commuter rail, subway, ferry, or bus stations, local zoning would have to allow mixed-use or multifamily housing at 15 units per acre with no required parking.",
+        "quote": "transit-density"
+      }
+    ],
+    "changes": [
+      {
+        "heading": "More homes allowed on house lots",
+        "lines": [
+          {
+            "text": "On lots with municipal or central water and sewer, duplexes and buildings with up to 5 units would be allowed as of right.",
+            "quote": "five-unit"
+          },
+          {
+            "text": "On lots without that water and sewer service, duplexes and buildings with up to 3 units would be allowed as of right.",
+            "quote": "three-unit"
+          },
+          {
+            "text": "Local height rules could not hold these buildings to fewer than 3 stories.",
+            "quote": "height"
+          },
+          {
+            "text": "Towns could not set a minimum lot size for new housing developments.",
+            "quote": "min-lot"
+          }
+        ]
+      },
+      {
+        "heading": "Parking rules",
+        "lines": [
+          {
+            "text": "Towns could not require parking spaces for new homes within half a mile of a commuter rail station, ferry terminal, or bus station, and farther away could require at most one space per unit.",
+            "quote": "parking"
+          },
+          {
+            "text": "No parking minimum could be placed on housing mainly for seniors, such as assisted living and nursing homes.",
+            "quote": "senior-parking"
+          },
+          {
+            "text": "Accessory dwelling units would be allowed as of right even on lots where the main home already has more than one unit.",
+            "quote": "adu"
+          }
+        ]
+      },
+      {
+        "heading": "Housing on land owned by churches and other religious groups",
+        "lines": [
+          {
+            "text": "Zoning could not block or require a special permit for multi-family housing on religious-owned land, and 20 per cent of the units would have to be affordable.",
+            "quote": "religious"
+          },
+          {
+            "text": "Such housing would be allowed as of right on that land.",
+            "quote": "religious-asofright"
+          },
+          {
+            "text": "A city or town that accepted the new section could exempt this housing from some or all of its property tax.",
+            "quote": "tax-exempt"
+          }
+        ]
+      },
+      {
+        "heading": "Splitting lots and local reviews",
+        "lines": [
+          {
+            "text": "A plan that met the rules for a by-right subdivision would be approved without a public hearing.",
+            "quote": "no-hearing"
+          },
+          {
+            "text": "If the planning board did not act within 21 days, the plan would count as approved.",
+            "quote": "sub-21-days"
+          },
+          {
+            "text": "New lots made this way could be no bigger than 10,000 square feet and could be used only for homes.",
+            "quote": "sub-lot-size"
+          },
+          {
+            "text": "Local health board septic rules for homebuilding could not go beyond the state environmental code.",
+            "quote": "septic"
+          }
+        ]
+      },
+      {
+        "heading": "Town plans and deadlines",
+        "lines": [
+          {
+            "text": "Every city and town would have to send the state a housing production plan every 5 years.",
+            "quote": "hpp"
+          },
+          {
+            "text": "If its zoning did not allow the needed affordable housing, a town would have 2 years after plan approval to change that zoning.",
+            "quote": "hpp-zoning"
+          },
+          {
+            "text": "Local rules that did not match the new transit-area requirements by January 1, 2028 would become void.",
+            "quote": "deadline-2028"
+          },
+          {
+            "text": "Towns would be clearly allowed to adopt inclusionary zoning that reserves some units as permanently affordable.",
+            "quote": "inclusionary"
+          }
+        ]
+      }
+    ],
+    "affects": [
+      {
+        "text": "Cities and towns would have to change zoning rules that bar duplexes and small multi-family buildings.",
+        "quote": "five-unit"
+      },
+      {
+        "text": "Religious organizations that own land could build multi-family housing there as of right.",
+        "quote": "religious-asofright"
+      },
+      {
+        "text": "State-owned property could be set aside for low or moderate income housing before it is sold or transferred.",
+        "quote": "state-land"
+      }
+    ],
+    "personal": [
+      {
+        "fact": "owns",
+        "when": true,
+        "effect": "direct",
+        "lines": [
+          {
+            "text": "If your lot is on municipal or central water and sewer, zoning could not stop you from building a duplex or up to 5 units there.",
+            "quote": "five-unit"
+          },
+          {
+            "text": "If your home already has more than one unit, you could add an accessory dwelling unit as of right.",
+            "quote": "adu"
+          }
+        ]
+      },
+      {
+        "fact": "wants_single_family",
+        "when": true,
+        "effect": "direct",
+        "lines": [
+          {
+            "text": "Towns could not require a minimum lot size for new homes, so smaller house lots could be allowed.",
+            "quote": "min-lot"
+          },
+          {
+            "text": "Lots created through a by-right split could be up to 10,000 square feet and would be for homes only.",
+            "quote": "sub-lot-size"
+          }
+        ]
+      },
+      {
+        "fact": "rents",
+        "when": true,
+        "effect": "possible",
+        "lines": [
+          {
+            "text": "New transit-area projects with 10 or more units would have to set aside units for households with lower incomes.",
+            "quote": "set-aside"
+          }
+        ],
+        "notStated": {
+          "text": "The bill does not mention rent limits or protections for people already renting.",
+          "terms": [
+            "rent control",
+            "tenant"
+          ]
+        }
+      },
+      {
+        "fact": "rides_transit",
+        "when": true,
+        "effect": "possible",
+        "lines": [
+          {
+            "text": "More homes could be built within half a mile of commuter rail, subway, ferry, and bus stations.",
+            "quote": "transit-density"
+          }
+        ],
+        "notStated": {
+          "text": "The bill does not mention how often transit runs or what riders pay.",
+          "terms": [
+            "fares",
+            "bus schedules"
+          ]
+        }
+      },
+      {
+        "fact": "drives",
+        "when": true,
+        "effect": "possible",
+        "lines": [
+          {
+            "text": "New housing near stations could be built with no parking spaces, and at most one space per unit could be required farther away.",
+            "quote": "parking"
+          }
+        ],
+        "notStated": {
+          "text": "The bill does not mention street parking or resident parking permits.",
+          "terms": [
+            "on-street parking",
+            "parking permit"
+          ]
+        }
+      },
+      {
+        "fact": "kids_in_schools",
+        "when": true,
+        "effect": "direct",
+        "lines": [
+          {
+            "text": "If a town set a local preference for homes on religious-owned land, households with children in its public schools would have to be included.",
+            "quote": "local-pref-include"
+          }
+        ]
+      },
+      {
+        "fact": "runs_business_here",
+        "when": true,
+        "effect": "possible",
+        "lines": [
+          {
+            "text": "Any local preference for these homes would have to include employees of local businesses and people hired to work in the town.",
+            "quote": "local-pref-include"
+          }
+        ],
+        "notStated": {
+          "text": "The bill does not say anything about business owners themselves or about commercial zoning rules.",
+          "terms": [
+            "business owners",
+            "commercial zoning"
+          ]
+        }
+      }
+    ],
+    "takesEffect": [
+      {
+        "label": "One year after the act takes effect",
+        "line": {
+          "text": "If it became law, the new limits on lot size, parking, and bans on duplexes would start a year later.",
+          "quote": "sec4-effect"
+        }
+      },
+      {
+        "label": "One year after the act takes effect",
+        "line": {
+          "text": "If it became law, the by-right subdivision section would start a year later.",
+          "quote": "sec13-effect"
+        }
+      },
+      {
+        "label": "Jan 1, 2028",
+        "line": {
+          "text": "Local rules that did not comply with the transit-area housing section by that date would become void.",
+          "quote": "deadline-2028"
+        }
+      }
+    ],
+    "versionNotes": [],
+    "author": "model"
+  }
+}

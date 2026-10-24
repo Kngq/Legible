@@ -1,0 +1,207 @@
+{
+  "bill": "H4699",
+  "model": "claude-opus-5",
+  "generatedOn": "2026-10-24",
+  "fetchedOn": "2026-10-24",
+  "draft": {
+    "quotes": [
+      {
+        "id": "commission",
+        "text": "there shall be a special commission to study and define conditions under which Single-Stair Multi-Family Residential buildings up to six stories shall be legalized in Massachusetts"
+      },
+      {
+        "id": "code-amendment",
+        "text": "The commission shall produce a building code amendment that allows single-stair multi-family residential buildings of up to six stories, including measures for mitigating any adverse health and safety impacts unique to single-stair multi-family residential buildings."
+      },
+      {
+        "id": "fire-measures",
+        "text": "Said measures mitigating any adverse health and safety impacts would include general fire prevention measures, including smoke alarms, sprinkler systems, fire-resistant materials, emergency exit strategies, and any safety measures pertinent to 527 CMR 1.00."
+      },
+      {
+        "id": "members-chair",
+        "text": "The commission shall consist of the secretary of housing and livable communities, or their designee, who shall serve as chair, 2 members of the Massachusetts House of Representatives, or their designees, 2 members of Massachusetts Senate, or their designees"
+      },
+      {
+        "id": "members-safety",
+        "text": "1 member representing the Fire Chiefs Association of Massachusetts, 2 members of the American Institute of Architects, 1 member who is a practicing fire engineer representing the National Fire Protection Association, 2 members representing the Board of Building Regulations and Standards"
+      },
+      {
+        "id": "members-rest",
+        "text": "1 member representing the American Planning Association Massachusetts Chapter, 1 member representing the Home Builders and Remodelers Association, 1 member representing NAIOP, 1 member representing the Center for Building in North America, 1 member representing a building official employed by a municipality with a Class 1 Fire Department, and 1 member representing Abundant Housing Massachusetts."
+      },
+      {
+        "id": "report-base",
+        "text": "The study shall build on the report Legalizing Mid-Rise Single-Stair Housing in Massachusetts produced by the Harvard Joint Center for Housing Studies, Boston Indicators, and Utile"
+      },
+      {
+        "id": "study-parts",
+        "text": "a technical study into the safety of single-stair residential buildings compared to two-staircase buildings, and a process map and timeline for implementation of drafted building code amendment"
+      },
+      {
+        "id": "deadline",
+        "text": "Not later than July 31, 2026, the commission shall file its study with the clerks of the house of representatives and the senate and the joint committee on housing."
+      }
+    ],
+    "proposes": [
+      {
+        "text": "The bill would set up a special commission to study when apartment buildings of up to six stories with a single staircase could be allowed in Massachusetts.",
+        "quote": "commission"
+      },
+      {
+        "text": "The commission would write a proposed building code change allowing such buildings, along with steps to handle health and safety risks that are specific to them.",
+        "quote": "code-amendment"
+      }
+    ],
+    "changes": [
+      {
+        "heading": "What the commission would do",
+        "lines": [
+          {
+            "text": "It would study and define the conditions under which single-stair apartment buildings up to six stories could be legal in the state.",
+            "quote": "commission"
+          },
+          {
+            "text": "It would draft an actual building code amendment, not just a report.",
+            "quote": "code-amendment"
+          },
+          {
+            "text": "The work would build on an existing report about mid-rise single-stair housing in Massachusetts.",
+            "quote": "report-base"
+          },
+          {
+            "text": "The study would compare the safety of single-stair buildings with buildings that have two staircases, and would lay out a timeline for putting the code change in place.",
+            "quote": "study-parts"
+          }
+        ]
+      },
+      {
+        "heading": "Safety measures to be covered",
+        "lines": [
+          {
+            "text": "The measures would include smoke alarms, sprinkler systems, fire-resistant materials, and emergency exit plans.",
+            "quote": "fire-measures"
+          },
+          {
+            "text": "They would also cover safety rules tied to the state fire code section 527 CMR 1.00.",
+            "quote": "fire-measures"
+          }
+        ]
+      },
+      {
+        "heading": "Who would sit on the commission",
+        "lines": [
+          {
+            "text": "The state housing secretary, or their designee, would chair it, with 2 members from the House and 2 from the Senate.",
+            "quote": "members-chair"
+          },
+          {
+            "text": "Fire chiefs, a practicing fire engineer from the National Fire Protection Association, architects, and the state building code board would each have seats.",
+            "quote": "members-safety"
+          },
+          {
+            "text": "Planners, home builders, commercial real estate, a municipal building official, and a housing group would also have seats.",
+            "quote": "members-rest"
+          }
+        ]
+      },
+      {
+        "heading": "Report",
+        "lines": [
+          {
+            "text": "The commission would file its study with the House and Senate clerks and the joint committee on housing.",
+            "quote": "deadline"
+          }
+        ]
+      }
+    ],
+    "affects": [
+      {
+        "text": "Builders, architects, planners, and fire officials would take part in writing the proposed code change.",
+        "quote": "members-rest"
+      },
+      {
+        "text": "Future apartment buildings of up to six stories could be built with one staircase if the code amendment were adopted.",
+        "quote": "code-amendment"
+      },
+      {
+        "text": "A city or town with a Class 1 Fire Department would have a building official on the commission.",
+        "quote": "members-rest"
+      }
+    ],
+    "personal": [
+      {
+        "fact": "rents",
+        "when": true,
+        "effect": "possible",
+        "lines": [
+          {
+            "text": "If a code change like the one studied were adopted, apartment buildings of up to six stories with a single staircase could be built, which might change what housing is available over time.",
+            "quote": "code-amendment"
+          }
+        ],
+        "notStated": {
+          "text": "The bill text does not mention tenants, leases, or evictions.",
+          "terms": [
+            "tenant",
+            "lease",
+            "eviction",
+            "landlord"
+          ]
+        }
+      },
+      {
+        "fact": "owns",
+        "when": true,
+        "effect": "possible",
+        "lines": [
+          {
+            "text": "The commission would draft a code amendment for single-stair multi-family buildings of up to six stories, which could affect what may be built on multi-family lots later.",
+            "quote": "code-amendment"
+          }
+        ],
+        "notStated": {
+          "text": "The bill text does not mention zoning, property taxes, or existing houses.",
+          "terms": [
+            "zoning",
+            "property tax",
+            "renovation",
+            "single-family"
+          ]
+        }
+      },
+      {
+        "fact": "state_employee",
+        "when": true,
+        "effect": "possible",
+        "lines": [
+          {
+            "text": "The secretary of housing and livable communities, or a person they pick, would chair the commission, so state staff could be assigned to the work.",
+            "quote": "members-chair"
+          }
+        ],
+        "notStated": {
+          "text": "The bill text does not mention pay, hours, or staffing for this work.",
+          "terms": [
+            "compensation",
+            "salary",
+            "collective bargaining",
+            "pension"
+          ]
+        }
+      }
+    ],
+    "takesEffect": [
+      {
+        "label": "July 31, 2026",
+        "line": {
+          "text": "If it became law, the commission would have to file its study by this date.",
+          "quote": "deadline",
+          "mark": "Not later than July 31, 2026"
+        },
+        "pastOn": "2026-08-01"
+      }
+    ],
+    "versionNotes": [],
+    "author": "model"
+  }
+}

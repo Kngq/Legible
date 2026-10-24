@@ -60,7 +60,8 @@ export function BillExplainer({
   const [allChanges, setAllChanges] = useState(false);
   const [allHistory, setAllHistory] = useState(false);
   const src = billCiteSource(e);
-  const line = (s: Line) => <CitedLine key={s.text} s={s} src={src} onChain={setChain} />;
+  // Keys include the position: a model's draft can repeat a sentence or a label.
+  const line = (s: Line, k: number) => <CitedLine key={`${k}-${s.quoteId}`} s={s} src={src} onChain={setChain} />;
   const { matched, open } = personalView(e, profile);
   const askable = open.filter((f) => canAskInCard(profile, f));
   const direct = matched.filter((r) => r.effect === "direct");
@@ -77,7 +78,7 @@ export function BillExplainer({
   const notes = e.versionNotes.length > 0 && (
     <ul className="mt-2 space-y-2 rounded-md bg-attention-soft px-3.5 py-3 text-small">
       {e.versionNotes.map((n) => (
-        <li key={n.text}>
+        <li key={`${n.entry.date}-${n.text}`}>
           <span className="font-semibold">{n.text}</span>{" "}
           <span className="text-muted-foreground">
             Official history, {n.entry.date} · {n.entry.branch}: {n.entry.action}
@@ -102,8 +103,8 @@ export function BillExplainer({
           <PartLabel n={2}>What would change</PartLabel>
           <p className="mt-1 text-small text-muted-foreground">If it became law. Each line opens the words in the bill it comes from.</p>
           {notes}
-          {groups.map((g) => (
-            <div key={g.heading} className={ROW}>
+          {groups.map((g, k) => (
+            <div key={`${k}-${g.heading}`} className={ROW}>
               <h4 className={LABEL}>{g.heading}</h4>
               {g.lines.map(line)}
             </div>
@@ -203,11 +204,11 @@ export function BillExplainer({
         {e.takesEffect.length > 0 && (
           <div className={ROW}>
             <p className={LABEL}>When it would start</p>
-            {e.takesEffect.map((t) => (
-              <div key={t.label} className="mt-3">
+            {e.takesEffect.map((t, k) => (
+              <div key={`${k}-${t.label}`} className="mt-3">
                 <span className="inline-block rounded-sm border border-border px-2.5 py-1 text-small font-semibold">{t.label}</span>
                 {t.pastOn && today >= t.pastOn && <span className="ml-2 inline-block rounded-sm bg-attention-soft px-2.5 py-1 text-small font-semibold">Already passed</span>}
-                {line(t.line)}
+                {line(t.line, k)}
                 {t.pastOn && today >= t.pastOn && <p className="text-small text-muted-foreground">This date in the saved text has already passed. A final version could set a new one.</p>}
               </div>
             ))}

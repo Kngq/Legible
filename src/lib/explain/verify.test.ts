@@ -66,6 +66,39 @@ describe("verifyExplainer", () => {
     expect(reviewed.quotes.every((q) => q.status === "reviewed")).toBe(true);
   });
 
+  it("prune mode drops a model's failing lines and keeps the rest", () => {
+    const d = draft({
+      author: "model",
+      quotes: [
+        { id: "duplex", text: "Cities shall allow duplexes on residential lots." },
+        { id: "start", text: "This act shall take effect one year after passage." },
+        { id: "made-up", text: "Cities shall build parks." },
+      ],
+      proposes: [
+        { text: "Cities would have to allow duplexes.", quote: "duplex" },
+        { text: "Cities must build parks.", quote: "made-up" },
+      ],
+      changes: [{ heading: "Parks", lines: [{ text: "This is good for parks, which could grow.", quote: "duplex" }] }],
+      personal: [{ fact: "owns", when: true, effect: "possible", lines: [{ text: "You could add a unit.", quote: "duplex" }], notStated: { text: "It does not mention duplexes.", terms: ["duplex"] } }],
+    });
+    const r = verifyExplainer({ draft: d, text: TEXT, source, history: [], mode: "prune" });
+    expect(r.errors).toEqual([]);
+    expect(r.explainer.provenance).toBe("ai_draft");
+    expect(r.explainer.proposes.map((l) => l.text)).toEqual(["Cities would have to allow duplexes."]);
+    expect(r.explainer.changes).toEqual([]);
+    expect(r.explainer.quotes.map((q) => q.id)).not.toContain("bill-S1-made-up");
+    // The rule stays; only its false "does not mention" sentence goes.
+    expect(r.explainer.personal[0].notStated).toBeUndefined();
+    expect(r.dropped.some((x) => x.includes("not found word for word"))).toBe(true);
+    expect(r.dropped.some((x) => x.includes("banned words good"))).toBe(true);
+    expect(r.dropped.some((x) => x.includes("but it does"))).toBe(true);
+  });
+
+  it("prune mode blocks a draft with nothing left to say", () => {
+    const d = draft({ author: "model", proposes: [{ text: "Cities must allow duplexes.", quote: "duplex" }] });
+    expect(verifyExplainer({ draft: d, text: TEXT, source, history: [], mode: "prune" }).errors).toEqual(["proposes: no line survived verification"]);
+  });
+
   it("finds the nearest section heading", () => {
     const n = normalize(TEXT);
     expect(sectionAt(n, n.indexOf("This act"))).toBe("Section 2");

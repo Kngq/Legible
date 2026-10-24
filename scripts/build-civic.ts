@@ -6,6 +6,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import type { CivicItem } from "@/lib/engine/civic";
+import type { ExplainerDraft } from "@/lib/explain/types";
 import { verifyExplainer } from "@/lib/explain/verify";
 import { findBannedWords } from "@/lib/vocab";
 import { locateQuote, normalize } from "@/lib/verify/normalize";
@@ -31,6 +32,9 @@ const official = (url: string) => {
 
 const warnings: string[] = [];
 const BILLS_SAVED = path.join(root, "data/official/bills");
+const DRAFTS = path.join(root, "data/drafts");
+/** Preview: use model drafts even where a person's draft exists. Never commit the result. */
+const PREFER_DRAFTS = process.argv.includes("--prefer-drafts");
 const BILLS_PUBLIC = path.join(root, "public/official/bills");
 
 interface BillSnapshot {
@@ -68,13 +72,24 @@ function billOriginal(c: (typeof CIVIC)[number]): Pick<CivicItem, "original" | "
   const words = text.split(/\s+/).length;
   const hash = crypto.createHash("sha256").update(raw).digest("hex");
   // A structured explanation, if one is written: every quote found in this saved text, or the build fails.
+  // A person's draft wins and must pass every check. Without one, a model's draft
+  // (npm run data:draft) ships as an AI draft with failed lines dropped.
   let explainer: CivicItem["explainer"];
-  const draft = BILL_EXPLAINERS[bill];
-  if (draft) {
-    const title = snap.document.Title?.trim() ?? bill;
-    const r = verifyExplainer({ draft, text, history, source: { kind: "bill", id: bill, title, url: c.source.url, file: `/official/bills/${bill}.json`, hash, savedOn: snap.fetchedOn } });
+  const title = snap.document.Title?.trim() ?? bill;
+  const source = { kind: "bill" as const, id: bill, title, url: c.source.url, file: `/official/bills/${bill}.json`, hash, savedOn: snap.fetchedOn };
+  const generated = path.join(DRAFTS, `${bill}.json`);
+  const hand = PREFER_DRAFTS && fs.existsSync(generated) ? undefined : BILL_EXPLAINERS[bill];
+  if (hand) {
+    const r = verifyExplainer({ draft: hand, text, history, source });
     for (const e of r.errors) errors.push(`${c.id} explainer: ${e}`);
     explainer = r.explainer;
+  } else if (fs.existsSync(generated)) {
+    const saved = JSON.parse(fs.readFileSync(generated, "utf8")) as { draft: ExplainerDraft; fetchedOn: string };
+    if (saved.fetchedOn !== snap.fetchedOn) warnings.push(`${c.id}: the AI draft was written from the ${saved.fetchedOn} snapshot; this one is ${snap.fetchedOn}`);
+    const r = verifyExplainer({ draft: { ...saved.draft, author: "model" }, text, history, source, mode: "prune" });
+    for (const d of r.dropped) warnings.push(`${c.id} AI draft dropped: ${d}`);
+    if (r.errors.length) warnings.push(`${c.id} AI draft not shipped: ${r.errors.join("; ")}`);
+    else explainer = r.explainer;
   }
   return {
     explainer,
@@ -165,6 +180,7 @@ const used = new Set(CIVIC.map((c) => c.seedId).filter(Boolean));
 for (const s of seed.civic_items) {
   if (!used.has(s.id) && !EXCLUDED[s.id]) errors.push(`seed item ${s.id} is neither used nor excluded`);
 }
+if (PREFER_DRAFTS) warnings.push("--prefer-drafts: model drafts replace hand-written ones where both exist. Preview only; rebuild without the flag before committing.");
 for (const bill of Object.keys(BILL_EXPLAINERS)) {
   if (!items.some((i) => i.explainer?.source.id === bill)) errors.push(`explainer for ${bill}: no bill item uses it`);
 }
