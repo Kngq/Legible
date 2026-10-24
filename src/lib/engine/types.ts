@@ -66,7 +66,8 @@ export interface DocumentData {
   docType: DocType;
   decideBy?: DecideBy;
   date?: string;
-  source: { name: string; url?: string };
+  /** hash: SHA-256 of the official file; pagesHash: of the page text quotes are checked against; savedOn: when the file was saved. */
+  source: { name: string; url?: string; file?: string; hash?: string; pagesHash?: string; savedOn?: string };
   /** reviewed: a person checked every quote. verified: machine-checked, review pending. ai_draft: from an upload. */
   provenance: Provenance;
   measures: Measure[];

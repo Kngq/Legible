@@ -183,6 +183,11 @@ const doc: DocumentData = {
   decideBy: DOCUMENT.decideBy,
   date: "2026-11-03",
   source: {
+    file: PDF_PUBLIC,
+    hash: crypto.createHash("sha256").update(fs.readFileSync(path.join(root, "data/official/IFV_2026_English.pdf"))).digest("hex"),
+    pagesHash: crypto.createHash("sha256").update(fs.readFileSync(path.join(root, "data/official/IFV_2026_English.pages.json"))).digest("hex"),
+    // The day the booklet PDF was saved into this repository (first commit, a9834b2).
+    savedOn: "2026-10-24",
     name: "Information for Voters 2026, Secretary of the Commonwealth. Summaries by the Attorney General; YES and NO statements by the Attorney General and the Secretary jointly.",
     url: "https://www.sec.state.ma.us/divisions/elections/research-and-statistics/2026-Information-for-voters/",
   },

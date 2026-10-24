@@ -9,6 +9,7 @@ import { answerFact, canAskInCard, clearFact, declineFact, skipFact, type Profil
 import type { Card, DocumentData, Measure } from "@/lib/engine/types";
 import { DIRECTION_DEFS, FACT_DEFS, SENSITIVE_FACTS, TOPIC_DEFS, type FactId } from "@/lib/vocab";
 import { DirectionMark, Glyph } from "./icons";
+import { Fingerprint } from "./FullText";
 import { FactQuestion } from "./MeasureCard";
 import { areaOf, type SheetView } from "./ProfileSheet";
 import { FOCUS, Tag } from "./ui";
@@ -130,12 +131,17 @@ export function ChainSheet({
     },
     {
       label: "The official file",
-      body: url ? (
+      body: (
+        <>
+          {url ? (
         <a href={url} target="_blank" rel="noreferrer" className={`mt-1 inline-flex min-h-11 items-center gap-2 text-body font-semibold underline underline-offset-4 ${FOCUS}`}>
           {sourceTitle(doc)} <Glyph name="external" size={16} />
         </a>
       ) : (
         <p className="mt-1 text-body font-semibold">{sourceTitle(doc)}</p>
+          )}
+          <Fingerprint source={doc.source} />
+        </>
       ),
     },
   ];

@@ -4,7 +4,7 @@
 // the exact page; "Read it here" loads that page range's text only when asked, so
 // long laws (Question 9 runs 41 pages) never weigh down the page.
 import { useState } from "react";
-import type { Measure } from "@/lib/engine/types";
+import type { DocumentData, Measure } from "@/lib/engine/types";
 import { Glyph } from "./icons";
 import { FOCUS } from "./ui";
 
@@ -32,7 +32,21 @@ export function FullTextLink({ measure }: { measure: Measure }) {
   );
 }
 
-export function FullText({ measure }: { measure: Measure }) {
+/** "Fingerprint 0d809a43…339b09, saved Oct 24, 2026": lets anyone check this copy matches the official file. */
+export function Fingerprint({ source }: { source: DocumentData["source"] }) {
+  if (!source.hash) return null;
+  const saved = source.savedOn ? new Date(`${source.savedOn}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : null;
+  return (
+    <p className="text-small text-muted-foreground">
+      <span title={`SHA-256 ${source.hash}`} className="font-mono">
+        Fingerprint {source.hash.slice(0, 8)}…{source.hash.slice(-6)}
+      </span>
+      {saved ? `, saved ${saved}` : ""}
+    </p>
+  );
+}
+
+export function FullText({ measure, source }: { measure: Measure; source?: DocumentData["source"] }) {
   const f = measure.fullText;
   const [pages, setPages] = useState<PageText[] | null>(null);
   const [state, setState] = useState<"idle" | "loading" | "error">("idle");
@@ -59,6 +73,11 @@ export function FullText({ measure }: { measure: Measure }) {
       <p className="mt-1 text-small text-muted-foreground">
         {f.label}, Information for Voters 2026, {pageLabel(f.pages)}. This is the original the summaries above come from.
       </p>
+      {source && (
+        <div className="mt-1">
+          <Fingerprint source={source} />
+        </div>
+      )}
       <div className="mt-3 flex flex-wrap gap-2">
         <a
           href={`${f.pdf}#page=${f.pages[0]}`}

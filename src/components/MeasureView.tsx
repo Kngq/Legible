@@ -188,7 +188,7 @@ export function MeasureView({
         </section>
       )}
 
-      <FullText measure={m} />
+      <FullText measure={m} source={doc.source} />
 
       <section id="draft" className="mt-10 scroll-mt-20">
         {drafting ? (
