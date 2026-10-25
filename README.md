@@ -6,6 +6,8 @@ Legible shows a Massachusetts resident the public decisions being made around th
 
 Built at **Hackachusetts** (October 24, 2026, civic action track).
 
+**Try it live: [nine-five-ochre.vercel.app](https://nine-five-ochre.vercel.app)**
+
 <p align="center">
   <img src="docs/screenshots/home.png" alt="Legible's For you page for a renter in Cambridge: a Coming up timeline of election dates and a registration deadline card explaining why it applies" width="720">
 </p>
