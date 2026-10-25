@@ -1,4 +1,4 @@
-# Design Document: Your Ballot, Wrapped
+# Design Document: Ballot stories (first built as "Your Ballot, Wrapped")
 
 ## Overview
 
@@ -34,13 +34,15 @@ src/components/wrapped/StoryPlayer.tsx   dialog, progress, tap zones, keys, focu
 src/components/wrapped/slides.tsx        the six slide compositions
 src/components/wrapped/SharePreview.tsx  preview sheet: switches, the drawn PNG, Save image
 src/components/wrapped/share-image.ts    canvas drawing and download (browser only)
-src/components/wrapped/WrappedInvite.tsx For you module
+src/components/wrapped/StoriesEntry.tsx  Explore feature (StoriesFeature) and For you link (StoriesLink)
 src/components/wrapped/wrapped.module.css keyframes for paper, constellation drift, stat rise
 ```
 
 The `lib` modules are pure TypeScript with no React or DOM, so they run in tests.
 
-`LegibleApp` adds route kind `wrapped`. The page underneath is Home (or first run); the screen key and scroll handling treat `#/wrapped` as `#/`, so opening and closing the story never remounts or scrolls the page beneath it. Close: `history.back()` when this session pushed the entry, otherwise replace with `#/`. "Explore this decision" replaces `#/wrapped` with the measure route.
+`LegibleApp` adds route kind `stories` with `over: "feed" | "explore"` (`#/stories`, `#/explore/stories`; `#/wrapped` parses as over For you). `screenRoute` maps it to the page underneath, which renders as usual (or first run); the screen key and scroll memory use that page, so opening and closing the stories never remounts or scrolls it, and the header tab stays on it. Close: `history.back()` when this session pushed the entry, otherwise replace with the page underneath. "Explore this decision" writes `storySlide` into the stories entry's `history.state`, then pushes the measure route with `fromStories`; the measure page then shows "Back to stories", and back remounts the player at `storySlide`. "Explore decisions" goes to Explore (just closes when already over Explore).
+
+Controls (W6): progress segments plus "Ballot stories · N of 6" and a labelled "Close" pill at the top; labelled "Previous" and "Next" pills at the bottom, "Done" on the last story. All are quiet surface pills, so each story's own primary action stays the only plum button.
 
 ## Story model
 

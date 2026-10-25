@@ -119,7 +119,7 @@ Changing an answer re-sorts the feed instantly, in the browser, with no network 
 ### 9. Share and come back (dev only)
 
 - **Your ballot, wrapped**: a six-slide story about the ballot told through the person's own profile (Opening, Your world, What connects to you, On your radar, One decision to explore, Your shareable moment). It ends with an image saved on the device; the town and topics appear on it only if the person turns them on.
-- **Civic plant**: a companion that grows through five stages (Seed to Blooming) as the person explores decisions and opens official sources, never from personal answers. **Your journey** shows the dated stages reached.
+- **Your little garden**: exploring earns water (once per page) and watering grows the plant through five stages (Seed to Blooming), never from personal answers or votes. Hold to water; the journey shows the dated stages reached.
 
 ---
 
@@ -212,5 +212,4 @@ Changing an answer re-sorts the feed instantly, in the browser, with no network 
 
 ### In development
 
-- Growth Story and changing plant stages (`GROWTH_TRACKING_ENABLED`); the plant itself shows in production as a fixed companion; real growth tracking still to be agreed (task 23.7)
 - Planned, not built: document upload with AI analysis, persona switcher, "What left your browser" panel, draft a message to a legislator

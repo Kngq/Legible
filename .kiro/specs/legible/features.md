@@ -55,7 +55,7 @@ When a change alters a feature, update its section here in the same commit.
 
 #### Acceptance Criteria
 
-1. THE SYSTEM SHALL route by URL hash: `#/` For you, `#/explore` Explore, `#/doc/<docId>` ballot guide, `#/measure/<docId>/<measureId>` ballot question page, `#/item/<itemId>` civic item or bill page, and `#/wrapped` (F13). Any other hash SHALL show For you.
+1. THE SYSTEM SHALL route by URL hash: `#/` For you, `#/explore` Explore, `#/doc/<docId>` ballot guide, `#/measure/<docId>/<measureId>` ballot question page, `#/item/<itemId>` civic item or bill page, and Ballot stories over For you (`#/stories`, or the older `#/wrapped`) or over Explore (`#/explore/stories`) (F13). Any other hash SHALL show For you.
 2. IF a `doc` or `measure` route names a document or measure that is not in the person's feed THEN THE SYSTEM SHALL show For you. A civic item SHALL open even when it belongs to another town, because items are public.
 3. Routes SHALL carry only public ids, never the town, a fact, or a topic.
 4. WHEN the person moves within the app THE SYSTEM SHALL push a history entry. The in-page Back button SHALL go back in history when this session pushed the entry, and otherwise SHALL replace the URL with the parent screen (a question page goes to its guide, everything else to For you).
@@ -64,7 +64,8 @@ When a change alters a feature, update its section here in the same commit.
 7. THE SYSTEM SHALL show a sticky header with:
    - the Legible mark, which opens a menu with "Who we are" and "Our mission" (closes on Escape or an outside click);
    - two tabs, "For you" and "Explore", with `aria-current="page"` on the active one. Tapping the active tab scrolls to the top. Detail pages have no active tab;
-   - the avatar ("Your profile"), which shows the plant (F14) and always opens the Civic Profile overview. A "!" badge SHALL show while no topics are set and topics were never confirmed.
+   - the garden button (F14): the plant at its stage and the water ready to pour (on phones, the drop and count only), which opens the garden;
+   - the avatar ("Your profile"), which shows the person's initial (or a person icon) and always opens the Civic Profile overview. A "!" badge SHALL show while no topics are set and topics were never confirmed.
 8. THE SYSTEM SHALL keep the "Login" and "Sign up" header buttons hidden (`SHOW_ACCOUNT_BUTTONS = false`). There are no accounts (see `docs/accounts-review.md`).
 9. On the first-run start screen the header SHALL show only the brand menu.
 
@@ -144,7 +145,7 @@ Differences from the plan: no ZIP code lookup (1.1); three steps instead of town
 
 ## F5 For you (home)
 
-**Status:** Production. **Code:** `src/components/Home.tsx`, `BriefCard.tsx`, `OriginalText.tsx`, `CursorCta.tsx`, `wrapped/WrappedInvite.tsx`. **Tests:** `home-copy.test.ts`, `timeline.test.ts`. **Traces to:** 20.3 to 20.6, 20.10.
+**Status:** Production. **Code:** `src/components/Home.tsx`, `BriefCard.tsx`, `OriginalText.tsx`, `CursorCta.tsx`, `wrapped/StoriesEntry.tsx`. **Tests:** `home-copy.test.ts`, `timeline.test.ts`. **Traces to:** 20.3 to 20.6, 20.10.
 
 **User Story:** As a resident, I want my home page to show what is coming up and the decisions closest to my life, so that I know what to read first.
 
@@ -152,7 +153,7 @@ Differences from the plan: no ZIP code lookup (1.1); three steps instead of town
 
 1. THE SYSTEM SHALL title the page "Your corner of {town}." ("the world" without a town), adding the person's name only when the line stays at most 32 characters, with "Understand what's happening around you, one decision at a time." and the plant (F14).
 2. THE SYSTEM SHALL show a profile line: the town (or an "Add your location" button), the housing label when known, and "Edit profile →". It SHALL never invent a town.
-3. THE SYSTEM SHALL show, in order: **Coming up** (F6), **Decisions for you**, the Wrapped invite (F13), and "Explore everything happening near you".
+3. THE SYSTEM SHALL show, in order: **Coming up** (F6), **Decisions for you**, and "Explore everything happening near you". Inside Decisions for you, one quiet text link, "New to these questions? Explore ballot stories →" (F13), sits under the featured decision when it is the ballot or a ballot question, otherwise at the end.
 4. **Decisions for you** SHALL list, in order: ballot questions an answer touches (when Election Day is among Coming up's dates), then the other decisions that relate to the person ranked by kind of connection (direct, potential, interest, open) and then by score, then ballot questions on the person's list. The first SHALL be the featured decision and the rest compact rows, with "Closest to your life first". IF nothing relates THEN THE SYSTEM SHALL say "Nothing matches your answers yet." with "Add details to your profile".
 5. The featured decision SHALL be the one raised surface on the page: meta, status, the headline, a short "what", the relevance note when supported, a primary action, and a secondary link.
 6. Each row SHALL stretch its headline over the row and show "{label}: {reason}" with a compact "Details" toggle that names the exact answers behind it, one line on the kind of connection ("Directly related to your situation.", "A possible connection, not a certain effect.", "Matches a subject you follow; nothing says it changes your situation.", "Depends on something you haven't told Legible yet."), and "Update your profile".
@@ -176,17 +177,18 @@ Differences from the plan: no ZIP code lookup (1.1); three steps instead of town
 
 ## F7 Explore
 
-**Status:** Production. **Code:** `src/components/Explore.tsx`, `src/components/updates.tsx`. **Traces to:** 20.4, 20.7, 20.9.
+**Status:** Production. **Code:** `src/components/Explore.tsx`, `src/components/updates.tsx`, `wrapped/StoriesEntry.tsx`. **Traces to:** 20.4, 20.7, 20.9.
 
 **User Story:** As a resident, I want one place for everything coming up near me and across Massachusetts, including bills, so that I can look beyond my ballot.
 
 #### Acceptance Criteria
 
 1. THE SYSTEM SHALL show "Explore" with "Deadlines, meetings, and proposals in {town} and across Massachusetts. Updates that may affect you come first, then the soonest."
-2. THE SYSTEM SHALL list updates, bills included, 8 at first, with "Show all {n} updates" / "Show fewer". Each card SHALL show its kind, a tag ("May affect you", "You follow this", "Might apply"), title, when, explanation, "Why you're seeing this", the "Official text" line, and actions.
-3. IF a town is set and no town documents exist THEN THE SYSTEM SHALL say "More {town} updates are coming." in one short note.
-4. THE SYSTEM SHALL show decided items collapsed under "Already decided {n}".
-5. THE SYSTEM SHALL end with "How Legible works": "Your details stay with you" (with "Manage or clear them"), "Official sources", and "You decide" ("It never tells you how to vote.").
+2. THE SYSTEM SHALL feature Ballot stories (F13) after the header and before the list: "Your ballot, in stories", what they are, and "Explore ballot stories →".
+3. THE SYSTEM SHALL list updates, bills included, 8 at first, with "Show all {n} updates" / "Show fewer". Each card SHALL show its kind, a tag ("May affect you", "You follow this", "Might apply"), title, when, explanation, "Why you're seeing this", the "Official text" line, and actions.
+4. IF a town is set and no town documents exist THEN THE SYSTEM SHALL say "More {town} updates are coming." in one short note.
+5. THE SYSTEM SHALL show decided items collapsed under "Already decided {n}".
+6. THE SYSTEM SHALL end with "How Legible works": "Your details stay with you" (with "Manage or clear them"), "Official sources", and "You decide" ("It never tells you how to vote.").
 
 ## F8 Ballot guide
 
@@ -294,7 +296,7 @@ Differences from the plan: no ZIP code lookup (1.1); three steps instead of town
 10. IF no API key is configured THEN both routes SHALL answer 503 and the dock SHALL say Kiro isn't connected and show the official passage and source. WHILE offline THE SYSTEM SHALL say so without a request and point to the official text.
 11. THE SYSTEM SHALL offer three checked starter questions per ballot question, and three general ones when no question is open.
 
-## F13 Your ballot, wrapped
+## F13 Ballot stories (first built as "Your ballot, wrapped")
 
 **Status:** Production (`WRAPPED_ENABLED` is on, `src/lib/wrapped/flag.ts`). **Full spec:** `.kiro/specs/ballot-wrapped/`. **Code:** `src/components/wrapped/`, `src/lib/engine/wrapped*.ts`, `src/lib/vocab/wrapped.ts`, `src/lib/engine/demo.ts`.
 
@@ -302,28 +304,35 @@ Differences from the plan: no ZIP code lookup (1.1); three steps instead of town
 
 #### Acceptance Criteria (summary; W1 to W12 govern)
 
-1. THE SYSTEM SHALL tell the story in six slides (Opening, Your world, What connects to you, On your radar, One decision to explore, Your shareable moment), advanced only by the person (tap right 70% or swipe left for next, left 30% or swipe right for back, arrow keys, buttons), never automatically.
+1. THE SYSTEM SHALL tell the story in six slides (Opening, Your world, What connects to you, On your radar, One decision to explore, Your shareable moment), advanced only by the person, never automatically: labelled Previous and Next buttons (Done on the last), arrow keys, and also tap right 70% or swipe left for next, left 30% or swipe right for back. "Ballot stories · N of 6" and a labelled Close stay visible.
 2. THE SYSTEM SHALL build every slide from one `buildCards` call, use only counts from the ballot data and verified sentences, keep facts (slide 3) and topics (slide 4) apart, and never use or imply what the person has read.
 3. THE SYSTEM SHALL draw a 1080 × 1920 share image on the device with the town and topics off by default, sensitive topics unchecked even after topics are switched on, and never the name or life facts. IF drawing fails or takes over 4 seconds THEN it SHALL say so in place.
-4. THE SYSTEM SHALL open from the For you invite or `#/wrapped`, as a modal dialog with focus trapped, Ask Kiro hidden, "Slide N of 6. {heading}" announced, and focus returned on close.
+4. THE SYSTEM SHALL open from the Explore feature or the For you link, over the page that opened it, as a modal dialog with focus trapped, Ask Kiro hidden, "Story N of 6. {heading}" announced, and focus returned on close. A question page opened from a story SHALL say "Back to stories" and return to that story.
 5. WHEN loaded with `?demo=true` THE SYSTEM SHALL use a fixed, labelled example profile (a Cambridge renter who rides transit) and SHALL NOT touch storage.
-6. THE SYSTEM SHALL show the invite on For you after Decisions for you, in development and production alike.
+6. THE SYSTEM SHALL feature the stories near the top of Explore and offer only a quiet link on For you, in development and production alike. The closer story SHALL head its cited sentences "What the official text says" and link the official voter guide page.
 
-## F14 Plant companion and Growth Story
+## F14 Plant companion and garden
 
-**Status:** Plant companion in production at a fixed look; growth tracking and Growth Story development only (`GROWTH_TRACKING_ENABLED` in `src/components/plant/useGrowth.ts`). **Code:** `src/components/plant/`, `src/lib/growth.ts`, `src/app/dev/plant/`. **Tests:** `src/lib/growth.test.ts`. **Replaces:** Requirement 5 (avatar) and the meter ring in 1.9.
+**Status:** Production. **Code:** `src/components/plant/` (`Garden.tsx`, `GardenButton.tsx`, `HomePlant.tsx`, `CivicPlant.tsx`, `useGarden.ts`), `src/lib/garden.ts`, `src/lib/growth.ts`, `src/app/dev/plant/`. **Tests:** `src/lib/garden.test.ts`, `src/lib/growth.test.ts`, `src/lib/nav/route.test.ts`. **Replaces:** Requirement 5 (avatar) and the meter ring in 1.9.
 
-**User Story:** As a resident, I want a calm companion that grows as I explore decisions, never from what I tell Legible about myself.
+**User Story:** As a resident, I want a little plant I can water and watch grow as I explore decisions, never from what I tell Legible about myself or how I vote.
 
 #### Acceptance Criteria
 
-1. THE SYSTEM SHALL show the same plant in the header avatar, beside the For you title, and at the top of the Civic Profile with the optional name under it.
-2. In production THE SYSTEM SHALL show one fixed look (`COMPANION_STAGE = 3`) announced as "Your plant", with no stage name, totals, journey link, or Growth Story; the For you plant SHALL open the Civic Profile.
-3. THE SYSTEM SHALL define five stages: Seed (0 decisions, 0 sources), Sprout (1, 0), Growing (3, 1), Flourishing (6, 3), Blooming (9, 5). Growth SHALL come only from decisions explored and official sources opened, never from profile answers, topics, or completion, and a stage SHALL never go down.
-4. In development THE SYSTEM SHALL use labelled preview data ("Development only. Dates and totals are illustrative.") with controls for an empty story and stages 1 to 5, and SHALL show "Your journey": reached stages with dates, a faint next stage or "Your plant is in full bloom.", and a privacy note.
-5. The plant SHALL sway and blink, lean toward a nearby mouse (never on touch), squash softly on tap, and change instantly under reduced motion.
-6. `/dev/plant` SHALL return 404 in production.
-7. Real tracking is not built (task 23.7).
+1. THE SYSTEM SHALL earn water only for exploring, once per page: opening a ballot question (3 drops), a civic item (2), the full voter guide (2), or an official source (1, any link that opens in a new tab). Revisiting a page SHALL earn nothing. Profile answers, topics, completion, and votes SHALL never earn water.
+2. A new garden SHALL start as a seed with 3 welcome drops, so a first visit can water right away.
+3. THE SYSTEM SHALL define five stages by total drops poured: Seed (0), Sprout (3), Growing (8), Budding (15), Blooming (24). Every drop poured SHALL count, a stage SHALL never go down, and nothing SHALL decay or wilt with time away. Each stage SHALL have its own outline (after `design-references/garden-concept.png`): a seed half in the soil with a tiny shoot; a sprout with a clear stem and two leaves; a branching crown; the crown with small white blossoms; open white flowers with yellow hearts. Leaves SHALL be matte, muted botanical greens in varied, tapered shapes (no gloss), and from stage 3 thin side stems SHALL carry the outer leaves so the plant branches rather than stacking. The pot SHALL be a chubby terracotta pot with a face (big eyes, pink cheeks, a small mouth), and wherever it is shown large it SHALL sit in a small patch of textured soil (`design-references/soil-reference.png`), drawn in SVG.
+4. THE SYSTEM SHALL offer a garden at `#/garden` titled "Your garden", with a Back button, the plant large on a soft card (no scenery) with the stage ("Stage 2 of 5 · Sprout"), a line from the plant, and a blue watering can; a pill with the water ready and a "+" to Explore; progress ("3 of 5 drops to Growing") with a bar; "Dress up your plant"; and the journey (stages reached with dates). Pressing and holding "Water your plant" (pointer, or Space or Enter) SHALL pour drop by drop, speeding up, until release, the water runs out, or the plant grows; a tap SHALL pour one drop; "Pour all" SHALL pour everything without holding. It SHALL never pour more than the water there is.
+5. WHEN the plant grows THE SYSTEM SHALL show "New stage: {name}!", burst sparkles, a proud grin and a hop, and SHALL announce the new stage and progress in a polite live region. WHEN a pour ends it SHALL announce the drops poured and what is left to the next stage.
+6. The plant SHALL be expressive: happy (closed smiling eyes, rosy cheeks, a heart), curious (round eyes, a tilt, "?"), excited (> < eyes, a big smile, a hop on growing), sleepy (relaxed eyes and zZ after a long quiet spell), surprised (round eyes, a tiny open mouth, "!" on tap), and "ahh" with lifted leaves while watered, with small surprises (a blush with hearts, a wiggle, a sneeze) every few drops. These SHALL be visual only and never change growth.
+6a. "Dress up your plant" SHALL offer None, Glasses, Bow, Hat, and Scarf as one radio group; tapping an unlocked one SHALL put it on at once, None SHALL take it off, and only one is worn at a time. Glasses SHALL be available at once, the bow from Sprout, the hat from Growing, the scarf from Blooming; a locked one SHALL show a lock and, when tapped, say how it unlocks ("Unlocks when your plant starts blooming."). A newly unlocked one SHALL be marked "New" and announced. Glasses and the scarf SHALL be worn on the pot; the bow and the hat on the plant's crown, placed per stage. The accessory SHALL show wherever the plant does and SHALL be kept with the garden.
+7. On first visit THE SYSTEM SHALL show three steps under the garden's controls (water your seedling, explore to earn more, grow and dress up) that check off as they happen, with "Got it" to put them away.
+8. The For you plant SHALL show its stage and accessory in its soil, with one garden prompt under it and no other garden line in the hero: "💧 5 drops · Water your plant →" while water is waiting, otherwise "🌱 Your little garden →". Pressing the plant or the prompt SHALL open the garden. WHEN water is earned the header garden button SHALL show a brief "+N" and announce it politely; THE SYSTEM SHALL show no other reward notices.
+9. THE SYSTEM SHALL keep the garden between visits only while "Remember on this device" is on, and SHALL say otherwise in the garden ("Your garden lasts for this visit. Keep it on this device"). Clear my information SHALL reset it to a new seed. Demo mode SHALL NOT touch storage.
+10. The Civic Profile SHALL keep the plant as its avatar with the optional name under it and a "Visit your garden" link; watering and growth SHALL happen only in the garden.
+11. Under reduced motion every change SHALL still happen, instantly, with no idle motion, falling drops, or bursts. The plant SHALL lean toward a nearby mouse, never on touch.
+12. Plant varieties SHALL be defined in `VARIETIES` (`src/lib/growth.ts`); there is one, the little sprout.
+13. `/dev/plant` SHALL return 404 in production.
 
 ## F15 Privacy
 

@@ -8,13 +8,13 @@ It is an invitation to explore, not a recap of behaviour. It never says how to v
 
 The idea and the pure logic come from Layla's branch (`origin/layla_branch`, commit `f20bfe8`, an eight-slide "Ballot, Wrapped"). This spec replaces that design: six slides, the Notebook colour roles, no civic personality, opt-in sharing, and the current Legible shell.
 
-This feature is on in production since Oct 24, 2026 (`WRAPPED_ENABLED`, Requirement W11).
+This feature is on in production since Oct 24, 2026 (`WRAPPED_ENABLED`, Requirement W11). On Oct 24, 2026 it was renamed **Ballot stories** in the interface and moved from the bottom of For you to a featured section near the top of Explore, with a quiet link on For you (W10, W13). "Wrapped" survives only on the share image.
 
 Out of scope for this build: what the person has explored or read (category C below); comparisons with other people; achievements, streaks, or scores; auto-advancing slides; uploading or hosting the share image; social network integrations; town documents other than the bundled ballot.
 
 ## Glossary
 
-- **Story:** the six-slide player, with progress segments, opened from For you or from `#/wrapped`.
+- **Story (Ballot stories):** the six-story player, with progress segments, opened from Explore, the For you link, `#/stories`, `#/explore/stories`, or the old `#/wrapped`.
 - **Slide:** one full-screen page of the story with one idea.
 - **May affect you (category A):** measures whose rules fire on the person's answered life facts (`relevance === "touches"`). Comes only from facts.
 - **On your radar (category B):** topics the person picked. Comes only from topics.
@@ -96,11 +96,12 @@ Out of scope for this build: what the person has explored or read (category C be
 
 #### Acceptance Criteria
 
-1. THE SYSTEM SHALL show one thin progress segment per slide at the top; segments before the current slide are full, the current one fills, later ones are empty.
-2. THE SYSTEM SHALL advance only when the person asks: tap on the right 70% or swipe left goes forward; tap on the left 30% or swipe right goes back; Next and Back buttons do the same.
+1. THE SYSTEM SHALL show one thin progress segment per slide at the top, and "Ballot stories · N of 6" in words beside them; segments before the current slide are full, the current one fills, later ones are empty.
+2. THE SYSTEM SHALL advance only when the person asks. Labelled "Previous" and "Next" buttons are always visible and are the primary way to move; on the last story "Next" becomes "Done", which closes. Tap on the right 70% or swipe left also goes forward; tap on the left 30% or swipe right goes back; nothing requires a tap zone or a swipe.
 3. THE SYSTEM SHALL NOT auto-advance, so no information disappears before it is read.
 4. THE SYSTEM SHALL ignore taps and swipes that start on a button, link, or form control.
-5. THE SYSTEM SHALL close the story with the close button, with Escape, and with the browser back button, and SHALL return to where the person was.
+5. THE SYSTEM SHALL close the story with a labelled "Close" button, with Escape, with "Done", with a click on the scrim around the frame on wide screens, and with the browser back button, and SHALL return to the page that opened it (For you or Explore).
+7. WHEN the person leaves a story for a question page THE SYSTEM SHALL keep the story on its own history entry with the story it was on, label the question page's back button "Back to stories" in words, and reopen that same story on back.
 6. WHEN the person is on the last slide THE SYSTEM SHALL keep forward taps on that slide.
 
 ### Requirement W7: Accessibility
@@ -112,8 +113,8 @@ Out of scope for this build: what the person has explored or read (category C be
 1. THE SYSTEM SHALL render the story as a modal dialog with an accessible name, make the page behind it inert, trap focus inside it, and hide the Ask Kiro launcher while it is open.
 2. WHEN the story closes THE SYSTEM SHALL return focus to the control that opened it, when that control is still on the page.
 3. THE SYSTEM SHALL support ArrowRight and ArrowLeft for next and back (except inside a form control) and Escape to close (closing the share preview first when it is open).
-4. THE SYSTEM SHALL announce "Slide N of 6. <heading>" in a polite live region on every change.
-5. THE SYSTEM SHALL give every control an accessible label, describe the navigation keys to assistive technology, show "Tap to begin" on touch screens and "Press → or click to begin" with a mouse, keep captions at 13 px or larger, keep tap targets at least 44 px, and keep text at WCAG AA contrast in light and dark themes.
+4. THE SYSTEM SHALL announce "Story N of 6. <heading>" in a polite live region on every change.
+5. THE SYSTEM SHALL give every control an accessible label, describe the navigation keys to assistive technology, show "Tap Next to begin, or swipe" on touch screens and "Press Next or the → key to begin" with a mouse, keep captions at 13 px or larger, keep tap targets at least 44 px, and keep text at WCAG AA contrast in light and dark themes.
 6. WHILE the person prefers reduced motion THE SYSTEM SHALL change slides, show counts, and place the topic constellation instantly, with no floating or drifting.
 
 ### Requirement W8: Empty and partial states
@@ -137,15 +138,16 @@ Out of scope for this build: what the person has explored or read (category C be
 2. WHILE in demo mode THE SYSTEM SHALL NOT read, write, or remove any storage key, SHALL keep "Remember on this device" off and unavailable, and "Clear my information" SHALL reset memory only.
 3. THE SYSTEM SHALL honour `?demo=true` only where Wrapped is enabled.
 
-### Requirement W10: Entry point
+### Requirement W10: Entry points
 
-**User Story:** As a For you reader, I want to find the story without it competing with my decisions.
+**User Story:** As a person who doesn't know where to start, I want to find the stories where I go to discover things, and understand what they are before I open them, without them crowding my personal decisions.
 
 #### Acceptance Criteria
 
-1. THE SYSTEM SHALL offer the story on For you as a compact editorial module after "Decisions for you" and before the Explore link, with a text link, not a filled primary button.
-2. THE SYSTEM SHALL NOT move or cover Coming up, the decisions, or the Ask Kiro launcher.
-3. THE SYSTEM SHALL also open the story from `#/wrapped`, before or after first run.
+1. THE SYSTEM SHALL feature the stories on Explore, after the page header and before the list of updates: kicker "A gentle place to start", heading "Your ballot, in stories", "Explore six short, visual stories about the decisions shaping your community.", the facts "6 short stories · Move at your own pace · From the official voter guide", the primary action "Explore ballot stories →", and a small drawing of fanned story frames (decorative). It SHALL use the page's own surfaces and button, not a promotional banner.
+2. THE SYSTEM SHALL NOT show the former "See your ballot, wrapped" module on For you. For you SHALL offer only a text link, "New to these questions? Explore ballot stories →", directly under the featured decision when that decision is the ballot or one of its questions, and otherwise at the end of "Decisions for you".
+3. THE SYSTEM SHALL NOT add a navigation tab, and SHALL NOT move or cover Coming up, the decisions, or the Ask Kiro launcher.
+4. THE SYSTEM SHALL play the stories over the page that opened them: `#/explore/stories` over Explore, `#/stories` over For you. `#/wrapped` SHALL still open them, over For you. Each works before or after first run.
 
 ### Requirement W11: Delivery
 
@@ -164,3 +166,12 @@ Out of scope for this build: what the person has explored or read (category C be
 1. THE SYSTEM SHALL have unit and property tests (fast-check) for: complete and empty profiles; the A/B separation; ballot counts; no identity labels and no banned or side-taking words in any slide text for any profile; verified sentences only; decision links; status labels; demo isolation (no storage calls); share preview content equal to the drawn content; topics opt-in and sensitive topics unchecked; reduced-motion values; keyboard, tap, and swipe mapping; focus-trap order.
 2. THE SYSTEM SHALL pass `npm test`, `npm run lint`, `npm run lint:words`, and a TypeScript check.
 3. THE SYSTEM SHALL be checked in the browser at 320, 375, and 390 px, tablet, and desktop, with screenshots of all six slides, before sign-off.
+
+### Requirement W13: Official sources in the story
+
+**User Story:** As a reader, I want to tell the official words from Legible's framing, and reach the source in one step.
+
+#### Acceptance Criteria
+
+1. THE SYSTEM SHALL head the closer story's cited sentences "What the official text says", each with its locator and page.
+2. WHEN the data names an official page for the question THE SYSTEM SHALL link "Read the official voter guide page ↗" on the closer story, opening in a new tab so the story stays open.

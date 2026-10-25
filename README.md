@@ -87,10 +87,10 @@ The Civic Profile is where a person tells Legible about their life. It is also w
 | Profile schema, storage, consent | [`src/lib/engine/profile.ts`](src/lib/engine/profile.ts) | [`profile.test.ts`](src/lib/engine/profile.test.ts) |
 | Personalization meter | [`src/lib/engine/personalization.ts`](src/lib/engine/personalization.ts) | [`personalization.test.ts`](src/lib/engine/personalization.test.ts) |
 | First run, Skip records nothing | [`src/lib/engine/onboarding.ts`](src/lib/engine/onboarding.ts) | [`onboarding.test.ts`](src/lib/engine/onboarding.test.ts) |
-| Growth from exploring only, never from personal answers | [`src/lib/growth.ts`](src/lib/growth.ts) | [`growth.test.ts`](src/lib/growth.test.ts) |
+| Water from exploring only, once per page; growth from watering | [`src/lib/garden.ts`](src/lib/garden.ts), [`src/lib/growth.ts`](src/lib/growth.ts) | [`garden.test.ts`](src/lib/garden.test.ts), [`growth.test.ts`](src/lib/growth.test.ts) |
 | Profile sheet and editors | [`ProfileSheet.tsx`](src/components/ProfileSheet.tsx), [`profile-steps.tsx`](src/components/profile-steps.tsx) | checked in the browser at desktop and 375 px (task 16.8) |
 
-> The plant appears in production as a visual companion (header avatar, For you hero, Civic Profile) at one fixed look, with no stages, totals, or journey. Growth tracking and the Growth Story (tasks 23.1–23.6) run in development builds only, behind `GROWTH_TRACKING_ENABLED`, with labeled preview data until task 23.7 lands.
+> The plant lives in its garden (`#/garden`): exploring earns water, and watering grows it through five stages. It is kept between visits only while "Remember on this device" is on.
 
 ---
 

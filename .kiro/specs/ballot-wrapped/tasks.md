@@ -51,6 +51,18 @@ On in production since Oct 24, 2026 (`WRAPPED_ENABLED`). Built on branch `featur
   - [x] 6.4 Captions at 13 px; "Press → or click to begin" with a mouse; navigation keys described to screen readers
   - [x] 6.5 Checked at 320, 375, 390, and desktop; tests, lint, lint:words, TypeScript, and production build pass
 
+- [x] 7. Ballot stories: discovery redesign (Oct 24, 2026)
+  - [x] 7.1 Spec: W6, W7, W10 rewritten; W13 added
+  - [x] 7.2 Route `stories` with the page underneath (`#/stories`, `#/explore/stories`, `#/wrapped` kept); scroll and tab follow the page underneath
+    - _Requirements: W10.4_
+  - [x] 7.3 Explore featured section and For you link (`StoriesEntry.tsx`); `WrappedInvite` removed
+    - _Requirements: W10.1-W10.3_
+  - [x] 7.4 Player: labelled Close, Previous, Next, Done; "N of 6"; scrim click closes; resumes the story after a question page, with "Back to stories"
+    - _Requirements: W6, W7.4, W7.5_
+  - [x] 7.5 Closer story: "What the official text says" and the official page link
+    - _Requirements: W13_
+  - [x] 7.6 Tests (routes, official link), lint, lint:words, TypeScript, build; browser pass at 320 and 375 px and desktop
+
 - [ ] 5. Later (needs approval or other work first)
   - [x] 5.1 Turn `WRAPPED_ENABLED` on in production (Oct 24, 2026)
   - [ ] 5.2 Category C ("decisions you explored") once real exploration tracking lands (`.kiro/specs/legible/tasks.md` 23.7)
