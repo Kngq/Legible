@@ -176,8 +176,8 @@ export function ProfileSheet({
               onSeeGrowth={growth.tracking ? () => open({ kind: "growth" }) : undefined}
             />
             <div className="mt-5 border-t border-border pt-4">
-              <h3 className="text-body font-semibold">Your profile details</h3>
-              <p className="text-small text-muted-foreground">
+              <h3 className="type-section">Your profile details</h3>
+              <p className="type-secondary text-muted-foreground">
                 {m.percent === 100 ? "All details added." : `${m.done} of ${m.total} details added, all optional.`} It all stays in this browser.
               </p>
               {afterCompletion}
@@ -206,7 +206,7 @@ export function ProfileSheet({
             <label id="name-h" htmlFor="profile-name" className="block text-body font-semibold">
               Your name
             </label>
-            <p className="mt-1 text-small text-muted-foreground">
+            <p className="mt-1 type-secondary text-muted-foreground">
               For a friendly hello on your home screen. It stays in this browser.
             </p>
             <input
@@ -228,10 +228,10 @@ export function ProfileSheet({
           return (
             <section aria-labelledby="interests-h" className="mt-4 rounded-lg bg-surface p-4 shadow-card">
               <div className="flex items-center justify-between gap-3">
-                <h3 id="interests-h" className="text-body font-semibold">
+                <h3 id="interests-h" className="type-section">
                   Your interests
                 </h3>
-                <Button variant="text" className="min-h-10!" onClick={() => open({ kind: "topics" })}>
+                <Button variant="text" className="min-h-10! type-secondary!" onClick={() => open({ kind: "topics" })}>
                   {chosen.length ? "Edit interests" : "Add interests"}
                 </Button>
               </div>
@@ -247,7 +247,7 @@ export function ProfileSheet({
                   ))}
                 </ul>
               ) : (
-                <p className="mt-1 text-small text-muted-foreground">
+                <p className="mt-1 type-secondary text-muted-foreground">
                   Pick the subjects you follow to add an On your list tag to decisions about them.
                 </p>
               )}
@@ -285,10 +285,10 @@ export function ProfileSheet({
         </ul>
         {onClear && (
           <section aria-labelledby="privacy-h" className="mt-6 rounded-lg border border-border p-4">
-            <h3 id="privacy-h" className="text-body font-semibold">
+            <h3 id="privacy-h" className="type-section">
               Your information
             </h3>
-            <p className="mt-1 text-small text-muted-foreground">
+            <p className="mt-1 type-secondary text-muted-foreground">
               Your town and answers stay in this browser. Legible never sends them to a server.
             </p>
             {confirmClear ? (
@@ -296,7 +296,7 @@ export function ProfileSheet({
                 <p id="clear-h" className="text-small font-semibold">
                   Clear your information?
                 </p>
-                <p id="clear-d" className="mt-1 text-small">
+                <p id="clear-d" className="mt-1 type-secondary">
                   This deletes your town, your answers, and the subjects you follow from this browser, and turns off keeping them on this device. You will start
                   again from the first screen. This cannot be undone.
                 </p>
@@ -390,7 +390,7 @@ export function ProfileSheet({
           ) : (
             <span className="size-12" />
           )}
-          <h2 id="profile-sheet-title" className="flex-1 text-center text-body font-semibold">
+          <h2 id="profile-sheet-title" className="flex-1 text-center type-secondary font-semibold text-muted-foreground">
             Your profile
           </h2>
           <button type="button" onClick={onClose} aria-label="Close" className={`flex size-12 items-center justify-center rounded-md hover:bg-surface-muted ${FOCUS}`}>

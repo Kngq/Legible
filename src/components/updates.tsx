@@ -17,8 +17,8 @@ import { type SheetView } from "./ProfileSheet";
 import { FOCUS, Tag } from "./ui";
 
 export const H2 = "text-title font-bold tracking-tight";
-export const PRIMARY = `inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-small font-semibold text-primary-foreground hover:opacity-90 ${FOCUS}`;
-export const SECONDARY = `inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-surface-muted px-5 text-small font-semibold hover:bg-border ${FOCUS}`;
+export const PRIMARY = `inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 type-button text-primary-foreground hover:opacity-90 ${FOCUS}`;
+export const SECONDARY = `inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-surface-muted px-5 type-button hover:bg-border ${FOCUS}`;
 
 // A hovering mouse or trackpad. Without one, cards show "Read more" in place of the
 // cursor capsule. Written out in full so Tailwind finds them.
@@ -91,7 +91,7 @@ export function TopBar({
 export function HowItWorks({ onOpenProfile }: { onOpenProfile: (v: SheetView) => void }) {
   return (
     <section aria-labelledby="h-how" className="mt-14 rounded-lg bg-surface-muted p-5">
-      <h2 id="h-how" className="text-body font-bold">
+      <h2 id="h-how" className="type-section">
         How Legible works
       </h2>
       <dl className="mt-3 space-y-3 text-small">
@@ -198,7 +198,7 @@ export function UpdateCard({ entry: e, today, onOpenItem, onOpenDoc, onOpenMeasu
         <p className="text-small font-semibold uppercase tracking-wider text-muted-foreground">{kind}</p>
         {e.touches ? <Tag pop="accent">May affect you</Tag> : e.level === "list" ? <Tag pop="info">You follow this</Tag> : e.level === "maybe" ? <Tag>Might apply</Tag> : null}
       </div>
-      <h3 className="mt-2 text-title">{title}</h3>
+      <h3 className="mt-2 type-card">{title}</h3>
       {when && <p className="mt-1 text-body font-semibold">{when}</p>}
       <p className="mt-2 text-body text-muted-foreground">{explain}</p>
 

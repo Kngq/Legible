@@ -73,9 +73,9 @@ function Timeline({ history, stage, enter }: { history: GrowthHistory; stage: Gr
                   <time dateTime={m.reachedOn}>{date}</time>
                 </p>
               )}
-              <h4 className="mt-0.5 font-display text-[1.25rem] leading-tight">{def.title}</h4>
+              <h4 className="mt-0.5 type-card">{def.title}</h4>
               <p className="mt-1 text-body">{def.line}</p>
-              {activity && <p className="mt-1 text-small text-muted-foreground">{activity}</p>}
+              {activity && <p className="mt-1 type-secondary text-muted-foreground">{activity}</p>}
             </div>
           </motion.li>
         );
@@ -86,14 +86,14 @@ function Timeline({ history, stage, enter }: { history: GrowthHistory; stage: Gr
             <CivicPlant stage={next.stage} size={MINI} still label="" />
           </div>
           <div className="min-w-0 pt-4">
-            <h4 className="font-display text-[1.25rem] leading-tight text-muted-foreground">{next.toward}</h4>
-            <p className="mt-1 text-small text-muted-foreground">Exploring decisions and opening official sources helps it grow, at your own pace.</p>
+            <h4 className="type-card text-muted-foreground">{next.toward}</h4>
+            <p className="mt-1 type-secondary text-muted-foreground">Exploring decisions and opening official sources helps it grow, at your own pace.</p>
           </div>
         </motion.li>
       ) : (
         <motion.li {...enter(items.length)} className="mt-1 rounded-lg bg-surface px-4 py-5 text-center shadow-card">
-          <p className="font-display text-[1.25rem] leading-tight">Your plant is in full bloom.</p>
-          <p className="mt-1 text-small text-muted-foreground">Thank you for staying curious about the decisions around you. Your story keeps going whenever you explore.</p>
+          <p className="type-card">Your plant is in full bloom.</p>
+          <p className="mt-1 type-secondary text-muted-foreground">Thank you for staying curious about the decisions around you. Your story keeps going whenever you explore.</p>
         </motion.li>
       )}
     </ol>

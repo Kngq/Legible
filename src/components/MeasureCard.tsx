@@ -56,7 +56,7 @@ export function MeasureCard({
         {m.kind === "referendum" && <Tag>Referendum</Tag>}
       </div>
 
-      <h3 id={`${cardDomId(m)}-title`} className="mt-2 text-title">
+      <h3 id={`${cardDomId(m)}-title`} className="mt-2 type-card">
         {m.title}
       </h3>
 

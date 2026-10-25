@@ -64,7 +64,7 @@ export function ComingUp({ entries, today, onOpenItem, onOpenDoc, onOpenProfile 
   return (
     <section aria-labelledby="h-coming" className="mt-section">
       <div className="flex items-baseline justify-between gap-3">
-        <h2 id="h-coming" className="text-body font-bold">
+        <h2 id="h-coming" className="type-section">
           Coming up
         </h2>
         <p className="text-small text-muted-foreground">Dates from official sources</p>

@@ -144,7 +144,7 @@ function Identity({ name, onNameChange, tracking }: { name?: string; onNameChang
           autoFocus
           className={`h-11 w-full rounded-md bg-surface-muted px-4 text-center text-body placeholder:text-muted-foreground ${FOCUS}`}
         />
-        <p className="text-small text-muted-foreground">Optional. For a friendly hello, and it stays in this browser.</p>
+        <p className="type-secondary text-muted-foreground">Optional. For a friendly hello, and it stays in this browser.</p>
         <div className="flex gap-2">
           <button type="submit" className={`min-h-10 rounded-md bg-primary px-4 text-small font-semibold text-primary-foreground hover:bg-primary-hover ${FOCUS}`}>
             Save
@@ -159,8 +159,8 @@ function Identity({ name, onNameChange, tracking }: { name?: string; onNameChang
 
   return name ? (
     <>
-      <div className="mt-1 flex items-baseline justify-center gap-2">
-        <h3 id="plant-h" className="font-display text-[1.5rem] font-normal leading-tight">
+      <div className="mt-4 flex items-baseline justify-center gap-2">
+        <h3 id="plant-h" className="type-page">
           {name}
         </h3>
         {onNameChange && (
@@ -174,14 +174,14 @@ function Identity({ name, onNameChange, tracking }: { name?: string; onNameChang
           </button>
         )}
       </div>
-      <p className="mt-1 text-small text-muted-foreground">{tracking ? "Your civic journey, growing with you." : "Your Civic Profile. It stays in this browser."}</p>
+      <p className="mt-1 type-secondary text-muted-foreground">{tracking ? "Your civic journey, growing with you." : "Your Civic Profile. It stays in this browser."}</p>
     </>
   ) : (
     <>
-      <h3 id="plant-h" className="mt-1 font-display text-[1.25rem] font-normal leading-tight">
+      <h3 id="plant-h" className="mt-4 type-page">
         {tracking ? "Your civic journey" : "Your Civic Profile"}
       </h3>
-      <p className="mt-1 text-small text-muted-foreground">{tracking ? "Every decision you explore helps your plant grow." : "Your answers and the subjects you follow, kept in this browser."}</p>
+      <p className="mt-1 type-secondary text-muted-foreground">{tracking ? "Every decision you explore helps your plant grow." : "Your answers and the subjects you follow, kept in this browser."}</p>
       {onNameChange && (
         <button
           type="button"

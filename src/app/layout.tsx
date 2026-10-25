@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Figtree, Fraunces, Geist_Mono, Raleway, Source_Serif_4 } from "next/font/google";
+import { Figtree, Fraunces, Geist_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { ChatDockGate } from "@/components/ChatDockGate";
 import { PAGE_DARK, PAGE_LIGHT } from "@/lib/theme-color";
@@ -9,13 +9,7 @@ const figtree = Figtree({
   subsets: ["latin"],
 });
 
-// Display face for the Legible wordmark.
-const raleway = Raleway({
-  variable: "--font-raleway",
-  subsets: ["latin"],
-});
-
-// Editorial headlines: the featured decision, page titles, detail headings.
+// Editorial headlines and the wordmark: the home hero, page titles, the featured decision.
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
@@ -23,7 +17,7 @@ const fraunces = Fraunces({
   style: ["normal", "italic"],
 });
 
-// Reading face for official text in the measure reader.
+// Official words only: bill text, quotations, the voter guide.
 const serif = Source_Serif_4({
   variable: "--font-serif",
   subsets: ["latin"],
@@ -61,7 +55,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${figtree.variable} ${fraunces.variable} ${raleway.variable} ${serif.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${figtree.variable} ${fraunces.variable} ${serif.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}

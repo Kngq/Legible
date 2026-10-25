@@ -190,7 +190,7 @@ export function Home({
       {/* Only what relates to this person. Everything else is on Explore. */}
       <section aria-labelledby="h-foryou" className="mt-section">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 id="h-foryou" className="text-body font-bold">
+          <h2 id="h-foryou" className="type-section">
             Decisions for you
           </h2>
           {featured && <p className="text-small text-muted-foreground">Closest to your life first</p>}

@@ -315,7 +315,7 @@ export function FeaturedDecision({ d, onOpenProfile }: { d: Decision; onOpenProf
         )}
       </div>
 
-      <h3 className="mt-4 font-display text-feature text-balance">{d.title}</h3>
+      <h3 className="mt-4 type-feature">{d.title}</h3>
       <p className="mt-3 max-w-[36em] text-body text-muted-foreground">{d.what}</p>
 
       <FeaturedNote d={d} onOpenProfile={onOpenProfile} />
@@ -394,7 +394,7 @@ export function DecisionRow({ d, onOpenProfile }: { d: Decision; onOpenProfile: 
             </span>
           )}
         </p>
-        <h3 className="mt-0.5 text-[1.0625rem] font-semibold leading-snug sm:text-lg">{title}</h3>
+        <h3 className="mt-0.5 type-card">{title}</h3>
         <RowRelevance d={d} why={why} onWhy={() => setWhy(!why)} onOpenProfile={onOpenProfile} />
         {d.relevance && <WhyBox open={why} relevance={d.relevance} onOpenProfile={onOpenProfile} />}
         {(source || !external) && (

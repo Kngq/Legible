@@ -47,7 +47,7 @@ export function Explore({
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-16 sm:px-6">
       <header className="pt-6 sm:pt-10">
-        <h1 className="font-display text-headline">Explore</h1>
+        <h1 className="type-page">Explore</h1>
         <p className="mt-3 text-body text-muted-foreground">
           Deadlines, meetings, and proposals in {town ?? "your area"} and across Massachusetts. Updates that may affect you come first, then the soonest.
         </p>
@@ -65,7 +65,7 @@ export function Explore({
       )}
 
       {noTownDocs && (
-        <p className="mt-6 text-small text-muted-foreground">
+        <p className="mt-6 type-secondary text-muted-foreground">
           <span className="font-semibold text-foreground">More {town} updates are coming.</span> We&apos;re still adding local decisions. For now, you can explore
           important updates across Massachusetts.
         </p>
