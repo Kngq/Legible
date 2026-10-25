@@ -23,7 +23,7 @@ import { useGrowth } from "./plant/useGrowth";
 import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { FOCUS } from "./ui";
-import { WrappedInvite } from "./wrapped/WrappedInvite";
+import { StoriesLink } from "./wrapped/StoriesEntry";
 
 // Plant size follows one breakpoint; re-renders only when it flips.
 const WIDE = "(min-width: 640px)";
@@ -58,7 +58,8 @@ export function Home({
   onOpenItem,
   onOpenProfile,
   onExplore,
-  onOpenWrapped,
+  onOpenStories,
+  onOpenGarden,
 }: {
   feed: Feed;
   /** Deadlines, meetings, and bills for this person's state and town, in feed order. */
@@ -70,8 +71,10 @@ export function Home({
   onOpenItem: (id: string) => void;
   onOpenProfile: (v: SheetView) => void;
   onExplore: () => void;
-  /** Opens "Your ballot, wrapped". Passed only while Wrapped is enabled. */
-  onOpenWrapped?: () => void;
+  /** Opens Ballot stories over For you. Passed only while the stories are enabled. */
+  onOpenStories?: () => void;
+  /** Opens the garden, where the plant is watered. */
+  onOpenGarden: () => void;
 }) {
   const town = townName(profile.townId);
   // A friendly greeting, stable per name so it doesn't flicker on re-render.
@@ -88,6 +91,16 @@ export function Home({
   const cardProps = { today, onOpenItem, onOpenDoc, onOpenMeasure };
   const list = decisionsFor({ touching, affect, listed, ballot: ballotItem, ...cardProps });
   const [featured, ...rest] = list;
+  // A quiet way into the ballot for anyone who doesn't know where to start (Explore
+  // features it): right under the featured decision when that is the ballot or one
+  // of its questions, otherwise at the end of the decisions.
+  const storiesLink = onOpenStories && <StoriesLink onOpen={onOpenStories} />;
+  const featuredEntry = featured && affect.find((e) => e.key === featured.key);
+  const ballotFeatured = Boolean(
+    featured &&
+      (ballotItem?.cards.some((c) => c.measure.id === featured.key) ||
+        (featuredEntry && (featuredEntry.kind === "civic" ? featuredEntry.ballot : featuredEntry.item.doc.docType === "ballot"))),
+  );
   const reduce = useReducedMotion() ?? false;
   const housing = housingLabel(profile);
   // The general profile link opens the overview; contextual "Add details" links open their own editor.
@@ -139,7 +152,7 @@ export function Home({
           // The living notebook hero: the person's corner of the map, and their plant.
           // Phones: headline beside the plant, the line under both. Wider: text left, plant right.
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 sm:gap-x-10">
-            <div className="col-start-1 row-start-1 min-w-0">
+            <div className="col-start-1 row-start-1 min-w-0 sm:self-end">
               {name && !nameInHeadline && (
                 <motion.p {...enter(0)} className="font-display text-lg italic text-muted-foreground">
                   {greeting}, {name}.
@@ -151,23 +164,22 @@ export function Home({
               </motion.h1>
             </div>
             {/* The intro and, under it, the profile line share one cell. */}
-            <motion.div {...enter(0.1)} className="col-span-2 row-start-2 mt-3 sm:col-span-1 sm:col-start-1 sm:-mt-6 sm:self-start">
+            <motion.div {...enter(0.1)} className="col-span-2 row-start-2 mt-3 sm:col-span-1 sm:col-start-1 sm:self-start">
               <p className="max-w-md text-body text-muted-foreground">Understand what&rsquo;s happening around you, one decision at a time.</p>
               {profileLine("mt-2")}
             </motion.div>
             <motion.div
               {...(reduce ? {} : { initial: { opacity: 0, y: -6, scale: 0.96 }, animate: { opacity: 1, y: 0, scale: 1 }, transition: { duration: 0.35, ease: EASE, delay: 0.05 } })}
-              className="col-start-2 row-start-1 flex flex-col items-center sm:row-span-2"
+              // Phones: the negative top margin lets the plant's headroom rise into the header's padding, so the
+              // headline row stays as tall as the headline. Wider: the column adds no height of its own (h-0) and
+              // fills the hero's height (min-h-full); the companion, trimmed to the drawn plant, sits at the top,
+              // level with the headline, and when a grown plant is taller than the text, mb-auto gives way and
+              // justify-end keeps its caption level with the text's last line instead of pushing "Coming up" down.
+              className="col-start-2 row-start-1 -mt-6 flex flex-col items-center sm:row-span-2 sm:mt-0 sm:h-0 sm:min-h-full sm:justify-end"
             >
-              {/* With growth tracked, the plant opens the journey; as a companion, the Civic Profile. */}
-              <HomePlant size={wide ? 164 : 96} onOpen={() => onOpenProfile(growth.tracking ? { kind: "growth" } : { kind: "list" })} />
-              <button
-                type="button"
-                onClick={() => onOpenProfile(growth.tracking ? { kind: "growth" } : { kind: "list" })}
-                className={`mt-1 inline-flex min-h-9 items-center gap-1 whitespace-nowrap rounded-sm text-small font-semibold text-primary underline-offset-4 hover:underline ${FOCUS}`}
-              >
-                {growth.tracking ? "See your journey" : "Your Civic Profile"} <span aria-hidden="true">→</span>
-              </button>
+              <div className="sm:mb-auto">
+                <HomePlant size={wide ? 144 : 84} trim={wide} onOpen={onOpenGarden} />
+              </div>
             </motion.div>
           </div>
         ) : (
@@ -200,6 +212,7 @@ export function Home({
             <div className="mt-3">
               <FeaturedDecision d={featured} onOpenProfile={onOpenProfile} />
             </div>
+            {ballotFeatured && storiesLink}
             {rest.length > 0 && (
               <ul className="mt-4 divide-y divide-border">
                 {rest.map((d) => (
@@ -217,9 +230,8 @@ export function Home({
             and the decisions that reach your life will show here first.
           </p>
         )}
+        {!ballotFeatured && storiesLink}
       </section>
-
-      {onOpenWrapped && <WrappedInvite onOpen={onOpenWrapped} />}
 
       <button
         type="button"

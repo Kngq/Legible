@@ -1,7 +1,8 @@
 "use client";
 
 // The one header, on every screen after onboarding: the Legible mark and
-// wordmark, the For you and Explore tabs, and the profile button. It replaces
+// wordmark, the For you and Explore tabs, the garden button (the plant and its
+// water), and the profile button. It replaces
 // the second in-page bar (TopBar) that Home and Explore used to draw under it.
 // Sticky; a hairline appears once the page scrolls under it.
 //
@@ -15,6 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import { transition } from "@/lib/motion";
 import { Glyph } from "./icons";
 import { CivicPlant } from "./plant/CivicPlant";
+import { GardenButton } from "./plant/GardenButton";
 import { useGrowth } from "./plant/useGrowth";
 import type { SheetView } from "./ProfileSheet";
 import { FOCUS } from "./ui";
@@ -124,6 +126,8 @@ export function SiteHeader({
   onHome,
   onExplore,
   onOpenProfile,
+  onOpenGarden,
+  gardenActive,
 }: {
   /** The tab for this screen; detail pages have none. */
   active?: HeaderTab;
@@ -135,9 +139,14 @@ export function SiteHeader({
   onHome?: () => void;
   onExplore?: () => void;
   onOpenProfile?: (v: SheetView) => void;
+  /** Opens the garden. With it, the plant lives in the garden button and the avatar shows the person. */
+  onOpenGarden?: () => void;
+  /** The garden is the page on screen. */
+  gardenActive?: boolean;
 }) {
-  // The avatar is the same plant, stage, and motion as the one in Civic Profile.
+  // Without a garden button, the avatar is the same plant and stage as in Civic Profile.
   const growth = useGrowth();
+  const plantAvatar = growth.enabled && !onOpenGarden;
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4);
@@ -164,7 +173,7 @@ export function SiteHeader({
 
   return (
     <header className={`w-full bg-background/90 backdrop-blur transition-shadow duration-(--dur-base) ease-legible ${scrolled ? "shadow-[0_1px_0_var(--border)]" : ""}`}>
-      <div className="mx-auto flex h-16 w-full max-w-5xl items-center gap-3 px-4 sm:px-6">
+      <div className="mx-auto flex h-16 w-full max-w-5xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
         <BrandMenu />
 
         {onHome && onExplore ? (
@@ -176,15 +185,16 @@ export function SiteHeader({
           <span className="mx-auto" />
         )}
 
+        {onOpenGarden && <GardenButton onOpen={onOpenGarden} active={gardenActive} />}
         {onOpenProfile ? (
           <button
             type="button"
             // Always the overview: the avatar is the way home, never straight into a question.
             onClick={() => onOpenProfile({ kind: "list" })}
             aria-label="Your profile"
-            className={`relative flex size-11 shrink-0 items-center justify-center rounded-full ${growth.enabled ? "bg-surface ring-1 ring-border" : "bg-accent-soft text-accent"} interactive press hover:scale-105 ${FOCUS}`}
+            className={`relative flex size-11 shrink-0 items-center justify-center rounded-full ${plantAvatar ? "bg-surface ring-1 ring-border" : "bg-accent-soft text-accent"} interactive press hover:scale-105 ${FOCUS}`}
           >
-            {growth.enabled ? (
+            {plantAvatar ? (
               <span className="flex size-11 items-end justify-center overflow-hidden rounded-full">
                 <CivicPlant stage={growth.stage} size={34} label="" />
               </span>

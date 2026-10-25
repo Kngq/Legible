@@ -1,4 +1,4 @@
-// The six slides of "Your ballot, wrapped", as view models. Pure TypeScript: no
+// The six Ballot stories (first built as "Your ballot, wrapped"), as view models. Pure TypeScript: no
 // React, no DOM, no network. Every visible string of a slide is listed in `texts`,
 // so tests can check neutrality, counts, and claims for every profile.
 //
@@ -82,7 +82,11 @@ export interface CloserDecision {
   basis: string; // why this one: "Connected to your answers", "On your list", "First on the ballot"
   basisPersonal: boolean; // true only for "Connected to your answers"
   sentences: CitedSentence[]; // 0 to 2, verified only
+  /** "What the official text says", over the sentences, so they read as the official words' content, not as Legible's view. */
+  factsLabel?: string;
   noSummary?: string;
+  /** The official voter guide page for this question, when the data names one. */
+  official?: { label: string; url: string };
   action: string;
   href: string;
 }
@@ -174,6 +178,7 @@ function closerDecision(doc: DocumentData, card: Card): CloserDecision {
   const m = card.measure;
   const personal = card.relevance === "touches";
   const sentences = verified(m, card.why, 2);
+  const url = m.sourceUrl ?? doc.source.url;
   return {
     measureId: m.id,
     number: `Question ${m.number}`,
@@ -182,7 +187,8 @@ function closerDecision(doc: DocumentData, card: Card): CloserDecision {
     basis: personal ? S.basisTouches : card.onYourList ? S.basisList : S.basisFirst,
     basisPersonal: personal,
     sentences,
-    ...(sentences.length === 0 ? { noSummary: S.closerNoSummary } : {}),
+    ...(sentences.length > 0 ? { factsLabel: S.closerFacts } : { noSummary: S.closerNoSummary }),
+    ...(url ? { official: { label: S.closerOfficial, url } } : {}),
     action: S.closerAction,
     href: measureHref(doc, m),
   };
@@ -290,7 +296,18 @@ export function buildStory(doc: DocumentData, summary: WrappedSummary, profile: 
     texts: [
       S.closerHeading,
       ...(pick
-        ? [pick.basis, pick.number, pick.title, pick.status.label, pick.status.detail, ...pick.sentences.flatMap((s) => [s.text, s.source]), ...(pick.noSummary ? [pick.noSummary] : []), pick.action]
+        ? [
+            pick.basis,
+            pick.number,
+            pick.title,
+            pick.status.label,
+            pick.status.detail,
+            ...(pick.factsLabel ? [pick.factsLabel] : []),
+            ...pick.sentences.flatMap((s) => [s.text, s.source]),
+            ...(pick.noSummary ? [pick.noSummary] : []),
+            pick.action,
+            ...(pick.official ? [pick.official.label] : []),
+          ]
         : []),
     ],
   };

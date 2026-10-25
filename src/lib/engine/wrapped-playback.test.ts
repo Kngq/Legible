@@ -102,10 +102,14 @@ describe("gestures and keys", () => {
 });
 
 describe("the story route", () => {
-  it("is #/wrapped and carries nothing else", async () => {
+  it("names only the page underneath, never the town or a slide", async () => {
     const { parseRoute, routeHash } = await import("@/lib/nav/route");
-    expect(parseRoute("#/wrapped")).toEqual({ kind: "wrapped" });
-    expect(routeHash({ kind: "wrapped" })).toBe("#/wrapped");
-    expect(parseRoute("#/wrapped/cambridge")).toEqual({ kind: "wrapped" });
+    expect(routeHash({ kind: "stories", over: "feed" })).toBe("#/stories");
+    expect(routeHash({ kind: "stories", over: "explore" })).toBe("#/explore/stories");
+    expect(parseRoute("#/stories/cambridge")).toEqual({ kind: "stories", over: "feed" });
+    expect(parseRoute("#/explore/stories/3")).toEqual({ kind: "stories", over: "explore" });
+    // The first address still opens the stories.
+    expect(parseRoute("#/wrapped")).toEqual({ kind: "stories", over: "feed" });
+    expect(parseRoute("#/wrapped/cambridge")).toEqual({ kind: "stories", over: "feed" });
   });
 });

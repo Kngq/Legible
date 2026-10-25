@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
   turbopack: {
     rules: {
       "*.css": {
+        // CSS modules keep Turbopack's own handling; `as: "*.css"` would turn them into
+        // global CSS and leave every imported class name undefined.
+        condition: { not: { path: /\.module\.css$/ } },
         loaders: ["@tailwindcss/turbopack"],
         as: "*.css",
       },

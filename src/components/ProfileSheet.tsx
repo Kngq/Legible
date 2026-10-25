@@ -10,14 +10,13 @@ import { answerArea, confirmTopics, declineArea, type Profile } from "@/lib/engi
 import { LIFE_AREAS, TOPIC_DEFS, TOPIC_IDS, type FactId, type LifeAreaId } from "@/lib/vocab";
 import { AvatarRing } from "./AvatarRing";
 import { PlantCompanion } from "./plant/PlantCompanion";
-import { GrowthStory } from "./plant/GrowthStory";
 import { useGrowth } from "./plant/useGrowth";
 import { SavedNote } from "./SavedNote";
 import { Glyph, Part } from "./icons";
 import { AreaStep, FACT_SHORT, TopicsStep, TownStep, townName } from "./profile-steps";
 import { Button, FOCUS } from "./ui";
 
-export type SheetView = { kind: "list" } | { kind: "town" } | { kind: "area"; id: LifeAreaId } | { kind: "topics" } | { kind: "growth" };
+export type SheetView = { kind: "list" } | { kind: "town" } | { kind: "area"; id: LifeAreaId } | { kind: "topics" };
 
 const EDIT = { kind: "edit" } as const;
 
@@ -64,6 +63,7 @@ export function ProfileSheet({
   onNotNow,
   onSavedBeyondTown,
   onClear,
+  onOpenGarden,
 }: {
   profile: Profile;
   setProfile: (p: Profile) => void;
@@ -76,10 +76,11 @@ export function ProfileSheet({
   onSavedBeyondTown: () => void;
   /** Clears the profile and preferences from this browser. Absent hides the button. */
   onClear?: () => void;
+  /** Closes the sheet and opens the garden. Absent hides the link. */
+  onOpenGarden?: () => void;
 }) {
   const growth = useGrowth();
-  // The Growth Story exists only while growth is tracked; otherwise its links open the overview.
-  const [view, setView] = useState<SheetView>(initial.kind === "growth" && !growth.tracking ? { kind: "list" } : initial);
+  const [view, setView] = useState<SheetView>(initial);
   const [draft, setDraft] = useState<Profile>(profile);
   const [lastSave, setLastSave] = useState<{ from: number; part?: string; at: number } | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
@@ -168,13 +169,10 @@ export function ProfileSheet({
       <>
         {growth.enabled ? (
           <>
-            {/* The plant is the profile's centrepiece. Profile completion stays a
-                separate, quieter line below it and never moves the plant. */}
-            <PlantCompanion
-              name={profile.name}
-              onNameChange={(name) => setProfile({ ...profile, name })}
-              onSeeGrowth={growth.tracking ? () => open({ kind: "growth" }) : undefined}
-            />
+            {/* The plant is the profile's avatar. Profile completion stays a
+                separate, quieter line below it and never moves the plant; watering
+                and growth live in the garden. */}
+            <PlantCompanion name={profile.name} onNameChange={(name) => setProfile({ ...profile, name })} onOpenGarden={onOpenGarden} />
             <div className="mt-5 border-t border-border pt-4">
               <h3 className="type-section">Your profile details</h3>
               <p className="type-secondary text-muted-foreground">
@@ -352,8 +350,6 @@ export function ProfileSheet({
         </div>
       </div>
     );
-  } else if (view.kind === "growth" && growth.tracking) {
-    body = <GrowthStory />;
   } else {
     body = (
       <div className="space-y-6">

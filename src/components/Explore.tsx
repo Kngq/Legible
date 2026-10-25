@@ -2,7 +2,8 @@
 
 // Explore: everything coming up near the person and across Massachusetts, for
 // browsing. Same ranked order as Home (buildTimeline with includeOthers), plus
-// decided items and the one note on how Legible works. Runs in the browser.
+// decided items and the one note on how Legible works. Ballot stories lead the
+// page, before the list, as the place to start for anyone new to the ballot. Runs in the browser.
 import { useState } from "react";
 import type { CivicCard } from "@/lib/engine/civic";
 import type { Feed } from "@/lib/engine/feed";
@@ -13,6 +14,7 @@ import type { SheetView } from "./ProfileSheet";
 import { townName } from "./profile-steps";
 import { FOCUS } from "./ui";
 import { FeedRow, HowItWorks, SECONDARY, UpdateCard } from "./updates";
+import { StoriesFeature } from "./wrapped/StoriesEntry";
 
 const SHOWN = 8;
 
@@ -25,6 +27,7 @@ export function Explore({
   onOpenMeasure,
   onOpenItem,
   onOpenProfile,
+  onOpenStories,
 }: {
   feed: Feed;
   civic: CivicCard[];
@@ -36,6 +39,8 @@ export function Explore({
   onOpenMeasure: (docId: string, measureId: string) => void;
   onOpenItem: (id: string) => void;
   onOpenProfile: (v: SheetView) => void;
+  /** Opens Ballot stories over Explore. Passed only while the stories are enabled. */
+  onOpenStories?: () => void;
 }) {
   const [all, setAll] = useState(false);
   const town = townName(profile.townId);
@@ -52,6 +57,9 @@ export function Explore({
           Deadlines, meetings, and proposals in {town ?? "your area"} and across Massachusetts. Updates that may affect you come first, then the soonest.
         </p>
       </header>
+
+      {/* A story-led way into the ballot, before the full list. */}
+      {onOpenStories && <StoriesFeature onOpen={onOpenStories} />}
 
       <ul className="mt-8 space-y-4">
         {(all ? entries : entries.slice(0, SHOWN)).map((e) => (

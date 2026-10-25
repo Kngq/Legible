@@ -155,6 +155,22 @@ describe("buildStory", () => {
     );
   });
 
+  it("keeps the official source one tap away on the closer decision", () => {
+    // The shipped ballot names the Secretary's page for every question.
+    for (const m of BALLOT_2026.measures) expect(m.sourceUrl).toMatch(/^https:\/\/www\.sec\.state\.ma\.us\//);
+    expect(slide(story(emptyProfile()), "closer").decision!.official?.url).toMatch(/^https:\/\/www\.sec\.state\.ma\.us\//);
+    fc.assert(
+      fc.property(arbAnyDocument, arbProfile, (doc, p) => {
+        const d = slide(story(p, doc), "closer").decision;
+        if (!d) return;
+        const m = doc.measures.find((x) => x.id === d.measureId)!;
+        expect(d.official?.url).toBe(m.sourceUrl ?? doc.source.url);
+        expect(d.factsLabel === undefined).toBe(d.sentences.length === 0);
+      }),
+      { numRuns: RUNS },
+    );
+  });
+
   it("links every decision to its measure page", () => {
     fc.assert(
       fc.property(arbAnyDocument, arbProfile, (doc, p) => {

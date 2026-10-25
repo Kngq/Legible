@@ -62,6 +62,7 @@ export function MeasureView({
   setProfile,
   town,
   backLabel,
+  showBackLabel = false,
   onBack,
   onForYou,
   onOpenMeasure,
@@ -82,6 +83,8 @@ export function MeasureView({
   setProfile: (p: Profile) => void;
   town?: string;
   backLabel: string;
+  /** Write the back label beside the arrow, when it names a place ("Back to stories"). */
+  showBackLabel?: boolean;
   onBack: () => void;
   /** Back to For you. */
   onForYou: () => void;
@@ -125,9 +128,10 @@ export function MeasureView({
           type="button"
           onClick={onBack}
           aria-label={backLabel}
-          className={`flex size-12 items-center justify-center rounded-full bg-surface shadow-card hover:bg-surface-muted ${FOCUS}`}
+          className={`flex h-12 items-center justify-center gap-1.5 rounded-full bg-surface shadow-card hover:bg-surface-muted ${showBackLabel ? "pl-3 pr-4 text-small font-semibold" : "w-12"} ${FOCUS}`}
         >
           <Glyph name="back" />
+          {showBackLabel && <span aria-hidden="true">{backLabel}</span>}
         </button>
         <div className="flex items-center rounded-full bg-surface px-1 shadow-card">
           <button type="button" onClick={share} aria-label={shared ? "Official link copied" : "Share the official page"} className={`flex size-12 items-center justify-center rounded-full hover:bg-surface-muted ${FOCUS}`}>

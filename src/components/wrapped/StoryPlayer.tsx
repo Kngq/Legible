@@ -1,13 +1,15 @@
 "use client";
 
-// The story player for "Your ballot, wrapped": a modal dialog that plays six
-// slides at the reader's pace (W6, W7). Thin progress segments at the top; tap the
-// right side or swipe left for the next slide, the left 30% or a right swipe to go
-// back; Next and Back buttons and the arrow keys do the same; Escape, the close
-// button, and the browser back button close it. Taps and swipes that start on a
-// control are ignored. Focus is trapped inside and returned on close by the shell.
-// Phones: the whole viewport, inside the safe areas. From 640 px: a centred
-// portrait frame over a scrim of the page ink. Runs in the browser only.
+// The player for Ballot stories (first built as "Your ballot, wrapped"): a modal
+// dialog that plays six stories at the reader's pace, never on a timer (W6, W7).
+// Navigation is written out for someone who has never used a story app: six
+// progress segments and "2 of 6" at the top, a labelled Close button, and labelled
+// Previous and Next buttons at the bottom (Next becomes Done on the last story).
+// Arrow keys, a tap on either side, and a swipe do the same, but nothing needs them.
+// Escape, Close, Done, a click on the scrim, and the browser back button close it.
+// Taps and swipes that start on a control are ignored. Focus is trapped inside and
+// returned on close by the shell. Phones: the whole viewport, inside the safe
+// areas. From 640 px: a centred portrait frame over a scrim of the page ink.
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import towns from "@/data/towns.json";
@@ -21,6 +23,7 @@ import { defaultShareChoices, shareItems, storyShareBase, withTimeout, type Shar
 import { announcement, WRAPPED_STRINGS as S } from "@/lib/vocab/wrapped";
 import { hideChatDock } from "@/lib/ui/chat-dock";
 import { Glyph } from "../icons";
+import { useGarden } from "../plant/useGarden";
 import { FOCUS } from "../ui";
 import { SharePreview } from "./SharePreview";
 import { renderShareImage } from "./share-image";
@@ -39,7 +42,21 @@ const reduceStory = storyReducer(SLIDE_COUNT);
 
 export type StoryExit = { kind: "close" } | { kind: "measure"; href: string } | { kind: "explore" } | { kind: "profile" } | { kind: "topics" };
 
-export function StoryPlayer({ doc, profile, demo, onExit }: { doc: DocumentData; profile: Profile; demo: boolean; onExit: (e: StoryExit) => void }) {
+export function StoryPlayer({
+  doc,
+  profile,
+  demo,
+  initialSlide = 0,
+  onExit,
+}: {
+  doc: DocumentData;
+  profile: Profile;
+  demo: boolean;
+  /** Where to open: 0, or the story the person left for a question page. */
+  initialSlide?: number;
+  /** How the person left, and from which story. */
+  onExit: (e: StoryExit, slide: number) => void;
+}) {
   const summary = useMemo(() => computeWrapped(doc, profile), [doc, profile]);
   const slides = useMemo(() => buildStory(doc, summary, profile, TOWNS), [doc, summary, profile]);
   const shareBase = useMemo<ShareBase>(() => storyShareBase(doc, summary, profile, TOWNS), [doc, summary, profile]);
@@ -64,16 +81,30 @@ export function StoryPlayer({ doc, profile, demo, onExit }: { doc: DocumentData;
   }, [defaultItems]);
   const share = { url: shareUrl, alt: `${S.closingImageAlt} ${defaultItems.map((i) => i.text).join(". ")}` };
 
-  const [state, dispatch] = useReducer(reduceStory, initialStory);
+  const [state, dispatch] = useReducer(reduceStory, initialSlide, (i) => reduceStory(initialStory, { type: "goto", index: i }));
   const [sharing, setSharing] = useState(false);
+  // Water earned while the stories are open (an official link opened from a story).
+  // The header's own note is behind the dialog, so the story shows it, on the story
+  // where it was earned, until the person moves to another story.
+  const garden = useGarden();
+  const [rewardSeen, setRewardSeen] = useState(garden.earned.n);
+  const [reward, setReward] = useState<{ n: number; drops: number; on: number } | null>(null);
   const reduce = useSyncExternalStore(subscribeReduced, () => window.matchMedia(REDUCED).matches, () => false);
   const motion = storyMotion(reduce);
   const dialog = useRef<HTMLDivElement>(null);
   const press = useRef<{ x: number; y: number; id: number } | null>(null);
   const slide = slides[state.index];
+  if (garden.earned.n !== rewardSeen) {
+    setRewardSeen(garden.earned.n);
+    if (garden.earned.n > rewardSeen && garden.earned.drops) setReward({ n: garden.earned.n, drops: garden.earned.drops, on: state.index });
+  }
+  const shownReward = reward?.on === state.index ? reward : null;
 
-  const go = useCallback((a: "next" | "prev") => dispatch({ type: a }), []);
-  const close = useCallback(() => onExit({ kind: "close" }), [onExit]);
+  const go = useCallback((a: "next" | "prev") => {
+    setReward(null);
+    dispatch({ type: a });
+  }, []);
+  const close = useCallback(() => onExit({ kind: "close" }, state.index), [onExit, state.index]);
 
   // While open: the page cannot scroll, Ask Kiro is hidden, focus starts in the dialog.
   useEffect(() => {
@@ -134,16 +165,24 @@ export function StoryPlayer({ doc, profile, demo, onExit }: { doc: DocumentData;
 
   const onAction = (a: SlideAction) => {
     if (a.kind === "save") setSharing(true);
-    else if (a.kind === "measure") onExit({ kind: "measure", href: a.href });
-    else onExit({ kind: a.kind });
+    else if (a.kind === "measure") onExit({ kind: "measure", href: a.href }, state.index);
+    else onExit({ kind: a.kind }, state.index);
   };
 
   const enter = state.dir === "next" ? "animate-slide-next" : state.dir === "prev" ? "animate-slide-back" : "animate-fade-in";
   const atEnd = state.index === SLIDE_COUNT - 1;
-  const roundButton = `flex size-11 items-center justify-center rounded-full bg-surface/80 text-foreground shadow-hairline interactive press hover:bg-surface disabled:opacity-0 ${FOCUS}`;
+  // Labelled pills, so nobody has to guess what an icon does.
+  const pill = `pointer-events-auto inline-flex min-h-11 items-center gap-1.5 rounded-full px-4 text-small font-semibold interactive press ${FOCUS}`;
+  const quiet = `${pill} bg-surface/90 text-foreground shadow-hairline hover:bg-surface disabled:pointer-events-none disabled:opacity-40`;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_srgb,var(--foreground)_62%,transparent)] sm:backdrop-blur-sm">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_srgb,var(--foreground)_62%,transparent)] sm:backdrop-blur-sm"
+      // On wide screens the scrim shows around the frame; a click on it closes, like Close.
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !sharing) close();
+      }}
+    >
       <div
         ref={dialog}
         role="dialog"
@@ -163,12 +202,14 @@ export function StoryPlayer({ doc, profile, demo, onExit }: { doc: DocumentData;
             ))}
           </ol>
           <div className="mt-2 flex items-center justify-between gap-2">
-            <p className="flex items-center gap-2 pl-1 text-small font-semibold">
-              <span className="font-display text-[1.0625rem] font-medium">Legible</span>
+            <p className="flex min-w-0 flex-wrap items-center gap-x-2 pl-1 text-small font-semibold">
+              <span>{S.playerTitle}</span>
+              <span className="tabular-nums text-muted-foreground">{S.progress(state.index + 1, SLIDE_COUNT)}</span>
               {demo && <span className="rounded-sm bg-surface-muted px-2 py-0.5 text-small font-semibold text-foreground">{S.demoTag}</span>}
             </p>
-            <button type="button" onClick={close} aria-label={S.close} className={roundButton}>
-              <Glyph name="close" size={18} />
+            <button type="button" onClick={close} aria-label={S.closeLabel} className={`${quiet} shrink-0 pl-3`}>
+              <Glyph name="close" size={16} />
+              {S.close}
             </button>
           </div>
         </div>
@@ -179,21 +220,32 @@ export function StoryPlayer({ doc, profile, demo, onExit }: { doc: DocumentData;
           </div>
         </div>
 
-        {/* Back and Next for keyboards, screen readers, and anyone who prefers buttons. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-center justify-between px-4 pb-[max(env(safe-area-inset-bottom),1rem)]" data-story-ignore>
-          <button type="button" onClick={() => go("prev")} disabled={state.index === 0} aria-label={S.back} className={`pointer-events-auto ${roundButton}`}>
+        {/* Previous and Next, always visible: the way to move for everyone, not a fallback. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-3 px-4 pb-[max(env(safe-area-inset-bottom),1rem)]" data-story-ignore>
+          <button type="button" onClick={() => go("prev")} disabled={state.index === 0} aria-label={S.backLabel} className={`${quiet} pl-3`}>
             <span className="rotate-90">
-              <Glyph name="chevron" size={16} />
+              <Glyph name="chevron" size={14} />
             </span>
+            {S.back}
           </button>
-          <span className="text-small font-semibold tabular-nums text-muted-foreground" aria-hidden="true">
-            {state.index + 1} / {SLIDE_COUNT}
-          </span>
-          <button type="button" onClick={() => go("next")} disabled={atEnd} aria-label={S.next} className={`pointer-events-auto ${roundButton}`}>
-            <span className="-rotate-90">
-              <Glyph name="chevron" size={16} />
+          {shownReward && (
+            <span key={shownReward.n} aria-hidden="true" className="inline-flex min-w-0 animate-fade-in items-center rounded-full bg-surface px-3 py-1.5 text-small font-semibold shadow-hairline">
+              <span className="sm:hidden">{S.rewardShort(shownReward.drops)}</span>
+              <span className="hidden sm:inline">{S.rewardLong(shownReward.drops)}</span>
             </span>
-          </button>
+          )}
+          {atEnd ? (
+            <button type="button" onClick={close} aria-label={S.doneLabel} className={`${quiet} px-5`}>
+              {S.done}
+            </button>
+          ) : (
+            <button type="button" onClick={() => go("next")} aria-label={S.nextLabel} className={`${quiet} pr-3`}>
+              {S.next}
+              <span className="-rotate-90">
+                <Glyph name="chevron" size={14} />
+              </span>
+            </button>
+          )}
         </div>
 
         <p id="story-help" className="sr-only">
@@ -201,6 +253,9 @@ export function StoryPlayer({ doc, profile, demo, onExit }: { doc: DocumentData;
         </p>
         <p className="sr-only" aria-live="polite">
           {announcement(state.index, SLIDE_COUNT, slide.heading)}
+        </p>
+        <p className="sr-only" role="status">
+          {shownReward ? S.rewardSaid(shownReward.drops) : ""}
         </p>
 
         {sharing && <SharePreview base={shareBase} onClose={() => setSharing(false)} />}

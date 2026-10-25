@@ -1,6 +1,6 @@
 "use client";
 
-// The six slide compositions of "Your ballot, wrapped". Each slide is one idea on
+// The six story compositions of Ballot stories (first built as "Your ballot, wrapped"). Each slide is one idea on
 // its own Notebook surface; variety comes from scale, layout, paper, and line
 // illustration, never from a colour standing for a topic or a side. Plum appears
 // only where the data supports a personal link (a known town, a decision that may
@@ -354,27 +354,41 @@ function Closer({ s, onAction }: { s: Extract<SlideModel, { id: "closer" }>; onA
             <span className="text-muted-foreground">{d.number}</span>
           </p>
           <h3 className={`${css.settle} mt-2 font-display text-[clamp(2.125rem,10vw,2.75rem)] leading-[1.02] tracking-[-0.025em] text-balance`}>{d.title}</h3>
-          <div className={`${css.rise} mt-4 flex flex-wrap items-center gap-x-3 gap-y-1`} style={at(3)}>
+          <div className={`${css.rise} mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 [@media(max-height:640px)]:mt-2`} style={at(3)}>
             <span className="rounded-sm px-2 py-0.5 text-small font-semibold shadow-[inset_0_0_0_1.5px_var(--foreground)]">{d.status.label}</span>
             <span className="text-small text-muted-foreground">{d.status.detail}</span>
           </div>
-          <div className="mt-4 min-h-0 space-y-3 overflow-y-auto" data-story-scroll>
+          <div className="mt-4 min-h-0 space-y-3 overflow-y-auto [@media(max-height:640px)]:mt-2" data-story-scroll>
+            {d.factsLabel && (
+              <p className={`${css.rise} text-small font-semibold text-muted-foreground`} style={at(4)}>
+                {d.factsLabel}
+              </p>
+            )}
             {d.sentences.map((x, i) => (
-              <p key={x.quoteId + i} className={`${css.rise} border-l-2 border-border pl-3`} style={at(4 + i)}>
+              <p key={x.quoteId + i} className={`${css.rise} border-l-2 border-border pl-3`} style={at(5 + i)}>
                 <span className="block text-body leading-snug">{x.text}</span>
                 <span className="mt-1 block text-small font-semibold text-muted-foreground">{x.source}</span>
               </p>
             ))}
             {d.noSummary && <p className="text-body text-muted-foreground">{d.noSummary}</p>}
           </div>
-          <button
-            type="button"
-            onClick={() => onAction({ kind: "measure", href: d.href })}
-            className={`${css.rise} group mt-6 inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-md bg-primary px-6 text-body font-semibold text-primary-foreground interactive press hover:bg-primary-hover ${FOCUS}`}
-            style={at(7)}
-          >
-            {d.action} <Arrow />
-          </button>
+          <div className={`${css.rise} mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 [@media(max-height:640px)]:mt-3`} style={at(7)}>
+            <button
+              type="button"
+              onClick={() => onAction({ kind: "measure", href: d.href })}
+              className={`group inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-primary px-6 text-body font-semibold text-primary-foreground interactive press hover:bg-primary-hover ${FOCUS}`}
+            >
+              {d.action} <Arrow />
+            </button>
+            {/* The Secretary's page for the question, in a new tab so the story stays where it is. */}
+            {d.official && (
+              <a href={d.official.url} target="_blank" rel="noopener noreferrer" className={`group text-small ${TEXT_LINK}`}>
+                {d.official.label}
+                <span aria-hidden="true">↗</span>
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            )}
+          </div>
         </div>
       ) : null}
     </section>

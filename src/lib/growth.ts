@@ -1,26 +1,13 @@
-// Plant growth: one set of definitions for the plant's stage everywhere it
-// appears (header avatar, profile, Growth Story). Growth reflects civic
-// exploration only: decisions explored and official sources opened. It never
-// reflects profile completion, private facts, beliefs, or voting.
+// Plant growth: one set of definitions for the plant's stages everywhere it
+// appears (header, For you, the garden). A plant grows only from water the
+// person pours, and water comes only from exploring civic information (see
+// garden.ts). Growth never reflects profile answers, beliefs, or voting.
 //
-// Nothing here is tracked yet. These types are the proposed shape for a
-// browser-only history: aggregate totals plus the date each stage was reached.
-// No per-click log, nothing sent to a server.
+// Stages are defined per variety so other plants (a cactus, a tulip) can be
+// added later as one more entry in VARIETIES, with their own stage names and
+// drop totals. For now there is one: the little sprout.
 
 export type GrowthStage = 1 | 2 | 3 | 4 | 5;
-
-/** Aggregate totals. `followed` is shown but never moves the plant: it comes from profile interests. */
-export type GrowthTotals = { decisions: number; sources: number; followed: number };
-
-export type Milestone = {
-  stage: GrowthStage;
-  /** ISO date (YYYY-MM-DD) the stage was reached, when known. */
-  reachedOn?: string;
-  /** Totals at that moment, when known. */
-  totals?: GrowthTotals;
-};
-
-export type GrowthHistory = { totals: GrowthTotals; milestones: Milestone[] };
 
 export type StageDef = {
   stage: GrowthStage;
@@ -29,63 +16,48 @@ export type StageDef = {
   title: string;
   /** One friendly line for the timeline. */
   line: string;
-  /** Shown while this is the next stage. */
-  toward: string;
-  /** What it takes to reach this stage. */
-  needs: { decisions: number; sources: number };
+  /** What the plant says when it reaches this stage. */
+  cheer: string;
+  /** Total drops poured that reach this stage. */
+  drops: number;
 };
 
-export const GROWTH_STAGES: readonly StageDef[] = [
-  { stage: 1, name: "Seed", title: "A seed is planted", line: "The first page of your story.", toward: "", needs: { decisions: 0, sources: 0 } },
-  { stage: 2, name: "Sprout", title: "A little sprout", line: "You explored your first decision.", toward: "Growing toward a first sprout", needs: { decisions: 1, sources: 0 } },
-  { stage: 3, name: "Growing", title: "Growing stronger", line: "You kept exploring and went to the official sources.", toward: "Growing toward a stronger stem", needs: { decisions: 3, sources: 1 } },
-  { stage: 4, name: "Flourishing", title: "Flourishing", line: "You looked closely at the decisions around you.", toward: "Growing toward fuller leaves", needs: { decisions: 6, sources: 3 } },
-  { stage: 5, name: "Blooming", title: "First bloom", line: "Your curiosity helped your little plant bloom.", toward: "Growing toward your first bloom", needs: { decisions: 9, sources: 5 } },
-];
+export type VarietyId = "sprout";
 
-export const ZERO: GrowthTotals = { decisions: 0, sources: 0, followed: 0 };
+export type PlantVariety = { id: VarietyId; name: string; stages: readonly StageDef[] };
 
-export function stageDef(stage: GrowthStage): StageDef {
-  return GROWTH_STAGES[stage - 1];
+export const VARIETIES: Record<VarietyId, PlantVariety> = {
+  sprout: {
+    id: "sprout",
+    name: "Little sprout",
+    stages: [
+      { stage: 1, name: "Seed", title: "A seed is planted", line: "The first page of your story.", cheer: "Hello! I'm a tiny seedling.", drops: 0 },
+      { stage: 2, name: "Sprout", title: "A little sprout", line: "Your first drops woke it up.", cheer: "Look, I sprouted!", drops: 3 },
+      { stage: 3, name: "Growing", title: "Growing stronger", line: "Side stems branch out with new leaves.", cheer: "Look, new leaves!", drops: 8 },
+      { stage: 4, name: "Budding", title: "First blossoms", line: "A full crown of leaves, and tiny white blossoms.", cheer: "Ooh, tiny blossoms!", drops: 15 },
+      { stage: 5, name: "Blooming", title: "First bloom", line: "Your curiosity helped your little plant bloom.", cheer: "I bloomed! We're growing together.", drops: 24 },
+    ],
+  },
+};
+
+export const DEFAULT_VARIETY: VarietyId = "sprout";
+
+/** The default variety's stages. */
+export const GROWTH_STAGES = VARIETIES[DEFAULT_VARIETY].stages;
+
+export function stageDef(stage: GrowthStage, variety: VarietyId = DEFAULT_VARIETY): StageDef {
+  return VARIETIES[variety].stages[stage - 1];
 }
 
-/** The highest stage whose needs the totals meet. */
-export function stageFor(t: GrowthTotals): GrowthStage {
+/** The highest stage the drops poured reach. */
+export function stageFor(poured: number, variety: VarietyId = DEFAULT_VARIETY): GrowthStage {
   let s: GrowthStage = 1;
-  for (const d of GROWTH_STAGES) if (t.decisions >= d.needs.decisions && t.sources >= d.needs.sources) s = d.stage;
+  for (const d of VARIETIES[variety].stages) if (poured >= d.drops) s = d.stage;
   return s;
 }
 
-export function nextStage(stage: GrowthStage): StageDef | undefined {
-  return stage < 5 ? stageDef((stage + 1) as GrowthStage) : undefined;
-}
-
-/**
- * New totals in, history out: adds a milestone for every stage the totals now
- * reach that the history lacks, dated `today`. Stages never go back down.
- */
-export function withTotals(h: GrowthHistory, totals: GrowthTotals, today: string): GrowthHistory {
-  const have = new Set(h.milestones.map((m) => m.stage));
-  const added: Milestone[] = [];
-  for (let s = 1; s <= stageFor(totals); s++) {
-    if (!have.has(s as GrowthStage)) added.push({ stage: s as GrowthStage, reachedOn: today, totals });
-  }
-  const milestones = [...h.milestones, ...added].sort((a, b) => a.stage - b.stage);
-  return { totals, milestones };
-}
-
-/** The plant's stage for a history: its highest milestone. */
-export function currentStage(h: GrowthHistory | null): GrowthStage {
-  return h?.milestones.reduce<GrowthStage>((s, m) => (m.stage > s ? m.stage : s), 1) ?? 1;
-}
-
-/** "3 decisions explored · 2 official sources opened", or "" for none. */
-export function activityLine(t: GrowthTotals | undefined): string {
-  if (!t) return "";
-  const parts: string[] = [];
-  if (t.decisions) parts.push(`${t.decisions} ${t.decisions === 1 ? "decision" : "decisions"} explored`);
-  if (t.sources) parts.push(`${t.sources} official ${t.sources === 1 ? "source" : "sources"} opened`);
-  return parts.join(" · ");
+export function nextStage(stage: GrowthStage, variety: VarietyId = DEFAULT_VARIETY): StageDef | undefined {
+  return stage < 5 ? stageDef((stage + 1) as GrowthStage, variety) : undefined;
 }
 
 /** "October 12" for an ISO date, read as a calendar day (no time zone shift). */

@@ -13,7 +13,7 @@ import { ballotReason, nextPick } from "@/lib/engine/ballot-picks";
 import { buildFeed } from "@/lib/engine/feed";
 import { relatedCivic, relatedMeasures } from "@/lib/engine/related";
 import type { DocumentData } from "@/lib/engine/types";
-import { parentRoute, parseRoute, routeHash, type Route } from "@/lib/nav/route";
+import { parentRoute, parseRoute, routeHash, screenRoute, type Route, type StoriesOver } from "@/lib/nav/route";
 import { hideChatDock } from "@/lib/ui/chat-dock";
 import { CivicView } from "./CivicView";
 import { DocumentView } from "./DocumentView";
@@ -22,13 +22,15 @@ import { HighlightAskProvider } from "./HighlightMenu";
 import { Explore } from "./Explore";
 import { Home } from "./Home";
 import { MeasureView } from "./MeasureView";
+import { Garden } from "./plant/Garden";
+import { resetGarden, rewardGarden, startGarden } from "./plant/useGarden";
 import { ProfileSheet, type SheetView } from "./ProfileSheet";
 import { ScreenIn } from "./ScreenIn";
 import { SiteHeader } from "./SiteHeader";
 import { townName } from "./profile-steps";
 import { useLegible } from "./useLegible";
 import { StoryPlayer, type StoryExit } from "./wrapped/StoryPlayer";
-import { WRAPPED_STRINGS } from "@/lib/vocab/wrapped";
+import { WRAPPED_STRINGS, WRAPPED_STRINGS as S } from "@/lib/vocab/wrapped";
 import { WRAPPED_ENABLED } from "@/lib/wrapped/flag";
 
 // Every document the feed can show. Bundled ballot only until the catalog
@@ -51,17 +53,26 @@ function subscribeHash(cb: () => void) {
 const hashSnapshot = () => window.location.hash;
 const serverHash = () => "";
 
+// What this app keeps on its own history entries. `legible` marks an entry this
+// session pushed; `storySlide` is where Ballot stories were left for a question
+// page; `fromStories` marks that question page, so its back button can say so.
+type HistoryState = { legible?: boolean; storySlide?: number; fromStories?: boolean } | null;
+const historyState = () => window.history.state as HistoryState;
+/** The screen a hash shows, for scroll memory: Ballot stories keep the page beneath. */
+const screenHash = (h: string) => routeHash(screenRoute(parseRoute(h)));
+
 export function LegibleApp() {
   const { loaded, today, profile, setProfile, preferences, setPreferences, canStore, forget, demo } = useLegible();
   const [sheet, setSheet] = useState<SheetView | null>(null);
   // Where the person is, read from the URL hash.
   const hash = useSyncExternalStore(subscribeHash, hashSnapshot, serverHash);
   const route = parseRoute(hash);
-  // "Your ballot, wrapped" plays over For you (or over first run, so it never needs
-  // onboarding). Its route shares For you's screen key, so opening and closing it
-  // never remounts or scrolls the page underneath. Development only.
-  const storyOpen = WRAPPED_ENABLED && route.kind === "wrapped";
-  const screenKey = route.kind === "wrapped" ? "#/" : hash || "#/";
+  // Ballot stories play over the page that opened them, For you or Explore (or over
+  // first run, so they never need onboarding). Their route shares that page's screen
+  // key, so opening and closing them never remounts or scrolls the page underneath.
+  const storyOpen = WRAPPED_ENABLED && route.kind === "stories";
+  const screen = storyOpen ? screenRoute(route) : route;
+  const screenKey = storyOpen ? routeHash(screen) : hash || "#/";
   const storyOpener = useRef<HTMLElement | null>(null);
   const scrolls = useRef<Record<string, number>>({});
   const restoreNext = useRef(false);
@@ -72,6 +83,7 @@ export function LegibleApp() {
   // Clears the profile and preferences from this browser and returns to the start.
   const clearAll = () => {
     forget();
+    resetGarden();
     setSavedBeyondTown(false);
     setRememberNotNow(false);
     window.history.replaceState(null, "", routeHash({ kind: "feed" }));
@@ -90,9 +102,36 @@ export function LegibleApp() {
     return (because ?? []).map((b) => (b.value ? FACT_DEFS[b.fact].because.yes : FACT_DEFS[b.fact].because.no));
   };
 
+  // The garden starts once the profile is read, and is kept between visits only
+  // while "Remember on this device" is on.
+  useEffect(() => {
+    if (loaded) startGarden({ today, persist: preferences.remember, demo });
+  }, [loaded, today, preferences.remember, demo]);
+  // Water for exploring: opening a ballot question, a civic item, or the full
+  // voter guide pays once per page. Pages that do not exist pay nothing.
+  const explored = loaded && preferences.onboardingDone;
+  useEffect(() => {
+    if (!explored) return;
+    const r = parseRoute(hash);
+    if (r.kind === "measure" && feed.items.some((i) => i.doc.id === r.docId && i.cards.some((c) => c.measure.id === r.measureId))) rewardGarden("question", r.measureId);
+    else if (r.kind === "item" && CIVIC.some((i) => i.id === r.itemId)) rewardGarden("item", r.itemId);
+    else if (r.kind === "doc" && feed.items.some((i) => i.doc.id === r.docId)) rewardGarden("guide", r.docId);
+  }, [explored, hash, feed]);
+  // And opening an official source: every link that opens in a new tab is one
+  // (official pages and bundled official PDFs). Once per address, page anchors aside.
+  useEffect(() => {
+    if (!explored) return;
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as Element | null)?.closest?.("a[target=_blank]") as HTMLAnchorElement | null;
+      if (a?.href) rewardGarden("source", a.href.split("#")[0]);
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, [explored]);
+
   // Remember each screen's scroll as the person scrolls it.
   useEffect(() => {
-    const onScroll = () => (scrolls.current[window.location.hash || "#/"] = window.scrollY);
+    const onScroll = () => (scrolls.current[screenHash(window.location.hash)] = window.scrollY);
     const onPop = () => (restoreNext.current = true);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("popstate", onPop);
@@ -111,7 +150,7 @@ export function LegibleApp() {
     const same = lastKey.current === screenKey;
     lastKey.current = screenKey;
     if (!same) {
-      const top = restoreNext.current ? (scrolls.current[hash || "#/"] ?? 0) : 0;
+      const top = restoreNext.current ? (scrolls.current[screenKey] ?? 0) : 0;
       window.scrollTo({ top });
     }
     restoreNext.current = false;
@@ -128,22 +167,35 @@ export function LegibleApp() {
     window.history.replaceState(null, "", h);
     window.dispatchEvent(new Event(NAV_EVENT));
   };
-  const openStory = () => {
+  const openStory = (over: StoriesOver) => {
     storyOpener.current = document.activeElement as HTMLElement | null;
-    window.history.pushState({ legible: true }, "", routeHash({ kind: "wrapped" }));
+    window.history.pushState({ legible: true }, "", routeHash({ kind: "stories", over }));
     window.dispatchEvent(new Event(NAV_EVENT));
   };
-  // Leaving the story: to a decision or Explore it replaces its own history entry;
-  // closing steps back when this session opened it, or goes to For you from a pasted link.
-  const exitStory = (e: StoryExit) => {
-    if (e.kind === "measure") return replaceRoute(e.href);
-    if (e.kind === "explore") return replaceRoute(routeHash({ kind: "explore" }));
-    if ((window.history.state as { legible?: boolean } | null)?.legible) window.history.back();
-    else replaceRoute(routeHash({ kind: "feed" }));
+  // Closing steps back to the page underneath when this session opened the stories,
+  // or replaces a pasted link with that page.
+  const closeStory = () => {
+    if (historyState()?.legible) window.history.back();
+    else replaceRoute(routeHash(screen));
+  };
+  // Leaving the stories. To a question page: remember the story on its own entry and
+  // push the question, so the browser's back (and the page's "Back to stories")
+  // returns to the same story. To Explore: replace the stories with it.
+  const exitStory = (e: StoryExit, slide: number) => {
+    if (e.kind === "measure") {
+      window.history.replaceState({ ...historyState(), storySlide: slide }, "", window.location.hash);
+      window.history.pushState({ legible: true, fromStories: true }, "", e.href);
+      window.dispatchEvent(new Event(NAV_EVENT));
+      return;
+    }
+    if (e.kind === "explore") return screen.kind === "explore" ? closeStory() : replaceRoute(routeHash({ kind: "explore" }));
+    closeStory();
     if (e.kind === "profile") setSheet({ kind: "list" });
     if (e.kind === "topics") setSheet({ kind: "topics" });
   };
-  const story = storyOpen && <StoryPlayer doc={DOCS[0]} profile={profile} demo={demo} onExit={exitStory} />;
+  const story = storyOpen && (
+    <StoryPlayer key={hash} doc={DOCS[0]} profile={profile} demo={demo} initialSlide={historyState()?.storySlide ?? 0} onExit={exitStory} />
+  );
 
   if (!loaded) return <div className="min-h-dvh" aria-busy="true" />;
 
@@ -184,6 +236,7 @@ export function LegibleApp() {
   };
   const openMeasure = (docId: string, measureId: string) => go({ kind: "measure", docId, measureId });
   const openItem = (itemId: string) => go({ kind: "item", itemId });
+  const openGarden = () => (route.kind === "garden" ? window.scrollTo({ top: 0, behavior: "smooth" }) : go({ kind: "garden" }));
 
   const town = townName(profile.townId);
   const docItem = route.kind === "doc" || route.kind === "measure" ? feed.items.find((i) => i.doc.id === route.docId) : undefined;
@@ -191,6 +244,9 @@ export function LegibleApp() {
   // Items are public: a pasted link to another town's meeting still opens.
   const rawItem = route.kind === "item" ? CIVIC.find((i) => i.id === route.itemId) : undefined;
   const itemCard = rawItem ? (civic.find((c) => c.item.id === rawItem.id) ?? civicCard(rawItem, profile, today)) : undefined;
+
+  // A question page opened from Ballot stories says where its back button goes.
+  const fromStories = Boolean(historyState()?.fromStories);
 
   let page;
   if (card && docItem) {
@@ -204,7 +260,8 @@ export function LegibleApp() {
         profile={profile}
         setProfile={setProfile}
         town={town}
-        backLabel="Back"
+        backLabel={fromStories ? S.backToStories : "Back"}
+        showBackLabel={fromStories}
         onBack={back}
         onForYou={() => go({ kind: "feed" })}
         onOpenMeasure={(measureId) => openMeasure(docItem.doc.id, measureId)}
@@ -238,7 +295,17 @@ export function LegibleApp() {
         onOpenMeasure={(measureId) => openMeasure(docItem.doc.id, measureId)}
       />
     );
-  } else if (route.kind === "explore") {
+  } else if (route.kind === "garden") {
+    page = (
+      <Garden
+        onBack={back}
+        onExplore={() => go({ kind: "explore" })}
+        remember={preferences.remember}
+        canStore={canStore}
+        {...(demo ? {} : { onRemember: () => setPreferences((p) => ({ ...p, remember: true })) })}
+      />
+    );
+  } else if (screen.kind === "explore") {
     page = (
       <Explore
         feed={feed}
@@ -250,6 +317,7 @@ export function LegibleApp() {
         onOpenMeasure={openMeasure}
         onOpenItem={openItem}
         onOpenProfile={setSheet}
+        {...(WRAPPED_ENABLED ? { onOpenStories: () => openStory("explore") } : {})}
       />
     );
   } else {
@@ -264,12 +332,13 @@ export function LegibleApp() {
         onOpenMeasure={openMeasure}
         onOpenItem={openItem}
         onOpenProfile={setSheet}
-        {...(WRAPPED_ENABLED ? { onOpenWrapped: openStory } : {})}
+        onOpenGarden={openGarden}
+        {...(WRAPPED_ENABLED ? { onOpenStories: () => openStory("feed") } : {})}
       />
     );
   }
 
-  const tab = route.kind === "explore" ? "explore" : route.kind === "feed" ? "home" : undefined;
+  const tab = screen.kind === "explore" ? "explore" : screen.kind === "feed" ? "home" : undefined;
   const toHome = () => (route.kind === "feed" ? window.scrollTo({ top: 0, behavior: "smooth" }) : go({ kind: "feed" }));
   const toExplore = () => (route.kind === "explore" ? window.scrollTo({ top: 0, behavior: "smooth" }) : go({ kind: "explore" }));
 
@@ -285,6 +354,8 @@ export function LegibleApp() {
             onHome={toHome}
             onExplore={toExplore}
             onOpenProfile={setSheet}
+            onOpenGarden={openGarden}
+            gardenActive={route.kind === "garden"}
           />
         </div>
         {demo && <p className="bg-surface-muted px-4 py-2 text-center text-small font-semibold">{WRAPPED_STRINGS.demoStrip}</p>}
@@ -305,6 +376,10 @@ export function LegibleApp() {
           onClear={() => {
             closeSheet();
             clearAll();
+          }}
+          onOpenGarden={() => {
+            closeSheet();
+            openGarden();
           }}
         />
       )}

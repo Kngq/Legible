@@ -1,42 +1,26 @@
 import { describe, expect, it } from "vitest";
-import { activityLine, currentStage, GROWTH_STAGES, milestoneDate, nextStage, stageFor, withTotals, ZERO } from "./growth";
+import { GROWTH_STAGES, milestoneDate, nextStage, stageFor, VARIETIES } from "./growth";
 
 describe("growth", () => {
-  it("defines five stages in order", () => {
+  it("defines five stages in order, each needing more drops", () => {
     expect(GROWTH_STAGES.map((s) => s.stage)).toEqual([1, 2, 3, 4, 5]);
-    expect(GROWTH_STAGES.map((s) => s.name)).toEqual(["Seed", "Sprout", "Growing", "Flourishing", "Blooming"]);
+    expect(GROWTH_STAGES.map((s) => s.name)).toEqual(["Seed", "Sprout", "Growing", "Budding", "Blooming"]);
+    for (let i = 1; i < GROWTH_STAGES.length; i++) expect(GROWTH_STAGES[i].drops).toBeGreaterThan(GROWTH_STAGES[i - 1].drops);
   });
 
-  it("reaches each stage exactly at its needs", () => {
-    for (const d of GROWTH_STAGES) expect(stageFor({ ...d.needs, followed: 0 })).toBe(d.stage);
+  it("reaches each stage exactly at its drops", () => {
+    for (const d of GROWTH_STAGES) {
+      expect(stageFor(d.drops)).toBe(d.stage);
+      if (d.drops > 0) expect(stageFor(d.drops - 1)).toBe(d.stage - 1);
+    }
+    expect(stageFor(999)).toBe(5);
   });
 
-  it("does not grow from followed interests alone", () => {
-    expect(stageFor({ decisions: 0, sources: 0, followed: 20 })).toBe(1);
-  });
-
-  it("needs sources as well as decisions past the sprout", () => {
-    expect(stageFor({ decisions: 20, sources: 0, followed: 0 })).toBe(2);
-  });
-
-  it("adds dated milestones for newly reached stages and keeps old dates", () => {
-    const a = withTotals({ totals: ZERO, milestones: [] }, { decisions: 1, sources: 0, followed: 0 }, "2026-10-12");
-    expect(a.milestones.map((m) => [m.stage, m.reachedOn])).toEqual([
-      [1, "2026-10-12"],
-      [2, "2026-10-12"],
-    ]);
-    const b = withTotals(a, { decisions: 3, sources: 2, followed: 0 }, "2026-10-15");
-    expect(b.milestones.map((m) => [m.stage, m.reachedOn])).toEqual([
-      [1, "2026-10-12"],
-      [2, "2026-10-12"],
-      [3, "2026-10-15"],
-    ]);
-    expect(currentStage(b)).toBe(3);
-  });
-
-  it("never moves backward", () => {
-    const a = withTotals({ totals: ZERO, milestones: [] }, { decisions: 9, sources: 5, followed: 0 }, "2026-10-24");
-    expect(currentStage(withTotals(a, ZERO, "2026-10-25"))).toBe(5);
+  it("keys every variety by its own id", () => {
+    for (const [id, v] of Object.entries(VARIETIES)) {
+      expect(v.id).toBe(id);
+      expect(v.stages).toHaveLength(5);
+    }
   });
 
   it("has no next stage after blooming", () => {
@@ -44,11 +28,9 @@ describe("growth", () => {
     expect(nextStage(5)).toBeUndefined();
   });
 
-  it("formats activity and dates", () => {
-    expect(activityLine({ decisions: 3, sources: 2, followed: 1 })).toBe("3 decisions explored · 2 official sources opened");
-    expect(activityLine({ decisions: 1, sources: 1, followed: 0 })).toBe("1 decision explored · 1 official source opened");
-    expect(activityLine(ZERO)).toBe("");
+  it("formats dates as calendar days", () => {
     expect(milestoneDate("2026-10-12")).toBe("October 12");
     expect(milestoneDate(undefined)).toBe("");
+    expect(milestoneDate("nope")).toBe("");
   });
 });

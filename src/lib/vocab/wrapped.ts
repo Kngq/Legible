@@ -1,4 +1,4 @@
-// Fixed vocabulary for "Your ballot, wrapped". Pure TypeScript: no React, no network.
+// Fixed vocabulary for Ballot stories (first built as "Your ballot, wrapped"). Pure TypeScript: no React, no network.
 // Every string the story writes itself lives here, so tests can check it for every profile.
 import type { TopicId } from "./index";
 
@@ -43,18 +43,25 @@ export const LOCATOR_LABELS: Record<string, string> = {
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
 export const WRAPPED_STRINGS = {
-  dialogLabel: "Your ballot, wrapped",
-  close: "Close story",
-  next: "Next slide",
-  back: "Previous slide",
+  dialogLabel: "Ballot stories",
+  close: "Close",
+  closeLabel: "Close ballot stories",
+  next: "Next",
+  nextLabel: "Next story",
+  back: "Previous",
+  backLabel: "Previous story",
+  done: "Done",
+  doneLabel: "Finish and close ballot stories",
+  progress: (i: number, n: number) => `${i} of ${n}`,
+  playerTitle: "Ballot stories",
   demoTag: "Example profile",
   demoStrip: "Example profile: a Cambridge renter who rides transit. Nothing here is saved.",
 
-  openingHeading: "Your ballot, wrapped.",
+  openingHeading: "Your ballot, in stories.",
   openingLine: "Big decisions. Your corner of Massachusetts.",
-  openingHint: "Tap to begin",
-  openingHintKeys: "Press → or click to begin",
-  navHelp: "Use the arrow keys or the Next and Back buttons to move between slides. Escape closes the story.",
+  openingHint: "Tap Next to begin, or swipe",
+  openingHintKeys: "Press Next or the → key to begin",
+  navHelp: "Use the Next and Previous buttons or the arrow keys to move between stories. Escape closes ballot stories.",
 
   worldHeading: "Here’s what’s happening around you.",
   worldCount: (n: number) => (n === 1 ? "question on the ballot" : "questions on the ballot"),
@@ -83,6 +90,8 @@ export const WRAPPED_STRINGS = {
   basisTouches: "Connected to your answers",
   basisList: "On your list",
   basisFirst: "First on the ballot",
+  closerFacts: "What the official text says",
+  closerOfficial: "Read the official voter guide page",
   closerSource: (locator: string, page?: number) =>
     `From ${LOCATOR_LABELS[locator] ?? "the official text"}${page ? `, page ${page}` : ""}`,
   closerNoSummary: "Its page has the official summary, in its exact words.",
@@ -111,12 +120,24 @@ export const WRAPPED_STRINGS = {
   shareError: "The image could not be made on this device.",
   shareDone: "Back to the story",
 
-  inviteKicker: "A different way to explore your ballot",
-  inviteLine: "Six little stories about the decisions shaping your community.",
-  inviteLink: "See your ballot, wrapped",
+  // Entry points: the featured section on Explore and the quiet link on For you.
+  featureKicker: "A gentle place to start",
+  featureHeading: "Your ballot, in stories",
+  featureIntro: "Explore six short, visual stories about the decisions shaping your community.",
+  featureCount: "6 short stories",
+  featurePace: "Move at your own pace",
+  featureSource: "From the official voter guide",
+  featureAction: "Explore ballot stories",
+  homeLead: "New to these questions?",
+  homeLink: "Explore ballot stories",
+  backToStories: "Back to stories",
+  // Water earned while the stories are open (an official link opened from a story).
+  rewardShort: (n: number) => `+${n} ${n === 1 ? "drop" : "drops"}`,
+  rewardLong: (n: number) => `+${n} ${n === 1 ? "drop" : "drops"} to your garden`,
+  rewardSaid: (n: number) => `You earned ${n} ${n === 1 ? "drop" : "drops"} of water. It's waiting in your garden.`,
 } as const;
 
-/** "Slide 3 of 6. Some decisions hit closer to home." */
+/** "Story 3 of 6. Some decisions hit closer to home." */
 export function announcement(index: number, count: number, heading: string): string {
-  return `Slide ${index + 1} of ${count}. ${heading}`;
+  return `Story ${index + 1} of ${count}. ${heading}`;
 }
